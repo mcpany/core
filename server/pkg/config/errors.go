@@ -8,96 +8,79 @@ import (
 	"fmt"
 )
 
-// ActionableError is an error that includes a suggestion for fixing the issue.
+// ActionableError represents the public ActionableError entity.
 //
-// Summary: An error type that pairs an underlying error with a user-facing suggestion.
+// Summary: Defines the structured data model representing a error.
 //
-// Fields:
-//   - Err: error. The original error that occurred.
-//   - Suggestion: string. A human-readable suggestion on how to resolve the error.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ActionableError struct {
 	Err        error
 	Suggestion string
 }
 
-// Error implements the error interface. Side Effects: - None.
+// Error serves as a public interface for interacting with Error.
+//
+// Summary: Error the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The resulting string.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Error operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
 
-// Unwrap returns the underlying error. Side Effects: - None.
+// Unwrap serves as a public interface for interacting with Unwrap.
+//
+// Summary: Unwrap the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Unwrap operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }
 
-// WrapActionableError wraps an error with context, preserving ActionableError semantics if present.
+// WrapActionableError serves as a public interface for interacting with WrapActionableError.
 //
-// Summary: Wraps an error with context, preserving ActionableError semantics.
-//
-// If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
-// Otherwise, it returns a standard wrapped error.
+// Summary: Wrap the actionable error appropriately based on current system conditions.
 //
 // Parameters:
-//   - context (string): The context message to prefix to the error.
-//   - err (error): The error to wrap.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: The wrapped error.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

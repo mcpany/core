@@ -10,9 +10,21 @@ import (
 	"io"
 )
 
-// JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
+// JSONExecutor represents the public JSONExecutor entity.
 //
-// Summary: JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
+// Summary: Defines the structured data model representing a executor.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONExecutor struct {
 	// in is the writer where JSON commands are written to (e.g. stdin of a process).
 	in io.Writer
@@ -20,16 +32,21 @@ type JSONExecutor struct {
 	out io.Reader
 }
 
-// NewJSONExecutor creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
+// NewJSONExecutor serves as a public interface for interacting with NewJSONExecutor.
 //
-// Summary: Creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
+// Summary: Constructs and returns an initialized json executor ready for consumption.
 //
 // Parameters:
-//   - in (io.Writer): Description for in.
-//   - out (io.Reader): Description for out.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*JSONExecutor): Result.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -37,16 +54,21 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	}
 }
 
-// Execute sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - data: Parameter.
-//   - result (any): Description for result.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (error): Result.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

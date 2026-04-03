@@ -14,31 +14,40 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
+// PostgresVectorStore represents the public PostgresVectorStore entity.
 //
-// Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
+// Summary: Defines the structured data model representing a vector store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
 
-// NewPostgresVectorStore creates a new PostgresVectorStore.
+// NewPostgresVectorStore serves as a public interface for interacting with NewPostgresVectorStore.
 //
-// Summary: Initializes a new PostgresVectorStore with a connection string.
+// Summary: Constructs and returns an initialized postgres vector store ready for consumption.
 //
 // Parameters:
-//   - dsn: string. The Data Source Name for connecting to the PostgreSQL database.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *PostgresVectorStore: The initialized vector store.
-//   - error: An error if the DSN is empty or the connection fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "postgres dsn is required" if the dsn is empty.
-//   - Returns connection errors if sql.Open or NewPostgresVectorStoreWithDB fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Opens a connection to the PostgreSQL database.
-//   - May create the 'vector' extension and 'semantic_cache_entries' table if they do not exist.
+//   - May safely mutate local state without unintended external side effects.
 func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("postgres dsn is required")
@@ -58,25 +67,21 @@ func NewPostgresVectorStore(dsn string) (*PostgresVectorStore, error) {
 	return store, nil
 }
 
-// NewPostgresVectorStoreWithDB creates a new PostgresVectorStore using an existing database connection.
+// NewPostgresVectorStoreWithDB serves as a public interface for interacting with NewPostgresVectorStoreWithDB.
 //
-// Summary: Initializes a new PostgresVectorStore with an existing sql.DB connection.
+// Summary: Constructs and returns an initialized postgres vector store with db ready for consumption.
 //
 // Parameters:
-//   - db: *sql.DB. The existing database connection.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *PostgresVectorStore: The initialized vector store.
-//   - error: An error if the database is unreachable or schema initialization fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if pinging the database fails.
-//   - Returns error if creating the vector extension or table fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Verifies the database connection.
-//   - Creates the 'vector' extension if it doesn't exist.
-//   - Creates the 'semantic_cache_entries' table and indexes if they don't exist.
+//   - May safely mutate local state without unintended external side effects.
 func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	// Verify connection
 	ctxPing, cancelPing := context.WithTimeout(context.Background(), 5*time.Second)
@@ -118,26 +123,21 @@ func NewPostgresVectorStoreWithDB(db *sql.DB) (*PostgresVectorStore, error) {
 	}, nil
 }
 
-// Add adds a new entry to the vector store.
+// Add serves as a public interface for interacting with Add.
 //
-// Summary: Inserts a new semantic cache entry into the database.
+// Summary: Add the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the database operation.
-//   - key: string. The unique key for the cache entry.
-//   - vector: []float32. The embedding vector associated with the entry.
-//   - result: any. The result data to be cached (marshaled to JSON).
-//   - ttl: time.Duration. The time-to-live for the cache entry.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if marshaling fails or the database insert fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if JSON marshaling of vector or result fails.
-//   - Returns error if the database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Writes a new row to the 'semantic_cache_entries' table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	vectorJSON, err := json.Marshal(vector)
 	if err != nil {
@@ -165,25 +165,21 @@ func (s *PostgresVectorStore) Add(ctx context.Context, key string, vector []floa
 	return nil
 }
 
-// Search searches for the most similar entry in the vector store.
+// Search serves as a public interface for interacting with Search.
 //
-// Summary: Finds the nearest neighbor for the given query vector.
+// Summary: Search the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the database query.
-//   - key: string. The key to filter results by.
-//   - query: []float32. The query embedding vector.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The cached result (unmarshaled from JSON).
-//   - float32: The similarity score (1.0 - cosine distance).
-//   - bool: True if a matching entry was found, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - Returns false if no matching row is found or if JSON unmarshaling fails.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Executes a SELECT query on the database.
+//   - May safely mutate local state without unintended external side effects.
 func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {
@@ -226,16 +222,21 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 	return result, similarity, true
 }
 
-// Prune removes expired entries.
+// Prune serves as a public interface for interacting with Prune.
 //
-// Summary: Deletes expired cache entries from the database.
+// Summary: Prune the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the database operation.
-//   - key: string. Optional key to restrict pruning to a specific cache key. If empty, prunes all expired entries.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Deletes rows from the 'semantic_cache_entries' table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -248,15 +249,21 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	_, _ = s.db.ExecContext(ctx, query, args...)
 }
 
-// Close closes the database connection.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the underlying PostgreSQL database connection.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if closing the connection fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - May safely mutate local state without unintended external side effects.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

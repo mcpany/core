@@ -11,36 +11,60 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// ScopesConfig defines the configuration for capability-based scoping.
+// ScopesConfig represents the public ScopesConfig entity.
 //
-// Summary: Represents the configuration for capability-based tool scoping.
-type ScopesConfig struct {
-	// Roles maps a role name to a list of allowed capability prefixes.
-	Roles map[string][]string `json:"roles"`
-}
-
-// ScopesMiddleware enforces granular capability-based tokens for tool execution.
-//
-// Summary: Represents middleware that enforces tool execution scopes based on agent roles.
-type ScopesMiddleware struct {
-	config ScopesConfig
-}
-
-// NewScopesMiddleware creates a new ScopesMiddleware.
-//
-// Summary: Creates a new instance of ScopesMiddleware.
+// Summary: Defines the structured data model representing a config.
 //
 // Parameters:
-//   - config (ScopesConfig): The configuration settings specifying allowed scopes per role.
+//   - None.
 //
 // Returns:
-//   - *ScopesMiddleware: A new instance of the middleware.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
 //   - None.
+type ScopesConfig struct {
+	// Roles maps a role name to a list of allowed capability prefixes.
+	Roles map[string][]string `json:"roles"`
+}
+
+// ScopesMiddleware represents the public ScopesMiddleware entity.
+//
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type ScopesMiddleware struct {
+	config ScopesConfig
+}
+
+// NewScopesMiddleware serves as a public interface for interacting with NewScopesMiddleware.
+//
+// Summary: Constructs and returns an initialized scopes middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 	return &ScopesMiddleware{
 		config: config,
@@ -50,25 +74,21 @@ func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 
 const agentRoleKey contextKey = "agent_role"
 
-// Execute checks if the tool name matches any capability token prefix granted to the agent's role.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Validates that the requested tool is allowed for the agent's role before execution.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request, optionally containing the agent's role.
-//   - req (*tool.ExecutionRequest): The execution request detailing the tool to be called.
-//   - next (tool.ExecutionFunc): The next execution function in the middleware chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of the tool execution if permitted.
-//   - error: An error if access is denied or execution fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if no scope configuration exists for the agent's role.
-//   - Returns an error if the requested tool is outside the granted scopes.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes the next function in the chain if access is granted.
+//   - May safely mutate local state without unintended external side effects.
 func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// For testing and mock purposes, we assume the agent role is passed in the context
 	// or we default to a "default" role if not found.

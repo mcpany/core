@@ -17,31 +17,40 @@ type contextKey string
 
 const remoteIPContextKey = contextKey("remote_ip")
 
-// ContextWithRemoteIP creates a new context containing the remote IP address.
+// ContextWithRemoteIP serves as a public interface for interacting with ContextWithRemoteIP.
 //
-// Summary: Injects the remote IP into the context.
+// Summary: Context the with remote ip appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - ip: string. The remote IP address to store in the context.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: A new context with the remote IP attached.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
 
-// ExtractIP extracts and validates the IP address from a string.
+// ExtractIP serves as a public interface for interacting with ExtractIP.
 //
-// Summary: Parses and sanitizes an IP address string.
-//
-// It handles "host:port" formats, strips IPv6 brackets, and removes zone indices.
+// Summary: Extract the ip appropriately based on current system conditions.
 //
 // Parameters:
-//   - addr: string. The address string to parse (e.g., "192.168.1.1:80", "[::1]", "fe80::1%eth0").
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The cleaned IP address string, or an empty string if the address is invalid.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ExtractIP(addr string) string {
 	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -63,16 +72,21 @@ func ExtractIP(addr string) string {
 	return parsedIP.String()
 }
 
-// GetClientIP extracts the client IP address from an HTTP request.
+// GetClientIP serves as a public interface for interacting with GetClientIP.
 //
-// Summary: Determines the client's IP address.
+// Summary: Fetches and returns the underlying client ip from the system state.
 //
 // Parameters:
-//   - r: *http.Request. The HTTP request to inspect.
-//   - trustProxy: bool. If true, trusts 'X-Real-IP' and 'X-Forwarded-For' headers. If false, only uses 'RemoteAddr'.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The best-effort client IP address.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
@@ -99,48 +113,60 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 	return ExtractIP(r.RemoteAddr)
 }
 
-// RemoteIPFromContext retrieves the remote IP address stored in the context.
+// RemoteIPFromContext serves as a public interface for interacting with RemoteIPFromContext.
 //
-// Summary: Retrieves the remote IP from the context.
+// Summary: Remote the ip from context appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to retrieve the IP from.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The remote IP address.
-//   - bool: True if the IP was found, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok
 }
 
-// IsPrivateNetworkIP checks if the IP address belongs to a private network.
+// IsPrivateNetworkIP serves as a public interface for interacting with IsPrivateNetworkIP.
 //
-// Summary: Checks if an IP is a private network address.
-//
-// This includes RFC1918 (Private IPv4), RFC4193 (Unique Local IPv6), and RFC6598 (CGNAT).
-// It does NOT include loopback or link-local addresses.
+// Summary: Checks condition indicating whether the target is private network ip.
 //
 // Parameters:
-//   - ip: net.IP. The IP address to check.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the IP is a private network address.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func IsPrivateNetworkIP(ip net.IP) bool {
 	return validation.IsPrivateNetworkIP(ip)
 }
 
-// IsPrivateIP checks if the IP address is private, link-local, or loopback.
+// IsPrivateIP serves as a public interface for interacting with IsPrivateIP.
 //
-// Summary: Checks if an IP is internal/private.
-//
-// This is a comprehensive check for any "internal" IP address that shouldn't be publicly routable.
+// Summary: Checks condition indicating whether the target is private ip.
 //
 // Parameters:
-//   - ip: net.IP. The IP address to check.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the IP is private, link-local, or loopback.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }

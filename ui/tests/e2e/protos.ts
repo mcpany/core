@@ -1,15 +1,18 @@
 /**
- * Defines the MCP Options proto.
+ * MCP_OPTIONS_PROTO serves as a public interface for interacting with MCP_OPTIONS_PROTO.
  *
- * Summary: Protocol buffer definition for MCP Options.
+ * Summary: Defines the structured data model representing a option proto.
  *
  * Parameters:
  *   - None.
  *
  * Returns:
- *   - string: The proto definition.
+ *   - None.
  *
  * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
  *   - None.
  */
 export const MCP_OPTIONS_PROTO = `// Copyright 2025 Author(s) of MCP Any
@@ -85,17 +88,20 @@ extend google.protobuf.MethodOptions {
 `;
 
 /**
- * Defines the User Service proto.
+ * USER_SERVICE_PROTO serves as a public interface for interacting with USER_SERVICE_PROTO.
  *
- * Summary: Protocol buffer definition for the User Service.
+ * Summary: Defines the structured data model representing a servic proto.
  *
  * Parameters:
  *   - None.
  *
  * Returns:
- *   - string: The proto definition.
+ *   - None.
  *
  * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
  *   - None.
  */
 export const USER_SERVICE_PROTO = `// Copyright 2025 Author(s) of MCP Any

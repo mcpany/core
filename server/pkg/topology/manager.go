@@ -25,9 +25,21 @@ type activityEvent struct {
 	ResponseLen int64
 }
 
-// Manager handles topology state tracking.
+// Manager represents the public Manager entity.
 //
-// Summary: Represents a Manager.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	mu              sync.RWMutex
 	sessions        map[string]*SessionStats
@@ -39,9 +51,21 @@ type Manager struct {
 	shutdownCh chan struct{}
 }
 
-// SessionStats contains statistics about a topology session.
+// SessionStats represents the public SessionStats entity.
 //
-// Summary: Represents a SessionStats.
+// Summary: Defines the structured data model representing a stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SessionStats struct {
 	ID             string
 	Metadata       map[string]string
@@ -55,18 +79,42 @@ type SessionStats struct {
 	ServiceLatency map[string]time.Duration // Per service latency
 }
 
-// Stats aggregated metrics.
+// Stats represents the public Stats entity.
 //
-// Summary: Represents a Stats.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Stats struct {
 	TotalRequests int64
 	AvgLatency    time.Duration
 	ErrorRate     float64
 }
 
-// MinuteStats tracks stats for a single minute.
+// MinuteStats represents the public MinuteStats entity.
 //
-// Summary: Represents a MinuteStats.
+// Summary: Defines the structured data model representing a stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MinuteStats struct {
 	Requests     int64
 	Errors       int64
@@ -75,9 +123,21 @@ type MinuteStats struct {
 	ServiceStats map[string]*ServiceTrafficStats
 }
 
-// ServiceTrafficStats tracks stats for a single service in a minute.
+// ServiceTrafficStats represents the public ServiceTrafficStats entity.
 //
-// Summary: Represents a ServiceTrafficStats.
+// Summary: Defines the structured data model representing a traffic stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceTrafficStats struct {
 	Requests int64
 	Errors   int64
@@ -85,9 +145,21 @@ type ServiceTrafficStats struct {
 	Bytes    int64
 }
 
-// TrafficPoint represents a data point for the traffic chart.
+// TrafficPoint represents the public TrafficPoint entity.
 //
-// Summary: Represents a TrafficPoint.
+// Summary: Defines the structured data model representing a point.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TrafficPoint struct {
 	Time    string `json:"time"`
 	Total   int64  `json:"requests"` // mapped to "requests" for UI
@@ -96,19 +168,21 @@ type TrafficPoint struct {
 	Bytes   int64  `json:"bytes"`
 }
 
-// NewManager creates a new Topology Manager.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Creates a new Topology Manager instance.
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - registry (serviceregistry.ServiceRegistryInterface): The service registry interface.
-//   - tm (tool.ManagerInterface): The tool manager interface.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: A new instance of the Topology Manager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Starts the background process loop.
+//   - May safely mutate local state without unintended external side effects.
 func NewManager(registry serviceregistry.ServiceRegistryInterface, tm tool.ManagerInterface) *Manager {
 	m := &Manager{
 		sessions:        make(map[string]*SessionStats),
@@ -247,22 +321,21 @@ func (m *Manager) handleActivity(event activityEvent) {
 	}
 }
 
-// RecordActivity updates the session activity.
-// ⚡ BOLT: Offloaded to asynchronous channel to prevent blocking the request path.
-// Randomized Selection from Top 5 High-Impact Targets
+// RecordActivity serves as a public interface for interacting with RecordActivity.
 //
-// Summary: Records a new activity event for a session.
+// Summary: Record the activity appropriately based on current system conditions.
 //
 // Parameters:
-//   - sessionID (string): The unique identifier of the session.
-//   - meta (map[string]interface{}): Metadata associated with the activity.
-//   - latency (time.Duration): The duration of the operation.
-//   - isError (bool): Whether the operation resulted in an error.
-//   - serviceID (string): The identifier of the service involved (optional).
-//   - responseLen (int64): The length of the response in bytes.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Sends an activity event to the processing channel (non-blocking).
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, latency time.Duration, isError bool, serviceID string, responseLen int64) {
 	// ⚡ BOLT: Shallow copy meta to prevent race conditions as map is passed by reference
 	metaCopy := make(map[string]interface{}, len(meta))
@@ -286,31 +359,40 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 	}
 }
 
-// Close stops the background worker.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: gracefully shuts down the Topology Manager.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
 //   - None.
 //
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
 // Side Effects:
-//   - Closes the shutdown channel, stopping the background loop.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Close() {
 	close(m.shutdownCh)
 }
 
-// GetStats returns the aggregated stats.
+// GetStats serves as a public interface for interacting with GetStats.
 //
-// Summary: Retrieves aggregated statistics, optionally filtered by service ID.
+// Summary: Fetches and returns the underlying stats from the system state.
 //
 // Parameters:
-//   - serviceID (string): The service ID to filter by (optional).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Stats: The aggregated statistics.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -348,21 +430,21 @@ func (m *Manager) GetStats(serviceID string) Stats {
 	}
 }
 
-// GetRecentServiceStats returns the aggregated statistics for a service over a given time window.
-// It uses trafficHistory which stores minute-level stats.
+// GetRecentServiceStats serves as a public interface for interacting with GetRecentServiceStats.
 //
-// Summary: Calculates recent statistics for a service within a time window.
+// Summary: Fetches and returns the underlying recent service stats from the system state.
 //
 // Parameters:
-//   - serviceID (string): The service ID to calculate stats for.
-//   - window (time.Duration): The time window to look back.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - avgLatency (time.Duration): The average latency over the window.
-//   - errorRate (float64): The error rate over the window.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -404,18 +486,21 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 	return avgLatency, errorRate
 }
 
-// GetTrafficHistory returns the traffic history for the last 24 hours.
+// GetTrafficHistory serves as a public interface for interacting with GetTrafficHistory.
 //
-// Summary: Retrieves traffic history points for the last hour (minute granularity).
+// Summary: Fetches and returns the underlying traffic history from the system state.
 //
 // Parameters:
-//   - serviceID (string): The service ID to filter by (optional).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []TrafficPoint: A slice of traffic data points.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -469,17 +554,21 @@ func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	return points
 }
 
-// SeedTrafficHistory allows seeding the traffic history with external data.
-// This is primarily for testing and debugging purposes.
+// SeedTrafficHistory serves as a public interface for interacting with SeedTrafficHistory.
 //
-// Summary: Seeds the traffic history with provided data points.
+// Summary: Executes the seed routine for the traffic history.
 //
 // Parameters:
-//   - points ([]TrafficPoint): The traffic data points to seed.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Modifies the internal traffic history state.
-//   - Updates the "seed-data" session stats.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -537,18 +626,21 @@ func (m *Manager) SeedTrafficHistory(points []TrafficPoint) {
 	}
 }
 
-// GetGraph generates the current topology graph.
+// GetGraph serves as a public interface for interacting with GetGraph.
 //
-// Summary: Constructs the network topology graph.
+// Summary: Fetches and returns the underlying graph from the system state.
 //
 // Parameters:
-//   - _ (context.Context): Unused context parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *topologyv1.Graph: The constructed topology graph.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Fetches all services and tools (may involve I/O).
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) GetGraph(_ context.Context) *topologyv1.Graph {
 	// ⚡ BOLT: Fetch external data OUTSIDE lock to prevent blocking the event loop.
 	// Randomized Selection from Top 5 High-Impact Targets

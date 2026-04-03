@@ -12,23 +12,41 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Manager handles the lifecycle and resolution of profiles.
+// Manager represents the public Manager entity.
 //
-// Summary: Manages profile definitions and resolution.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
 }
 
-// NewManager creates a new Profile Manager.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Initializes a new Profile Manager.
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - profiles: []*configv1.ProfileDefinition. Initial profile definitions.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: The initialized manager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -37,12 +55,21 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	return m
 }
 
-// Update updates the profile definitions managed by the manager.
+// Update serves as a public interface for interacting with Update.
 //
-// Summary: Updates the stored profile definitions.
+// Summary: Update the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {
@@ -53,16 +80,21 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	m.profiles = newProfiles
 }
 
-// GetProfileDefinition returns the profile definition by name.
+// GetProfileDefinition serves as a public interface for interacting with GetProfileDefinition.
 //
-// Summary: Retrieves a profile definition.
+// Summary: Fetches and returns the underlying profile definition from the system state.
 //
 // Parameters:
-//   - name: string. The name of the profile.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.ProfileDefinition: The profile definition.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -70,18 +102,21 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 	return p, ok
 }
 
-// ResolveProfile computes the final effective configuration for a given profile,
-// applying inheritance and overrides.
+// ResolveProfile serves as a public interface for interacting with ResolveProfile.
 //
-// Summary: Resolves a profile hierarchy into a final configuration.
+// Summary: Resolve the profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - profileName: string. The name of the profile to resolve.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
-//   - map[string]*configv1.SecretValue: Merged secrets.
-//   - error: Error if profile not found or cycle detected.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

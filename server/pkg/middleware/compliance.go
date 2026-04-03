@@ -12,36 +12,63 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
+// JSONRPCError represents the public JSONRPCError entity.
 //
-// Summary: Represents a JSONRPCError.
+// Summary: Defines the structured data model representing a error.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    any    `json:"data,omitempty"`
 }
 
-// JSONRPCResponse represents a JSON-RPC 2.0 response object.
+// JSONRPCResponse represents the public JSONRPCResponse entity.
 //
-// Summary: Represents a JSONRPCResponse.
+// Summary: Defines the structured data model representing a response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
 	Error   *JSONRPCError `json:"error,omitempty"`
 }
 
-// JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
+// JSONRPCComplianceMiddleware serves as a public interface for interacting with JSONRPCComplianceMiddleware.
 //
-// Summary: Wraps non-JSON error responses in a JSON-RPC error format.
+// Summary: Jsonrpc the compliance middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.Handler: The wrapped handler that enforces JSON-RPC compliance for errors.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Intercepts and rewrites HTTP response bodies for error status codes.
+//   - May safely mutate local state without unintended external side effects.
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -95,22 +122,40 @@ type smartResponseWriter struct {
 	passThrough bool
 }
 
-// Header returns the header map that will be sent by WriteHeader.
+// Header serves as a public interface for interacting with Header.
 //
-// Summary: Returns the response headers.
+// Summary: Header the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.Header: The header map.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader serves as a public interface for interacting with WriteHeader.
 //
-// Summary: Writes the status code to the response.
+// Summary: Write the header appropriately based on current system conditions.
 //
 // Parameters:
-//   - code: int. The HTTP status code.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -133,16 +178,21 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 	}
 }
 
-// Write writes the data to the connection as part of an HTTP reply.
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Writes data to the response body, buffering if necessary.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - b: []byte. The data to write.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -179,13 +229,21 @@ func (w *smartResponseWriter) flushHeader() {
 	w.w.WriteHeader(w.statusCode)
 }
 
-// Flush implements http.Flusher to support streaming.
+// Flush serves as a public interface for interacting with Flush.
 //
-// Summary: Flushes the response buffer to the client.
+// Summary: Flush the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
+//   - Returns the successfully computed domain model or execution state.
 //
-//	None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

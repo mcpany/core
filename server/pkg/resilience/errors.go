@@ -3,19 +3,40 @@
 
 package resilience
 
-// PermanentError is an error that should not be retried.
+// PermanentError represents the public PermanentError entity.
 //
-// Summary: Wrapper error indicating that an operation failed permanently and should not be retried.
+// Summary: Defines the structured data model representing a error.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PermanentError struct {
 	Err error
 }
 
-// Error returns the error message.
+// Error serves as a public interface for interacting with Error.
 //
-// Summary: Returns the string representation of the error.
+// Summary: Error the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The error message.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (e *PermanentError) Error() string {
 	if e.Err == nil {
 		return "permanent error"
@@ -23,12 +44,21 @@ func (e *PermanentError) Error() string {
 	return e.Err.Error()
 }
 
-// Unwrap returns the wrapped error.
+// Unwrap serves as a public interface for interacting with Unwrap.
 //
-// Summary: Unwraps the underlying error.
+// Summary: Unwrap the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: The original error.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

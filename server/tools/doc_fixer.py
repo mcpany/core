@@ -12,16 +12,21 @@ METHOD_PATTERN = re.compile(r'^func\s+\((.*?)\)\s+([A-Z][a-zA-Z0-9_]*)\s*\((.*?)
 
 def nice_name(name):
     """
-    Summary: nice_name.
+    nice_name operation.
+
+    Summary: Nice the name appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     # Split camelCase -> "camel case"
     # e.g. HTTPRateLimit -> HTTP Rate Limit
@@ -32,16 +37,21 @@ def nice_name(name):
 
 def parse_params(param_str):
     """
-    Summary: parse_params.
+    parse_params operation.
+
+    Summary: Parse the params appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     if not param_str:
         return []
@@ -72,16 +82,21 @@ def parse_params(param_str):
 
 def parse_returns(return_str):
     """
-    Summary: parse_returns.
+    parse_returns operation.
+
+    Summary: Parse the returns appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     if not return_str:
         return []
@@ -112,16 +127,21 @@ def parse_returns(return_str):
 
 def generate_doc(name, params, returns, receiver=None, is_type=False):
     """
-    Summary: generate_doc.
+    generate_doc operation.
+
+    Summary: Generate the doc appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     nice = nice_name(name)
     summary = f"{name} {nice}."
@@ -197,16 +217,21 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
 
 def process_file(filepath):
     """
-    Summary: process_file.
+    process_file operation.
+
+    Summary: Process the file appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     with open(filepath, 'r') as f:
         lines = f.readlines()
@@ -281,16 +306,21 @@ def process_file(filepath):
 
 def scan_dir(root_dir):
     """
-    Summary: scan_dir.
+    scan_dir operation.
+
+    Summary: Scan the dir appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     for root, dirs, files in os.walk(root_dir):
         for file in files:

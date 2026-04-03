@@ -20,7 +20,21 @@ var (
 	ServiceStartupTimeout = 15 * time.Second
 )
 
-// AITool represents an AI tool used in testing.
+// AITool represents the public AITool entity.
+//
+// Summary: Provides tool execution capabilities for tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

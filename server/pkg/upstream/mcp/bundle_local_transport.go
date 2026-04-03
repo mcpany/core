@@ -10,9 +10,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// BundleLocalTransport implements mcp.Transport for running a bundle locally via exec.
+// BundleLocalTransport represents the public BundleLocalTransport entity.
 //
-// Summary: Represents a BundleLocalTransport.
+// Summary: Defines the structured data model representing a local transport.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BundleLocalTransport struct {
 	Command    string
 	Args       []string
@@ -20,34 +32,21 @@ type BundleLocalTransport struct {
 	WorkingDir string
 }
 
-// Connect establishes a connection to the local process.
+// Connect serves as a public interface for interacting with Connect.
+//
+// Summary: Connect the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - mcp.Connection: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the command fails to start.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Starts a local process.
-//
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env

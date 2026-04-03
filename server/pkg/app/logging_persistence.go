@@ -11,7 +11,21 @@ import (
 	"github.com/mcpany/core/server/pkg/storage"
 )
 
-// initializeLogPersistence hydrates the logger with recent logs from storage.
+// initializeLogPersistence serves as a public interface for interacting with initializeLogPersistence.
+//
+// Summary: Initialize the log persistence appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *Application) initializeLogPersistence(ctx context.Context, store storage.Storage) error {
 	log := logging.GetLogger()
 	logs, err := store.GetRecentLogs(ctx, 1000)
@@ -34,7 +48,21 @@ func (a *Application) initializeLogPersistence(ctx context.Context, store storag
 	return nil
 }
 
-// startLogPersistence starts a background worker to persist logs to storage.
+// startLogPersistence serves as a public interface for interacting with startLogPersistence.
+//
+// Summary: Start the log persistence appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *Application) startLogPersistence(ctx context.Context, store storage.Storage) {
 	log := logging.GetLogger()
 	// Create a buffered channel for log persistence to avoid blocking the broadcaster.

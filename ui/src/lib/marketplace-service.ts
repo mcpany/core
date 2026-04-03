@@ -6,21 +6,21 @@
 import { apiClient, UpstreamServiceConfig } from "@/lib/client";
 
 /**
- * Summary: Document ServiceCollection
+ * ServiceCollection represents the public ServiceCollection entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a collection.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * A collection of services, typically organized by theme or use case.
+ *   - None.
  */
 export interface ServiceCollection {
   /** The name of the collection. */
@@ -36,21 +36,21 @@ export interface ServiceCollection {
 }
 
 /**
- * Summary: Document ExternalMarketplace
+ * ExternalMarketplace represents the public ExternalMarketplace entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a marketplace.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * An external marketplace where MCP servers can be discovered.
+ *   - None.
  */
 export interface ExternalMarketplace {
   /** Unique identifier for the marketplace. */
@@ -66,21 +66,21 @@ export interface ExternalMarketplace {
 }
 
 /**
- * Summary: Document ExternalServer
+ * ExternalServer represents the public ExternalServer entity.
  *
- * Params:
- *   - None
+ * Summary: Provides network listening and request routing capabilities for server.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * A server listed in an external marketplace.
+ *   - None.
  */
 export interface ExternalServer {
   /** Unique identifier for the server. */
@@ -96,21 +96,21 @@ export interface ExternalServer {
 }
 
 /**
- * Summary: Document CommunityServer
+ * CommunityServer represents the public CommunityServer entity.
  *
- * Params:
- *   - None
+ * Summary: Provides network listening and request routing capabilities for server.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * A server discovered from the Community (Awesome List).
+ *   - None.
  */
 export interface CommunityServer {
     /** The category or section where this server was found (e.g., "Browser Automation"). */
@@ -143,21 +143,21 @@ const PUBLIC_MARKETPLACES: ExternalMarketplace[] = [
 ];
 
 /**
- * Summary: Document marketplaceService
+ * marketplaceService serves as a public interface for interacting with marketplaceService.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a service.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Service for interacting with internal and external marketplaces.
+ *   - None.
  */
 export const marketplaceService = {
   /**

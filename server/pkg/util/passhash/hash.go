@@ -10,28 +10,21 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Password hashes a password using bcrypt.
+// Password serves as a public interface for interacting with Password.
+//
+// Summary: Password the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - password: The password to hash.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The hashed password.
-//   - error: An error if the hashing fails.
-//
-// Summary: Executes Password operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func Password(password string) (string, error) {
 	// Increase cost to 12 for better security (default is 10)
 	const cost = 12
@@ -42,28 +35,21 @@ func Password(password string) (string, error) {
 	return string(bytes), nil
 }
 
-// CheckPassword checks if a password matches a hash.
+// CheckPassword serves as a public interface for interacting with CheckPassword.
+//
+// Summary: Check the password appropriately based on current system conditions.
 //
 // Parameters:
-//   - password: The password to check.
-//   - hash: The hash to compare against.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the password matches the hash, false otherwise.
-//
-// Summary: Executes CheckPassword operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func CheckPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil

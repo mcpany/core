@@ -20,6 +20,23 @@
 
 
 
+/**
+ * MarketplaceItemConfig represents the public MarketplaceItemConfig entity.
+ *
+ * Summary: Defines the structured data model representing a item config.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
@@ -27,21 +44,21 @@ export interface MarketplaceItemConfig {
 }
 
 /**
- * Summary: Document EnvVarDefinition
+ * EnvVarDefinition represents the public EnvVarDefinition entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a var definition.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * EnvVarDefinition type definition.
+ *   - None.
  */
 export interface EnvVarDefinition {
   name: string;
@@ -53,21 +70,21 @@ export interface EnvVarDefinition {
 }
 
 /**
- * Summary: Document MarketplaceItem
+ * MarketplaceItem represents the public MarketplaceItem entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a item.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * MarketplaceItem type definition.
+ *   - None.
  */
 export interface MarketplaceItem {
   id: string;
@@ -78,21 +95,21 @@ export interface MarketplaceItem {
 }
 
 /**
- * Summary: Document MARKETPLACE_ITEMS
+ * MARKETPLACE_ITEMS serves as a public interface for interacting with MARKETPLACE_ITEMS.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a items.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * The MARKETPLACE_ITEMS const.
+ *   - None.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {

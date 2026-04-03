@@ -14,18 +14,21 @@ import (
 
 const trueVal = "true"
 
-// IsSafeIP checks if the IP address string is safe to connect to,
-// respecting the allowed network resources policy.
+// IsSafeIP represents the public IsSafeIP entity.
 //
-// Summary: Validates an IP address string against security policies.
+// Summary: Defines the structured data model representing a safe ip.
 //
 // Parameters:
-//   - ipStr: string. The IP address to check.
+//   - None.
 //
 // Returns:
-//   - error: An error if the IP is invalid or forbidden.
+//   - None.
 //
-// IsSafeIP is a variable to allow mocking in tests.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var IsSafeIP = func(ipStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -56,32 +59,21 @@ var lookupIPFunc = func(ctx context.Context, network, host string) ([]net.IP, er
 	return net.DefaultResolver.LookupIP(ctx, network, host)
 }
 
-// IsSafeURL checks if the URL is safe to connect to.
-// It validates the scheme and resolves the host to ensure it doesn't point to
-// loopback, link-local, private, or multicast addresses.
+// IsSafeURL represents the public IsSafeURL entity.
 //
-// Summary: Validates a URL against security policies, including DNS resolution check.
-//
-// NOTE: This function performs DNS resolution to check the IP.
-// It is susceptible to DNS rebinding attacks if the check is separated from the connection.
-// For critical security, use a custom Dialer that validates the IP after resolution.
+// Summary: Defines the structured data model representing a safe url.
 //
 // Parameters:
-//   - urlStr: string. The URL to check.
+//   - None.
 //
 // Returns:
-//   - error: An error if the URL is invalid or points to a forbidden destination.
+//   - None.
 //
 // Errors:
-//   - Returns error if URL parsing fails.
-//   - Returns error if scheme is not http/https.
-//   - Returns error if host resolution fails or returns no IPs.
-//   - Returns error if any resolved IP is unsafe.
+//   - None.
 //
 // Side Effects:
-//   - Performs DNS lookup.
-//
-// IsSafeURL is a variable to allow mocking in tests.
+//   - None.
 var IsSafeURL = func(urlStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -136,17 +128,21 @@ var IsSafeURL = func(urlStr string) error {
 	return nil
 }
 
-// ValidateIP checks if the IP address is allowed based on the policy.
+// ValidateIP serves as a public interface for interacting with ValidateIP.
 //
-// Summary: Internal helper to validate an IP address against forbidden ranges.
+// Summary: Validate the ip appropriately based on current system conditions.
 //
 // Parameters:
-//   - ip: net.IP. The IP address to check.
-//   - allowLoopback: bool. Whether to allow loopback addresses.
-//   - allowPrivate: bool. Whether to allow private network addresses.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the IP matches a forbidden range.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

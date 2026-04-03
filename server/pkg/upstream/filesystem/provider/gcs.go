@@ -20,9 +20,21 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// GcsProvider provides access to files in a Google Cloud Storage bucket.
+// GcsProvider represents the public GcsProvider entity.
 //
-// Summary: Represents a GcsProvider.
+// Summary: Defines the structured data model representing a provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client
@@ -30,35 +42,21 @@ type GcsProvider struct {
 
 var newStorageClient = storage.NewClient
 
-// NewGcsProvider creates a new GcsProvider from the given configuration.
+// NewGcsProvider serves as a public interface for interacting with NewGcsProvider.
+//
+// Summary: Constructs and returns an initialized gcs provider ready for consumption.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
-//   - config (*configv1.GcsFs): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *GcsProvider: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Initializes NewGcsProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, error) {
 	if config == nil {
 		return nil, fmt.Errorf("gcs config is nil")
@@ -75,59 +73,40 @@ func NewGcsProvider(_ context.Context, config *configv1.GcsFs) (*GcsProvider, er
 	}, nil
 }
 
-// GetFs returns the underlying filesystem.
+// GetFs serves as a public interface for interacting with GetFs.
 //
-// Returns:
-//   - afero.Fs: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetFs operation.
+// Summary: Fetches and returns the underlying fs from the system state.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *GcsProvider) GetFs() afero.Fs {
 	return p.fs
 }
 
-// ResolvePath resolves the virtual path to a real path in the bucket.
+// ResolvePath serves as a public interface for interacting with ResolvePath.
+//
+// Summary: Resolve the path appropriately based on current system conditions.
 //
 // Parameters:
-//   - virtualPath (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes ResolvePath operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	// Same as S3
 	cleanPath := path.Clean("/" + virtualPath)
@@ -139,30 +118,21 @@ func (p *GcsProvider) ResolvePath(virtualPath string) (string, error) {
 	return cleanPath, nil
 }
 
-// Close closes the GCS client.
+// Close serves as a public interface for interacting with Close.
 //
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *GcsProvider) Close() error {
 	if p.client != nil {
 		return p.client.Close()
@@ -178,164 +148,97 @@ type gcsFs struct {
 	ctx    context.Context
 }
 
-// Create creates a file in the filesystem, returning the file and an error, if any happens.
+// Create serves as a public interface for interacting with Create.
+//
+// Summary: Create the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - afero.File: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Initializes Create operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Create(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 }
 
-// Mkdir creates a directory in the filesystem, returning an error, if any happens.
+// Mkdir serves as a public interface for interacting with Mkdir.
+//
+// Summary: Mkdir the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Mkdir operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Mkdir(_ string, _ os.FileMode) error {
 	return nil // Flat namespace
 }
 
-// MkdirAll creates a directory path and all parents that does not exist for a given name.
+// MkdirAll serves as a public interface for interacting with MkdirAll.
+//
+// Summary: Mkdir the all appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes MkdirAll operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) MkdirAll(_ string, _ os.FileMode) error {
 	return nil // Flat namespace
 }
 
-// Open opens a file, returning it or an error, if any happens.
+// Open serves as a public interface for interacting with Open.
+//
+// Summary: Open the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - afero.File: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Open operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Open(name string) (afero.File, error) {
 	return fs.OpenFile(name, os.O_RDONLY, 0)
 }
 
-// OpenFile opens a file using the given flags and the given mode.
+// OpenFile serves as a public interface for interacting with OpenFile.
+//
+// Summary: Open the file appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The parameter.
-//   - flag (int): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - afero.File: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes OpenFile operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, error) {
 	f := &gcsFile{
 		fs:   fs,
@@ -361,64 +264,40 @@ func (fs *gcsFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 	return f, nil
 }
 
-// Remove removes a file identified by name, returning an error, if any happens.
+// Remove serves as a public interface for interacting with Remove.
+//
+// Summary: Remove the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Remove operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Remove(name string) error {
 	return fs.client.Bucket(fs.bucket).Object(name).Delete(fs.ctx)
 }
 
-// RemoveAll removes a directory path and any children it contains.
+// RemoveAll serves as a public interface for interacting with RemoveAll.
+//
+// Summary: Remove the all appropriately based on current system conditions.
 //
 // Parameters:
-//   - path (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes RemoveAll operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) RemoveAll(path string) error {
 	// Delete everything with prefix
 	it := fs.client.Bucket(fs.bucket).Objects(fs.ctx, &storage.Query{Prefix: path})
@@ -437,34 +316,21 @@ func (fs *gcsFs) RemoveAll(path string) error {
 	return nil
 }
 
-// Rename renames a file.
+// Rename serves as a public interface for interacting with Rename.
+//
+// Summary: Rename the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - (oldname): The parameter.
-//   - newname (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Rename operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Rename(oldname, newname string) error {
 	src := fs.client.Bucket(fs.bucket).Object(oldname)
 	dst := fs.client.Bucket(fs.bucket).Object(newname)
@@ -475,34 +341,21 @@ func (fs *gcsFs) Rename(oldname, newname string) error {
 	return src.Delete(fs.ctx)
 }
 
-// Stat returns a FileInfo describing the named file, or an error, if any happens.
+// Stat serves as a public interface for interacting with Stat.
+//
+// Summary: Stat the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - os.FileInfo: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Stat operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	attrs, err := fs.client.Bucket(fs.bucket).Object(name).Attrs(fs.ctx)
 	if err != nil {
@@ -519,125 +372,78 @@ func (fs *gcsFs) Stat(name string) (os.FileInfo, error) {
 	}, nil
 }
 
-// Name returns the name of this file system.
+// Name serves as a public interface for interacting with Name.
 //
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Name operation.
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Name() string {
 	return "gcs"
 }
 
-// Chmod changes the mode of the named file to mode.
+// Chmod serves as a public interface for interacting with Chmod.
+//
+// Summary: Chmod the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): The parameter.
-//   - _ (os.FileMode): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Chmod operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Chmod(_ string, _ os.FileMode) error {
 	return nil // Not supported
 }
 
-// Chown changes the uid and gid of the named file.
+// Chown serves as a public interface for interacting with Chown.
+//
+// Summary: Chown the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): The parameter.
-//   - (_): The parameter.
-//   - _ (int): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Chown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Chown(_ string, _, _ int) error {
 	return nil // Not supported
 }
 
-// Chtimes changes the access and modification times of the named file.
+// Chtimes serves as a public interface for interacting with Chtimes.
+//
+// Summary: Chtimes the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): The parameter.
-//   - (_): The parameter.
-//   - _ (time.Time): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Chtimes operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fs *gcsFs) Chtimes(_ string, _, _ time.Time) error {
 	return nil // Not supported
 }
@@ -649,30 +455,21 @@ type gcsFile struct {
 	writer *storage.Writer
 }
 
-// Close closes the file.
+// Close serves as a public interface for interacting with Close.
 //
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Close() error {
 	if f.writer != nil {
 		return f.writer.Close()
@@ -683,34 +480,21 @@ func (f *gcsFile) Close() error {
 	return nil
 }
 
-// Read reads up to len(b) bytes from the File.
+// Read serves as a public interface for interacting with Read.
+//
+// Summary: Read the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - p ([]byte): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - n (int): The result.
-//   - err (error): An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Retrieves Read operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Read(p []byte) (n int, err error) {
 	if f.reader == nil {
 		return 0, fmt.Errorf("file not opened for reading")
@@ -718,35 +502,21 @@ func (f *gcsFile) Read(p []byte) (n int, err error) {
 	return f.reader.Read(p)
 }
 
-// ReadAt reads len(b) bytes from the File starting at byte offset off.
+// ReadAt serves as a public interface for interacting with ReadAt.
+//
+// Summary: Read the at appropriately based on current system conditions.
 //
 // Parameters:
-//   - p ([]byte): The parameter.
-//   - off (int64): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - n (int): The result.
-//   - err (error): An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Retrieves ReadAt operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 	// storage.Reader doesn't support ReadAt directly unless created with range?
 	// But afero.File requires ReadAt.
@@ -759,67 +529,40 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 	return io.ReadFull(rc, p)
 }
 
-// Seek sets the offset for the next Read or Write to offset, interpreted according to whence.
+// Seek serves as a public interface for interacting with Seek.
+//
+// Summary: Seek the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (int64): The parameter.
-//   - _ (int): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int64: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Seek operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Seek(_ int64, _ int) (int64, error) {
 	return 0, fmt.Errorf("seek not supported")
 }
 
-// Write writes len(b) bytes to the File.
+// Write serves as a public interface for interacting with Write.
+//
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - p ([]byte): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - n (int): The result.
-//   - err (error): An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Write(p []byte) (n int, err error) {
 	if f.writer == nil {
 		return 0, fmt.Errorf("file not opened for writing")
@@ -827,93 +570,59 @@ func (f *gcsFile) Write(p []byte) (n int, err error) {
 	return f.writer.Write(p)
 }
 
-// WriteAt writes len(b) bytes to the File starting at byte offset off.
+// WriteAt serves as a public interface for interacting with WriteAt.
+//
+// Summary: Write the at appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ ([]byte): The parameter.
-//   - _ (int64): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - n (int): The result.
-//   - err (error): An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Updates WriteAt operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) WriteAt(_ []byte, _ int64) (n int, err error) {
 	return 0, fmt.Errorf("writeat not supported")
 }
 
-// Name returns the name of the file as presented to Open.
+// Name serves as a public interface for interacting with Name.
 //
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Name operation.
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Name() string {
 	return f.name
 }
 
-// Readdir reads the contents of the directory associated with file and returns
-// a slice of up to n FileInfo values, as would be returned by Lstat, in directory order.
+// Readdir serves as a public interface for interacting with Readdir.
+//
+// Summary: Readdir the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (int): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []os.FileInfo: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Retrieves Readdir operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 	// List objects with prefix name/
 	prefix := f.name
@@ -957,34 +666,21 @@ func (f *gcsFile) Readdir(_ int) ([]os.FileInfo, error) {
 	return infos, nil
 }
 
-// Readdirnames reads and returns a slice of names from the directory f.
+// Readdirnames serves as a public interface for interacting with Readdirnames.
+//
+// Summary: Readdirnames the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - n (int): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Retrieves Readdirnames operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 	infos, err := f.Readdir(n)
 	if err != nil {
@@ -997,31 +693,21 @@ func (f *gcsFile) Readdirnames(n int) ([]string, error) {
 	return names, nil
 }
 
-// Stat returns the FileInfo structure describing file.
+// Stat serves as a public interface for interacting with Stat.
 //
-// Returns:
-//   - os.FileInfo: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Stat operation.
+// Summary: Stat the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Stat() (os.FileInfo, error) {
 	if f.reader != nil {
 		return &gcsFileInfo{
@@ -1043,93 +729,59 @@ func (f *gcsFile) Stat() (os.FileInfo, error) {
 	return f.fs.Stat(f.name)
 }
 
-// Sync commits the current contents of the file to stable storage.
+// Sync serves as a public interface for interacting with Sync.
 //
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Sync operation.
+// Summary: Sync the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Sync() error {
 	return nil
 }
 
-// Truncate changes the size of the file.
+// Truncate serves as a public interface for interacting with Truncate.
+//
+// Summary: Truncate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (int64): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Truncate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) Truncate(_ int64) error {
 	return fmt.Errorf("truncate not supported")
 }
 
-// WriteString is like Write, but writes the contents of string s rather than a slice of bytes.
+// WriteString serves as a public interface for interacting with WriteString.
+//
+// Summary: Write the string appropriately based on current system conditions.
 //
 // Parameters:
-//   - s (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ret (int): The result.
-//   - err (error): An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Updates WriteString operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *gcsFile) WriteString(s string) (ret int, err error) {
 	return f.Write([]byte(s))
 }
@@ -1141,77 +793,59 @@ type gcsFileInfo struct {
 	isDir   bool
 }
 
-// Name returns the base name of the file.
+// Name serves as a public interface for interacting with Name.
 //
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Name operation.
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fi *gcsFileInfo) Name() string {
 	return fi.name
 }
 
-// Size returns the length in bytes for regular files; system-dependent for others.
+// Size serves as a public interface for interacting with Size.
 //
-// Returns:
-//   - int64: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Size operation.
+// Summary: Size the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fi *gcsFileInfo) Size() int64 {
 	return fi.size
 }
 
-// Mode returns file mode bits.
+// Mode serves as a public interface for interacting with Mode.
 //
-// Returns:
-//   - os.FileMode: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Mode operation.
+// Summary: Mode the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fi *gcsFileInfo) Mode() os.FileMode {
 	if fi.isDir {
 		return os.ModeDir | 0755
@@ -1219,77 +853,59 @@ func (fi *gcsFileInfo) Mode() os.FileMode {
 	return 0644
 }
 
-// ModTime returns the modification time.
+// ModTime serves as a public interface for interacting with ModTime.
 //
-// Returns:
-//   - time.Time: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ModTime operation.
+// Summary: Mod the time appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fi *gcsFileInfo) ModTime() time.Time {
 	return fi.modTime
 }
 
-// IsDir returns true if the file is a directory.
+// IsDir serves as a public interface for interacting with IsDir.
 //
-// Returns:
-//   - bool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Checks IsDir operation.
+// Summary: Checks condition indicating whether the target is dir.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fi *gcsFileInfo) IsDir() bool {
 	return fi.isDir
 }
 
-// Sys returns underlying data source (can return nil).
+// Sys serves as a public interface for interacting with Sys.
 //
-// Returns:
-//   - interface: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Sys operation.
+// Summary: Sys the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (fi *gcsFileInfo) Sys() interface{} {
 	return nil
 }

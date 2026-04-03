@@ -14,44 +14,60 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// RedisStrategy implements RateLimitStrategy for Redis-based rate limiting.
+// RedisStrategy represents the public RedisStrategy entity.
 //
-// Summary: Strategy for creating Redis-backed distributed rate limiters.
+// Summary: Defines the structured data model representing a strategy.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RedisStrategy struct {
 	// redisClients caches Redis clients per config. Key is configHash.
 	redisClients sync.Map
 }
 
-// NewRedisStrategy creates a new RedisStrategy.
+// NewRedisStrategy serves as a public interface for interacting with NewRedisStrategy.
 //
-// Summary: Initializes a new RedisStrategy.
+// Summary: Constructs and returns an initialized redis strategy ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *RedisStrategy: The initialized strategy.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewRedisStrategy() *RedisStrategy {
 	return &RedisStrategy{}
 }
 
-// Create creates a new RedisLimiter.
+// Create serves as a public interface for interacting with Create.
 //
-// Summary: Creates a new Redis-backed rate limiter.
+// Summary: Create the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - serviceID: string. The service identifier.
-//   - limitScopeKey: string. The scope key for the limit.
-//   - partitionKey: string. The partition key for the limit.
-//   - config: *configv1.RateLimitConfig. The rate limit configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Limiter: The created RedisLimiter.
-//   - error: An error if the Redis configuration is missing.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "redis config is missing" if the config does not contain Redis settings.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Establishes or reuses a Redis connection.
+//   - May safely mutate local state without unintended external side effects.
 func (s *RedisStrategy) Create(_ context.Context, serviceID, limitScopeKey, partitionKey string, config *configv1.RateLimitConfig) (Limiter, error) {
 	if config.GetRedis() == nil {
 		return nil, fmt.Errorf("redis config is missing")

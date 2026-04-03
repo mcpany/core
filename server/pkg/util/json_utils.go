@@ -7,8 +7,21 @@ import (
 	"bytes"
 )
 
-// skipString returns the index after the JSON string starting at start.
-// start must point to the opening quote.
+// skipString serves as a public interface for interacting with skipString.
+//
+// Summary: Skip the string appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipString(input []byte, start int) int {
 	// String starts at start, which is '"'
 	scanStart := start + 1

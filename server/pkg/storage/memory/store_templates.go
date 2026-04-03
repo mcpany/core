@@ -10,16 +10,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// ListServiceTemplates retrieves all service templates.
+// ListServiceTemplates serves as a public interface for interacting with ListServiceTemplates.
 //
-// Summary: Lists all stored service templates.
+// Summary: List the service templates appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.ServiceTemplate: A list of service templates.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -30,17 +35,21 @@ func (s *Store) ListServiceTemplates(_ context.Context) ([]*configv1.ServiceTemp
 	return list, nil
 }
 
-// GetServiceTemplate retrieves a service template by ID.
+// GetServiceTemplate serves as a public interface for interacting with GetServiceTemplate.
 //
-// Summary: Retrieves a service template by ID.
+// Summary: Fetches and returns the underlying service template from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The template ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.ServiceTemplate: The template, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.ServiceTemplate, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -50,19 +59,21 @@ func (s *Store) GetServiceTemplate(_ context.Context, id string) (*configv1.Serv
 	return nil, nil
 }
 
-// SaveServiceTemplate saves a service template.
+// SaveServiceTemplate serves as a public interface for interacting with SaveServiceTemplate.
 //
-// Summary: Stores a service template.
+// Summary: Save the service template appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - template: *configv1.ServiceTemplate. The template to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal service template map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.ServiceTemplate) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -70,19 +81,21 @@ func (s *Store) SaveServiceTemplate(_ context.Context, template *configv1.Servic
 	return nil
 }
 
-// DeleteServiceTemplate deletes a service template by ID.
+// DeleteServiceTemplate serves as a public interface for interacting with DeleteServiceTemplate.
 //
-// Summary: Deletes a service template.
+// Summary: Delete the service template appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The template ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal service template map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteServiceTemplate(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

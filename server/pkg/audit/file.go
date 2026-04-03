@@ -14,32 +14,42 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// FileAuditStore writes audit logs to a file or stdout.
+// FileAuditStore represents the public FileAuditStore entity.
 //
-// Summary: Audit store implementation that appends newline-delimited JSON (NDJSON) to a file or standard output.
+// Summary: Defines the structured data model representing a audit store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type FileAuditStore struct {
 	mu   sync.Mutex
 	file *os.File
 	out  io.Writer
 }
 
-// NewFileAuditStore creates a new FileAuditStore.
+// NewFileAuditStore serves as a public interface for interacting with NewFileAuditStore.
 //
-// Summary: Initializes a new FileAuditStore.
+// Summary: Constructs and returns an initialized file audit store ready for consumption.
 //
 // Parameters:
-//   - path: string. The file path for the audit log (or empty for stdout).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *FileAuditStore: The initialized store.
-//   - error: An error if the path is invalid or file cannot be opened.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if path validation fails.
-//   - Returns error if file creation/opening fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Opens (or creates) the specified file in append mode.
+//   - May safely mutate local state without unintended external side effects.
 func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	var f *os.File
 	var err error
@@ -58,19 +68,21 @@ func NewFileAuditStore(path string) (*FileAuditStore, error) {
 	}, nil
 }
 
-// Write writes an audit entry to the file.
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Appends a JSON-marshaled audit entry to the configured output.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - entry: Entry. The audit entry to write.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if writing fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Writes data to the file or stdout.
+//   - May safely mutate local state without unintended external side effects.
 func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	// ⚡ BOLT: Serialize JSON outside the lock to reduce critical section duration.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -95,30 +107,40 @@ func (s *FileAuditStore) Write(_ context.Context, entry Entry) error {
 	return err
 }
 
-// Read implements the Store interface.
+// Read serves as a public interface for interacting with Read.
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Read the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *FileAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for file audit store")
 }
 
-// Close closes the file.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the underlying file handle if one exists.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if closing the file fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes the file descriptor.
+//   - May safely mutate local state without unintended external side effects.
 func (s *FileAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

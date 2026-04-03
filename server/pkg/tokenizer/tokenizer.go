@@ -13,9 +13,21 @@ import (
 	"unicode/utf8"
 )
 
-// Tokenizer defines the interface for counting tokens in a given text.
+// Tokenizer represents the public Tokenizer entity.
 //
-// Summary: Represents a Tokenizer.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Tokenizer interface {
 	// CountTokens estimates or calculates the number of tokens in the input text.
 	//
@@ -26,71 +38,57 @@ type Tokenizer interface {
 	CountTokens(text string) (int, error)
 }
 
-// SimpleTokenizer implements a character-based heuristic.
-// Logic: ~4 characters per token.
+// SimpleTokenizer represents the public SimpleTokenizer entity.
 //
-// Summary: Represents a SimpleTokenizer.
-type SimpleTokenizer struct{}
-
-// NewSimpleTokenizer creates a new SimpleTokenizer. Returns the result.
+// Summary: Defines the structured data model representing a tokenizer.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - *SimpleTokenizer: The resulting *SimpleTokenizer.
+//   - None.
 //
 // Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewSimpleTokenizer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
+type SimpleTokenizer struct{}
+
+// NewSimpleTokenizer serves as a public interface for interacting with NewSimpleTokenizer.
+//
+// Summary: Constructs and returns an initialized simple tokenizer ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewSimpleTokenizer() *SimpleTokenizer {
 	return &SimpleTokenizer{}
 }
 
-// CountTokens counts tokens in text using the simple heuristic. text is the text. Returns the result. Returns an error if the operation fails.
+// CountTokens serves as a public interface for interacting with CountTokens.
+//
+// Summary: Count the tokens appropriately based on current system conditions.
 //
 // Parameters:
-//   - text (string): The text parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The resulting int.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes CountTokens operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -102,73 +100,59 @@ func (t *SimpleTokenizer) CountTokens(text string) (int, error) {
 	return count, nil
 }
 
-// WordTokenizer implements a word-based heuristic.
-// Logic: Count words (split by space) and multiply by a factor (e.g. 1.3) to account for subwords/punctuation.
+// WordTokenizer represents the public WordTokenizer entity.
 //
-// Summary: Represents a WordTokenizer.
+// Summary: Defines the structured data model representing a tokenizer.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WordTokenizer struct {
 	Factor float64
 }
 
-// NewWordTokenizer creates a new WordTokenizer with a default factor of 1.3. Returns the result.
+// NewWordTokenizer serves as a public interface for interacting with NewWordTokenizer.
+//
+// Summary: Constructs and returns an initialized word tokenizer ready for consumption.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *WordTokenizer: The resulting *WordTokenizer.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewWordTokenizer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewWordTokenizer() *WordTokenizer {
 	return &WordTokenizer{Factor: 1.3}
 }
 
-// CountTokens counts tokens in text using the word-based heuristic. text is the text. Returns the result. Returns an error if the operation fails.
+// CountTokens serves as a public interface for interacting with CountTokens.
+//
+// Summary: Count the tokens appropriately based on current system conditions.
 //
 // Parameters:
-//   - text (string): The text parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The resulting int.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes CountTokens operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *WordTokenizer) CountTokens(text string) (int, error) {
 	if len(text) == 0 {
 		return 0, nil
@@ -247,33 +231,21 @@ func countWords(text string) int {
 	return wordCount
 }
 
-// CountTokensInValue recursively counts tokens in arbitrary structures. t is the t. v is the v. Returns the result. Returns an error if the operation fails.
+// CountTokensInValue serves as a public interface for interacting with CountTokensInValue.
+//
+// Summary: Count the tokens in value appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - None
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes CountTokensInValue operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 	// OPTIMIZATION: Handle common primitive types and simple collections
 	// without allocating the 'visited' map. This significantly improves performance
@@ -308,28 +280,21 @@ func CountTokensInValue(t Tokenizer, v interface{}) (int, error) {
 // rawWordCounter implements the recursiveTokenizer interface but counts raw words instead of tokens.
 type rawWordCounter struct{}
 
-// CountTokens counts the number of words in the text.
+// CountTokens serves as a public interface for interacting with CountTokens.
+//
+// Summary: Count the tokens appropriately based on current system conditions.
 //
 // Parameters:
-//   - text: The input text.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The word count.
-//   - error: Always nil.
-//
-// Summary: Executes CountTokens operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r *rawWordCounter) CountTokens(text string) (int, error) {
 	return countWords(text), nil
 }

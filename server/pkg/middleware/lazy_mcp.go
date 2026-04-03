@@ -9,60 +9,82 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// LazyMCPConfig defines the configuration for On-Demand Discovery filtering.
+// LazyMCPConfig represents the public LazyMCPConfig entity.
 //
-// Summary: Represents the configuration for the LazyMCP middleware.
+// Summary: Defines the structured data model representing a mcp config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
 	CacheTTL  int     `json:"cache_ttl"`
 }
 
-// LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
+// LazyMCPMiddleware represents the public LazyMCPMiddleware entity.
 //
-// Summary: Represents the middleware for filtering tools based on intent.
-type LazyMCPMiddleware struct {
-	config LazyMCPConfig
-}
-
-// NewLazyMCPMiddleware creates a new LazyMCPMiddleware.
-//
-// Summary: Creates a new instance of LazyMCPMiddleware.
+// Summary: Defines the structured data model representing a mcp middleware.
 //
 // Parameters:
-//   - config (LazyMCPConfig): The configuration settings for the middleware.
+//   - None.
 //
 // Returns:
-//   - *LazyMCPMiddleware: A new instance of the middleware.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
 //   - None.
+type LazyMCPMiddleware struct {
+	config LazyMCPConfig
+}
+
+// NewLazyMCPMiddleware serves as a public interface for interacting with NewLazyMCPMiddleware.
+//
+// Summary: Constructs and returns an initialized lazy mcp middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 	return &LazyMCPMiddleware{
 		config: config,
 	}
 }
 
-// FilterTools takes an original tool list result and an intent string (from the context or header),
-// and returns a new list of tools that are "similar" to the intent.
+// FilterTools serves as a public interface for interacting with FilterTools.
 //
-// Summary: Filters a list of tools based on their similarity to the provided intent.
+// Summary: Filter the tools appropriately based on current system conditions.
 //
 // Parameters:
-//   - res (*mcp.ListToolsResult): The original list of tools to filter.
-//   - intent (string): The user's intent to match against tool names and descriptions.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.ListToolsResult: A new list of tools that match the given intent.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string) *mcp.ListToolsResult {
 	if !m.config.Enabled || intent == "" {
 		return res

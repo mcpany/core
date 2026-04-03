@@ -6,22 +6,21 @@
 import { Monaco } from "@monaco-editor/react";
 
 /**
- * Summary: Document defineDraculaTheme
+ * defineDraculaTheme serves as a public interface for interacting with defineDraculaTheme.
  *
- * Params:
- *   - Documented below.
+ * Summary: Define the dracula theme appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - None
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Defines the Dracula theme for the Monaco editor.
- * @param monaco - The monaco instance.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function defineDraculaTheme(monaco: Monaco) {
   monaco.editor.defineTheme("dracula", {

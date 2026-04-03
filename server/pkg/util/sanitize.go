@@ -9,20 +9,38 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// RedactedString is the string used to replace sensitive data.
+// RedactedString represents the public RedactedString entity.
 //
-// Summary: Constant string for redacted data.
-const RedactedString = "REDACTED"
-
-// SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
-//
-// Summary: Sanitizes a user object.
+// Summary: Defines the structured data model representing a string.
 //
 // Parameters:
-//   - u (*configv1.User): The user object to sanitize.
+//   - None.
 //
 // Returns:
-//   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+const RedactedString = "REDACTED"
+
+// SanitizeUser serves as a public interface for interacting with SanitizeUser.
+//
+// Summary: Sanitize the user appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func SanitizeUser(u *configv1.User) *configv1.User {
 	if u == nil {
 		return nil
@@ -37,15 +55,21 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 	return clone
 }
 
-// SanitizeCredential creates a sanitized copy of the credential object with sensitive data redacted.
+// SanitizeCredential serves as a public interface for interacting with SanitizeCredential.
 //
-// Summary: Sanitizes a credential object.
+// Summary: Sanitize the credential appropriately based on current system conditions.
 //
 // Parameters:
-//   - c (*configv1.Credential): The credential object to sanitize.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	if c == nil {
 		return nil
@@ -63,16 +87,21 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	return clone
 }
 
-// SanitizeAuthentication sanitizes the authentication object.
-// It modifies the object in place (assumes it's already a clone).
+// SanitizeAuthentication serves as a public interface for interacting with SanitizeAuthentication.
 //
-// Summary: Sanitizes an authentication object.
+// Summary: Sanitize the authentication appropriately based on current system conditions.
 //
 // Parameters:
-//   - a (*configv1.Authentication): The authentication object to sanitize.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
 	if a == nil {
 		return nil
@@ -113,15 +142,21 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 	return a
 }
 
-// SanitizeUserToken sanitizes the user token.
+// SanitizeUserToken serves as a public interface for interacting with SanitizeUserToken.
 //
-// Summary: Sanitizes a user token.
+// Summary: Sanitize the user token appropriately based on current system conditions.
 //
 // Parameters:
-//   - t (*configv1.UserToken): The user token to sanitize.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
@@ -135,15 +170,21 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	return t
 }
 
-// SanitizeSecretValue sanitizes a SecretValue.
+// SanitizeSecretValue serves as a public interface for interacting with SanitizeSecretValue.
 //
-// Summary: Sanitizes a SecretValue object.
+// Summary: Sanitize the secret value appropriately based on current system conditions.
 //
 // Parameters:
-//   - s (*configv1.SecretValue): The secret value to sanitize.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 	if s == nil {
 		return nil

@@ -16,23 +16,59 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Registry manages available middlewares.
+// Registry represents the public Registry entity.
 //
-// Summary: Represents a Registry.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
 	mcpFactories map[string]MCPFactory
 }
 
-// Factory is a function that creates a HTTP middleware from configuration.
+// Factory represents the public Factory entity.
 //
-// Summary: Represents a Factory.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
-// MCPFactory is a function that creates an MCP middleware from configuration.
+// MCPFactory represents the public MCPFactory entity.
 //
-// Summary: Represents a MCPFactory.
+// Summary: Defines the structured data model representing a factory.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -42,77 +78,63 @@ var (
 	}
 )
 
-// Register registers a HTTP middleware factory.
+// Register serves as a public interface for interacting with Register.
+//
+// Summary: Register the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The name of the resource.
-//   - factory (Factory): The factory.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.factories[name] = factory
 }
 
-// RegisterMCP registers an MCP middleware factory.
+// RegisterMCP serves as a public interface for interacting with RegisterMCP.
+//
+// Summary: Register the mcp appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The name of the resource.
-//   - factory (MCPFactory): The factory.
-//
-// Summary: Executes RegisterMCP operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
 	globalRegistry.mcpFactories[name] = factory
 }
 
-// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+// GetHTTPMiddlewares serves as a public interface for interacting with GetHTTPMiddlewares.
+//
+// Summary: Fetches and returns the underlying http middlewares from the system state.
 //
 // Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ([]func(http.Handler) http.Handler): The result.
-//
-// Summary: Retrieves GetHTTPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -136,27 +158,21 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 	return middlewares
 }
 
-// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+// GetMCPMiddlewares serves as a public interface for interacting with GetMCPMiddlewares.
+//
+// Summary: Fetches and returns the underlying mcp middlewares from the system state.
 //
 // Parameters:
-//   - configs ([]*configv1.Middleware): The configs.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
-//
-// Summary: Retrieves GetMCPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -180,9 +196,21 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 	return middlewares
 }
 
-// StandardMiddlewares holds the standard middlewares that might need to be updated.
+// StandardMiddlewares represents the public StandardMiddlewares entity.
 //
-// Summary: Represents a StandardMiddlewares.
+// Summary: Defines the structured data model representing a middlewares.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware
@@ -197,36 +225,21 @@ type StandardMiddlewares struct {
 	Cleanup          func() error
 }
 
-// InitStandardMiddlewares registers standard middlewares.
+// InitStandardMiddlewares serves as a public interface for interacting with InitStandardMiddlewares.
+//
+// Summary: Init the standard middlewares appropriately based on current system conditions.
 //
 // Parameters:
-//   - authManager (*auth.Manager): The authManager.
-//   - toolManager (tool.ManagerInterface): The toolManager.
-//   - auditConfig (*configv1.AuditConfig): The auditConfig.
-//   - cachingMiddleware (*CachingMiddleware): The cachingMiddleware.
-//   - globalRateLimitConfig (*configv1.RateLimitConfig): The globalRateLimitConfig.
-//   - dlpConfig (*configv1.DLPConfig): The dlpConfig.
-//   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The contextOptimizerConfig.
-//   - debuggerConfig (*configv1.DebuggerConfig): The debuggerConfig.
-//   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smartRecoveryConfig.
+//   - None.
 //
 // Returns:
-//   - (*StandardMiddlewares): The result.
-//   - (error): An error if the operation fails.
-//
-// Summary: Executes InitStandardMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

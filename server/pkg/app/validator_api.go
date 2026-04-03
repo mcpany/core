@@ -13,17 +13,41 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-// ValidateRequest represents the request body for the validation endpoint.
+// ValidateRequest represents the public ValidateRequest entity.
 //
-// Summary: Represents a ValidateRequest.
+// Summary: Defines the structured data model representing a request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidateRequest struct {
 	Content string `json:"content"`
 	Format  string `json:"format"` // "json" or "yaml"
 }
 
-// ValidateResponse represents the response body for the validation endpoint.
+// ValidateResponse represents the public ValidateResponse entity.
 //
-// Summary: Represents a ValidateResponse.
+// Summary: Defines the structured data model representing a response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidateResponse struct {
 	Valid   bool   `json:"valid"`
 	Error   string `json:"error,omitempty"`

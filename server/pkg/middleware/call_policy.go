@@ -12,50 +12,61 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
+// CallPolicyMiddleware represents the public CallPolicyMiddleware entity.
 //
-// Summary: Middleware that evaluates and enforces security policies for tool executions.
+// Summary: Defines the structured data model representing a policy middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
 
-// NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
+// NewCallPolicyMiddleware serves as a public interface for interacting with NewCallPolicyMiddleware.
 //
-// Summary: Initializes a new CallPolicyMiddleware.
+// Summary: Constructs and returns an initialized call policy middleware ready for consumption.
 //
 // Parameters:
-//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *CallPolicyMiddleware: The initialized middleware.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute enforces call policies before proceeding to the next handler.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Checks if the tool execution is allowed by the service's policies.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The tool execution request.
-//   - next: tool.ExecutionFunc. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result if allowed.
-//   - error: An error if the policy blocks execution or policy evaluation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if service info is not found (fail closed).
-//   - Returns error if policy evaluation fails.
-//   - Returns "execution denied by policy" if the policy denies the request.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Logs errors if service info is missing or policy evaluation fails.
-//   - Increments a metric counter when a call is blocked.
+//   - May safely mutate local state without unintended external side effects.
 func (m *CallPolicyMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

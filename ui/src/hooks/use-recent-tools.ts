@@ -9,22 +9,21 @@ const STORAGE_KEY = "mcpany-recent-tools";
 const MAX_RECENT_TOOLS = 5;
 
 /**
- * Summary: Document useRecentTools
+ * useRecentTools serves as a public interface for interacting with useRecentTools.
  *
- * Params:
- *   - None
+ * Summary: Use the recent tools appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Hook for managing recently used tools.
- * @returns The recent tools state and functions.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function useRecentTools() {
   const [recentTools, setRecentTools] = useState<string[]>([]);

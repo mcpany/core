@@ -15,18 +15,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
+// LoadServices serves as a public interface for interacting with LoadServices.
 //
-// Summary: Loads and validates the server configuration.
+// Summary: Load the services appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store from which to load the configuration.
-//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: A validated configuration object.
-//   - error: An error if loading or validation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -102,17 +105,21 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 	return fileConfig, nil
 }
 
-// LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
+// LoadResolvedConfig serves as a public interface for interacting with LoadResolvedConfig.
 //
-// Summary: Loads configuration with merging and defaults but without strict validation.
+// Summary: Load the resolved config appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The resolved configuration.
-//   - error: An error if loading fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

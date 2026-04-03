@@ -11,45 +11,42 @@ import { usePolling } from "@/hooks/use-polling";
 export type { ServiceHealth, HealthHistoryPoint };
 
 /**
- * Summary: Document ServiceHistory
+ * ServiceHistory represents the public ServiceHistory entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a history.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * ServiceHistory maps service IDs to their list of historical health points.
+ *   - None.
  */
 export interface ServiceHistory {
   [serviceId: string]: HealthHistoryPoint[];
 }
 
 /**
- * Summary: Document useServiceHealthHistory
+ * useServiceHealthHistory serves as a public interface for interacting with useServiceHealthHistory.
  *
- * Params:
- *   - None
+ * Summary: Use the service health history appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * useServiceHealthHistory is a hook that fetches and maintains the health history of services.
- * It polls the backend API for health data (which now includes server-side history).
- *
- * @returns An object containing the current services list, their health history, and a loading state.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function useServiceHealthHistory() {
   const [history, setHistory] = useState<ServiceHistory>({});

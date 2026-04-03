@@ -13,9 +13,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// DiscoverySandboxConfig defines the configuration for Discovery-Phase Sandbox Isolation.
+// DiscoverySandboxConfig represents the public DiscoverySandboxConfig entity.
 //
-// Summary: Represents the configuration for the Discovery-Phase Sandbox middleware.
+// Summary: Defines the structured data model representing a sandbox config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DiscoverySandboxConfig struct {
 	// Enabled determines if the DiscoverySandbox middleware is active.
 	Enabled bool `json:"enabled"`
@@ -27,53 +39,61 @@ type DiscoverySandboxConfig struct {
 	AllowedPaths []string `json:"allowed_paths"`
 }
 
-// DiscoverySandboxMiddleware wraps discovery commands in a secure, ephemeral execution environment
-// to prevent startup-time RCE and Ghost-Execution exploits during capability discovery.
+// DiscoverySandboxMiddleware represents the public DiscoverySandboxMiddleware entity.
 //
-// Summary: Represents the middleware for Discovery-Phase Sandbox Isolation.
-type DiscoverySandboxMiddleware struct {
-	config DiscoverySandboxConfig
-}
-
-// NewDiscoverySandboxMiddleware creates a new DiscoverySandboxMiddleware instance.
-//
-// Summary: Creates a new Discovery-Phase Sandbox Isolation middleware instance.
+// Summary: Defines the structured data model representing a sandbox middleware.
 //
 // Parameters:
-//   - config (DiscoverySandboxConfig): The configuration settings.
+//   - None.
 //
 // Returns:
-//   - *DiscoverySandboxMiddleware: The resulting middleware instance.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
 //   - None.
+type DiscoverySandboxMiddleware struct {
+	config DiscoverySandboxConfig
+}
+
+// NewDiscoverySandboxMiddleware serves as a public interface for interacting with NewDiscoverySandboxMiddleware.
+//
+// Summary: Constructs and returns an initialized discovery sandbox middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewDiscoverySandboxMiddleware(config DiscoverySandboxConfig) *DiscoverySandboxMiddleware {
 	return &DiscoverySandboxMiddleware{
 		config: config,
 	}
 }
 
-// PreExecute is called before a tool is executed. For discovery commands, it validates
-// constraints and simulates launching an isolated sandbox environment.
+// PreExecute serves as a public interface for interacting with PreExecute.
 //
-// Summary: Intercepts tool execution to enforce discovery-phase sandbox constraints.
+// Summary: Pre the execute appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*mcp.CallToolRequest): The tool execution request.
-//   - t (*tool.Tool): The tool being executed.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if sandbox constraints are violated.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the tool name indicates a discovery command and sandbox simulation fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Logs a security audit event upon sandbox constraint enforcement.
+//   - May safely mutate local state without unintended external side effects.
 func (m *DiscoverySandboxMiddleware) PreExecute(ctx context.Context, req *mcp.CallToolRequest, t *tool.Tool) error {
 	if !m.config.Enabled {
 		return nil
@@ -106,25 +126,21 @@ func (m *DiscoverySandboxMiddleware) PreExecute(ctx context.Context, req *mcp.Ca
 	return nil
 }
 
-// PostExecute is called after the tool completes, successfully or not.
+// PostExecute serves as a public interface for interacting with PostExecute.
 //
-// Summary: PostExecute performs cleanup of the ephemeral sandbox environment.
+// Summary: Post the execute appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*mcp.CallToolRequest): The tool execution request.
-//   - result (*mcp.CallToolResult): The result of the tool execution.
-//   - err (error): The error returned by the tool, if any.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.CallToolResult: The original result.
-//   - error: The original error.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - None.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Logs the teardown of the ephemeral sandbox.
+//   - May safely mutate local state without unintended external side effects.
 func (m *DiscoverySandboxMiddleware) PostExecute(ctx context.Context, req *mcp.CallToolRequest, result *mcp.CallToolResult, err error) (*mcp.CallToolResult, error) {
 	if !m.config.Enabled {
 		return result, err

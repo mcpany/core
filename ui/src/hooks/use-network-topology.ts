@@ -10,21 +10,21 @@ import { Graph, Node as TopologyNode } from '../types/topology';
 import { useTopology } from '../contexts/service-health-context';
 
 /**
- * Summary: Document NetworkGraphState
+ * NetworkGraphState represents the public NetworkGraphState entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a graph state.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * State and actions for the network graph visualization.
+ *   - None.
  */
 export interface NetworkGraphState {
     /** Current list of nodes in the graph. */
@@ -81,26 +81,21 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 /**
- * Summary: Document useNetworkTopology
+ * useNetworkTopology serves as a public interface for interacting with useNetworkTopology.
  *
- * Params:
- *   - None
+ * Summary: Use the network topology appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Hook to fetch and manage network topology data.
- *
- * It periodically polls the backend for topology updates and handles layouting
- * using Dagre for automatic positioning of nodes and edges.
- *
- * @returns {NetworkGraphState} The network graph state and actions including nodes, edges, and event handlers.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function useNetworkTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);

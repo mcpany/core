@@ -26,27 +26,21 @@ type httpPool struct {
 	transport *http.Transport
 }
 
-// Close closes the connection pool and the idle connections.
+// Close serves as a public interface for interacting with Close.
 //
-// Returns:
-//   - error: An error if the pool cannot be closed.
-//
-// Side Effects:
-//   - Closes idle network connections.
-//
-// Summary: Executes Close operation.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err
@@ -55,29 +49,21 @@ func (p *httpPool) Close() error {
 	return nil
 }
 
-// NewHTTPPool creates a new connection pool for HTTP clients.
+// NewHTTPPool represents the public NewHTTPPool entity.
 //
-// It is defined as a variable to allow for easy mocking in tests.
+// Summary: Defines the structured data model representing a http pool.
 //
 // Parameters:
-//   - minSize (int): The initial number of clients to create.
-//   - maxSize (int): The maximum number of clients the pool can hold.
-//   - idleTimeout (time.Duration): The duration after which an idle client may be closed.
-//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - None.
 //
 // Returns:
-//   - pool.Pool[*client.HTTPClientWrapper]: The created pool.
-//   - error: An error if the pool cannot be created.
+//   - None.
 //
 // Errors:
-//   - Returns error if TLS configuration is invalid (e.g., certificate files missing).
-//   - Returns error if pool creation fails.
+//   - None.
 //
 // Side Effects:
-//   - Reads certificate files if mTLS is configured.
-//   - Initializes a new http.Transport and http.Client.
-//
-// Summary: Represents a NewHTTPPool.
+//   - None.
 var NewHTTPPool = func(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

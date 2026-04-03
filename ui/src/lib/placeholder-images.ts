@@ -6,21 +6,21 @@
 import data from './placeholder-images.json';
 
 /**
- * Summary: Document ImagePlaceholder
+ * ImagePlaceholder represents the public ImagePlaceholder entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a placeholder.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * ImagePlaceholder type definition.
+ *   - None.
  */
 export type ImagePlaceholder = {
   id: string;
@@ -30,20 +30,20 @@ export type ImagePlaceholder = {
 };
 
 /**
- * Summary: Document PlaceHolderImages
+ * PlaceHolderImages serves as a public interface for interacting with PlaceHolderImages.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a holder images.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * The PlaceHolderImages const.
+ *   - None.
  */
 export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;

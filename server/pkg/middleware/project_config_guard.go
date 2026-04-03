@@ -13,9 +13,21 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// ProjectConfigGuardConfig defines the configuration for the Project Configuration Security Guard.
+// ProjectConfigGuardConfig represents the public ProjectConfigGuardConfig entity.
 //
-// Summary: Configuration for the Project Configuration Security Guard middleware.
+// Summary: Defines the structured data model representing a config guard config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ProjectConfigGuardConfig struct {
 	// Enabled determines if the guard is active.
 	Enabled bool `json:"enabled"`
@@ -37,55 +49,61 @@ type ProjectConfigGuardConfig struct {
 	AttestedHLCAMap map[string]string `json:"attested_hlca_map"`
 }
 
-// ProjectConfigGuardMiddleware implements the Project Configuration Security Guard.
+// ProjectConfigGuardMiddleware represents the public ProjectConfigGuardMiddleware entity.
 //
-// Summary: Represents the Project Config Guard Middleware.
-type ProjectConfigGuardMiddleware struct {
-	config ProjectConfigGuardConfig
-}
-
-// NewProjectConfigGuardMiddleware creates a new ProjectConfigGuardMiddleware instance.
-//
-// Summary: Creates a new Project Configuration Security Guard middleware instance.
+// Summary: Defines the structured data model representing a config guard middleware.
 //
 // Parameters:
-//   - config (ProjectConfigGuardConfig): The configuration settings.
+//   - None.
 //
 // Returns:
-//   - *ProjectConfigGuardMiddleware: The resulting middleware instance.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
 //   - None.
+type ProjectConfigGuardMiddleware struct {
+	config ProjectConfigGuardConfig
+}
+
+// NewProjectConfigGuardMiddleware serves as a public interface for interacting with NewProjectConfigGuardMiddleware.
+//
+// Summary: Constructs and returns an initialized project config guard middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewProjectConfigGuardMiddleware(config ProjectConfigGuardConfig) *ProjectConfigGuardMiddleware {
 	return &ProjectConfigGuardMiddleware{
 		config: config,
 	}
 }
 
-// Execute enforces project config security before proceeding.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the Project Config Guard check on the request.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result if validation passes.
-//   - error: An error if validation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if an un-attested hook is found.
-//   - Returns an error if enableAllProjectMcpServers is used without attestation.
-//   - Returns an error if HLCA validation fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - May intercept and read target files.
-//   - Rewrites base URLs if configured.
+//   - May safely mutate local state without unintended external side effects.
 func (m *ProjectConfigGuardMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

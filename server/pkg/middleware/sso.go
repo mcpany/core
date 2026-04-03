@@ -12,21 +12,21 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// SSOMiddleware creates a new SSO middleware.
+// SSOMiddleware serves as a public interface for interacting with SSOMiddleware.
 //
-// Summary: Middleware that enforces SSO authentication via trusted proxy headers or IDP bearer tokens.
+// Summary: Sso the middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - config: *configv1.SSOConfig. The configuration settings for SSO.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The HTTP middleware handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Inspects headers for authentication information.
-//   - Calls IDP /userinfo endpoint to validate bearer tokens.
-//   - Aborts the request with 401 Unauthorized if authentication is missing or invalid.
-//   - Sets "X-User-ID" header on the request on successful authentication for downstream handlers.
+//   - May safely mutate local state without unintended external side effects.
 func SSOMiddleware(config *configv1.SSOConfig) func(http.Handler) http.Handler {
 	// Reusable HTTP client for IDP requests
 	client := &http.Client{

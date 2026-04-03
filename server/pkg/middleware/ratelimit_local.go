@@ -12,58 +12,78 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LocalLimiter is an in-memory implementation of Limiter.
+// LocalLimiter represents the public LocalLimiter entity.
 //
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
+// Summary: Defines the structured data model representing a limiter.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type LocalLimiter struct {
 	*rate.Limiter
 }
 
-// Allow checks if the request is allowed (cost 1).
+// Allow serves as a public interface for interacting with Allow.
 //
-// Summary: Checks if a single event is allowed by the rate limiter.
+// Summary: Allow the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if allowed, false otherwise.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Consumes 1 token from the bucket if allowed.
+//   - May safely mutate local state without unintended external side effects.
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
 
-// AllowN checks if the request is allowed with a specific cost.
+// AllowN serves as a public interface for interacting with AllowN.
 //
-// Summary: Checks if N events are allowed by the rate limiter.
+// Summary: Allow the n appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - n: int. The cost of the event.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if allowed, false otherwise.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Consumes n tokens from the bucket if allowed.
+//   - May safely mutate local state without unintended external side effects.
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
 
-// Update updates the limiter configuration.
+// Update serves as a public interface for interacting with Update.
 //
-// Summary: Dynamically updates the rate limit and burst size.
+// Summary: Update the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - rps: float64. The new requests per second limit.
-//   - burst: int. The new burst size.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Modifies the underlying rate.Limiter state.
+//   - May safely mutate local state without unintended external side effects.
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -74,38 +94,57 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 	}
 }
 
-// LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
+// LocalStrategy represents the public LocalStrategy entity.
 //
-// Summary: Strategy for creating local rate limiters.
-type LocalStrategy struct{}
-
-// NewLocalStrategy creates a new LocalStrategy.
+// Summary: Defines the structured data model representing a strategy.
 //
-// Summary: Initializes a new LocalStrategy.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *LocalStrategy: The initialized strategy.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type LocalStrategy struct{}
+
+// NewLocalStrategy serves as a public interface for interacting with NewLocalStrategy.
+//
+// Summary: Constructs and returns an initialized local strategy ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
 
-// Create creates a new LocalLimiter.
+// Create serves as a public interface for interacting with Create.
 //
-// Summary: Creates a new in-memory rate limiter based on the provided configuration.
+// Summary: Create the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: string. Unused (serviceID).
-//   - _: string. Unused (limitScopeKey).
-//   - _: string. Unused (partitionKey).
-//   - config: *configv1.RateLimitConfig. The rate limit configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Limiter: The created LocalLimiter.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Sets a minimum burst of 1 if configured lower.
+//   - May safely mutate local state without unintended external side effects.
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

@@ -10,10 +10,21 @@ import (
 	config_v1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
-// It allows for dynamic updates to configuration values that are used across the application.
+// GlobalSettingsManager represents the public GlobalSettingsManager entity.
 //
-// Summary: Represents a GlobalSettingsManager.
+// Summary: Coordinates operations and orchestrates lifecycle events for the settings manager components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GlobalSettingsManager struct {
 	mu             sync.RWMutex
 	apiKey         atomic.Value // stores string
@@ -21,17 +32,21 @@ type GlobalSettingsManager struct {
 	allowedOrigins atomic.Value // stores []string
 }
 
-// NewGlobalSettingsManager creates a new GlobalSettingsManager with initial values.
+// NewGlobalSettingsManager serves as a public interface for interacting with NewGlobalSettingsManager.
 //
-// Summary: Initializes the global settings manager.
+// Summary: Constructs and returns an initialized global settings manager ready for consumption.
 //
 // Parameters:
-//   - apiKey: string. The initial API key.
-//   - allowedIPs: []string. The initial list of allowed IP addresses.
-//   - allowedOrigins: []string. The initial list of allowed CORS origins.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *GlobalSettingsManager: The initialized manager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins []string) *GlobalSettingsManager {
 	m := &GlobalSettingsManager{}
 	m.apiKey.Store(apiKey)
@@ -45,17 +60,21 @@ func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins
 	return m
 }
 
-// Update updates the settings from the provided GlobalSettings config.
+// Update serves as a public interface for interacting with Update.
 //
-// Summary: Refreshes global settings from the configuration object.
+// Summary: Update the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - settings: *config_v1.GlobalSettings. The new global settings configuration.
-//   - explicitAPIKey: string. An explicitly provided API key (e.g. from CLI flags) that overrides the config.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
+//   - Returns the successfully computed domain model or execution state.
 //
-//	None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, explicitAPIKey string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -84,12 +103,21 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 	m.allowedOrigins.Store(origins)
 }
 
-// GetAPIKey returns the current API key.
+// GetAPIKey serves as a public interface for interacting with GetAPIKey.
 //
-// Summary: Retrieves the active API key.
+// Summary: Fetches and returns the underlying api key from the system state.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The API key.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *GlobalSettingsManager) GetAPIKey() string {
 	val := m.apiKey.Load()
 	if val == nil {
@@ -98,12 +126,21 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 	return val.(string)
 }
 
-// GetAllowedIPs returns the current allowed IPs.
+// GetAllowedIPs serves as a public interface for interacting with GetAllowedIPs.
 //
-// Summary: Retrieves the list of allowed IP addresses.
+// Summary: Fetches and returns the underlying allowed i ps from the system state.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: A list of allowed IP CIDRs or addresses.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	val := m.allowedIPs.Load()
 	if val == nil {
@@ -112,12 +149,21 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	return val.([]string)
 }
 
-// GetAllowedOrigins returns the current allowed origins.
+// GetAllowedOrigins serves as a public interface for interacting with GetAllowedOrigins.
 //
-// Summary: Retrieves the list of allowed CORS origins.
+// Summary: Fetches and returns the underlying allowed origins from the system state.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: A list of allowed origins.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *GlobalSettingsManager) GetAllowedOrigins() []string {
 	val := m.allowedOrigins.Load()
 	if val == nil {

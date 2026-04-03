@@ -17,9 +17,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Provider defines the interface for auto-discovering local services.
+// Provider represents the public Provider entity.
 //
-// Summary: Represents a Provider.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -27,75 +39,61 @@ type Provider interface {
 	Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error)
 }
 
-// OllamaProvider discovers local Ollama instances.
-// OllamaProvider is a provider that discovers local Ollama instances.
+// OllamaProvider represents the public OllamaProvider entity.
 //
-// Summary: Represents a OllamaProvider.
+// Summary: Defines the structured data model representing a provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client
 	clientOnce sync.Once
 }
 
-// Name returns the name of the provider.
+// Name serves as a public interface for interacting with Name.
+//
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The resulting string.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Name operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
 
-// Discover attempts to find local Ollama instances and return them as tools.
+// Discover serves as a public interface for interacting with Discover.
+//
+// Summary: Discover the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: The resulting []*configv1.UpstreamServiceConfig.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Discover operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

@@ -36,96 +36,138 @@ const (
 	APIKeyContextKey authContextKey = "api_key"
 )
 
-// ContextWithAPIKey returns a new context with the API Key embedded.
+// ContextWithAPIKey serves as a public interface for interacting with ContextWithAPIKey.
 //
-// Summary: Embeds an API key into the context.
+// Summary: Context the with api key appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - apiKey: string. The API key to store.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: A new context containing the API key.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ContextWithAPIKey(ctx context.Context, apiKey string) context.Context {
 	return context.WithValue(ctx, APIKeyContextKey, apiKey)
 }
 
-// APIKeyFromContext returns the API Key from the context if present.
+// APIKeyFromContext serves as a public interface for interacting with APIKeyFromContext.
 //
-// Summary: Retrieves the API key from the context.
+// Summary: Api the key from context appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to search.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The API key.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func APIKeyFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(APIKeyContextKey).(string)
 	return val, ok
 }
 
-// ContextWithUser returns a new context with the user ID embedded.
+// ContextWithUser serves as a public interface for interacting with ContextWithUser.
 //
-// Summary: Embeds a user ID into the context.
+// Summary: Context the with user appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - userID: string. The user ID to store.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: A new context containing the user ID.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ContextWithUser(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, UserContextKey, userID)
 }
 
-// UserFromContext returns the user ID from the context if present.
+// UserFromContext serves as a public interface for interacting with UserFromContext.
 //
-// Summary: Retrieves the user ID from the context.
+// Summary: User the from context appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to search.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The user ID.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func UserFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(UserContextKey).(string)
 	return val, ok
 }
 
-// ContextWithProfileID returns a new context with the profile ID embedded.
+// ContextWithProfileID serves as a public interface for interacting with ContextWithProfileID.
 //
-// Summary: Embeds a profile ID into the context.
+// Summary: Context the with profile id appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - profileID: string. The profile ID to store.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: A new context containing the profile ID.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ContextWithProfileID(ctx context.Context, profileID string) context.Context {
 	return context.WithValue(ctx, ProfileIDContextKey, profileID)
 }
 
-// ProfileIDFromContext returns the profile ID from the context if present.
+// ProfileIDFromContext serves as a public interface for interacting with ProfileIDFromContext.
 //
-// Summary: Retrieves the profile ID from the context.
+// Summary: Profile the id from context appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context to search.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The profile ID.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ProfileIDFromContext(ctx context.Context) (string, bool) {
 	val, ok := ctx.Value(ProfileIDContextKey).(string)
 	return val, ok
 }
 
-// Authenticator defines the interface for authentication mechanisms.
+// Authenticator represents the public Authenticator entity.
 //
-// Summary: Interface for authenticating HTTP requests.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Authenticator interface {
 	// Authenticate checks if a request is authenticated and returns the updated context.
 	//
@@ -141,24 +183,42 @@ type Authenticator interface {
 	Authenticate(ctx context.Context, r *http.Request) (context.Context, error)
 }
 
-// APIKeyAuthenticator provides an authentication mechanism based on a static API key.
+// APIKeyAuthenticator represents the public APIKeyAuthenticator entity.
 //
-// Summary: Authenticates requests using a static API key.
+// Summary: Defines the structured data model representing a key authenticator.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type APIKeyAuthenticator struct {
 	ParamName string
 	In        configv1.APIKeyAuth_Location
 	Value     string
 }
 
-// NewAPIKeyAuthenticator creates a new APIKeyAuthenticator instance.
+// NewAPIKeyAuthenticator serves as a public interface for interacting with NewAPIKeyAuthenticator.
 //
-// Summary: Initializes an APIKeyAuthenticator.
+// Summary: Constructs and returns an initialized api key authenticator ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.APIKeyAuth. The configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *APIKeyAuthenticator: The initialized authenticator, or nil if config is invalid.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	if config == nil || config.GetParamName() == "" || config.GetVerificationValue() == "" {
 		return nil
@@ -170,17 +230,21 @@ func NewAPIKeyAuthenticator(config *configv1.APIKeyAuth) *APIKeyAuthenticator {
 	}
 }
 
-// Authenticate verifies the API key in the request.
+// Authenticate serves as a public interface for interacting with Authenticate.
 //
-// Summary: Validates the API key from header, query, or cookie.
+// Summary: Authenticate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - r: *http.Request. The HTTP request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: Context with API key if valid.
-//   - error: Error if unauthorized.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	var receivedKey string
 	switch a.In {
@@ -203,23 +267,41 @@ func (a *APIKeyAuthenticator) Authenticate(ctx context.Context, r *http.Request)
 	return ctx, fmt.Errorf("unauthorized")
 }
 
-// BasicAuthenticator authenticates using HTTP Basic Auth and bcrypt password hashing.
+// BasicAuthenticator represents the public BasicAuthenticator entity.
 //
-// Summary: Authenticates requests using HTTP Basic Auth.
+// Summary: Defines the structured data model representing a authenticator.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BasicAuthenticator struct {
 	PasswordHash string
 	Username     string
 }
 
-// NewBasicAuthenticator creates a new BasicAuthenticator instance.
+// NewBasicAuthenticator serves as a public interface for interacting with NewBasicAuthenticator.
 //
-// Summary: Initializes a BasicAuthenticator.
+// Summary: Constructs and returns an initialized basic authenticator ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.BasicAuth. The configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *BasicAuthenticator: The initialized authenticator, or nil if config is invalid.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	if config == nil || config.GetPasswordHash() == "" {
 		return nil
@@ -230,17 +312,21 @@ func NewBasicAuthenticator(config *configv1.BasicAuth) *BasicAuthenticator {
 	}
 }
 
-// Authenticate validates the basic auth credentials.
+// Authenticate serves as a public interface for interacting with Authenticate.
 //
-// Summary: Validates username and password hash.
+// Summary: Authenticate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - r: *http.Request. The HTTP request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: Authenticated context.
-//   - error: Error if unauthorized.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	user, password, ok := r.BasicAuth()
 	if !ok {
@@ -263,23 +349,41 @@ func (a *BasicAuthenticator) Authenticate(ctx context.Context, r *http.Request) 
 	return ctx, fmt.Errorf("unauthorized")
 }
 
-// TrustedHeaderAuthenticator authenticates using a trusted header.
+// TrustedHeaderAuthenticator represents the public TrustedHeaderAuthenticator entity.
 //
-// Summary: Authenticates requests based on the presence/value of a specific header.
+// Summary: Defines the structured data model representing a header authenticator.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TrustedHeaderAuthenticator struct {
 	HeaderName  string
 	HeaderValue string // Optional: if empty, just checks presence
 }
 
-// NewTrustedHeaderAuthenticator creates a new TrustedHeaderAuthenticator instance.
+// NewTrustedHeaderAuthenticator serves as a public interface for interacting with NewTrustedHeaderAuthenticator.
 //
-// Summary: Initializes a TrustedHeaderAuthenticator.
+// Summary: Constructs and returns an initialized trusted header authenticator ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.TrustedHeaderAuth. The configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *TrustedHeaderAuthenticator: The initialized authenticator, or nil if config is invalid.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedHeaderAuthenticator {
 	if config == nil || config.GetHeaderName() == "" {
 		return nil
@@ -290,17 +394,21 @@ func NewTrustedHeaderAuthenticator(config *configv1.TrustedHeaderAuth) *TrustedH
 	}
 }
 
-// Authenticate validates the trusted header.
+// Authenticate serves as a public interface for interacting with Authenticate.
 //
-// Summary: Checks for the trusted header.
+// Summary: Authenticate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - r: *http.Request. The HTTP request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: Authenticated context.
-//   - error: Error if unauthorized.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	val := r.Header.Get(a.HeaderName)
 	if val == "" {
@@ -315,9 +423,21 @@ func (a *TrustedHeaderAuthenticator) Authenticate(ctx context.Context, r *http.R
 	return ctx, nil
 }
 
-// Manager oversees the authentication process for the server.
+// Manager represents the public Manager entity.
 //
-// Summary: Manages authentication strategies and user sessions.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	authenticators *xsync.Map[string, Authenticator]
 	apiKey         string
@@ -331,12 +451,21 @@ type Manager struct {
 	storage storage.Storage
 }
 
-// NewManager creates and initializes a new Manager with an empty authenticator registry.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Initializes a new Authentication Manager.
+// Summary: Constructs and returns an initialized manager ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: A new Manager instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewManager() *Manager {
 	return &Manager{
 		authenticators: xsync.NewMap[string, Authenticator](),
@@ -344,15 +473,21 @@ func NewManager() *Manager {
 	}
 }
 
-// SetUsers updates the list of active users.
+// SetUsers serves as a public interface for interacting with SetUsers.
 //
-// Summary: Sets the configured users.
+// Summary: Set the users appropriately based on current system conditions.
 //
 // Parameters:
-//   - users: []*configv1.User. The list of users.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the internal user map.
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -361,31 +496,42 @@ func (am *Manager) SetUsers(users []*configv1.User) {
 	}
 }
 
-// SetStorage sets the storage backend for the manager.
+// SetStorage serves as a public interface for interacting with SetStorage.
 //
-// Summary: Configures the storage backend.
+// Summary: Set the storage appropriately based on current system conditions.
 //
 // Parameters:
-//   - s: storage.Storage. The storage implementation.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the internal storage reference.
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) SetStorage(s storage.Storage) {
 	am.mu.Lock()
 	defer am.mu.Unlock()
 	am.storage = s
 }
 
-// GetUser retrieves a user configuration by their ID.
+// GetUser serves as a public interface for interacting with GetUser.
 //
-// Summary: Looks up a user by ID.
+// Summary: Fetches and returns the underlying user from the system state.
 //
 // Parameters:
-//   - id: string. The user ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.User: The user configuration.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	am.usersMu.RLock()
 	defer am.usersMu.RUnlock()
@@ -393,32 +539,40 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 	return u, ok
 }
 
-// SetAPIKey sets the global API key for the server.
+// SetAPIKey serves as a public interface for interacting with SetAPIKey.
 //
-// Summary: Sets the global API key.
+// Summary: Set the api key appropriately based on current system conditions.
 //
 // Parameters:
-//   - apiKey: string. The API key.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the internal API key.
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }
 
-// AddAuthenticator registers an authenticator for a given service ID.
+// AddAuthenticator serves as a public interface for interacting with AddAuthenticator.
 //
-// Summary: Registers an authenticator for a service.
+// Summary: Add the authenticator appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
-//   - authenticator: Authenticator. The authenticator instance.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Error if authenticator is nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Adds or updates an entry in the authenticators map.
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticator) error {
 	if authenticator == nil {
 		return fmt.Errorf("authenticator for service %s is nil", serviceID)
@@ -427,18 +581,21 @@ func (am *Manager) AddAuthenticator(serviceID string, authenticator Authenticato
 	return nil
 }
 
-// Authenticate authenticates a request for a specific service.
+// Authenticate serves as a public interface for interacting with Authenticate.
 //
-// Summary: Authenticates a request, checking service-specific or global rules.
+// Summary: Authenticate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - serviceID: string. The service ID.
-//   - r: *http.Request. The HTTP request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: The authenticated context.
-//   - error: Error if unauthorized.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.Request) (context.Context, error) {
 	if am.apiKey != "" {
 		receivedKey := r.Header.Get("X-API-Key")
@@ -488,44 +645,59 @@ func (am *Manager) Authenticate(ctx context.Context, serviceID string, r *http.R
 	return ctx, fmt.Errorf("unauthorized: no authentication configured")
 }
 
-// GetAuthenticator retrieves the authenticator registered for a specific service.
+// GetAuthenticator serves as a public interface for interacting with GetAuthenticator.
 //
-// Summary: Looks up an authenticator by service ID.
+// Summary: Fetches and returns the underlying authenticator from the system state.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Authenticator: The authenticator instance.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) GetAuthenticator(serviceID string) (Authenticator, bool) {
 	return am.authenticators.Load(serviceID)
 }
 
-// RemoveAuthenticator removes the authenticator for a given service ID.
+// RemoveAuthenticator serves as a public interface for interacting with RemoveAuthenticator.
 //
-// Summary: Removes an authenticator by service ID.
+// Summary: Remove the authenticator appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Removes an entry from the authenticators map.
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) RemoveAuthenticator(serviceID string) {
 	am.authenticators.Delete(serviceID)
 }
 
-// AddOAuth2Authenticator creates and registers a new OAuth2Authenticator for a given service ID.
+// AddOAuth2Authenticator serves as a public interface for interacting with AddOAuth2Authenticator.
 //
-// Summary: Helper to add an OAuth2 authenticator.
+// Summary: Add the o auth authenticator appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. Context for initialization.
-//   - serviceID: string. The service ID.
-//   - config: *OAuth2Config. The OAuth2 configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Error if creation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (am *Manager) AddOAuth2Authenticator(ctx context.Context, serviceID string, config *OAuth2Config) error {
 	if config == nil {
 		return nil
@@ -542,17 +714,21 @@ var (
 	oauthAuthenticatorCache = xsync.NewMap[string, *OAuth2Authenticator]()
 )
 
-// ValidateAuthentication validates the authentication request against the provided configuration.
+// ValidateAuthentication serves as a public interface for interacting with ValidateAuthentication.
 //
-// Summary: Validates a request against a specific auth configuration.
+// Summary: Validate the authentication appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - config: *configv1.Authentication. The authentication configuration.
-//   - r: *http.Request. The HTTP request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Error if validation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ValidateAuthentication(ctx context.Context, config *configv1.Authentication, r *http.Request) error {
 	if config == nil {
 		return nil // No auth configured implies allowed

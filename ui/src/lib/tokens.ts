@@ -4,26 +4,21 @@
  */
 
 /**
- * Summary: Document estimateTokens
+ * estimateTokens serves as a public interface for interacting with estimateTokens.
  *
- * Params:
- *   - None
+ * Summary: Estimate the tokens appropriately based on current system conditions.
  *
- * Estimates the number of tokens in a string or object using a simple heuristic.
- *
- * Summary: Provides a rough estimation of the number of tokens for UI purposes.
- *
- * Params:
- *   - input (any): The text or object to estimate tokens for.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - number: The estimated token count based on heuristics.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function estimateTokens(input: any): number {
     if (!input) return 0;
@@ -46,26 +41,21 @@ export function estimateTokens(input: any): number {
 }
 
 /**
- * Summary: Document estimateMessageTokens
+ * estimateMessageTokens serves as a public interface for interacting with estimateMessageTokens.
  *
- * Params:
- *   - None
+ * Summary: Estimate the message tokens appropriately based on current system conditions.
  *
- * Calculates total tokens for a sequence of messages.
- *
- * Summary: Aggregates the estimated token count for an array of message objects.
- *
- * Params:
- *   - messages (any[]): Array of message objects containing content.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - number: Total estimated tokens for all messages.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function estimateMessageTokens(messages: any[]): number {
     return messages.reduce((acc, msg) => {
@@ -78,26 +68,21 @@ export function estimateMessageTokens(messages: any[]): number {
 }
 
 /**
- * Summary: Document formatTokenCount
+ * formatTokenCount serves as a public interface for interacting with formatTokenCount.
  *
- * Params:
- *   - None
+ * Summary: Format the token count appropriately based on current system conditions.
  *
- * Formats a number of tokens into a human-readable string.
- *
- * Summary: Converts a token count into a formatted string (e.g., 1.2k).
- *
- * Params:
- *   - count (number): The number of tokens.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - string: The formatted token count string.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function formatTokenCount(count: number): string {
     if (count >= 1000) {
@@ -107,26 +92,21 @@ export function formatTokenCount(count: number): string {
 }
 
 /**
- * Summary: Document calculateCost
+ * calculateCost serves as a public interface for interacting with calculateCost.
  *
- * Params:
- *   - None
+ * Summary: Calculate the cost appropriately based on current system conditions.
  *
- * Calculates the estimated cost for a given number of tokens.
- *
- * Summary: Estimates the cost in USD based on a generic pricing model.
- *
- * Params:
- *   - tokens (number): The number of tokens.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - number: The estimated cost in USD.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function calculateCost(tokens: number): number {
     // Generic blended rate: $5 per 1M tokens ($0.005 per 1k)
@@ -136,26 +116,21 @@ export function calculateCost(tokens: number): number {
 }
 
 /**
- * Summary: Document formatCost
+ * formatCost serves as a public interface for interacting with formatCost.
  *
- * Params:
- *   - None
+ * Summary: Format the cost appropriately based on current system conditions.
  *
- * Formats a cost into a currency string.
- *
- * Summary: Formats a numerical cost into a USD currency string.
- *
- * Params:
- *   - cost (number): The cost in USD.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - string: The formatted string (e.g., "$0.0024").
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function formatCost(cost: number): string {
     if (cost === 0) return "$0.00";

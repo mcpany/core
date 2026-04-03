@@ -7,11 +7,21 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// MCPServerSpec defines the desired state of MCPServer.
+// MCPServerSpec represents the public MCPServerSpec entity.
 //
-// Summary: Specification for MCPServer resource.
+// Summary: Defines the structured data model representing a server spec.
 //
-// +kubebuilder:object:generate=true
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerSpec struct {
 	// Replicas is the number of replicas for the server
 	Replicas *int32 `json:"replicas,omitempty"`
@@ -24,11 +34,21 @@ type MCPServerSpec struct {
 	ConfigMap string `json:"configMap"`
 }
 
-// MCPServerStatus defines the observed state of MCPServer.
+// MCPServerStatus represents the public MCPServerStatus entity.
 //
-// Summary: Status of MCPServer resource.
+// Summary: Defines the structured data model representing a server status.
 //
-// +kubebuilder:object:generate=true
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerStatus struct {
 	// AvailableReplicas is the number of available replicas
 	AvailableReplicas int32 `json:"availableReplicas"`
@@ -37,9 +57,21 @@ type MCPServerStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// MCPServer is the Schema for the mcpservers API.
+// MCPServer represents the public MCPServer entity.
 //
-// Summary: MCPServer resource definition.
+// Summary: Provides network listening and request routing capabilities for server.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServer struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -50,9 +82,21 @@ type MCPServer struct {
 
 // +kubebuilder:object:root=true
 
-// MCPServerList contains a list of MCPServer.
+// MCPServerList represents the public MCPServerList entity.
 //
-// Summary: List of MCPServer resources.
+// Summary: Defines the structured data model representing a server list.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

@@ -11,9 +11,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Storage defines the interface for persisting configuration.
+// Storage represents the public Storage entity.
 //
-// Summary: Interface for backend storage operations.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Storage interface {
 	// Load retrieves the full server configuration.
 	//

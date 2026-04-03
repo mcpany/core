@@ -11,13 +11,21 @@ in TypeScript (.tsx) files. It attempts to infer prop descriptions based on name
 
 def get_prop_desc(name):
     """
-    Generates a description for a prop based on its name.
+    get_prop_desc operation.
 
-    Args:
-        name: The name of the prop.
+    Summary: Fetches and returns the underlying prop desc from the system state.
+
+    Parameters:
+      - Check signature.
 
     Returns:
-        A description string.
+      - Expected state or data.
+
+    Throws/Errors:
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     name_lower = name.lower()
     if name_lower == 'id': return "The unique identifier."
@@ -44,10 +52,21 @@ def get_prop_desc(name):
 
 def process_file(filepath):
     """
-    Scans a file for React components and adds/updates docstrings.
+    process_file operation.
 
-    Args:
-        filepath: The path to the file to process.
+    Summary: Process the file appropriately based on current system conditions.
+
+    Parameters:
+      - Check signature.
+
+    Returns:
+      - Expected state or data.
+
+    Throws/Errors:
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     with open(filepath, 'r') as f:
         content = f.read()
@@ -205,7 +224,21 @@ def process_file(filepath):
 
 def main():
     """
-    Main function to walk the directory and process all .tsx files.
+    main operation.
+
+    Summary: Main the  appropriately based on current system conditions.
+
+    Parameters:
+      - Check signature.
+
+    Returns:
+      - Expected state or data.
+
+    Throws/Errors:
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     root_dir = 'ui/src'
     for dirpath, dirnames, filenames in os.walk(root_dir):

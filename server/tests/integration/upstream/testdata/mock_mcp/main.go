@@ -9,7 +9,21 @@ import (
 	"os"
 )
 
-// JSONRPCRequest represents a JSON-RPC 2.0 request.
+// JSONRPCRequest represents the public JSONRPCRequest entity.
+//
+// Summary: Defines the structured data model representing a request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCRequest struct {
 	JSONRPC string           `json:"jsonrpc"`
 	ID      *json.RawMessage `json:"id,omitempty"`
@@ -17,7 +31,21 @@ type JSONRPCRequest struct {
 	Params  json.RawMessage  `json:"params,omitempty"`
 }
 
-// JSONRPCResponse represents a JSON-RPC 2.0 response.
+// JSONRPCResponse represents the public JSONRPCResponse entity.
+//
+// Summary: Defines the structured data model representing a response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCResponse struct {
 	JSONRPC string           `json:"jsonrpc"`
 	ID      *json.RawMessage `json:"id,omitempty"`
@@ -25,7 +53,21 @@ type JSONRPCResponse struct {
 	Error   *JSONRPCError    `json:"error,omitempty"`
 }
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
+// JSONRPCError represents the public JSONRPCError entity.
+//
+// Summary: Defines the structured data model representing a error.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

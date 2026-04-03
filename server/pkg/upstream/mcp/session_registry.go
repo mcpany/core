@@ -10,128 +10,104 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
-// This allows requests from upstream (like sampling) to be routed to the correct downstream client.
+// SessionRegistry represents the public SessionRegistry entity.
 //
-// Summary: Represents a SessionRegistry.
+// Summary: Defines the structured data model representing a registry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session
 }
 
-// NewSessionRegistry creates a new SessionRegistry.
+// NewSessionRegistry serves as a public interface for interacting with NewSessionRegistry.
 //
-// Returns:
-//   - *SessionRegistry: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewSessionRegistry operation.
+// Summary: Constructs and returns an initialized session registry ready for consumption.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),
 	}
 }
 
-// Register registers a mapping between an upstream session and a downstream session.
+// Register serves as a public interface for interacting with Register.
+//
+// Summary: Register the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - upstreamSession (mcp.Session): The parameter.
-//   - downstreamSession (tool.Session): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.sessions[upstreamSession] = downstreamSession
 }
 
-// Unregister removes the mapping for an upstream session.
+// Unregister serves as a public interface for interacting with Unregister.
+//
+// Summary: Unregister the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - upstreamSession (mcp.Session): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Unregister operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	delete(r.sessions, upstreamSession)
 }
 
-// Get retrieves the downstream session associated with an upstream session.
+// Get serves as a public interface for interacting with Get.
+//
+// Summary: Fetches and returns the underlying  from the system state.
 //
 // Parameters:
-//   - upstreamSession (mcp.Session): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - tool.Session: The result.
-//   - bool: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves Get operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

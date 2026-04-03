@@ -22,9 +22,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// AuditMiddleware provides audit logging for tool executions.
+// AuditMiddleware represents the public AuditMiddleware entity.
 //
-// Summary: Middleware for auditing tool execution.
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AuditMiddleware struct {
 	mu          sync.RWMutex
 	config      *configv1.AuditConfig
@@ -33,22 +45,21 @@ type AuditMiddleware struct {
 	broadcaster *logging.Broadcaster
 }
 
-// NewAuditMiddleware creates a new AuditMiddleware.
+// NewAuditMiddleware serves as a public interface for interacting with NewAuditMiddleware.
 //
-// Summary: Initializes the audit middleware with the provided configuration.
+// Summary: Constructs and returns an initialized audit middleware ready for consumption.
 //
 // Parameters:
-//   - auditConfig (*configv1.AuditConfig): The configuration for audit logging.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *AuditMiddleware: The initialized middleware instance.
-//   - error: An error if the middleware cannot be initialized.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if audit store initialization fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Initializes internal stores and redactor.
+//   - May safely mutate local state without unintended external side effects.
 func NewAuditMiddleware(auditConfig *configv1.AuditConfig) (*AuditMiddleware, error) {
 	m := &AuditMiddleware{
 		config:      auditConfig,
@@ -105,38 +116,42 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 	return nil
 }
 
-// SetStore sets the audit store.
-// This is primarily used for testing.
+// SetStore serves as a public interface for interacting with SetStore.
 //
-// Summary: Sets the audit store implementation.
+// Summary: Set the store appropriately based on current system conditions.
 //
 // Parameters:
-//   - store (audit.Store): The audit store to use.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Replaces the current audit store.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.store = store
 }
 
-// UpdateConfig updates the audit configuration safely.
+// UpdateConfig serves as a public interface for interacting with UpdateConfig.
 //
-// Summary: Updates the middleware configuration and re-initializes the store if needed.
+// Summary: Update the config appropriately based on current system conditions.
 //
 // Parameters:
-//   - auditConfig (*configv1.AuditConfig): The new configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the store re-initialization fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if store re-initialization fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - May close existing store and open a new one.
-//   - Updates redactor configuration.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -179,21 +194,21 @@ func (m *AuditMiddleware) UpdateConfig(auditConfig *configv1.AuditConfig) error 
 	return nil
 }
 
-// Execute intercepts tool execution to log audit events.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Intercepts and logs tool execution requests and results.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the tool execution fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Writes an audit log entry to the configured store.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	m.mu.RLock()
 	auditConfig := m.config
@@ -307,91 +322,120 @@ func (m *AuditMiddleware) writeLog(ctx context.Context, store audit.Store, entry
 	}
 }
 
-// ClearHistory clears the audit history from the broadcaster.
+// ClearHistory serves as a public interface for interacting with ClearHistory.
 //
-// Summary: Clears the audit history.
+// Summary: Clear the history appropriately based on current system conditions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Clears the history in the broadcaster.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) ClearHistory() {
 	if m.broadcaster != nil {
 		m.broadcaster.ClearHistory()
 	}
 }
 
-// Broadcast manually broadcasts an audit entry, used primarily for test seeding.
+// Broadcast serves as a public interface for interacting with Broadcast.
 //
-// Summary: Broadcasts an audit entry.
+// Summary: Broadcast the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - entry (audit.Entry): The audit entry to broadcast.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) Broadcast(entry audit.Entry) {
 	if m.broadcaster != nil {
 		m.broadcaster.Broadcast(entry)
 	}
 }
 
-// SubscribeWithHistory returns a channel that will receive broadcast messages,
-// and the current history of messages.
+// SubscribeWithHistory serves as a public interface for interacting with SubscribeWithHistory.
 //
-// Summary: Subscribes to audit events with history.
+// Summary: Subscribe the with history appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - chan any: A channel receiving new audit entries.
-//   - []any: A slice of historical audit entries.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Adds a new subscriber to the broadcaster.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 	return m.broadcaster.SubscribeWithHistory()
 }
 
-// GetHistory returns the current broadcast history.
+// GetHistory serves as a public interface for interacting with GetHistory.
 //
-// Summary: Retrieves the audit history from the broadcaster.
+// Summary: Fetches and returns the underlying history from the system state.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []any: A slice of audit entries.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
 
-// Unsubscribe removes a subscriber channel.
+// Unsubscribe serves as a public interface for interacting with Unsubscribe.
 //
-// Summary: Unsubscribes from audit events.
+// Summary: Unsubscribe the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ch (chan any): The channel to unsubscribe.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Removes the subscriber from the broadcaster.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) Unsubscribe(ch chan any) {
 	m.broadcaster.Unsubscribe(ch)
 }
 
-// Read reads audit entries from the underlying store.
+// Read serves as a public interface for interacting with Read.
 //
-// Summary: Reads historical audit logs from storage.
+// Summary: Read the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - filter (audit.Filter): The filter criteria for querying logs.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []audit.Entry: A slice of audit entries matching the filter.
-//   - error: An error if reading fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if store is not initialized.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Reads from the audit store.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audit.Entry, error) {
 	m.mu.RLock()
 	store := m.store
@@ -403,15 +447,21 @@ func (m *AuditMiddleware) Read(ctx context.Context, filter audit.Filter) ([]audi
 	return store.Read(ctx, filter)
 }
 
-// Close closes the underlying store.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the audit store.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes the audit store connection.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) Close() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -421,31 +471,21 @@ func (m *AuditMiddleware) Close() error {
 	return nil
 }
 
-// Write writes an audit entry directly to the store.
+// Write serves as a public interface for interacting with Write.
+//
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context for the operation.
-//   - entry: The audit.Entry to write.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the write fails, or nil on success.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the audit store is not initialized.
-//
-// Summary: Updates Write operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

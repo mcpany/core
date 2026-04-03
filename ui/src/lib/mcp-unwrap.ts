@@ -4,26 +4,21 @@
  */
 
 /**
- * Summary: Document unwrapMcpResult
+ * unwrapMcpResult serves as a public interface for interacting with unwrapMcpResult.
  *
- * Params:
- *   - None
+ * Summary: Unwrap the mcp result appropriately based on current system conditions.
  *
- * Unwraps an MCP Tool Result to extract its core content payload.
- *
- * Summary: Extracts the core content payload from an MCP tool result.
- *
- * Params:
- *   - result (any): The raw tool execution result to be unwrapped.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - any: The unwrapped content payload, or the original result if it cannot be unwrapped.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function unwrapMcpResult(result: any): any {
     let content = result;
@@ -80,26 +75,21 @@ export function unwrapMcpResult(result: any): any {
 }
 
 /**
- * Summary: Document deepParseJson
+ * deepParseJson serves as a public interface for interacting with deepParseJson.
  *
- * Params:
- *   - None
+ * Summary: Deep the parse json appropriately based on current system conditions.
  *
- * Recursively traverses an object or array and parses any stringified JSON values.
- *
- * Summary: Deeply parses JSON strings embedded within an object or array.
- *
- * Params:
- *   - obj (any): The object, array, or string to deeply parse.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - any: The fully expanded object with all valid JSON strings parsed.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function deepParseJson(obj: any): any {
     if (typeof obj === 'string') {

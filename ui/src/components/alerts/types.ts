@@ -17,42 +17,59 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Severity = "critical" | "warning" | "info";
 /**
- * Summary: Document AlertStatus
+ * Severity represents the public Severity entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
+ *   - None.
+ */
+export type Severity = "critical" | "warning" | "info";
+/**
+ * AlertStatus represents the public AlertStatus entity.
  *
- * AlertStatus type definition.
+ * Summary: Defines the structured data model representing a status.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
  */
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
 /**
- * Summary: Document Alert
+ * Alert represents the public Alert entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Alert type definition.
+ *   - None.
  */
 export interface Alert {
   id: string;
@@ -82,6 +99,23 @@ export interface Alert {
  * Alert type definition.
  */
 
+/**
+ * AlertRule represents the public AlertRule entity.
+ *
+ * Summary: Defines the structured data model representing a rule.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export interface AlertRule {
   id: string;
   name: string;

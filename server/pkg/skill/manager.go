@@ -28,43 +28,42 @@ var (
 	validNameRegex = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`)
 )
 
-// Manager handles the storage and retrieval of skills.
+// Manager represents the public Manager entity.
 //
-// Summary: Represents a Manager.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex
 	cache   []*Skill
 }
 
-// NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
+// NewManager serves as a public interface for interacting with NewManager.
+//
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - rootDir (string): The rootDir parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: The resulting *Manager.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewManager operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewManager(rootDir string) (*Manager, error) {
 	if err := os.MkdirAll(rootDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create skill root directory: %w", err)
@@ -74,34 +73,21 @@ func NewManager(rootDir string) (*Manager, error) {
 	}, nil
 }
 
-// ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
+// ListSkills serves as a public interface for interacting with ListSkills.
+//
+// Summary: List the skills appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*Skill: The resulting []*Skill.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes ListSkills operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) ListSkills() ([]*Skill, error) {
 	// ⚡ BOLT: Optimization - Cached skill listing to avoid redundant I/O.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -142,67 +128,42 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 	return skills, nil
 }
 
-// GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
+// GetSkill serves as a public interface for interacting with GetSkill.
+//
+// Summary: Fetches and returns the underlying skill from the system state.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Skill: The resulting *Skill.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Retrieves GetSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return m.loadSkill(name)
 }
 
-// CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
+// CreateSkill serves as a public interface for interacting with CreateSkill.
+//
+// Summary: Create the skill appropriately based on current system conditions.
 //
 // Parameters:
-//   - skill (*Skill): The skill parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes CreateSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) CreateSkill(skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -231,34 +192,21 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 	return m.writeSkillFile(skillDir, skill)
 }
 
-// UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
+// UpdateSkill serves as a public interface for interacting with UpdateSkill.
+//
+// Summary: Update the skill appropriately based on current system conditions.
 //
 // Parameters:
-//   - originalName (string): The originalName parameter.
-//   - skill (*Skill): The skill parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes UpdateSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -290,33 +238,21 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 	return m.writeSkillFile(newDir, skill)
 }
 
-// DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
+// DeleteSkill serves as a public interface for interacting with DeleteSkill.
+//
+// Summary: Delete the skill appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes DeleteSkill operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -333,35 +269,21 @@ func (m *Manager) DeleteSkill(name string) error {
 	return os.RemoveAll(skillDir)
 }
 
-// SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
+// SaveAsset serves as a public interface for interacting with SaveAsset.
+//
+// Summary: Save the asset appropriately based on current system conditions.
 //
 // Parameters:
-//   - skillName (string): The skillName parameter.
-//   - relPath (string): The relPath parameter.
-//   - content ([]byte): The content parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes SaveAsset operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) SaveAsset(skillName string, relPath string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

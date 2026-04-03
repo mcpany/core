@@ -25,12 +25,21 @@ var (
 	jqCache       sync.Map // map[string]*gojq.Query
 )
 
-// TextParser provides functionality to parse various text formats (JSON, XML,
-// plain text) and extract data into a structured map. It uses a configuration
-// map to define the extraction rules for each format, such as JSONPath for
-// JSON, XPath for XML, and regex for plain text.
+// TextParser represents the public TextParser entity.
 //
-// Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
+// Summary: Defines the structured data model representing a parser.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TextParser struct {
 	transformer *Transformer
 }
@@ -40,15 +49,21 @@ var (
 	defaultTextParserOnce sync.Once
 )
 
-// NewTextParser returns a shared instance of TextParser.
+// NewTextParser serves as a public interface for interacting with NewTextParser.
 //
-// Summary: Returns a singleton instance of TextParser.
+// Summary: Constructs and returns an initialized text parser ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *TextParser: The singleton instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Initializes the singleton on first call.
+//   - May safely mutate local state without unintended external side effects.
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -58,41 +73,40 @@ func NewTextParser() *TextParser {
 	return defaultTextParser
 }
 
-// Transform takes a map of data and a Go template string and returns a byte
-// slice containing the transformed output.
+// Transform serves as a public interface for interacting with Transform.
 //
-// Summary: Delegates to the internal Transformer to render templates.
+// Summary: Transform the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - templateStr: string. The Go template.
-//   - data: any. The context data.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []byte: The rendered output.
-//   - error: An error if transformation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }
 
-// Parse extracts data from an input byte slice based on the specified input
-// type and configuration.
+// Parse serves as a public interface for interacting with Parse.
 //
-// Summary: Parses input data according to rules defined in config or query.
+// Summary: Parse the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - inputType: string. One of "json", "xml", "text", "jq".
-//   - input: []byte. The raw input data.
-//   - config: map[string]string. Extraction rules (key -> path/regex). Used for json, xml, text.
-//   - jqQuery: string. The JQ query string. Used for jq type.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The extracted data (usually map[string]any or any for jq).
-//   - error: An error if parsing fails or input type is unsupported.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if input format is invalid.
-//   - Returns error if extraction rules fail.
-//   - Returns "unsupported input type" for unknown types.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *TextParser) Parse(inputType string, input []byte, config map[string]string, jqQuery string) (any, error) {
 	switch strings.ToLower(inputType) {
 	case "json":

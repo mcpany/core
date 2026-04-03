@@ -13,74 +13,119 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
+// ClaudeDesktopConfig represents the public ClaudeDesktopConfig entity.
 //
-// Summary: Configuration format used by Claude Desktop.
+// Summary: Defines the structured data model representing a desktop config.
 //
-// Fields:
-//   - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
-// MCPServerConfig represents a single server configuration in Claude Desktop.
+// MCPServerConfig represents the public MCPServerConfig entity.
 //
-// Summary: Configuration for a single MCP server in Claude Desktop.
+// Summary: Defines the structured data model representing a server config.
 //
-// Fields:
-//   - Command: string. The command to execute to start the server.
-//   - Args: []string. The arguments to pass to the command.
-//   - Env: map[string]string. Environment variables to set for the server process.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
 	Env     map[string]string `json:"env,omitempty"`
 }
 
-// McpAnyConfig represents the target configuration structure for MCP Any.
+// McpAnyConfig represents the public McpAnyConfig entity.
 //
-// Summary:
-//   Configuration for the MCP Any server.
+// Summary: Defines the structured data model representing a any config.
 //
-// Fields:
-//   - UpstreamServices: []UpstreamService. A list of upstream services to configure.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
 
-// UpstreamService represents a single upstream service configuration.
+// UpstreamService represents the public UpstreamService entity.
 //
-// Summary:
-//   Configuration for a single upstream service.
+// Summary: Defines the structured data model representing a service.
 //
-// Fields:
-//   - Name: string. The name of the service.
-//   - McpService: *McpService. The MCP service configuration (optional).
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
 }
 
-// McpService defines the configuration for an MCP-based service.
+// McpService represents the public McpService entity.
 //
-// Summary:
-//   Configuration for a service using the Model Context Protocol (MCP).
+// Summary: Defines the structured data model representing a service.
 //
-// Fields:
-//   - StdioConnection: *StdioConnection. Parameters for connecting via standard I/O (optional).
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
 
-// StdioConnection defines the parameters for connecting to an MCP server via standard I/O.
+// StdioConnection represents the public StdioConnection entity.
 //
-// Summary:
-//   Parameters for connecting to an MCP server using standard input/output streams.
+// Summary: Defines the structured data model representing a connection.
 //
-// Fields:
-//   - Command: string. The command to execute.
-//   - Args: []string. The arguments to pass to the command.
-//   - Env: map[string]string. The environment variables to set for the command.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`

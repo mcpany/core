@@ -5,7 +5,19 @@ package tool
 
 import "errors"
 
-// ErrToolNotFound is returned when a requested tool cannot be found.
+// ErrToolNotFound represents the public ErrToolNotFound entity.
 //
-// Summary: Represents a ErrToolNotFound.
+// Summary: Defines the structured data model representing a tool not found.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var ErrToolNotFound = errors.New("unknown tool")

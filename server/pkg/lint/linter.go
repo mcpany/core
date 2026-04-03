@@ -14,11 +14,21 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 )
 
-// Severity indicates the importance of a linting result.
+// Severity represents the public Severity entity.
 //
-// It is used to categorize findings based on their impact and urgency.
+// Summary: Defines the structured data model representing a .
 //
-// Summary: Represents a Severity.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Severity int
 
 const (
@@ -33,26 +43,21 @@ const (
 	Info
 )
 
-// String returns the string representation of the severity.
+// String serves as a public interface for interacting with String.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
-//
-// Returns:
-//   - string: The string representation of the severity.
-//
-// Summary: Executes String operation.
+// Summary: String the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -66,11 +71,21 @@ func (s Severity) String() string {
 	}
 }
 
-// Result represents a single linting finding.
+// Result represents the public Result entity.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
+// Summary: Defines the structured data model representing a .
 //
-// Summary: Represents a Result.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -82,26 +97,21 @@ type Result struct {
 	Path string
 }
 
-// String returns the string representation of the result.
+// String serves as a public interface for interacting with String.
 //
-// It formats the result into a human-readable string suitable for CLI output.
-//
-// Returns:
-//   - string: A formatted string containing severity, service, path, and message.
-//
-// Summary: Executes String operation.
+// Summary: String the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -114,65 +124,59 @@ func (r Result) String() string {
 	return fmt.Sprintf("[%s]%s%s: %s", r.Severity, serviceStr, pathStr, r.Message)
 }
 
-// Linter performs static analysis on the configuration.
+// Linter represents the public Linter entity.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
+// Summary: Defines the structured data model representing a .
 //
-// Summary: Represents a Linter.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }
 
-// NewLinter creates a new Linter instance.
+// NewLinter serves as a public interface for interacting with NewLinter.
+//
+// Summary: Constructs and returns an initialized linter ready for consumption.
 //
 // Parameters:
-//   - cfg: *configv1.McpAnyServerConfig. The server configuration to be linted.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Linter: A new Linter instance initialized with the provided configuration.
-//
-// Summary: Initializes NewLinter operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
 
-// Run executes all linting checks.
+// Run serves as a public interface for interacting with Run.
 //
-// It aggregates results from multiple check categories including standard validation,
-// secret usage, shell injection risks, insecure HTTP, and cache settings.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request (currently unused but reserved for future async checks).
-//
-// Returns:
-//   - []Result: A list of linting findings.
-//   - error: An error if the linting process encounters a fatal issue (currently always nil).
-//
-// Summary: Executes Run operation.
+// Summary: Run the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

@@ -16,14 +16,42 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// CopilotCLI handles interactions with the GitHub Copilot CLI tool for testing.
+// CopilotCLI represents the public CopilotCLI entity.
+//
+// Summary: Defines the structured data model representing a cli.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CopilotCLI struct {
 	t         *testing.T
 	configDir string
 	servers   map[string]MCPServerConfig
 }
 
-// MCPServerConfig defines the configuration for an MCP server.
+// MCPServerConfig represents the public MCPServerConfig entity.
+//
+// Summary: Defines the structured data model representing a server config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerConfig struct {
 	Command string   `json:"command,omitempty"`
 	Args    []string `json:"args,omitempty"`
@@ -31,16 +59,40 @@ type MCPServerConfig struct {
 	Type    string   `json:"type"` // "local", "http", "sse"
 }
 
-// MCPConfig defines the configuration file structure.
+// MCPConfig represents the public MCPConfig entity.
+//
+// Summary: Defines the structured data model representing a config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
 
-// NewCopilotCLI creates a new CopilotCLI instance.
+// NewCopilotCLI serves as a public interface for interacting with NewCopilotCLI.
 //
-// t is the t.
+// Summary: Constructs and returns an initialized copilot cli ready for consumption.
 //
-// Returns the result.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	tempDir := t.TempDir()
 	return &CopilotCLI{
@@ -50,7 +102,21 @@ func NewCopilotCLI(t *testing.T) *CopilotCLI {
 	}
 }
 
-// Install installs the Copilot CLI tool.
+// Install serves as a public interface for interacting with Install.
+//
+// Summary: Install the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *CopilotCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -73,10 +139,21 @@ func (c *CopilotCLI) copilotCommand(args ...string) *exec.Cmd {
 	return exec.CommandContext(context.Background(), copilotPath, args...)
 }
 
-// AddMCP adds an MCP server to the Copilot CLI configuration by writing to mcp-config.json.
+// AddMCP serves as a public interface for interacting with AddMCP.
 //
-// name is the name of the resource.
-// endpoint is the endpoint.
+// Summary: Add the mcp appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -92,9 +169,21 @@ func (c *CopilotCLI) AddMCP(name, endpoint string) {
 	c.writeConfig()
 }
 
-// RemoveMCP removes an MCP server.
+// RemoveMCP serves as a public interface for interacting with RemoveMCP.
 //
-// name is the name of the resource.
+// Summary: Remove the mcp appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *CopilotCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	delete(c.servers, name)
@@ -121,13 +210,21 @@ func (c *CopilotCLI) writeConfig() {
 	require.NoError(c.t, err, "failed to write mcp-config.json")
 }
 
-// Run executes a prompt.
+// Run serves as a public interface for interacting with Run.
 //
-// apiKey is the apiKey.
-// prompt is the prompt.
+// Summary: Run the  appropriately based on current system conditions.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *CopilotCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

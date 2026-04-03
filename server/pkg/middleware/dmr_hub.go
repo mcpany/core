@@ -13,9 +13,21 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// DMRHubConfig defines the configuration for the Dynamic Mesh Resilience Hub.
+// DMRHubConfig represents the public DMRHubConfig entity.
 //
-// Summary: Configuration for Dynamic Mesh Resilience Hub.
+// Summary: Defines the structured data model representing a hub config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DMRHubConfig struct {
 	// Enabled determines if the DMR Hub is active.
 	Enabled bool `json:"enabled"`
@@ -24,42 +36,61 @@ type DMRHubConfig struct {
 	StatefulTools []string `json:"stateful_tools"`
 }
 
-// DMRHub implements the Dynamic Mesh Resilience Hub middleware.
-// It verifies Zero-Knowledge State Attestation (ZKSA) migrations between
-// physical nodes upon subagent failure.
+// DMRHub represents the public DMRHub entity.
 //
-// Summary: Represents the DMR Hub middleware.
+// Summary: Defines the structured data model representing a hub.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DMRHub struct {
 	config DMRHubConfig
 }
 
-// NewDMRHub creates a new DMRHub middleware instance.
+// NewDMRHub serves as a public interface for interacting with NewDMRHub.
 //
-// Summary: Creates a new Dynamic Mesh Resilience Hub instance.
+// Summary: Constructs and returns an initialized dmr hub ready for consumption.
 //
 // Parameters:
-//   - config (DMRHubConfig): The configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *DMRHub: The resulting DMR Hub instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewDMRHub(config DMRHubConfig) *DMRHub {
 	return &DMRHub{
 		config: config,
 	}
 }
 
-// Execute enforces state migration proofs before proceeding to the next handler.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the node status and ZKSA proof checks.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result if allowed.
-//   - error: An error if the migration proof is invalid or missing during failure.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (h *DMRHub) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !h.config.Enabled {
 		return next(ctx, req)

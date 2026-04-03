@@ -14,103 +14,78 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// ConnectionFactory is responsible for creating new gRPC client connections.
-// It can be configured with a custom dialer for testing or special connection
-// scenarios.
+// ConnectionFactory represents the public ConnectionFactory entity.
 //
-// Summary: Represents a ConnectionFactory.
+// Summary: Defines the structured data model representing a factory.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }
 
-// NewConnectionFactory creates and returns a new ConnectionFactory with default
-// settings.
+// NewConnectionFactory serves as a public interface for interacting with NewConnectionFactory.
 //
-// Returns:
-//   - *ConnectionFactory: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewConnectionFactory operation.
+// Summary: Constructs and returns an initialized connection factory ready for consumption.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewConnectionFactory() *ConnectionFactory {
 	return &ConnectionFactory{}
 }
 
-// WithDialer sets a custom dialer function for the ConnectionFactory. This is
-// useful for tests that need to mock the network connection.
+// WithDialer serves as a public interface for interacting with WithDialer.
+//
+// Summary: With the dialer appropriately based on current system conditions.
 //
 // Parameters:
-//   - dialer func(context.Context (string): The parameter.
-//   - (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - net.Conn: The result.
-//   - error): The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes WithDialer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net.Conn, error)) {
 	f.dialer = dialer
 }
 
-// NewConnection establishes a new gRPC client connection to the specified
-// target address. It uses insecure credentials by default. If a custom dialer
-// has been set, it will be used for the connection.
+// NewConnection serves as a public interface for interacting with NewConnection.
+//
+// Summary: Constructs and returns an initialized connection ready for consumption.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
-//   - targetAddress (string): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *grpc.ClientConn: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Initializes NewConnection operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *ConnectionFactory) NewConnection(_ context.Context, targetAddress string) (*grpc.ClientConn, error) {
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),

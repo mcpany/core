@@ -21,9 +21,21 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// TestE2ECaching tests the end-to-end caching functionality.
+// TestE2ECaching serves as a public interface for interacting with TestE2ECaching.
 //
-// t is the t.
+// Summary: Test the e caching appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -39,11 +51,21 @@ func TestE2ECaching(t *testing.T) {
 	})
 }
 
-// BuildCachingServer builds and starts a caching server for testing.
+// BuildCachingServer serves as a public interface for interacting with BuildCachingServer.
 //
-// t is the t.
+// Summary: Build the caching server appropriately based on current system conditions.
 //
-// Returns the result.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -51,11 +73,21 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterCachingService registers the caching service with the MCP server.
+// RegisterCachingService serves as a public interface for interacting with RegisterCachingService.
 //
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: Register the caching service appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -97,12 +129,21 @@ func protoString(value string) *string {
 	return &value
 }
 
-// NoOpMiddleware is a middleware that does nothing and calls the next handler.
+// NoOpMiddleware serves as a public interface for interacting with NoOpMiddleware.
 //
-// _ is an unused parameter.
-// next is the next.
+// Summary: No the op middleware appropriately based on current system conditions.
 //
-// Returns the result.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -134,11 +175,21 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 	require.NoError(t, err)
 }
 
-// ValidateCaching validates that caching is working correctly.
+// ValidateCaching serves as a public interface for interacting with ValidateCaching.
 //
-// t is the t.
-// mcpanyEndpoint is the mcpanyEndpoint.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: Validate the caching appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 

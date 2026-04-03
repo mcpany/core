@@ -13,28 +13,42 @@ import (
 	"time"
 )
 
-// OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
+// OllamaEmbeddingProvider represents the public OllamaEmbeddingProvider entity.
 //
-// Summary: Provides an interface to generate text embeddings using the Ollama API.
+// Summary: Defines the structured data model representing a embedding provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
 	client  *http.Client
 }
 
-// NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
+// NewOllamaEmbeddingProvider serves as a public interface for interacting with NewOllamaEmbeddingProvider.
 //
-// Summary: Initializes a new provider for Ollama embeddings.
+// Summary: Constructs and returns an initialized ollama embedding provider ready for consumption.
 //
 // Parameters:
-//   - baseURL: string. The base URL of the Ollama API (defaults to "http://localhost:11434" if empty).
-//   - model: string. The name of the embedding model to use (defaults to "nomic-embed-text" if empty).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *OllamaEmbeddingProvider: The initialized embedding provider.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Sets default values for baseURL and model if not provided.
+//   - May safely mutate local state without unintended external side effects.
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"
@@ -58,26 +72,21 @@ type ollamaEmbeddingResponse struct {
 	Embedding []float32 `json:"embedding"`
 }
 
-// Embed generates an embedding for the given text using Ollama.
+// Embed serves as a public interface for interacting with Embed.
 //
-// Summary: Calls the Ollama API to generate a vector embedding for the input text.
+// Summary: Embed the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the HTTP request.
-//   - text: string. The input text to be embedded.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []float32: The generated embedding vector.
-//   - error: An error if the API call fails or the response is invalid.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if request marshaling or creation fails.
-//   - Returns error if the HTTP request fails.
-//   - Returns error if the API returns a non-200 status code.
-//   - Returns error if response decoding fails or no embedding data is returned.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Makes an HTTP POST request to the configured Ollama API endpoint.
+//   - May safely mutate local state without unintended external side effects.
 func (p *OllamaEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := ollamaEmbeddingRequest{
 		Model:  p.model,

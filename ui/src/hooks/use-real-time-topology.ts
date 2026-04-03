@@ -62,22 +62,21 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 /**
- * Summary: Document useRealTimeTopology
+ * useRealTimeTopology serves as a public interface for interacting with useRealTimeTopology.
  *
- * Params:
- *   - None
+ * Summary: Use the real time topology appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Hook to fetch and manage the network topology graph.
- * @returns The topology state and controls.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function useRealTimeTopology() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);

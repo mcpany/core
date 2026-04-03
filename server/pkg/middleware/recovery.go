@@ -10,20 +10,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// RecoveryMiddleware recovers from panics in the handler chain, logs the panic,
-// and returns a generic 500 Internal Server Error response.
+// RecoveryMiddleware serves as a public interface for interacting with RecoveryMiddleware.
 //
-// Summary: Middleware to recover from panics.
+// Summary: Recovery the middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - next (http.Handler): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.Handler: A handler that wraps the next handler with recovery logic.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Logs panic details if a panic occurs.
-//   - Writes a 500 Internal Server Error response to the client on panic.
+//   - May safely mutate local state without unintended external side effects.
 func RecoveryMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

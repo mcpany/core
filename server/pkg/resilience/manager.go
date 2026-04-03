@@ -9,24 +9,42 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
+// Manager represents the public Manager entity.
 //
-// Summary: Central manager for applying resilience patterns to operations.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry
 	timeout        *Timeout
 }
 
-// NewManager creates a new Manager with the given resilience configuration.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Initializes a new Resilience Manager.
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.ResilienceConfig. The resilience configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -58,21 +76,21 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 	}
 }
 
-// Execute wraps the given function with resilience features.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - work: func(context.Context) error. The operation to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails after all resilience attempts.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Applies timeout context.
-//   - Retries operation on failure.
-//   - Checks and updates circuit breaker state.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

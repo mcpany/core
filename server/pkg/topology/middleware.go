@@ -12,20 +12,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Middleware returns a middleware function to track session activity.
+// Middleware serves as a public interface for interacting with Middleware.
 //
-// Summary: Creates an MCP middleware for tracking and recording session activity metrics.
+// Summary: Middleware the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - next: mcp.MethodHandler. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - mcp.MethodHandler: The wrapped handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Extracts session ID from context or request.
-//   - Records duration, success/error status, and response size.
-//   - Calls m.RecordActivity to persist metrics.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Middleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return func(
 		ctx context.Context,

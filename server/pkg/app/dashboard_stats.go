@@ -63,9 +63,21 @@ const (
 	labelStatus          = "status"
 )
 
-// ToolUsageStats represents usage statistics for a tool.
+// ToolUsageStats represents the public ToolUsageStats entity.
 //
-// Summary: Represents a ToolUsageStats.
+// Summary: Defines the structured data model representing a usage stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolUsageStats struct {
 	Name      string `json:"name"`
 	ServiceID string `json:"serviceId"`
@@ -211,9 +223,21 @@ func (a *Application) handleDebugSeedTraffic() http.HandlerFunc {
 	}
 }
 
-// ToolFailureStats represents failure statistics for a tool.
+// ToolFailureStats represents the public ToolFailureStats entity.
 //
-// Summary: Represents a ToolFailureStats.
+// Summary: Defines the structured data model representing a failure stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolFailureStats struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -333,9 +357,21 @@ func (a *Application) handleDashboardToolFailures() http.HandlerFunc {
 	}
 }
 
-// ToolAnalytics represents detailed usage analytics for a tool.
+// ToolAnalytics represents the public ToolAnalytics entity.
 //
-// Summary: Represents a ToolAnalytics.
+// Summary: Defines the structured data model representing a analytics.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolAnalytics struct {
 	Name        string  `json:"name"`
 	ServiceID   string  `json:"serviceId"`
@@ -449,17 +485,41 @@ func (a *Application) handleDashboardToolUsage() http.HandlerFunc {
 	}
 }
 
-// ServiceHealthResponse represents the response for the health dashboard.
+// ServiceHealthResponse represents the public ServiceHealthResponse entity.
 //
-// Summary: Represents a ServiceHealthResponse.
+// Summary: Defines the structured data model representing a health response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceHealthResponse struct {
 	Services []ServiceHealth                  `json:"services"`
 	History  map[string][]health.HistoryPoint `json:"history"`
 }
 
-// ServiceHealth represents the health status of a service.
+// ServiceHealth represents the public ServiceHealth entity.
 //
-// Summary: Represents a ServiceHealth.
+// Summary: Defines the structured data model representing a health.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceHealth struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`

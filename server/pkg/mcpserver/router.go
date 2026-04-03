@@ -9,77 +9,97 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MethodHandler defines the signature for a function that handles an MCP method call.
+// MethodHandler represents the public MethodHandler entity.
 //
-// Summary: Handler function signature for MCP methods.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (mcp.Request): The request object.
-//
-// Returns:
-//   - mcp.Result: The result of the operation.
-//   - error: An error if the operation fails.
-type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
-
-// Router is responsible for mapping MCP method names to their corresponding handler functions.
-//
-// Summary: Routes MCP requests to registered handlers.
-//
-// Side Effects:
-//   - Stores handlers in an internal map.
-type Router struct {
-	handlers map[string]MethodHandler
-}
-
-// NewRouter creates and returns a new, empty Router.
-//
-// Summary: Creates a new Router instance.
+// Summary: Defines the structured data model representing a handler.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - *Router: A new, initialized Router.
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Allocates memory for the Router and its handler map.
+//   - None.
+type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
+
+// Router represents the public Router entity.
+//
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type Router struct {
+	handlers map[string]MethodHandler
+}
+
+// NewRouter serves as a public interface for interacting with NewRouter.
+//
+// Summary: Constructs and returns an initialized router ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
 	}
 }
 
-// Register associates a handler function with a specific MCP method name.
+// Register serves as a public interface for interacting with Register.
 //
-// Summary: Registers a handler for an MCP method.
+// Summary: Register the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - method (string): The method name.
-//   - handler (MethodHandler): The handler function.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the internal handler map.
+//   - May safely mutate local state without unintended external side effects.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
 
-// GetHandler retrieves the handler function for a given MCP method name.
+// GetHandler serves as a public interface for interacting with GetHandler.
 //
-// Summary: Retrieves a handler for an MCP method.
+// Summary: Fetches and returns the underlying handler from the system state.
 //
 // Parameters:
-//   - method (string): The name of the MCP method.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - MethodHandler: The handler function if found.
-//   - bool: A boolean indicating whether a handler was found (true) or not (false).
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

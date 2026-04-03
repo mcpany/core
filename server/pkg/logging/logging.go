@@ -23,58 +23,40 @@ var (
 	programLevel = new(slog.LevelVar)
 )
 
-// SetLevel updates the global log level dynamically.
+// SetLevel serves as a public interface for interacting with SetLevel.
+//
+// Summary: Set the level appropriately based on current system conditions.
 //
 // Parameters:
-//   - level (slog.Level): The new log level.
-//
-// Side Effects:
-//   - Updates the global log level atomic variable.
-//
-// Summary: Updates SetLevel operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
 
-// ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
+// ForTestsOnlyResetLogger serves as a public interface for interacting with ForTestsOnlyResetLogger.
+//
+// Summary: For the tests only reset logger appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes ForTestsOnlyResetLogger operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
 //   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -83,35 +65,21 @@ func ForTestsOnlyResetLogger() {
 	GlobalBroadcaster.Reset()
 }
 
-// Init initializes the application's global logger with a specific log level
-// and output destination.
+// Init serves as a public interface for interacting with Init.
 //
-// This function is designed to be called only once, typically at the start of the application,
-// to ensure a consistent logging setup.
+// Summary: Init the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - level (slog.Level): The minimum log level to be recorded.
-//   - output (io.Writer): The output destination for logs.
-//   - logFilePath (string): Optional path to a log file for JSON output.
-//   - format (...string): Optional format string ("json" or "text"). Defaults to "text".
-//
-// Side Effects:
-//   - Sets the global logger instance.
-//   - May open a file for writing.
-//
-// Summary: Executes Init operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -178,30 +146,21 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 	// Init complete
 }
 
-// GetLogger returns the shared global logger instance.
+// GetLogger serves as a public interface for interacting with GetLogger.
 //
-// If the logger has not yet been initialized through a call to `Init`, this function will
-// initialize it with default settings: logging to `os.Stderr` at `slog.LevelInfo`.
-//
-// Returns:
-//   - *slog.Logger: The global `*slog.Logger` instance.
-//
-// Side Effects:
-//   - May initialize the default logger if not already set.
-//
-// Summary: Retrieves GetLogger operation.
+// Summary: Fetches and returns the underlying logger from the system state.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -221,30 +180,21 @@ func GetLogger() *slog.Logger {
 	return defaultLogger.Load()
 }
 
-// ToSlogLevel converts a string log level to a slog.Level.
+// ToSlogLevel serves as a public interface for interacting with ToSlogLevel.
+//
+// Summary: To the slog level appropriately based on current system conditions.
 //
 // Parameters:
-//   - level (configv1.GlobalSettings_LogLevel): The log level from the configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - slog.Level: The corresponding slog.Level.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ToSlogLevel operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

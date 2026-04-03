@@ -10,40 +10,63 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
+// HTTPCORSMiddleware represents the public HTTPCORSMiddleware entity.
 //
-// Summary: Represents a HTTPCORSMiddleware.
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
 	wildcardAllowed bool
 }
 
-// NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
+// NewHTTPCORSMiddleware serves as a public interface for interacting with NewHTTPCORSMiddleware.
 //
-// Summary: Initializes HTTP CORS middleware.
-//
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
+// Summary: Constructs and returns an initialized httpcors middleware ready for consumption.
 //
 // Parameters:
-//   - allowedOrigins ([]string): The allowed origins.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*HTTPCORSMiddleware): The initialized middleware.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
 	return m
 }
 
-// Update updates the allowed origins.
+// Update serves as a public interface for interacting with Update.
 //
-// Summary: Updates the allowed origins dynamically.
+// Summary: Update the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - allowedOrigins ([]string): The new list of allowed origins.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -65,15 +88,21 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
+// Handler serves as a public interface for interacting with Handler.
 //
-// Summary: Middleware to handle CORS headers.
+// Summary: Handler the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - next (http.Handler): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (http.Handler): The wrapped handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

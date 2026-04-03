@@ -7,21 +7,21 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2 } from "lucide-react";
 
 /**
- * Summary: Document ServiceTemplate
+ * ServiceTemplate represents the public ServiceTemplate entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a template.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * A template for creating a new service configuration.
+ *   - None.
  */
 export interface ServiceTemplate {
   /** Unique identifier for the template. */
@@ -64,21 +64,21 @@ export interface ServiceTemplate {
 }
 
 /**
- * Summary: Document SERVICE_TEMPLATES
+ * SERVICE_TEMPLATES serves as a public interface for interacting with SERVICE_TEMPLATES.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a templates.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * A list of built-in service templates.
+ *   - None.
  */
 export const SERVICE_TEMPLATES: ServiceTemplate[] = [
   {

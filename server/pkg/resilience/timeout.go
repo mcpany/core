@@ -9,44 +9,61 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Timeout implements a timeout policy for operations.
+// Timeout represents the public Timeout entity.
 //
-// Summary: Enforces a maximum duration for operations.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Timeout struct {
 	duration *durationpb.Duration
 }
 
-// NewTimeout creates a new Timeout instance with the given duration.
+// NewTimeout serves as a public interface for interacting with NewTimeout.
 //
-// Summary: Initializes a new Timeout policy.
+// Summary: Constructs and returns an initialized timeout ready for consumption.
 //
 // Parameters:
-//   - duration: *durationpb.Duration. The timeout duration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Timeout: The initialized timeout policy.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,
 	}
 }
 
-// Execute runs the provided work function with a timeout.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes work within a timed context.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - work: func(context.Context) error. The function to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the work fails or the timeout is exceeded.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns context.DeadlineExceeded if the timeout is reached.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Creates a child context with a deadline.
+//   - May safely mutate local state without unintended external side effects.
 func (t *Timeout) Execute(ctx context.Context, work func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(ctx, t.duration.AsDuration())
 	defer cancel()

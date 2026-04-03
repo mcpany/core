@@ -17,11 +17,21 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Manager handles the loading and listing of catalog services.
+// Manager represents the public Manager entity.
 //
-// Summary: Manages the service catalog.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
 //
-// It scans a specified directory for service configurations and provides access to them.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	mu          sync.RWMutex
 	fs          afero.Fs
@@ -29,16 +39,21 @@ type Manager struct {
 	services    []*configv1.UpstreamServiceConfig
 }
 
-// NewManager creates a new Catalog Manager.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Initializes a new Catalog Manager.
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - fs: afero.Fs. The filesystem to scan.
-//   - catalogPath: string. The path to the catalog directory.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: The initialized manager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -46,19 +61,21 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	}
 }
 
-// Load scans the catalog directory and loads all service configurations.
+// Load serves as a public interface for interacting with Load.
 //
-// Summary: Loads service configurations from the catalog directory.
+// Summary: Load the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the directory walk fails (individual config load errors are logged but do not abort).
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal list of services.
-//   - Reads files from the filesystem.
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -127,16 +144,21 @@ func (m *Manager) Load(ctx context.Context) error {
 	return g.Wait()
 }
 
-// ListServices returns the list of loaded services.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Retrieves the list of loaded services.
+// Summary: List the services appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ context.Context: The context (unused).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

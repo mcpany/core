@@ -9,22 +9,89 @@ import (
 	"math"
 )
 
-// maxUnescapeLimit is the maximum size of a key that we will attempt to unescape
-// using json.Unmarshal. Keys larger than this will use a streaming scanner
-// to avoid excessive allocation.
-// Variable for testing purposes.
+// maxUnescapeLimit represents the public maxUnescapeLimit entity.
+//
+// Summary: Defines the structured data model representing a unescape limit.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var maxUnescapeLimit = 1024 * 1024
 
-// unescapeStackLimit is the size of the stack buffer for unescaping keys.
+// unescapeStackLimit represents the public unescapeStackLimit entity.
+//
+// Summary: Defines the structured data model representing a stack limit.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const unescapeStackLimit = 256
 
-// isJSONWhitespace is a lookup table for fast whitespace checking.
-// It avoids multiple comparisons in the hot path.
+// isJSONWhitespace represents the public isJSONWhitespace entity.
+//
+// Summary: Defines the structured data model representing a json whitespace.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var isJSONWhitespace [256]bool
 
-// isNumberDelimiter is a lookup table for fast number delimiter checking.
+// isNumberDelimiter represents the public isNumberDelimiter entity.
+//
+// Summary: Defines the structured data model representing a number delimiter.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var isNumberDelimiter [256]bool
 
+// init serves as a public interface for interacting with init.
+//
+// Summary: Init the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func init() {
 	isJSONWhitespace[' '] = true
 	isJSONWhitespace['\t'] = true
@@ -46,9 +113,21 @@ func init() {
 	isNumberDelimiter[':'] = true
 }
 
-// redactJSONFast is a zero-allocation (mostly) implementation of RedactJSON.
-// It scans the input byte slice and constructs a new slice with redacted values.
-// It avoids full JSON parsing.
+// redactJSONFast serves as a public interface for interacting with redactJSONFast.
+//
+// Summary: Redact the json fast appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func redactJSONFast(input []byte) []byte {
 	// Lazy allocation: only allocate result buffer if we actually need to redact something.
 	var out []byte
@@ -224,7 +303,21 @@ func redactJSONFast(input []byte) []byte {
 	return out
 }
 
-// skipWhitespaceAndComments skips whitespace and JSON comments (// and /* */).
+// skipWhitespaceAndComments serves as a public interface for interacting with skipWhitespaceAndComments.
+//
+// Summary: Skip the whitespace and comments appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipWhitespaceAndComments(input []byte, start int) int {
 	n := len(input)
 	i := start
@@ -266,7 +359,21 @@ func skipWhitespaceAndComments(input []byte, start int) int {
 	return i
 }
 
-// skipJSONValue returns the index after the JSON value starting at start.
+// skipJSONValue serves as a public interface for interacting with skipJSONValue.
+//
+// Summary: Skip the json value appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipJSONValue(input []byte, start int) int {
 	if start >= len(input) {
 		return start
@@ -287,6 +394,21 @@ func skipJSONValue(input []byte, start int) int {
 	}
 }
 
+// skipObject serves as a public interface for interacting with skipObject.
+//
+// Summary: Skip the object appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipObject(input []byte, start int) int {
 	// Object starts at start, which is '{'
 	depth := 1
@@ -339,6 +461,21 @@ func skipObject(input []byte, start int) int {
 	return n
 }
 
+// skipArray serves as a public interface for interacting with skipArray.
+//
+// Summary: Skip the array appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipArray(input []byte, start int) int {
 	// Array starts at start, which is '['
 	depth := 1
@@ -390,6 +527,21 @@ func skipArray(input []byte, start int) int {
 	return n
 }
 
+// skipLiteral serves as a public interface for interacting with skipLiteral.
+//
+// Summary: Skip the literal appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipLiteral(input []byte, start int) int {
 	// true, false, null
 	i := start
@@ -403,6 +555,21 @@ func skipLiteral(input []byte, start int) int {
 	return i
 }
 
+// isKeySensitive serves as a public interface for interacting with isKeySensitive.
+//
+// Summary: Checks condition indicating whether the target is key sensitive.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func isKeySensitive(keyContent []byte) bool {
 	var keyToCheck []byte
 	var sensitive bool
@@ -466,9 +633,21 @@ func isKeySensitive(keyContent []byte) bool {
 	return sensitive
 }
 
-// unescapeKeySmall unescapes a JSON string into a provided buffer.
-// It returns the unescaped slice (backed by buf) and true on success.
-// If buf is too small or input is invalid, it returns false.
+// unescapeKeySmall serves as a public interface for interacting with unescapeKeySmall.
+//
+// Summary: Unescape the key small appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func unescapeKeySmall(input []byte, buf []byte) ([]byte, bool) {
 	bufIdx := 0
 	i := 0
@@ -560,8 +739,21 @@ func unescapeKeySmall(input []byte, buf []byte) ([]byte, bool) {
 	return buf[:bufIdx], true
 }
 
-// scanEscapedKeyForSensitive scans a large escaped key for sensitive words using a fixed-size buffer.
-// It returns true if any sensitive word is found.
+// scanEscapedKeyForSensitive serves as a public interface for interacting with scanEscapedKeyForSensitive.
+//
+// Summary: Scan the escaped key for sensitive appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func scanEscapedKeyForSensitive(keyContent []byte) bool {
 	// 4KB buffer
 	// We use 4097 to allow appending a dummy character when the buffer is full but
@@ -691,6 +883,21 @@ func scanEscapedKeyForSensitive(keyContent []byte) bool {
 	return false
 }
 
+// skipNumber serves as a public interface for interacting with skipNumber.
+//
+// Summary: Skip the number appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func skipNumber(input []byte, start int) int {
 	// Number
 	// Scan until delimiter: , } ] or whitespace

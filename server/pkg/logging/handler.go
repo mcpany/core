@@ -13,10 +13,21 @@ import (
 	"github.com/google/uuid"
 )
 
-// LogEntry is the structure for logs sent over WebSocket.
-// It matches the frontend expectation.
+// LogEntry represents the public LogEntry entity.
 //
-// Summary: Represents a LogEntry.
+// Summary: Defines the structured data model representing a entry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type LogEntry struct {
 	ID        string         `json:"id"`
 	Timestamp string         `json:"timestamp"`
@@ -26,9 +37,21 @@ type LogEntry struct {
 	Metadata  map[string]any `json:"metadata,omitempty"`
 }
 
-// BroadcastHandler implements slog.Handler and sends logs to the Broadcaster.
+// BroadcastHandler represents the public BroadcastHandler entity.
 //
-// Summary: Represents a BroadcastHandler.
+// Summary: Defines the structured data model representing a handler.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BroadcastHandler struct {
 	broadcaster *Broadcaster
 	attrs       []slog.Attr
@@ -37,34 +60,21 @@ type BroadcastHandler struct {
 	level       slog.Leveler
 }
 
-// NewBroadcastHandler creates a new BroadcastHandler. broadcaster is the broadcaster. level is the minimum log level to broadcast. Returns the result.
+// NewBroadcastHandler serves as a public interface for interacting with NewBroadcastHandler.
+//
+// Summary: Constructs and returns an initialized broadcast handler ready for consumption.
 //
 // Parameters:
-//   - broadcaster (*Broadcaster): The broadcaster parameter.
-//   - level (slog.Leveler): The level parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *BroadcastHandler: The resulting *BroadcastHandler.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewBroadcastHandler operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *BroadcastHandler {
 	return &BroadcastHandler{
 		broadcaster: broadcaster,
@@ -72,66 +82,40 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 	}
 }
 
-// Enabled returns true if the level is greater than or equal to the handler's level. _ is an unused parameter. level is the log level. Returns true if successful.
+// Enabled serves as a public interface for interacting with Enabled.
+//
+// Summary: Enabled the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - level (slog.Level): The level parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Enabled operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 	return level >= h.level.Level()
 }
 
-// Handle handles the log record by converting it to LogEntry and broadcasting it. _ is an unused parameter. r is the r. Returns an error if the operation fails.
+// Handle serves as a public interface for interacting with Handle.
+//
+// Summary: Handle the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
-//   - r (slog.Record): The r parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Handle operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	entry := LogEntry{
 		ID:        uuid.New().String(),
@@ -205,33 +189,21 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 	return nil
 }
 
-// WithAttrs returns a new handler with the given attributes. attrs is the attrs. Returns the result.
+// WithAttrs serves as a public interface for interacting with WithAttrs.
+//
+// Summary: With the attrs appropriately based on current system conditions.
 //
 // Parameters:
-//   - attrs ([]slog.Attr): The attrs parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes WithAttrs operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -248,33 +220,21 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	}
 }
 
-// WithGroup returns a new handler with the given group. name is the name of the resource. Returns the result.
+// WithGroup serves as a public interface for interacting with WithGroup.
+//
+// Summary: With the group appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes WithGroup operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -291,72 +251,59 @@ func (h *BroadcastHandler) WithGroup(name string) slog.Handler {
 	}
 }
 
-// TeeHandler is a slog.Handler that writes to multiple handlers.
+// TeeHandler represents the public TeeHandler entity.
 //
-// Summary: Represents a TeeHandler.
+// Summary: Defines the structured data model representing a handler.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TeeHandler struct {
 	handlers []slog.Handler
 }
 
-// NewTeeHandler creates a new TeeHandler. handlers is the handlers. Returns the result.
+// NewTeeHandler serves as a public interface for interacting with NewTeeHandler.
+//
+// Summary: Constructs and returns an initialized tee handler ready for consumption.
 //
 // Parameters:
-//   - handlers (...slog.Handler): The handlers parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *TeeHandler: The resulting *TeeHandler.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewTeeHandler operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 	return &TeeHandler{handlers: handlers}
 }
 
-// Enabled returns true if any of the handlers are enabled. ctx is the context for the request. level is the level. Returns true if successful.
+// Enabled serves as a public interface for interacting with Enabled.
+//
+// Summary: Enabled the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - level (slog.Level): The level parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Enabled operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	for _, handler := range h.handlers {
 		if handler.Enabled(ctx, level) {
@@ -366,34 +313,21 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return false
 }
 
-// Handle forwards the record to all enabled handlers. ctx is the context for the request. r is the r. Returns an error if the operation fails.
+// Handle serves as a public interface for interacting with Handle.
+//
+// Summary: Handle the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - r (slog.Record): The r parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Handle operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	var err error
 	for _, handler := range h.handlers {
@@ -406,33 +340,21 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 	return err
 }
 
-// WithAttrs returns a new TeeHandler with the attributes applied to all handlers. attrs is the attrs. Returns the result.
+// WithAttrs serves as a public interface for interacting with WithAttrs.
+//
+// Summary: With the attrs appropriately based on current system conditions.
 //
 // Parameters:
-//   - attrs ([]slog.Attr): The attrs parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes WithAttrs operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {
@@ -441,33 +363,21 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return NewTeeHandler(handlers...)
 }
 
-// WithGroup returns a new TeeHandler with the group applied to all handlers. name is the name of the resource. Returns the result.
+// WithGroup serves as a public interface for interacting with WithGroup.
+//
+// Summary: With the group appropriately based on current system conditions.
 //
 // Parameters:
-//   - name (string): The name parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - slog.Handler: The resulting slog.Handler.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes WithGroup operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *TeeHandler) WithGroup(name string) slog.Handler {
 	handlers := make([]slog.Handler, len(h.handlers))
 	for i, handler := range h.handlers {

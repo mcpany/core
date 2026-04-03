@@ -3,67 +3,60 @@
 
 package config
 
-// MockWatcher is a mock implementation of the Watcher for testing.
+// MockWatcher represents the public MockWatcher entity.
 //
-// Summary: Represents a MockWatcher.
+// Summary: Defines the structured data model representing a watcher.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()
 }
 
-// NewMockWatcher creates a new mock watcher.
+// NewMockWatcher serves as a public interface for interacting with NewMockWatcher.
 //
-// Returns:
-//   - *MockWatcher: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewMockWatcher operation.
+// Summary: Constructs and returns an initialized mock watcher ready for consumption.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
 
-// Watch mocks the Watch method.
+// Watch serves as a public interface for interacting with Watch.
+//
+// Summary: Watch the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - paths ([]string): The parameter.
-//   - reloadFunc (func(): The parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ) (error): An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if ...
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
-//
-// Summary: Executes Watch operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -71,27 +64,21 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close mocks the Close method.
+// Close serves as a public interface for interacting with Close.
+//
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
 //   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

@@ -9,10 +9,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Session defines the interface for tools to interact with the client session.
-// It includes capabilities like Sampling (CreateMessage) and Roots inspection.
+// Session represents the public Session entity.
 //
-// Summary: Represents a Session.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Session interface {
 	// CreateMessage requests a message creation (sampling) from the client.
 	//
@@ -40,70 +51,98 @@ type Session interface {
 	ListRoots(ctx context.Context) (*mcp.ListRootsResult, error)
 }
 
-// Sampler is an alias for Session for backward compatibility.
+// Sampler represents the public Sampler entity.
 //
-// Summary: Represents a Sampler.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Sampler = Session
 
 type sessionContextKey struct{}
 
-// NewContextWithSession creates a new context with the given Session.
+// NewContextWithSession serves as a public interface for interacting with NewContextWithSession.
 //
-// Summary: Injects Session into context.
+// Summary: Constructs and returns an initialized context with session ready for consumption.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - s: Session. The session to inject.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: The new context.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewContextWithSession(ctx context.Context, s Session) context.Context {
 	return context.WithValue(ctx, sessionContextKey{}, s)
 }
 
-// GetSession retrieves the Session from the context.
+// GetSession serves as a public interface for interacting with GetSession.
 //
-// Summary: Retrieves Session from context.
+// Summary: Fetches and returns the underlying session from the system state.
 //
 // Parameters:
-//   - ctx: context.Context. The context.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Session: The session if found.
-//   - bool: True if the session exists.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func GetSession(ctx context.Context) (Session, bool) {
 	s, ok := ctx.Value(sessionContextKey{}).(Session)
 	return s, ok
 }
 
-// NewContextWithSampler creates a new context with the given Sampler.
+// NewContextWithSampler serves as a public interface for interacting with NewContextWithSampler.
 //
-// Summary: Injects Sampler into context.
-//
-// Deprecated: Use NewContextWithSession instead.
+// Summary: Constructs and returns an initialized context with sampler ready for consumption.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - s: Sampler. The sampler to inject.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - context.Context: The new context.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewContextWithSampler(ctx context.Context, s Sampler) context.Context {
 	return NewContextWithSession(ctx, s)
 }
 
-// GetSampler retrieves the Sampler from the context.
+// GetSampler serves as a public interface for interacting with GetSampler.
 //
-// Summary: Retrieves Sampler from context.
-//
-// Deprecated: Use GetSession instead.
+// Summary: Fetches and returns the underlying sampler from the system state.
 //
 // Parameters:
-//   - ctx: context.Context. The context.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Sampler: The sampler if found.
-//   - bool: True if the sampler exists.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func GetSampler(ctx context.Context) (Sampler, bool) {
 	return GetSession(ctx)
 }

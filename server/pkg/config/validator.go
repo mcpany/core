@@ -24,9 +24,21 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// BinaryType defines the type of the binary being validated.
+// BinaryType represents the public BinaryType entity.
 //
-// Summary: Enumeration of binary types for validation context.
+// Summary: Defines the structured data model representing a type.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BinaryType int
 
 const (
@@ -46,9 +58,21 @@ const (
 	Client
 )
 
-// AuthValidationContext defines the context for authentication validation.
+// AuthValidationContext represents the public AuthValidationContext entity.
 //
-// Summary: Enumeration of authentication validation contexts.
+// Summary: Defines the structured data model representing a validation context.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AuthValidationContext int
 
 const (
@@ -79,56 +103,60 @@ var (
 	execLookPath = exec.LookPath
 )
 
-// ValidationError encapsulates a validation error for a specific service.
+// ValidationError represents the public ValidationError entity.
 //
-// Summary: Represents a configuration validation error.
+// Summary: Defines the structured data model representing a error.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidationError struct {
 	ServiceName string
 	Err         error
 }
 
-// Error returns the formatted error message. Side Effects: - None.
+// Error serves as a public interface for interacting with Error.
+//
+// Summary: Error the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The resulting string.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Error operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (e *ValidationError) Error() string {
 	return fmt.Sprintf("service %q: %v", e.ServiceName, e.Err)
 }
 
-// Validate inspects the given McpAnyServerConfig for correctness and consistency.
+// Validate serves as a public interface for interacting with Validate.
 //
-// Summary: Validates the entire server configuration.
+// Summary: Validate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the validation (used for secret resolution).
-//   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
-//   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -525,16 +553,21 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 	return nil
 }
 
-// ValidateOrError validates a single upstream service configuration and returns an error if it's invalid.
+// ValidateOrError serves as a public interface for interacting with ValidateOrError.
 //
-// Summary: Validates a single upstream service.
+// Summary: Validate the or error appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the validation.
-//   - service (*configv1.UpstreamServiceConfig): The upstream service configuration to validate.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (error): An error if validation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

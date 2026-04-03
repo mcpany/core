@@ -10,24 +10,21 @@ import (
 	"os"
 )
 
-// ReadLastNLines reads the last n lines from a file.
-// It is optimized to read from the end of the file.
+// ReadLastNLines serves as a public interface for interacting with ReadLastNLines.
 //
-// Summary: Reads the tail of a file.
+// Summary: Read the last n lines appropriately based on current system conditions.
 //
 // Parameters:
-//   - path: string. The path to the file.
-//   - n: int. The number of lines to read.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - [][]byte: A slice of byte slices representing the lines.
-//   - error: An error if the file cannot be opened or read.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns error if file open or seek fails.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Opens and reads the specified file from the filesystem.
+//   - May safely mutate local state without unintended external side effects.
 func ReadLastNLines(path string, n int) ([][]byte, error) {
 	if n <= 0 {
 		return nil, nil

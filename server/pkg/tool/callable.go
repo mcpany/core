@@ -10,28 +10,40 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CallableTool implements the Tool interface for a tool that is executed by a
-// Callable.
+// CallableTool represents the public CallableTool entity.
 //
-// Summary: Represents a CallableTool.
+// Summary: Provides tool execution capabilities for tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CallableTool struct {
 	*baseTool
 }
 
-// NewCallableTool creates a new CallableTool.
+// NewCallableTool serves as a public interface for interacting with NewCallableTool.
 //
-// Summary: Creates a new tool that wraps a Callable interface.
+// Summary: Constructs and returns an initialized callable tool ready for consumption.
 //
 // Parameters:
-//   - toolDef: *configv1.ToolDefinition. The definition of the tool.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration of the service the tool belongs to.
-//   - callable: Callable. The callable implementation for execution.
-//   - inputSchema: *structpb.Struct. The input schema for the tool.
-//   - outputSchema: *structpb.Struct. The output schema for the tool.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *CallableTool: A pointer to the created CallableTool.
-//   - error: An error if creation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -40,53 +52,79 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 	return &CallableTool{base}, nil
 }
 
-// Execute handles the execution of the tool.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the underlying callable.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of the execution.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
 
-// Callable returns the underlying Callable of the tool.
+// Callable serves as a public interface for interacting with Callable.
 //
-// Summary: Retrieves the underlying Callable interface.
+// Summary: Callable the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Callable: The underlying callable.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }
 
-// IsStreaming returns true if the underlying callable supports streaming.
+// IsStreaming serves as a public interface for interacting with IsStreaming.
 //
-// Summary: Checks if the tool supports streaming execution.
+// Summary: Checks condition indicating whether the target is streaming.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if streaming is supported.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *CallableTool) IsStreaming() bool {
 	_, ok := t.callable.(StreamingCallable)
 	return ok
 }
 
-// StreamExecute handles the streaming execution of the tool.
+// StreamExecute serves as a public interface for interacting with StreamExecute.
 //
-// Summary: Executes the underlying callable in streaming mode.
+// Summary: Stream the execute appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	if sc, ok := t.callable.(StreamingCallable); ok {
 		return sc.StreamCall(ctx, req)

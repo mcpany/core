@@ -14,16 +14,21 @@ import (
 
 var exportRegexCache sync.Map
 
-// ShouldExport determines whether a named item (tool, prompt, or resource) should be exported.
+// ShouldExport serves as a public interface for interacting with ShouldExport.
 //
-// Summary: Checks if an item should be exported based on policy.
+// Summary: Should the export appropriately based on current system conditions.
 //
 // Parameters:
-//   - name: string. The name of the item.
-//   - policy: *configv1.ExportPolicy. The export policy to evaluate.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the item should be exported, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -66,22 +71,21 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	return true
 }
 
-// EvaluateCallPolicy checks if a call should be allowed based on the policies.
+// EvaluateCallPolicy serves as a public interface for interacting with EvaluateCallPolicy.
 //
-// Summary: Evaluates call policies against a tool execution.
-//
-// If arguments is nil, it performs a static check (ignoring rules with argument_regex).
-// It returns true if the call is allowed, false otherwise.
+// Summary: Evaluate the call policy appropriately based on current system conditions.
 //
 // Parameters:
-//   - policies: []*configv1.CallPolicy. The list of policies to evaluate.
-//   - toolName: string. The name of the tool being called.
-//   - callID: string. The unique ID of the call.
-//   - arguments: []byte. The arguments of the call (can be nil).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the call is allowed, false otherwise.
-//   - error: An error if evaluation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -142,24 +146,41 @@ type compiledCallPolicyRule struct {
 	rule          *configv1.CallPolicyRule
 }
 
-// CompiledCallPolicy holds a compiled version of a call policy.
+// CompiledCallPolicy represents the public CompiledCallPolicy entity.
 //
-// Summary: Represents a pre-compiled call policy for efficient evaluation.
+// Summary: Defines the structured data model representing a call policy.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CompiledCallPolicy struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledCallPolicyRule
 }
 
-// CompileCallPolicies compiles a list of call policies into an efficient runtime format.
+// CompileCallPolicies serves as a public interface for interacting with CompileCallPolicies.
 //
-// Summary: Compiles call policies for runtime usage.
+// Summary: Compile the call policies appropriately based on current system conditions.
 //
 // Parameters:
-//   - policies: []*configv1.CallPolicy. The list of policies to compile.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*CompiledCallPolicy: The compiled policies.
-//   - error: An error if compilation fails (e.g., invalid regex).
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -175,16 +196,21 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 	return compiled, nil
 }
 
-// NewCompiledCallPolicy compiles a single call policy.
+// NewCompiledCallPolicy serves as a public interface for interacting with NewCompiledCallPolicy.
 //
-// Summary: Compiles a single call policy.
+// Summary: Constructs and returns an initialized compiled call policy ready for consumption.
 //
 // Parameters:
-//   - policy: *configv1.CallPolicy. The policy to compile.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *CompiledCallPolicy: The compiled policy.
-//   - error: An error if compilation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -225,19 +251,21 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 	}, nil
 }
 
-// EvaluateCompiledCallPolicy checks if a call should be allowed based on the compiled policies.
+// EvaluateCompiledCallPolicy serves as a public interface for interacting with EvaluateCompiledCallPolicy.
 //
-// Summary: Evaluates compiled call policies.
+// Summary: Evaluate the compiled call policy appropriately based on current system conditions.
 //
 // Parameters:
-//   - policies: []*CompiledCallPolicy. The list of compiled policies to evaluate.
-//   - toolName: string. The name of the tool being called.
-//   - callID: string. The unique ID of the call.
-//   - arguments: []byte. The arguments of the call (can be nil).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the call is allowed, false otherwise.
-//   - error: An error if evaluation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

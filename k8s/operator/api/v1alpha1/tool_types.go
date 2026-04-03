@@ -7,11 +7,21 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ToolSpec defines the desired state of Tool.
+// ToolSpec represents the public ToolSpec entity.
 //
-// Summary: Specification for Tool resource.
+// Summary: Defines the structured data model representing a spec.
 //
-// +kubebuilder:object:generate=true
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolSpec struct {
 	// Type is the type of tool (e.g., "container", "binary", "script")
 	// +kubebuilder:validation:Enum=container;binary;script
@@ -30,11 +40,21 @@ type ToolSpec struct {
 	Content string `json:"content,omitempty"`
 }
 
-// ToolStatus defines the observed state of Tool.
+// ToolStatus represents the public ToolStatus entity.
 //
-// Summary: Status of Tool resource.
+// Summary: Defines the structured data model representing a status.
 //
-// +kubebuilder:object:generate=true
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolStatus struct {
 	// Ready indicates if the tool is ready to be used
 	Ready bool `json:"ready"`
@@ -45,9 +65,21 @@ type ToolStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// Tool is the Schema for the tools API.
+// Tool represents the public Tool entity.
 //
-// Summary: Tool resource definition.
+// Summary: Provides tool execution capabilities for .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Tool struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -58,9 +90,21 @@ type Tool struct {
 
 // +kubebuilder:object:root=true
 
-// ToolList contains a list of Tool.
+// ToolList represents the public ToolList entity.
 //
-// Summary: List of Tool resources.
+// Summary: Defines the structured data model representing a list.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

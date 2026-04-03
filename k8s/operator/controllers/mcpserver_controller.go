@@ -19,10 +19,21 @@ import (
 	mcpv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// MCPServerReconciler reconciles a MCPServer object
-// MCPServerReconciler reconciles an MCPServer object
+// MCPServerReconciler represents the public MCPServerReconciler entity.
 //
-// Summary: Reconciles an MCPServer object.
+// Summary: Defines the structured data model representing a server reconciler.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -34,24 +45,21 @@ type MCPServerReconciler struct {
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
+// Reconcile serves as a public interface for interacting with Reconcile.
 //
-// Summary: Reconciles the given request.
+// Summary: Reconcile the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: ctrl.Request. The reconcile request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ctrl.Result: The result of the reconciliation.
-//   - error: An error if reconciliation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if reconciliation encounters an issue.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Modifies Kubernetes resources.
+//   - May safely mutate local state without unintended external side effects.
 func (r *MCPServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -244,21 +252,21 @@ func labelsForMCPServer(name string) map[string]string {
 	return map[string]string{"app": "mcp-server", "mcp_cr": name}
 }
 
-// SetupWithManager sets up the controller with the Manager.
+// SetupWithManager serves as a public interface for interacting with SetupWithManager.
 //
-// Summary: Sets up the controller with the Manager.
+// Summary: Setup the with manager appropriately based on current system conditions.
 //
 // Parameters:
-//   - mgr: ctrl.Manager. The controller manager.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if setup fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the setup fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Registers the controller with the manager.
+//   - May safely mutate local state without unintended external side effects.
 func (r *MCPServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpv1alpha1.MCPServer{}).

@@ -5,14 +5,38 @@ package alerts
 
 import "time"
 
-// Severity represents the severity level of an alert.
+// Severity represents the public Severity entity.
 //
-// Summary: Represents a Severity.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Severity string
 
-// Status represents the status of an alert.
+// Status represents the public Status entity.
 //
-// Summary: Represents a Status.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Status string
 
 const (
@@ -37,9 +61,21 @@ const (
 	StatusResolved Status = "resolved"
 )
 
-// Alert represents a system alert.
+// Alert represents the public Alert entity.
 //
-// Summary: Represents a Alert.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -51,9 +87,21 @@ type Alert struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-// AlertRule defines a condition for triggering an alert.
+// AlertRule represents the public AlertRule entity.
 //
-// Summary: Represents a AlertRule.
+// Summary: Defines the structured data model representing a rule.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -66,9 +114,21 @@ type AlertRule struct {
 	LastUpdated time.Time `json:"last_updated"`
 }
 
-// AlertStats represents aggregated statistics for alerts.
+// AlertStats represents the public AlertStats entity.
 //
-// Summary: Represents a AlertStats.
+// Summary: Defines the structured data model representing a stats.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AlertStats struct {
 	ActiveCritical      int    `json:"activeCritical"`
 	ActiveCriticalTrend string `json:"activeCriticalTrend"`

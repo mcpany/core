@@ -18,108 +18,181 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockManagerInterface is a mock of ManagerInterface interface.
+// MockManagerInterface represents the public MockManagerInterface entity.
 //
-// Summary: Mock tool manager for testing.
+// Summary: Defines the required contract and behavior that manager interface implementations must satisfy.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
 	isgomock struct{}
 }
 
-// MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
+// MockManagerInterfaceMockRecorder represents the public MockManagerInterfaceMockRecorder entity.
 //
-// Summary: Recorder for MockManagerInterface expectations.
+// Summary: Defines the structured data model representing a manager interface mock recorder.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }
 
-// NewMockManagerInterface creates a new mock instance.
+// NewMockManagerInterface serves as a public interface for interacting with NewMockManagerInterface.
 //
-// Summary: Initializes a new mock tool manager.
+// Summary: Constructs and returns an initialized mock manager interface ready for consumption.
 //
 // Parameters:
-//   - ctrl: *gomock.Controller. The mock controller.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *MockManagerInterface: A new mock instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 	mock := &MockManagerInterface{ctrl: ctrl}
 	mock.recorder = &MockManagerInterfaceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT serves as a public interface for interacting with EXPECT.
 //
-// Summary: Returns the recorder for expectations.
+// Summary: Expect the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *MockManagerInterfaceMockRecorder: The recorder.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 	return m.recorder
 }
 
-// AddMiddleware mocks base method.
+// AddMiddleware serves as a public interface for interacting with AddMiddleware.
 //
-// Summary: Mock implementation of AddMiddleware.
+// Summary: Add the middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - middleware: ExecutionMiddleware. The middleware to add.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) AddMiddleware(middleware ExecutionMiddleware) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddMiddleware", middleware)
 }
 
-// AddMiddleware indicates an expected call of AddMiddleware.
+// AddMiddleware serves as a public interface for interacting with AddMiddleware.
 //
-// Summary: Expectation for AddMiddleware.
+// Summary: Add the middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - middleware: any. The expected middleware.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) AddMiddleware(middleware any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddMiddleware", reflect.TypeOf((*MockManagerInterface)(nil).AddMiddleware), middleware)
 }
 
-// AddServiceInfo mocks base method.
+// AddServiceInfo serves as a public interface for interacting with AddServiceInfo.
 //
-// Summary: Mock implementation of AddServiceInfo.
+// Summary: Add the service info appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
-//   - info: *ServiceInfo. The service info.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddServiceInfo", serviceID, info)
 }
 
-// AddServiceInfo indicates an expected call of AddServiceInfo.
+// AddServiceInfo serves as a public interface for interacting with AddServiceInfo.
 //
-// Summary: Expectation for AddServiceInfo.
+// Summary: Add the service info appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
-//   - info: any. The expected service info.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) AddServiceInfo(serviceID, info any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddServiceInfo", reflect.TypeOf((*MockManagerInterface)(nil).AddServiceInfo), serviceID, info)
 }
 
-// AddTool mocks base method.
+// AddTool serves as a public interface for interacting with AddTool.
 //
-// Summary: Mock implementation of AddTool.
+// Summary: Add the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - tool: Tool. The tool to add.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) AddTool(tool Tool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddTool", tool)
@@ -127,56 +200,81 @@ func (m *MockManagerInterface) AddTool(tool Tool) error {
 	return ret0
 }
 
-// AddTool indicates an expected call of AddTool.
+// AddTool serves as a public interface for interacting with AddTool.
 //
-// Summary: Expectation for AddTool.
+// Summary: Add the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - tool: any. The expected tool.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) AddTool(tool any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTool", reflect.TypeOf((*MockManagerInterface)(nil).AddTool), tool)
 }
 
-// ClearToolsForService mocks base method.
+// ClearToolsForService serves as a public interface for interacting with ClearToolsForService.
 //
-// Summary: Mock implementation of ClearToolsForService.
+// Summary: Clear the tools for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) ClearToolsForService(serviceID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "ClearToolsForService", serviceID)
 }
 
-// ClearToolsForService indicates an expected call of ClearToolsForService.
+// ClearToolsForService serves as a public interface for interacting with ClearToolsForService.
 //
-// Summary: Expectation for ClearToolsForService.
+// Summary: Clear the tools for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) ClearToolsForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearToolsForService", reflect.TypeOf((*MockManagerInterface)(nil).ClearToolsForService), serviceID)
 }
 
-// ExecuteTool mocks base method.
+// ExecuteTool serves as a public interface for interacting with ExecuteTool.
 //
-// Summary: Mock implementation of ExecuteTool.
+// Summary: Execute the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - req: *ExecutionRequest. The request object.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ExecuteTool", ctx, req)
@@ -185,31 +283,41 @@ func (m *MockManagerInterface) ExecuteTool(ctx context.Context, req *ExecutionRe
 	return ret0, ret1
 }
 
-// ExecuteTool indicates an expected call of ExecuteTool.
+// ExecuteTool serves as a public interface for interacting with ExecuteTool.
 //
-// Summary: Expectation for ExecuteTool.
+// Summary: Execute the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: any. The expected context.
-//   - req: any. The expected request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) ExecuteTool(ctx, req any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExecuteTool", reflect.TypeOf((*MockManagerInterface)(nil).ExecuteTool), ctx, req)
 }
 
-// GetAllowedServiceIDs mocks base method.
+// GetAllowedServiceIDs serves as a public interface for interacting with GetAllowedServiceIDs.
 //
-// Summary: Mock implementation of GetAllowedServiceIDs.
+// Summary: Fetches and returns the underlying allowed service i ds from the system state.
 //
 // Parameters:
-//   - profileID: string. The profile ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]bool: The map of allowed service IDs.
-//   - bool: True if successful.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllowedServiceIDs", profileID)
@@ -218,29 +326,41 @@ func (m *MockManagerInterface) GetAllowedServiceIDs(profileID string) (map[strin
 	return ret0, ret1
 }
 
-// GetAllowedServiceIDs indicates an expected call of GetAllowedServiceIDs.
+// GetAllowedServiceIDs serves as a public interface for interacting with GetAllowedServiceIDs.
 //
-// Summary: Expectation for GetAllowedServiceIDs.
+// Summary: Fetches and returns the underlying allowed service i ds from the system state.
 //
 // Parameters:
-//   - profileID: any. The expected profile ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) GetAllowedServiceIDs(profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllowedServiceIDs", reflect.TypeOf((*MockManagerInterface)(nil).GetAllowedServiceIDs), profileID)
 }
 
-// GetToolCountForService mocks base method.
+// GetToolCountForService serves as a public interface for interacting with GetToolCountForService.
 //
-// Summary: Mock implementation of GetToolCountForService.
+// Summary: Fetches and returns the underlying tool count for service from the system state.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The tool count.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) GetToolCountForService(serviceID string) int {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetToolCountForService", serviceID)
@@ -248,30 +368,41 @@ func (m *MockManagerInterface) GetToolCountForService(serviceID string) int {
 	return ret0
 }
 
-// GetToolCountForService indicates an expected call of GetToolCountForService.
+// GetToolCountForService serves as a public interface for interacting with GetToolCountForService.
 //
-// Summary: Expectation for GetToolCountForService.
+// Summary: Fetches and returns the underlying tool count for service from the system state.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) GetToolCountForService(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetToolCountForService", reflect.TypeOf((*MockManagerInterface)(nil).GetToolCountForService), serviceID)
 }
 
-// GetServiceInfo mocks base method.
+// GetServiceInfo serves as a public interface for interacting with GetServiceInfo.
 //
-// Summary: Mock implementation of GetServiceInfo.
+// Summary: Fetches and returns the underlying service info from the system state.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *ServiceInfo: The service info.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetServiceInfo", serviceID)
@@ -280,30 +411,41 @@ func (m *MockManagerInterface) GetServiceInfo(serviceID string) (*ServiceInfo, b
 	return ret0, ret1
 }
 
-// GetServiceInfo indicates an expected call of GetServiceInfo.
+// GetServiceInfo serves as a public interface for interacting with GetServiceInfo.
 //
-// Summary: Expectation for GetServiceInfo.
+// Summary: Fetches and returns the underlying service info from the system state.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) GetServiceInfo(serviceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetServiceInfo", reflect.TypeOf((*MockManagerInterface)(nil).GetServiceInfo), serviceID)
 }
 
-// GetTool mocks base method.
+// GetTool serves as a public interface for interacting with GetTool.
 //
-// Summary: Mock implementation of GetTool.
+// Summary: Fetches and returns the underlying tool from the system state.
 //
 // Parameters:
-//   - toolName: string. The tool name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Tool: The tool.
-//   - bool: True if found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) GetTool(toolName string) (Tool, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTool", toolName)
@@ -312,30 +454,41 @@ func (m *MockManagerInterface) GetTool(toolName string) (Tool, bool) {
 	return ret0, ret1
 }
 
-// GetTool indicates an expected call of GetTool.
+// GetTool serves as a public interface for interacting with GetTool.
 //
-// Summary: Expectation for GetTool.
+// Summary: Fetches and returns the underlying tool from the system state.
 //
 // Parameters:
-//   - toolName: any. The expected tool name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) GetTool(toolName any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTool", reflect.TypeOf((*MockManagerInterface)(nil).GetTool), toolName)
 }
 
-// IsServiceAllowed mocks base method.
+// IsServiceAllowed serves as a public interface for interacting with IsServiceAllowed.
 //
-// Summary: Mock implementation of IsServiceAllowed.
+// Summary: Checks condition indicating whether the target is service allowed.
 //
 // Parameters:
-//   - serviceID: string. The service ID.
-//   - profileID: string. The profile ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if allowed.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "IsServiceAllowed", serviceID, profileID)
@@ -343,27 +496,41 @@ func (m *MockManagerInterface) IsServiceAllowed(serviceID, profileID string) boo
 	return ret0
 }
 
-// IsServiceAllowed indicates an expected call of IsServiceAllowed.
+// IsServiceAllowed serves as a public interface for interacting with IsServiceAllowed.
 //
-// Summary: Expectation for IsServiceAllowed.
+// Summary: Checks condition indicating whether the target is service allowed.
 //
 // Parameters:
-//   - serviceID: any. The expected service ID.
-//   - profileID: any. The expected profile ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) IsServiceAllowed(serviceID, profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsServiceAllowed", reflect.TypeOf((*MockManagerInterface)(nil).IsServiceAllowed), serviceID, profileID)
 }
 
-// ListMCPTools mocks base method.
+// ListMCPTools serves as a public interface for interacting with ListMCPTools.
 //
-// Summary: Mock implementation of ListMCPTools.
+// Summary: List the mcp tools appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*mcp.Tool: The list of MCP tools.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListMCPTools")
@@ -371,23 +538,41 @@ func (m *MockManagerInterface) ListMCPTools() []*mcp.Tool {
 	return ret0
 }
 
-// ListMCPTools indicates an expected call of ListMCPTools.
+// ListMCPTools serves as a public interface for interacting with ListMCPTools.
 //
-// Summary: Expectation for ListMCPTools.
+// Summary: List the mcp tools appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) ListMCPTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListMCPTools", reflect.TypeOf((*MockManagerInterface)(nil).ListMCPTools))
 }
 
-// ListServices mocks base method.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Mock implementation of ListServices.
+// Summary: List the services appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*ServiceInfo: The list of services.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListServices")
@@ -395,23 +580,41 @@ func (m *MockManagerInterface) ListServices() []*ServiceInfo {
 	return ret0
 }
 
-// ListServices indicates an expected call of ListServices.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Expectation for ListServices.
+// Summary: List the services appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) ListServices() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServices", reflect.TypeOf((*MockManagerInterface)(nil).ListServices))
 }
 
-// ListTools mocks base method.
+// ListTools serves as a public interface for interacting with ListTools.
 //
-// Summary: Mock implementation of ListTools.
+// Summary: List the tools appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []Tool: The list of tools.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) ListTools() []Tool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTools")
@@ -419,79 +622,121 @@ func (m *MockManagerInterface) ListTools() []Tool {
 	return ret0
 }
 
-// ListTools indicates an expected call of ListTools.
+// ListTools serves as a public interface for interacting with ListTools.
 //
-// Summary: Expectation for ListTools.
+// Summary: List the tools appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) ListTools() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTools", reflect.TypeOf((*MockManagerInterface)(nil).ListTools))
 }
 
-// SetMCPServer mocks base method.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
 //
-// Summary: Mock implementation of SetMCPServer.
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - mcpServer: MCPServerProvider. The MCP server provider.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) SetMCPServer(mcpServer MCPServerProvider) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMCPServer", mcpServer)
 }
 
-// SetMCPServer indicates an expected call of SetMCPServer.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
 //
-// Summary: Expectation for SetMCPServer.
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - mcpServer: any. The expected MCP server provider.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) SetMCPServer(mcpServer any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetMCPServer", reflect.TypeOf((*MockManagerInterface)(nil).SetMCPServer), mcpServer)
 }
 
-// SetProfiles mocks base method.
+// SetProfiles serves as a public interface for interacting with SetProfiles.
 //
-// Summary: Mock implementation of SetProfiles.
+// Summary: Set the profiles appropriately based on current system conditions.
 //
 // Parameters:
-//   - enabled: []string. Enabled profiles.
-//   - defs: []*v1.ProfileDefinition. Profile definitions.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) SetProfiles(enabled []string, defs []*v1.ProfileDefinition) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetProfiles", enabled, defs)
 }
 
-// SetProfiles indicates an expected call of SetProfiles.
+// SetProfiles serves as a public interface for interacting with SetProfiles.
 //
-// Summary: Expectation for SetProfiles.
+// Summary: Set the profiles appropriately based on current system conditions.
 //
 // Parameters:
-//   - enabled: any. The expected enabled profiles.
-//   - defs: any. The expected profile definitions.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) SetProfiles(enabled, defs any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetProfiles", reflect.TypeOf((*MockManagerInterface)(nil).SetProfiles), enabled, defs)
 }
 
-// ToolMatchesProfile mocks base method.
+// ToolMatchesProfile serves as a public interface for interacting with ToolMatchesProfile.
 //
-// Summary: Mock implementation of ToolMatchesProfile.
+// Summary: Tool the matches profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - tool: Tool. The tool.
-//   - profileID: string. The profile ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the tool matches the profile.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockManagerInterface) ToolMatchesProfile(tool Tool, profileID string) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ToolMatchesProfile", tool, profileID)
@@ -499,16 +744,21 @@ func (m *MockManagerInterface) ToolMatchesProfile(tool Tool, profileID string) b
 	return ret0
 }
 
-// ToolMatchesProfile indicates an expected call of ToolMatchesProfile.
+// ToolMatchesProfile serves as a public interface for interacting with ToolMatchesProfile.
 //
-// Summary: Expectation for ToolMatchesProfile.
+// Summary: Tool the matches profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - tool: any. The expected tool.
-//   - profileID: any. The expected profile ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *gomock.Call: The mock call.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (mr *MockManagerInterfaceMockRecorder) ToolMatchesProfile(tool, profileID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ToolMatchesProfile", reflect.TypeOf((*MockManagerInterface)(nil).ToolMatchesProfile), tool, profileID)

@@ -13,13 +13,21 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// Upstream defines the standard interface for all backend service integrations.
+// Upstream represents the public Upstream entity.
 //
-// Each implementation of this interface is responsible for discovering and
-// registering its capabilities, such as tools, prompts, and resources, with the
-// appropriate managers.
+// Summary: Defines the structured data model representing a .
 //
-// Summary: Represents a Upstream.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -69,10 +77,21 @@ type Upstream interface {
 	) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error)
 }
 
-// HealthChecker is an optional interface that Upstreams can implement to provide
-// runtime health status.
+// HealthChecker represents the public HealthChecker entity.
 //
-// Summary: Represents a HealthChecker.
+// Summary: Defines the structured data model representing a checker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

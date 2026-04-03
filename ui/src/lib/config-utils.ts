@@ -6,49 +6,40 @@
 import { UpstreamServiceConfig } from "./client";
 
 /**
- * Summary: Document SecretHandlingMode
+ * SecretHandlingMode represents the public SecretHandlingMode entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a handling mode.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Defines the mode for handling secrets in configurations.
- * - 'redact': Replaces secrets with '<REDACTED>'.
- * - 'template': Replaces secrets with template placeholders (e.g., '${API_KEY}').
- * - 'unsafe': Leaves secrets as plain text (use with caution).
+ *   - None.
  */
 export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
 
 /**
- * Summary: Document sanitizeServiceConfig
+ * sanitizeServiceConfig serves as a public interface for interacting with sanitizeServiceConfig.
  *
- * Params:
- *   - None
+ * Summary: Sanitize the service config appropriately based on current system conditions.
  *
- * Sanitizes a service configuration by redacting or templating potential secrets.
- *
- * Summary: Redacts or templates secrets embedded in a service configuration object.
- *
- * Params:
- *   - service (UpstreamServiceConfig): The service configuration to sanitize.
- *   - mode (SecretHandlingMode): The secret handling mode ('redact', 'template', or 'unsafe').
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - UpstreamServiceConfig: A sanitized deep copy of the configuration.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original

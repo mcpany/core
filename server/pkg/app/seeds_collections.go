@@ -8,9 +8,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// BuiltinServiceCollections contains the official service collections.
+// BuiltinServiceCollections represents the public BuiltinServiceCollections entity.
 //
-// Summary: Represents a BuiltinServiceCollections.
+// Summary: Defines the structured data model representing a service collections.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var BuiltinServiceCollections []*configv1.Collection
 
 func init() {

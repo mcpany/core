@@ -11,9 +11,21 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MockTool is a mock implementation of the Tool interface for testing purposes.
+// MockTool represents the public MockTool entity.
 //
-// Summary: Mock tool for testing.
+// Summary: Provides tool execution capabilities for tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -21,12 +33,21 @@ type MockTool struct {
 	GetCacheConfigFunc func() *configv1.CacheConfig
 }
 
-// Tool returns the protobuf definition of the mock tool.
+// Tool serves as a public interface for interacting with Tool.
 //
-// Summary: Retrieves the mock tool definition.
+// Summary: Tool the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *v1.Tool: The tool definition.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -34,12 +55,21 @@ func (m *MockTool) Tool() *v1.Tool {
 	return &v1.Tool{}
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool serves as a public interface for interacting with MCPTool.
 //
-// Summary: Retrieves the MCP tool definition.
+// Summary: Mcp the tool appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -47,42 +77,40 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 	return nil
 }
 
-// IsStreaming returns whether the mock tool supports streaming.
+// IsStreaming serves as a public interface for interacting with IsStreaming.
 //
-// Summary: Checks if the mock tool supports streaming.
+// Summary: Checks condition indicating whether the target is streaming.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: Always returns false.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) IsStreaming() bool {
 	return false
 }
 
-// StreamExecute executes the mock tool in streaming mode.
+// StreamExecute serves as a public interface for interacting with StreamExecute.
 //
-// Summary: Executes the mock tool in streaming mode.
+// Summary: Stream the execute appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan any: A channel that emits the result or error.
-//   - error: Always nil for the mock tool.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - None.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes the mock tool logic asynchronously.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -97,23 +125,21 @@ func (m *MockTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 	return ch, nil
 }
 
-// Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the mock tool.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns the error returned by the underlying mock ExecuteFunc.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Calls the underlying mock ExecuteFunc.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -121,12 +147,21 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 	return nil, nil
 }
 
-// GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
+// GetCacheConfig serves as a public interface for interacting with GetCacheConfig.
 //
-// Summary: Retrieves the cache configuration.
+// Summary: Fetches and returns the underlying cache config from the system state.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.CacheConfig: The cache configuration.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

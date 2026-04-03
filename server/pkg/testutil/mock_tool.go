@@ -13,39 +13,61 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MockTool is a mock implementation of the tool.Tool interface for testing.
+// MockTool represents the public MockTool entity.
 //
-// Summary: Mock tool for unit testing.
+// Summary: Provides tool execution capabilities for tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
-// Tool returns a basic tool definition for the mock tool.
+// Tool serves as a public interface for interacting with Tool.
 //
-// Summary: Returns the tool definition.
+// Summary: Tool the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *v1.Tool: A minimal tool definition.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
 	}.Build()
 }
 
-// Execute calls the mock ExecuteFunc if set, otherwise returns nil.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the mock tool logic.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result from ExecuteFunc.
-//   - error: The error from ExecuteFunc.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Invokes the injected ExecuteFunc.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -53,12 +75,21 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 	return nil, nil
 }
 
-// GetCacheConfig returns nil for the mock tool.
+// GetCacheConfig serves as a public interface for interacting with GetCacheConfig.
 //
-// Summary: Returns cache configuration (nil for mock).
+// Summary: Fetches and returns the underlying cache config from the system state.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.CacheConfig: Always nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

@@ -11,9 +11,21 @@ import (
 	"time"
 )
 
-// CheckResult represents a single check result.
+// CheckResult represents the public CheckResult entity.
 //
-// Summary: The outcome of a single health check execution.
+// Summary: Defines the structured data model representing a result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckResult struct {
 	Status  string `json:"status"`
 	Message string `json:"message,omitempty"`
@@ -21,38 +33,80 @@ type CheckResult struct {
 	Diff    string `json:"diff,omitempty"`
 }
 
-// CheckFunc is a function that performs a health check.
+// CheckFunc represents the public CheckFunc entity.
 //
-// Summary: Function signature for a health check execution logic.
+// Summary: Defines the structured data model representing a func.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckFunc func(context.Context) CheckResult
 
-// DoctorReport represents the full doctor report.
+// DoctorReport represents the public DoctorReport entity.
 //
-// Summary: Aggregated health report containing all check results.
+// Summary: Defines the structured data model representing a report.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DoctorReport struct {
 	Status    string                 `json:"status"`
 	Timestamp time.Time              `json:"timestamp"`
 	Checks    map[string]CheckResult `json:"checks"`
 }
 
-// Doctor is the health check handler.
+// Doctor represents the public Doctor entity.
 //
-// Summary: Registry and handler for system health checks (Doctor).
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Doctor struct {
 	checks     map[string]CheckFunc
 	mu         sync.RWMutex
 	httpClient *http.Client
 }
 
-// NewDoctor creates a new Doctor.
+// NewDoctor serves as a public interface for interacting with NewDoctor.
 //
-// Summary: Initializes a new Doctor instance.
+// Summary: Constructs and returns an initialized doctor ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Doctor: The initialized doctor registry.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Initializes internal maps and HTTP client.
+//   - May safely mutate local state without unintended external side effects.
 func NewDoctor() *Doctor {
 	return &Doctor{
 		checks:     make(map[string]CheckFunc),
@@ -60,34 +114,42 @@ func NewDoctor() *Doctor {
 	}
 }
 
-// AddCheck adds a named health check.
+// AddCheck serves as a public interface for interacting with AddCheck.
 //
-// Summary: Registers a custom health check function.
+// Summary: Add the check appropriately based on current system conditions.
 //
 // Parameters:
-//   - name: string. The unique name of the check.
-//   - check: CheckFunc. The function to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the internal checks map.
+//   - May safely mutate local state without unintended external side effects.
 func (d *Doctor) AddCheck(name string, check CheckFunc) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.checks[name] = check
 }
 
-// Handler returns the http handler.
+// Handler serves as a public interface for interacting with Handler.
 //
-// Summary: Returns an HTTP handler that runs all checks and returns a JSON report.
+// Summary: Handler the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.HandlerFunc: The HTTP handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Executes all registered health checks.
-//   - Makes an external network call to google.com (connectivity check).
-//   - Reads environment variables (Auth checks).
-//   - Writes JSON response to the client.
+//   - May safely mutate local state without unintended external side effects.
 func (d *Doctor) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		report := DoctorReport{

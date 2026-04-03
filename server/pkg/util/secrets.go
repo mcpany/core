@@ -28,19 +28,21 @@ import (
 
 const maxSecretRecursionDepth = 10
 
-// ResolveSecret resolves a SecretValue configuration object into a concrete string value.
-// It handles various secret types including plain text, environment variables, file paths,
-// remote URLs, Vault, and AWS Secrets Manager.
+// ResolveSecret serves as a public interface for interacting with ResolveSecret.
 //
-// Summary: Resolves a secret configuration into a string value.
+// Summary: Resolve the secret appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the secret resolution.
-//   - secret (*configv1.SecretValue): The configuration object to resolve.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The resolved secret string.
-//   - error: An error if resolution fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, error) {
 	return resolveSecretRecursive(ctx, secret, 0)
 }
@@ -313,19 +315,21 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 	}
 }
 
-// ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
-// If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.
+// ResolveSecretMap serves as a public interface for interacting with ResolveSecretMap.
 //
-// Summary: Resolves a map of secrets and merges with plain values.
+// Summary: Resolve the secret map appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the secret resolution.
-//   - secretMap (map[string]*configv1.SecretValue): A map of keys to SecretValue objects.
-//   - plainMap (map[string]string): A map of keys to plain string values.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]string: A single map containing all keys with their resolved string values.
-//   - error: An error if any secret resolution fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ResolveSecretMap(ctx context.Context, secretMap map[string]*configv1.SecretValue, plainMap map[string]string) (map[string]string, error) {
 	result := make(map[string]string)
 	for k, v := range plainMap {

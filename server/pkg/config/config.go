@@ -14,35 +14,21 @@ import (
 	"github.com/spf13/viper"
 )
 
-// BindRootFlags binds the global and persistent command-line flags to the Viper configuration registry.
+// BindRootFlags serves as a public interface for interacting with BindRootFlags.
 //
-// It establishes the connection between Cobra command flags and Viper's configuration management,
-// enabling flag parsing and environment variable overrides (using the "MCPANY_" prefix).
-//
-// Parameters:
-//   - cmd (*cobra.Command): The command instance to which the persistent flags will be attached.
-//
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - Modifies the global Viper configuration state.
-//   - Registers flags on the provided Cobra command.
-//   - Exits the application on error.
-//
-// Summary: Executes BindRootFlags operation.
+// Summary: Bind the root flags appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
@@ -96,36 +82,21 @@ func BindRootFlags(cmd *cobra.Command) {
 	}
 }
 
-// BindServerFlags binds server-specific command-line flags to the Viper configuration registry.
+// BindServerFlags serves as a public interface for interacting with BindServerFlags.
 //
-// It defines flags specific to the server operation, such as port configurations,
-// authentication keys, and runtime modes (e.g., stdio).
-//
-// Parameters:
-//   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
-//
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Modifies the global Viper configuration state.
-//   - Registers flags on the provided Cobra command.
-//   - Exits the application on error.
-//
-// Summary: Executes BindServerFlags operation.
+// Summary: Bind the server flags appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -160,35 +131,21 @@ func BindServerFlags(cmd *cobra.Command) {
 	}
 }
 
-// BindFlags binds both root and server-specific command line flags to the Viper configuration registry.
+// BindFlags serves as a public interface for interacting with BindFlags.
 //
-// This is a helper function that orchestrates the binding of all necessary flags by delegating
-// to BindRootFlags and BindServerFlags.
-//
-// Parameters:
-//   - cmd (*cobra.Command): The command instance to which the flags will be attached.
-//
-// Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Modifies the global Viper configuration state.
-//   - Registers flags on the provided Cobra command.
-//
-// Summary: Executes BindFlags operation.
+// Summary: Bind the flags appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)

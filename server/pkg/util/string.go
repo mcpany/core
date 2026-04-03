@@ -5,19 +5,21 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import "unicode/utf8"
 
-// LevenshteinDistance calculates the Levenshtein distance between two strings.
+// LevenshteinDistance serves as a public interface for interacting with LevenshteinDistance.
 //
-// Summary: Calculates the Levenshtein edit distance.
-//
-// It returns the minimum number of single-character edits (insertions, deletions, or substitutions)
-// required to change one string into the other.
+// Summary: Levenshtein the distance appropriately based on current system conditions.
 //
 // Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The Levenshtein distance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func LevenshteinDistance(s1, s2 string) int {
 	// Pass a very large limit so it behaves like the unbounded version.
 	// The maximum possible distance is max(len(s1), len(s2)).
@@ -25,19 +27,21 @@ func LevenshteinDistance(s1, s2 string) int {
 	return LevenshteinDistanceWithLimit(s1, s2, len(s1)+len(s2))
 }
 
-// LevenshteinDistanceWithLimit calculates the Levenshtein distance with an upper limit.
+// LevenshteinDistanceWithLimit serves as a public interface for interacting with LevenshteinDistanceWithLimit.
 //
-// Summary: Calculates the Levenshtein edit distance with a limit.
-//
-// If the distance is strictly greater than limit, it returns a value > limit (specifically limit + 1).
+// Summary: Levenshtein the distance with limit appropriately based on current system conditions.
 //
 // Parameters:
-//   - s1: string. The first string.
-//   - s2: string. The second string.
-//   - limit: int. The maximum distance to compute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The Levenshtein distance, or limit + 1 if it exceeds the limit.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func LevenshteinDistanceWithLimit(s1, s2 string, limit int) int {
 	// Optimization: If both strings are ASCII, we can avoid rune conversion
 	// and use stack-based allocation for small strings.

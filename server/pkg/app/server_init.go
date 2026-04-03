@@ -21,6 +21,21 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
+// initializeDatabase serves as a public interface for interacting with initializeDatabase.
+//
+// Summary: Initialize the database appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *Application) initializeDatabase(ctx context.Context, store config.Store, cfg *configv1.McpAnyServerConfig) error {
 	log := logging.GetLogger()
 
@@ -158,6 +173,21 @@ func (a *Application) initializeDatabase(ctx context.Context, store config.Store
 	return nil
 }
 
+// hasConfiguredFields serves as a public interface for interacting with hasConfiguredFields.
+//
+// Summary: Checks condition indicating whether the target has configured fields.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func hasConfiguredFields(message proto.Message) bool {
 	if message == nil {
 		return false
@@ -172,6 +202,21 @@ func hasConfiguredFields(message proto.Message) bool {
 	return hasFields
 }
 
+// seedCollections serves as a public interface for interacting with seedCollections.
+//
+// Summary: Executes the seed routine for the collections.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *Application) seedCollections(ctx context.Context, store config.Store) error {
 	s, ok := store.(storage.Storage)
 	if !ok {
@@ -199,6 +244,21 @@ func (a *Application) seedCollections(ctx context.Context, store config.Store) e
 	return nil
 }
 
+// initializeAdminUser serves as a public interface for interacting with initializeAdminUser.
+//
+// Summary: Initialize the admin user appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *Application) initializeAdminUser(ctx context.Context, store config.Store) error {
 	s, ok := store.(storage.Storage)
 	if !ok {
@@ -256,6 +316,21 @@ func (a *Application) initializeAdminUser(ctx context.Context, store config.Stor
 	return nil
 }
 
+// seedTemplates serves as a public interface for interacting with seedTemplates.
+//
+// Summary: Executes the seed routine for the templates.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (a *Application) seedTemplates(ctx context.Context, store config.Store) error {
 	s, ok := store.(storage.Storage)
 	if !ok {

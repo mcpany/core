@@ -68,25 +68,21 @@ const addToRemoveQueue = (toastId: string) => {
 }
 
 /**
- * Summary: Document reducer
+ * reducer serves as a public interface for interacting with reducer.
  *
- * Params:
- *   - Documented below.
+ * Summary: Reducer the  appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * The reducer function for managing toast state.
- *
- * @param state - The current state of the toasts.
- * @param action - The action to perform (ADD, UPDATE, DISMISS, REMOVE).
- * @returns The new state after applying the action.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {

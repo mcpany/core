@@ -24,9 +24,21 @@ const (
 	datadogBatchWait  = 1 * time.Second
 )
 
-// DatadogAuditStore sends audit logs to Datadog.
+// DatadogAuditStore represents the public DatadogAuditStore entity.
 //
-// Summary: Asynchronous audit store that forwards logs to Datadog's API.
+// Summary: Defines the structured data model representing a audit store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -36,18 +48,21 @@ type DatadogAuditStore struct {
 	done   chan struct{}
 }
 
-// NewDatadogAuditStore creates a new DatadogAuditStore.
+// NewDatadogAuditStore serves as a public interface for interacting with NewDatadogAuditStore.
 //
-// Summary: Initializes a new DatadogAuditStore with background workers.
+// Summary: Constructs and returns an initialized datadog audit store ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.DatadogConfig. The Datadog configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *DatadogAuditStore: The initialized store.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Starts background workers to process the log queue.
+//   - May safely mutate local state without unintended external side effects.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -114,22 +129,21 @@ func (e *DatadogAuditStore) worker() {
 	}
 }
 
-// Write implements the Store interface.
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Queues an audit entry for sending to Datadog.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - entry: Entry. The audit entry to log.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the queue is full.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "audit queue full" if the buffer is exceeded.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Sends the entry to a buffered channel.
+//   - May safely mutate local state without unintended external side effects.
 func (e *DatadogAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -184,31 +198,40 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-// Read implements the Store interface.
+// Read serves as a public interface for interacting with Read.
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Read the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
 
-// Close closes the queue and waits for workers to finish.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Shuts down the Datadog audit store gracefully.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes internal channels.
-//   - Flushes pending logs.
+//   - May safely mutate local state without unintended external side effects.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

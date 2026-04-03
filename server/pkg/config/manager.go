@@ -24,18 +24,38 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
-// MergeStrategyReplace indicates that the new configuration list should replace the existing one.
+// MergeStrategyReplace represents the public MergeStrategyReplace entity.
 //
-// Summary: Constant for "replace" merge strategy.
-const MergeStrategyReplace = "replace"
-
-// UpstreamServiceManager manages the lifecycle and configuration of upstream services.
+// Summary: Defines the structured data model representing a strategy replace.
 //
-// Summary: Handles loading, validating, and merging service configurations from various sources.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Stores the final, merged UpstreamServiceConfig objects.
-//   - Makes HTTP requests to fetch remote configurations.
+//   - None.
+const MergeStrategyReplace = "replace"
+
+// UpstreamServiceManager represents the public UpstreamServiceManager entity.
+//
+// Summary: Coordinates operations and orchestrates lifecycle events for the service manager components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UpstreamServiceManager struct {
 	log               *slog.Logger
 	services          map[string]*configv1.UpstreamServiceConfig // Stores the final, merged UpstreamServiceConfig objects
@@ -48,15 +68,21 @@ type UpstreamServiceManager struct {
 	profileSecrets          map[string]*configv1.SecretValue          // Stores secrets resolved from profiles
 }
 
-// NewUpstreamServiceManager creates a new instance of UpstreamServiceManager.
+// NewUpstreamServiceManager serves as a public interface for interacting with NewUpstreamServiceManager.
 //
-// Summary: Initializes a new UpstreamServiceManager with the specified profiles.
+// Summary: Constructs and returns an initialized upstream service manager ready for consumption.
 //
 // Parameters:
-//   - enabledProfiles ([]string): A list of profile names that are active. Services must match one of these profiles to be loaded.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*UpstreamServiceManager): A pointer to a fully initialized UpstreamServiceManager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager {
 	if len(enabledProfiles) == 0 {
 		enabledProfiles = []string{"default"}
@@ -77,21 +103,21 @@ func NewUpstreamServiceManager(enabledProfiles []string) *UpstreamServiceManager
 	}
 }
 
-// LoadAndMergeServices loads all upstream services from the provided configuration.
+// LoadAndMergeServices serves as a public interface for interacting with LoadAndMergeServices.
 //
-// Summary: Processes local and remote service configurations, merging them based on priority and name.
+// Summary: Load the and merge services appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the operation.
-//   - config (*configv1.McpAnyServerConfig): The main server configuration containing service definitions and collection references.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ([]*configv1.UpstreamServiceConfig): A slice of merged service configurations.
-//   - (error): An error if any critical failure occurs during loading or merging.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - May clear existing services if a replace strategy is configured.
-//   - Fetches remote collections via HTTP.
+//   - May safely mutate local state without unintended external side effects.
 func (m *UpstreamServiceManager) LoadAndMergeServices(ctx context.Context, config *configv1.McpAnyServerConfig) ([]*configv1.UpstreamServiceConfig, error) {
 	// Respect merge strategy
 	if strategy := config.GetMergeStrategy(); strategy != nil {

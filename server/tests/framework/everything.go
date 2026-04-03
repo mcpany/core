@@ -11,11 +11,21 @@ import (
 	"github.com/mcpany/core/server/tests/integration"
 )
 
-// BuildEverythingServer builds a server with everything.
+// BuildEverythingServer serves as a public interface for interacting with BuildEverythingServer.
 //
-// t is the t.
+// Summary: Build the everything server appropriately based on current system conditions.
 //
-// Returns the result.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	args := []string{"@modelcontextprotocol/server-everything", "streamableHttp"}
@@ -26,11 +36,21 @@ func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 	return proc
 }
 
-// RegisterEverythingService registers everything service.
+// RegisterEverythingService serves as a public interface for interacting with RegisterEverythingService.
 //
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: Register the everything service appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func RegisterEverythingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	const serviceID = "e2e_everything_server_streamable"
 	integration.RegisterStreamableMCPService(t, registrationClient, serviceID, upstreamEndpoint, true, nil)

@@ -11,27 +11,21 @@ interface CodeGeneratorOptions {
 }
 
 /**
- * Summary: Document generateCurlCommand
+ * generateCurlCommand serves as a public interface for interacting with generateCurlCommand.
  *
- * Params:
- *   - Documented below.
+ * Summary: Generate the curl command appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Generates a Curl command for executing a tool.
- * @param params - The parameters for generation.
- * @param params.toolName - The name of the tool.
- * @param params.args - The arguments for the tool.
- * @param params.baseUrl - The base URL of the API.
- * @param params.token - The authentication token.
- * @returns The generated Curl command string.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function generateCurlCommand({ toolName, args, baseUrl = "http://localhost:8080", token }: CodeGeneratorOptions): string {
   const payload = {
@@ -52,27 +46,21 @@ export function generateCurlCommand({ toolName, args, baseUrl = "http://localhos
 }
 
 /**
- * Summary: Document generatePythonCode
+ * generatePythonCode serves as a public interface for interacting with generatePythonCode.
  *
- * Params:
- *   - Documented below.
+ * Summary: Generate the python code appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Generates Python code for executing a tool using the requests library.
- * @param params - The parameters for generation.
- * @param params.toolName - The name of the tool.
- * @param params.args - The arguments for the tool.
- * @param params.baseUrl - The base URL of the API.
- * @param params.token - The authentication token.
- * @returns The generated Python code string.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function generatePythonCode({ toolName, args, baseUrl = "http://localhost:8080", token }: CodeGeneratorOptions): string {
   const payload = {

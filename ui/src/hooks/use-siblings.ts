@@ -8,23 +8,21 @@ import { apiClient } from "@/lib/client";
 import { UpstreamServiceConfig, ToolDefinition } from "@/lib/types";
 
 /**
- * Summary: Document useServiceSiblings
+ * useServiceSiblings serves as a public interface for interacting with useServiceSiblings.
  *
- * Params:
- *   - Documented below.
+ * Summary: Use the service siblings appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - None
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * useServiceSiblings.
- *
- * @param currentServiceId - The currentServiceId.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function useServiceSiblings(currentServiceId: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);
@@ -43,24 +41,21 @@ export function useServiceSiblings(currentServiceId: string) {
 }
 
 /**
- * Summary: Document useToolSiblings
+ * useToolSiblings serves as a public interface for interacting with useToolSiblings.
  *
- * Params:
- *   - Documented below.
+ * Summary: Use the tool siblings appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - None
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * useToolSiblings.
- *
- * @param serviceId - The serviceId.
- * @param currentToolName - The currentToolName.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function useToolSiblings(serviceId: string, currentToolName: string) {
     const [siblings, setSiblings] = useState<{ label: string; href: string }[]>([]);

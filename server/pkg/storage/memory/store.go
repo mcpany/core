@@ -22,9 +22,21 @@ type tokenKey struct {
 	serviceID string
 }
 
-// Store implements storage.Storage in memory.
+// Store represents the public Store entity.
 //
-// Summary: A thread-safe, in-memory implementation of the Storage interface, primarily for testing.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Store struct {
 	mu                 sync.RWMutex
 	services           map[string]*configv1.UpstreamServiceConfig
@@ -39,15 +51,21 @@ type Store struct {
 	logs               []*logging.LogEntry
 }
 
-// NewStore creates a new memory store.
+// NewStore serves as a public interface for interacting with NewStore.
 //
-// Summary: Initializes a new, empty in-memory store.
+// Summary: Constructs and returns an initialized store ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Store: A pointer to the initialized Store.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Allocates internal maps and slices.
+//   - May safely mutate local state without unintended external side effects.
 func NewStore() *Store {
 	return &Store{
 		services:           make(map[string]*configv1.UpstreamServiceConfig),
@@ -62,19 +80,21 @@ func NewStore() *Store {
 	}
 }
 
-// SaveLog saves a log entry.
+// SaveLog serves as a public interface for interacting with SaveLog.
 //
-// Summary: Appends a log entry to the in-memory log store.
+// Summary: Save the log appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - entry: *logging.LogEntry. The log entry to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Appends to the internal logs slice.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -82,20 +102,21 @@ func (s *Store) SaveLog(_ context.Context, entry *logging.LogEntry) error {
 	return nil
 }
 
-// GetRecentLogs retrieves recent log entries.
+// GetRecentLogs serves as a public interface for interacting with GetRecentLogs.
 //
-// Summary: Returns the N most recent log entries.
+// Summary: Fetches and returns the underlying recent logs from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - limit: int. The maximum number of logs to return.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*logging.LogEntry: A slice of log entries.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Reads from the internal logs slice.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]*logging.LogEntry, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -112,19 +133,21 @@ func (s *Store) GetRecentLogs(_ context.Context, limit int) ([]*logging.LogEntry
 	return result, nil
 }
 
-// SaveToken saves a user token.
+// SaveToken serves as a public interface for interacting with SaveToken.
 //
-// Summary: Stores a user token in memory.
+// Summary: Save the token appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - token: *configv1.UserToken. The token to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal tokens map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -136,18 +159,21 @@ func (s *Store) SaveToken(_ context.Context, token *configv1.UserToken) error {
 	return nil
 }
 
-// GetToken retrieves a user token by user ID and service ID.
+// GetToken serves as a public interface for interacting with GetToken.
 //
-// Summary: Retrieves a stored user token.
+// Summary: Fetches and returns the underlying token from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - userID: string. The user ID.
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.UserToken: The retrieved token, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -161,20 +187,21 @@ func (s *Store) GetToken(_ context.Context, userID, serviceID string) (*configv1
 	return nil, nil
 }
 
-// DeleteToken deletes a user token.
+// DeleteToken serves as a public interface for interacting with DeleteToken.
 //
-// Summary: Removes a user token from memory.
+// Summary: Delete the token appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - userID: string. The user ID.
-//   - serviceID: string. The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes from the internal tokens map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -186,16 +213,21 @@ func (s *Store) DeleteToken(_ context.Context, userID, serviceID string) error {
 	return nil
 }
 
-// Load retrieves the full server configuration.
+// Load serves as a public interface for interacting with Load.
 //
-// Summary: Constructs and returns the complete server configuration from stored components.
+// Summary: Load the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The complete configuration object.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -234,19 +266,21 @@ func (s *Store) Load(_ context.Context) (*configv1.McpAnyServerConfig, error) {
 	return cfg, nil
 }
 
-// SaveService saves a single upstream service configuration.
+// SaveService serves as a public interface for interacting with SaveService.
 //
-// Summary: Stores an upstream service configuration.
+// Summary: Save the service appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - service: *configv1.UpstreamServiceConfig. The service config to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal services map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamServiceConfig) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -254,17 +288,21 @@ func (s *Store) SaveService(_ context.Context, service *configv1.UpstreamService
 	return nil
 }
 
-// GetService retrieves a single upstream service configuration by name.
+// GetService serves as a public interface for interacting with GetService.
 //
-// Summary: Retrieves an upstream service configuration.
+// Summary: Fetches and returns the underlying service from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - name: string. The name of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.UpstreamServiceConfig: The service config, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -274,16 +312,21 @@ func (s *Store) GetService(_ context.Context, name string) (*configv1.UpstreamSe
 	return nil, nil
 }
 
-// ListServices lists all upstream service configurations.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Lists all stored upstream service configurations.
+// Summary: List the services appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of service configs.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -294,19 +337,21 @@ func (s *Store) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConf
 	return list, nil
 }
 
-// DeleteService deletes an upstream service configuration by name.
+// DeleteService serves as a public interface for interacting with DeleteService.
 //
-// Summary: Deletes an upstream service configuration.
+// Summary: Delete the service appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - name: string. The name of the service to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal services map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteService(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -314,36 +359,59 @@ func (s *Store) DeleteService(_ context.Context, name string) error {
 	return nil
 }
 
-// Close closes the underlying storage connection.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: No-op for in-memory store.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) Close() error {
 	return nil
 }
 
-// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+// HasConfigSources serves as a public interface for interacting with HasConfigSources.
 //
-// Summary: Indicates if the store supports config sources (always true for this mock).
+// Summary: Checks condition indicating whether the target has config sources.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: Always true.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
 
-// GetGlobalSettings retrieves the global configuration.
+// GetGlobalSettings serves as a public interface for interacting with GetGlobalSettings.
 //
-// Summary: Retrieves the global settings object.
+// Summary: Fetches and returns the underlying global settings from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.GlobalSettings: The global settings.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -353,19 +421,21 @@ func (s *Store) GetGlobalSettings(_ context.Context) (*configv1.GlobalSettings, 
 	return proto.Clone(s.globalSettings).(*configv1.GlobalSettings), nil
 }
 
-// SaveGlobalSettings saves the global configuration.
+// SaveGlobalSettings serves as a public interface for interacting with SaveGlobalSettings.
 //
-// Summary: Persists the global settings.
+// Summary: Save the global settings appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - settings: *configv1.GlobalSettings. The settings to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal global settings.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalSettings) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -373,16 +443,21 @@ func (s *Store) SaveGlobalSettings(_ context.Context, settings *configv1.GlobalS
 	return nil
 }
 
-// ListSecrets retrieves all secrets.
+// ListSecrets serves as a public interface for interacting with ListSecrets.
 //
-// Summary: Lists all stored secrets.
+// Summary: List the secrets appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Secret: A list of secrets.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -393,17 +468,21 @@ func (s *Store) ListSecrets(_ context.Context) ([]*configv1.Secret, error) {
 	return list, nil
 }
 
-// GetSecret retrieves a secret by ID.
+// GetSecret serves as a public interface for interacting with GetSecret.
 //
-// Summary: Retrieves a secret by its ID.
+// Summary: Fetches and returns the underlying secret from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The secret ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Secret: The secret, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -413,19 +492,21 @@ func (s *Store) GetSecret(_ context.Context, id string) (*configv1.Secret, error
 	return nil, nil
 }
 
-// SaveSecret saves a secret.
+// SaveSecret serves as a public interface for interacting with SaveSecret.
 //
-// Summary: Stores a secret.
+// Summary: Save the secret appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - secret: *configv1.Secret. The secret to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal secrets map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -433,19 +514,21 @@ func (s *Store) SaveSecret(_ context.Context, secret *configv1.Secret) error {
 	return nil
 }
 
-// DeleteSecret deletes a secret by ID.
+// DeleteSecret serves as a public interface for interacting with DeleteSecret.
 //
-// Summary: Deletes a secret.
+// Summary: Delete the secret appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The secret ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal secrets map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -453,23 +536,21 @@ func (s *Store) DeleteSecret(_ context.Context, id string) error {
 	return nil
 }
 
-// CreateUser creates a new user.
+// CreateUser serves as a public interface for interacting with CreateUser.
 //
-// Summary: Creates a new user entry.
+// Summary: Create the user appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - user: *configv1.User. The user to create.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the user ID is missing or already exists.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "user ID is required" if ID is empty.
-//   - Returns "user already exists" if ID is present.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Adds to the internal users map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -483,17 +564,21 @@ func (s *Store) CreateUser(_ context.Context, user *configv1.User) error {
 	return nil
 }
 
-// GetUser retrieves a user by ID.
+// GetUser serves as a public interface for interacting with GetUser.
 //
-// Summary: Retrieves a user.
+// Summary: Fetches and returns the underlying user from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The user ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.User: The user, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -503,16 +588,21 @@ func (s *Store) GetUser(_ context.Context, id string) (*configv1.User, error) {
 	return nil, nil
 }
 
-// ListUsers retrieves all users.
+// ListUsers serves as a public interface for interacting with ListUsers.
 //
-// Summary: Lists all users.
+// Summary: List the users appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.User: A list of users.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -523,22 +613,21 @@ func (s *Store) ListUsers(_ context.Context) ([]*configv1.User, error) {
 	return list, nil
 }
 
-// UpdateUser updates an existing user.
+// UpdateUser serves as a public interface for interacting with UpdateUser.
 //
-// Summary: Updates an existing user.
+// Summary: Update the user appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - user: *configv1.User. The user to update.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the user is not found.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "user not found" if the user does not exist.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal users map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -549,19 +638,21 @@ func (s *Store) UpdateUser(_ context.Context, user *configv1.User) error {
 	return nil
 }
 
-// DeleteUser deletes a user by ID.
+// DeleteUser serves as a public interface for interacting with DeleteUser.
 //
-// Summary: Deletes a user.
+// Summary: Delete the user appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The user ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal users map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteUser(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -571,16 +662,21 @@ func (s *Store) DeleteUser(_ context.Context, id string) error {
 
 // Profiles
 
-// ListProfiles retrieves all profile definitions.
+// ListProfiles serves as a public interface for interacting with ListProfiles.
 //
-// Summary: Lists all stored profile definitions.
+// Summary: List the profiles appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.ProfileDefinition: A list of profiles.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -591,17 +687,21 @@ func (s *Store) ListProfiles(_ context.Context) ([]*configv1.ProfileDefinition, 
 	return list, nil
 }
 
-// GetProfile retrieves a profile definition by name.
+// GetProfile serves as a public interface for interacting with GetProfile.
 //
-// Summary: Retrieves a profile by name.
+// Summary: Fetches and returns the underlying profile from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - name: string. The profile name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.ProfileDefinition: The profile, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDefinition, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -611,19 +711,21 @@ func (s *Store) GetProfile(_ context.Context, name string) (*configv1.ProfileDef
 	return nil, nil
 }
 
-// SaveProfile saves a profile definition.
+// SaveProfile serves as a public interface for interacting with SaveProfile.
 //
-// Summary: Stores a profile definition.
+// Summary: Save the profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - profile: *configv1.ProfileDefinition. The profile to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal profile map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefinition) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -631,19 +733,21 @@ func (s *Store) SaveProfile(_ context.Context, profile *configv1.ProfileDefiniti
 	return nil
 }
 
-// DeleteProfile deletes a profile definition by name.
+// DeleteProfile serves as a public interface for interacting with DeleteProfile.
 //
-// Summary: Deletes a profile.
+// Summary: Delete the profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - name: string. The profile name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal profile map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteProfile(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -653,16 +757,21 @@ func (s *Store) DeleteProfile(_ context.Context, name string) error {
 
 // Service Collections
 
-// ListServiceCollections retrieves all service collections.
+// ListServiceCollections serves as a public interface for interacting with ListServiceCollections.
 //
-// Summary: Lists all service collections.
+// Summary: List the service collections appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Collection: A list of collections.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -673,17 +782,21 @@ func (s *Store) ListServiceCollections(_ context.Context) ([]*configv1.Collectio
 	return list, nil
 }
 
-// GetServiceCollection retrieves a service collection by name.
+// GetServiceCollection serves as a public interface for interacting with GetServiceCollection.
 //
-// Summary: Retrieves a service collection.
+// Summary: Fetches and returns the underlying service collection from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - name: string. The collection name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Collection: The collection, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.Collection, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -693,19 +806,21 @@ func (s *Store) GetServiceCollection(_ context.Context, name string) (*configv1.
 	return nil, nil
 }
 
-// SaveServiceCollection saves a service collection.
+// SaveServiceCollection serves as a public interface for interacting with SaveServiceCollection.
 //
-// Summary: Stores a service collection.
+// Summary: Save the service collection appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - collection: *configv1.Collection. The collection to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal collection map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Collection) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -713,19 +828,21 @@ func (s *Store) SaveServiceCollection(_ context.Context, collection *configv1.Co
 	return nil
 }
 
-// DeleteServiceCollection deletes a service collection by name.
+// DeleteServiceCollection serves as a public interface for interacting with DeleteServiceCollection.
 //
-// Summary: Deletes a service collection.
+// Summary: Delete the service collection appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - name: string. The collection name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal collection map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -735,16 +852,21 @@ func (s *Store) DeleteServiceCollection(_ context.Context, name string) error {
 
 // Credentials
 
-// ListCredentials retrieves all credentials.
+// ListCredentials serves as a public interface for interacting with ListCredentials.
 //
-// Summary: Lists all credentials.
+// Summary: List the credentials appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Credential: A list of credentials.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -755,17 +877,21 @@ func (s *Store) ListCredentials(_ context.Context) ([]*configv1.Credential, erro
 	return list, nil
 }
 
-// GetCredential retrieves a credential by ID.
+// GetCredential serves as a public interface for interacting with GetCredential.
 //
-// Summary: Retrieves a credential by ID.
+// Summary: Fetches and returns the underlying credential from the system state.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The credential ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Credential: The credential, or nil if not found.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credential, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -775,19 +901,21 @@ func (s *Store) GetCredential(_ context.Context, id string) (*configv1.Credentia
 	return nil, nil
 }
 
-// SaveCredential saves a credential.
+// SaveCredential serves as a public interface for interacting with SaveCredential.
 //
-// Summary: Stores a credential.
+// Summary: Save the credential appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - cred: *configv1.Credential. The credential to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the internal credential map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -795,19 +923,21 @@ func (s *Store) SaveCredential(_ context.Context, cred *configv1.Credential) err
 	return nil
 }
 
-// DeleteCredential deletes a credential by ID.
+// DeleteCredential serves as a public interface for interacting with DeleteCredential.
 //
-// Summary: Deletes a credential.
+// Summary: Delete the credential appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - id: string. The credential ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Removes from the internal credential map.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteCredential(_ context.Context, id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

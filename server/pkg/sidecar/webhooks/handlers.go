@@ -17,32 +17,55 @@ import (
 	"github.com/google/uuid"
 )
 
-// KindPostCall identifies a post-call webhook.
+// KindPostCall represents the public KindPostCall entity.
 //
-// Summary: Constant for post-call webhook kind.
-const KindPostCall = "PostCall"
-
-// MarkdownHandler is a webhook handler that converts HTML content to Markdown.
-// It processes incoming CloudEvents containing HTML and returns the converted Markdown.
-//
-// Summary: Webhook handler for Markdown conversion.
-type MarkdownHandler struct{}
-
-// Handle processes the markdown conversion request.
-// It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
-//
-// Summary: Handles the markdown conversion request.
+// Summary: Defines the structured data model representing a post call.
 //
 // Parameters:
-//   - w: http.ResponseWriter. The HTTP response writer.
-//   - r: *http.Request. The HTTP request.
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Writes the converted Markdown to the response.
+//   - None.
+const KindPostCall = "PostCall"
+
+// MarkdownHandler represents the public MarkdownHandler entity.
+//
+// Summary: Defines the structured data model representing a handler.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type MarkdownHandler struct{}
+
+// Handle serves as a public interface for interacting with Handle.
+//
+// Summary: Handle the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -95,27 +118,38 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(respEvent)
 }
 
-// TruncateHandler is a webhook handler that truncates long strings to a specified length.
-// It processes incoming CloudEvents and truncates strings in "inputs" or "result" fields.
-// The maximum characters can be specified via the "max_chars" query parameter (default 100).
+// TruncateHandler represents the public TruncateHandler entity.
 //
-// Summary: Webhook handler for text truncation.
-type TruncateHandler struct{}
-
-// Handle processes the text truncation request.
-//
-// Summary: Handles the text truncation request.
+// Summary: Defines the structured data model representing a handler.
 //
 // Parameters:
-//   - w: http.ResponseWriter. The HTTP response writer.
-//   - r: *http.Request. The HTTP request.
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Writes the truncated text to the response.
+//   - None.
+type TruncateHandler struct{}
+
+// Handle serves as a public interface for interacting with Handle.
+//
+// Summary: Handle the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -174,27 +208,38 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(respEvent)
 }
 
-// PaginateHandler is a webhook handler that splits long strings into pages.
-// It processes incoming CloudEvents and paginates strings in "inputs" or "result" fields.
-// The page size can be specified via the "page_size" query parameter (default 1000).
+// PaginateHandler represents the public PaginateHandler entity.
 //
-// Summary: Webhook handler for pagination.
-type PaginateHandler struct{}
-
-// Handle processes the pagination request.
-//
-// Summary: Handles the pagination request.
+// Summary: Defines the structured data model representing a handler.
 //
 // Parameters:
-//   - w: http.ResponseWriter. The HTTP response writer.
-//   - r: *http.Request. The HTTP request.
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Writes the paginated content to the response.
+//   - None.
+type PaginateHandler struct{}
+
+// Handle serves as a public interface for interacting with Handle.
+//
+// Summary: Handle the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

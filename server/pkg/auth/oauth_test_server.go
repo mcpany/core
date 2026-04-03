@@ -18,42 +18,42 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// MockOAuth2Server serves as a mock OIDC/OAuth2 provider.
+// MockOAuth2Server represents the public MockOAuth2Server entity.
 //
-// Summary: Represents a MockOAuth2Server.
+// Summary: Provides network listening and request routing capabilities for o auth server.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockOAuth2Server struct {
 	*httptest.Server
 	PrivateKey *rsa.PrivateKey
 	ClientID   string
 }
 
-// NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
+// NewMockOAuth2Server serves as a public interface for interacting with NewMockOAuth2Server.
+//
+// Summary: Constructs and returns an initialized mock o auth server ready for consumption.
 //
 // Parameters:
-//   - t (*testing.T): The t parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *MockOAuth2Server: The resulting *MockOAuth2Server.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewMockOAuth2Server operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err)
@@ -124,34 +124,21 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 	return mock
 }
 
-// NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
+// NewIDToken serves as a public interface for interacting with NewIDToken.
+//
+// Summary: Constructs and returns an initialized id token ready for consumption.
 //
 // Parameters:
-//   - t (*testing.T): The t parameter.
-//   - claims (jwt.MapClaims): The claims parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The resulting string.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewIDToken operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *MockOAuth2Server) NewIDToken(t *testing.T, claims jwt.MapClaims) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	signedToken, err := token.SignedString(s.PrivateKey)

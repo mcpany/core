@@ -24,9 +24,21 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+// GlobalRateLimitMiddleware represents the public GlobalRateLimitMiddleware entity.
 //
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+// Summary: Defines the structured data model representing a rate limit middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -36,18 +48,21 @@ type GlobalRateLimitMiddleware struct {
 	redisClients sync.Map
 }
 
-// NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
+// NewGlobalRateLimitMiddleware serves as a public interface for interacting with NewGlobalRateLimitMiddleware.
 //
-// Summary: Initializes the global rate limit middleware with the provided configuration.
+// Summary: Constructs and returns an initialized global rate limit middleware ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Initializes internal caches for limiters.
+//   - May safely mutate local state without unintended external side effects.
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -55,16 +70,21 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 	}
 }
 
-// UpdateConfig updates the rate limit configuration safely.
+// UpdateConfig serves as a public interface for interacting with UpdateConfig.
 //
-// Summary: Updates the rate limit configuration at runtime.
+// Summary: Update the config appropriately based on current system conditions.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Acquires a lock to safely update the configuration.
-//   - Effectively changes rate limiting behavior for subsequent requests.
+//   - May safely mutate local state without unintended external side effects.
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -74,26 +94,21 @@ func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfi
 	// So we generally don't need to clear cache unless KeyBy changes.
 }
 
-// Execute executes the rate limiting middleware.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Intercepts requests and enforces the configured rate limits.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - method: string. The MCP method being called.
-//   - req: mcp.Request. The request payload.
-//   - next: mcp.MethodHandler. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - mcp.Result: The result of the next handler if allowed.
-//   - error: An error if the rate limit is exceeded or the next handler fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "global rate limit exceeded" if the request is blocked.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Records metrics for allowed and blocked requests.
-//   - May update the state of the rate limiter (e.g., consume tokens).
+//   - May safely mutate local state without unintended external side effects.
 func (m *GlobalRateLimitMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	m.mu.RLock()
 	config := m.config

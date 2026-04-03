@@ -8,22 +8,21 @@ import { useState, useEffect } from "react";
 const STORAGE_KEY = "mcpany-pinned-tools";
 
 /**
- * Summary: Document usePinnedTools
+ * usePinnedTools serves as a public interface for interacting with usePinnedTools.
  *
- * Params:
- *   - None
+ * Summary: Use the pinned tools appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Hook for pinnedtools.
- * @returns The result.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function usePinnedTools() {
   const [pinnedTools, setPinnedTools] = useState<string[]>([]);

@@ -12,7 +12,21 @@ mcp = FastMCP("e2e-cowsay-server")
 
 def main():
     """
-    Main entry point for the cowsay server.
+    main operation.
+
+    Summary: Main the  appropriately based on current system conditions.
+
+    Parameters:
+      - Check signature.
+
+    Returns:
+      - Expected state or data.
+
+    Throws/Errors:
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     @mcp.tool()
     def say(message: str) -> str:

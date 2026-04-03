@@ -13,15 +13,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// VerifyIntegrity checks if the tool definition matches its expected hash.
+// VerifyIntegrity serves as a public interface for interacting with VerifyIntegrity.
 //
-// Summary: Verifies runtime tool integrity.
+// Summary: Verify the integrity appropriately based on current system conditions.
 //
 // Parameters:
-//   - t: *v1.Tool. The tool to verify.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if integrity check fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func VerifyIntegrity(t *v1.Tool) error {
 	if !t.HasIntegrity() {
 		return nil // No integrity check required
@@ -43,15 +49,21 @@ func VerifyIntegrity(t *v1.Tool) error {
 	return nil
 }
 
-// VerifyConfigIntegrity checks if the config tool definition matches its expected hash.
+// VerifyConfigIntegrity serves as a public interface for interacting with VerifyConfigIntegrity.
 //
-// Summary: Verifies configuration tool integrity.
+// Summary: Verify the config integrity appropriately based on current system conditions.
 //
 // Parameters:
-//   - t: *configv1.ToolDefinition. The tool definition to verify.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if integrity check fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	if t.GetIntegrity() == nil {
 		return nil // No integrity check required
@@ -73,16 +85,21 @@ func VerifyConfigIntegrity(t *configv1.ToolDefinition) error {
 	return nil
 }
 
-// CalculateHash computes the SHA256 hash of a runtime tool definition.
+// CalculateHash serves as a public interface for interacting with CalculateHash.
 //
-// Summary: Calculates hash for runtime tool.
+// Summary: Calculate the hash appropriately based on current system conditions.
 //
 // Parameters:
-//   - t: *v1.Tool. The tool to hash.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The hex-encoded SHA256 hash.
-//   - error: An error if marshaling fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func CalculateHash(t *v1.Tool) (string, error) {
 	// Create a copy of the tool without the integrity field to calculate the hash
 	toolCopy := proto.Clone(t).(*v1.Tool)
@@ -101,16 +118,21 @@ func CalculateHash(t *v1.Tool) (string, error) {
 	return hex.EncodeToString(hash[:]), nil
 }
 
-// CalculateConfigHash computes the SHA256 hash of a configuration tool definition.
+// CalculateConfigHash serves as a public interface for interacting with CalculateConfigHash.
 //
-// Summary: Calculates hash for configuration tool.
+// Summary: Calculate the config hash appropriately based on current system conditions.
 //
 // Parameters:
-//   - t: *configv1.ToolDefinition. The tool definition to hash.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The hex-encoded SHA256 hash.
-//   - error: An error if marshaling fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func CalculateConfigHash(t *configv1.ToolDefinition) (string, error) {
 	// Create a copy of the tool to calculate the hash
 	toolCopy := proto.Clone(t).(*configv1.ToolDefinition)

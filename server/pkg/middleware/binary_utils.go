@@ -8,7 +8,21 @@ import (
 	"math"
 )
 
-// float32ToBytes converts a slice of float32 to a byte slice.
+// float32ToBytes serves as a public interface for interacting with float32ToBytes.
+//
+// Summary: Float the to bytes appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func float32ToBytes(floats []float32) []byte {
 	bytes := make([]byte, len(floats)*4)
 	for i, f := range floats {
@@ -17,7 +31,21 @@ func float32ToBytes(floats []float32) []byte {
 	return bytes
 }
 
-// bytesToFloat32 converts a byte slice to a slice of float32.
+// bytesToFloat32 serves as a public interface for interacting with bytesToFloat32.
+//
+// Summary: Bytes the to float appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func bytesToFloat32(bytes []byte) []float32 {
 	if len(bytes)%4 != 0 {
 		return nil // Invalid length

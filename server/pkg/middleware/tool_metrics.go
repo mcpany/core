@@ -82,26 +82,40 @@ var (
 	)
 )
 
-// ToolMetricsMiddleware provides detailed metrics for tool executions.
+// ToolMetricsMiddleware represents the public ToolMetricsMiddleware entity.
 //
-// Summary: Middleware that records Prometheus metrics for tool execution calls.
+// Summary: Defines the structured data model representing a metrics middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
-// NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
+// NewToolMetricsMiddleware serves as a public interface for interacting with NewToolMetricsMiddleware.
 //
-// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
+// Summary: Constructs and returns an initialized tool metrics middleware ready for consumption.
 //
 // Parameters:
-//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
-//     If nil, a simple default tokenizer is used.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Registers Prometheus metrics (globally, once).
+//   - May safely mutate local state without unintended external side effects.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -120,22 +134,21 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	}
 }
 
-// Execute executes the tool metrics middleware.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Wraps tool execution to record latency, size, and token metrics.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing tool execution details.
-//   - next: tool.ExecutionFunc. The next handler in the execution chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the execution fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates Prometheus counters, histograms, and gauges.
-//   - Measures execution duration.
+//   - May safely mutate local state without unintended external side effects.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

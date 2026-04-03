@@ -13,9 +13,21 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// AIABrokerConfig defines the configuration for the Active Intent Alignment Broker.
+// AIABrokerConfig represents the public AIABrokerConfig entity.
 //
-// Summary: Configuration for Active Intent Alignment Broker.
+// Summary: Defines the structured data model representing a broker config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AIABrokerConfig struct {
 	// Enabled determines if the AIA Broker is active.
 	Enabled bool `json:"enabled"`
@@ -24,54 +36,61 @@ type AIABrokerConfig struct {
 	RequiredFor []string `json:"required_for"`
 }
 
-// AIABroker implements the Active Intent Alignment Broker middleware.
-// It verifies that specialist agent reasoning traces remain semantically
-// aligned with the mission-root intent.
+// AIABroker represents the public AIABroker entity.
 //
-// Summary: Represents the AIA Broker middleware.
-type AIABroker struct {
-	config AIABrokerConfig
-}
-
-// NewAIABroker creates a new AIABroker middleware instance.
-//
-// Summary: Creates a new Active Intent Alignment Broker instance.
+// Summary: Defines the structured data model representing a broker.
 //
 // Parameters:
-//   - config (AIABrokerConfig): The configuration settings.
+//   - None.
 //
 // Returns:
-//   - *AIABroker: The resulting AIA Broker instance.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
 //   - None.
+type AIABroker struct {
+	config AIABrokerConfig
+}
+
+// NewAIABroker serves as a public interface for interacting with NewAIABroker.
+//
+// Summary: Constructs and returns an initialized aia broker ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewAIABroker(config AIABrokerConfig) *AIABroker {
 	return &AIABroker{
 		config: config,
 	}
 }
 
-// Execute enforces intent alignment before proceeding to the next handler.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the intent alignment check before proceeding.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result if allowed.
-//   - error: An error if the policy blocks execution or policy evaluation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if intent drift is detected or required headers are missing.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Logs validation failures.
+//   - May safely mutate local state without unintended external side effects.
 func (b *AIABroker) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !b.config.Enabled {
 		return next(ctx, req)

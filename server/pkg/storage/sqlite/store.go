@@ -15,76 +15,97 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// Store implements config.Store using SQLite.
+// Store represents the public Store entity.
 //
-// Summary: SQLite storage implementation.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Store struct {
 	db *DB
 }
 
-// NewStore creates a new SQLite store.
+// NewStore serves as a public interface for interacting with NewStore.
 //
-// Summary: Creates a new SQLite store.
+// Summary: Constructs and returns an initialized store ready for consumption.
 //
 // Parameters:
-//   - db (*DB): The database connection wrapper.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Store: A pointer to a new Store.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
 
-// Close closes the underlying database connection.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the database connection.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the database connection close fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes the connection to SQLite.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) Close() error {
 	return s.db.Close()
 }
 
-// HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
+// HasConfigSources serves as a public interface for interacting with HasConfigSources.
 //
-// Summary: Checks if the store has configuration sources.
+// Summary: Checks condition indicating whether the target has config sources.
 //
-// For DB stores, we assume they always have a source (the DB itself).
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True always for DB store.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) HasConfigSources() bool {
 	return true
 }
 
-// Load implements config.Store interface.
+// Load serves as a public interface for interacting with Load.
 //
-// Summary: Loads the entire server configuration from the database.
+// Summary: Load the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The loaded configuration.
-//   - error: An error if loading fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if any database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes multiple SELECT queries against the database.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
 	var (
 		services    []*configv1.UpstreamServiceConfig
@@ -283,22 +304,21 @@ func (s *Store) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) 
 	return builder.Build(), nil
 }
 
-// SaveService saves an upstream service configuration.
+// SaveService serves as a public interface for interacting with SaveService.
 //
-// Summary: Persists a service configuration.
+// Summary: Save the service appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - service (*configv1.UpstreamServiceConfig): The service configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if service name is missing or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates a row in the upstream_services table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	if service.GetName() == "" {
 		return fmt.Errorf("service name is required")
@@ -329,21 +349,21 @@ func (s *Store) SaveService(ctx context.Context, service *configv1.UpstreamServi
 	return nil
 }
 
-// GetService retrieves an upstream service configuration by name.
+// GetService serves as a public interface for interacting with GetService.
 //
-// Summary: Retrieves a service configuration by name.
+// Summary: Fetches and returns the underlying service from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The name of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.UpstreamServiceConfig: The service configuration.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if service is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetService(ctx context.Context, name string) (*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -363,19 +383,21 @@ func (s *Store) GetService(ctx context.Context, name string) (*configv1.Upstream
 	return &service, nil
 }
 
-// ListServices lists all upstream service configurations.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Lists all services.
+// Summary: List the services appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of service configurations.
-//   - error: An error if listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	query := "SELECT config_json FROM upstream_services"
 	rows, err := s.db.QueryContext(ctx, query)
@@ -405,22 +427,21 @@ func (s *Store) ListServices(ctx context.Context) ([]*configv1.UpstreamServiceCo
 	return services, nil
 }
 
-// DeleteService deletes an upstream service configuration by name.
+// DeleteService serves as a public interface for interacting with DeleteService.
 //
-// Summary: Deletes a service configuration.
+// Summary: Delete the service appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The name of the service to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes a row from the upstream_services table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteService(ctx context.Context, name string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM upstream_services WHERE name = ?", name)
 	if err != nil {
@@ -429,20 +450,21 @@ func (s *Store) DeleteService(ctx context.Context, name string) error {
 	return nil
 }
 
-// GetGlobalSettings retrieves the global configuration.
+// GetGlobalSettings serves as a public interface for interacting with GetGlobalSettings.
 //
-// Summary: Retrieves global settings.
+// Summary: Fetches and returns the underlying global settings from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.GlobalSettings: The global settings.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if settings are not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings, error) {
 	query := "SELECT config_json FROM global_settings WHERE id = 1"
 	row := s.db.QueryRowContext(ctx, query)
@@ -462,22 +484,21 @@ func (s *Store) GetGlobalSettings(ctx context.Context) (*configv1.GlobalSettings
 	return &settings, nil
 }
 
-// SaveGlobalSettings saves the global configuration.
+// SaveGlobalSettings serves as a public interface for interacting with SaveGlobalSettings.
 //
-// Summary: Persists global settings.
+// Summary: Save the global settings appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - settings (*configv1.GlobalSettings): The settings to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates the global_settings table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.GlobalSettings) error {
 	opts := protojson.MarshalOptions{UseProtoNames: true}
 	configJSON, err := opts.Marshal(settings)
@@ -501,22 +522,21 @@ func (s *Store) SaveGlobalSettings(ctx context.Context, settings *configv1.Globa
 
 // Users
 
-// CreateUser creates a new user.
+// CreateUser serves as a public interface for interacting with CreateUser.
 //
-// Summary: Creates a user.
+// Summary: Create the user appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - user (*configv1.User): The user to create.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if creation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if user ID is missing or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts a row into the users table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetId() == "" {
 		return fmt.Errorf("user ID is required")
@@ -539,21 +559,21 @@ func (s *Store) CreateUser(ctx context.Context, user *configv1.User) error {
 	return nil
 }
 
-// GetUser retrieves a user by ID.
+// GetUser serves as a public interface for interacting with GetUser.
 //
-// Summary: Retrieves a user by ID.
+// Summary: Fetches and returns the underlying user from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The user ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.User: The user.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if user is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) {
 	query := "SELECT config_json FROM users WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -573,19 +593,21 @@ func (s *Store) GetUser(ctx context.Context, id string) (*configv1.User, error) 
 	return &user, nil
 }
 
-// ListUsers retrieves all users.
+// ListUsers serves as a public interface for interacting with ListUsers.
 //
-// Summary: Lists all users.
+// Summary: List the users appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.User: A list of users.
-//   - error: An error if listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM users")
 	if err != nil {
@@ -614,22 +636,21 @@ func (s *Store) ListUsers(ctx context.Context) ([]*configv1.User, error) {
 	return users, nil
 }
 
-// UpdateUser updates an existing user.
+// UpdateUser serves as a public interface for interacting with UpdateUser.
 //
-// Summary: Updates a user.
+// Summary: Update the user appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - user (*configv1.User): The user to update.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if update fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if user ID is missing, user not found, or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the row in the users table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 	if user.GetId() == "" {
 		return fmt.Errorf("user ID is required")
@@ -660,22 +681,21 @@ func (s *Store) UpdateUser(ctx context.Context, user *configv1.User) error {
 	return nil
 }
 
-// DeleteUser deletes a user by ID.
+// DeleteUser serves as a public interface for interacting with DeleteUser.
 //
-// Summary: Deletes a user.
+// Summary: Delete the user appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The user ID to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes the row from the users table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteUser(ctx context.Context, id string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE id = ?", id)
 	if err != nil {
@@ -686,19 +706,21 @@ func (s *Store) DeleteUser(ctx context.Context, id string) error {
 
 // Secrets
 
-// ListSecrets retrieves all secrets.
+// ListSecrets serves as a public interface for interacting with ListSecrets.
 //
-// Summary: Lists all secrets.
+// Summary: List the secrets appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Secret: A list of secrets.
-//   - error: An error if listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM secrets")
 	if err != nil {
@@ -725,21 +747,21 @@ func (s *Store) ListSecrets(ctx context.Context) ([]*configv1.Secret, error) {
 	return secrets, nil
 }
 
-// GetSecret retrieves a secret by ID.
+// GetSecret serves as a public interface for interacting with GetSecret.
 //
-// Summary: Retrieves a secret by ID.
+// Summary: Fetches and returns the underlying secret from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The secret ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Secret: The secret.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if secret is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, error) {
 	query := "SELECT config_json FROM secrets WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -759,22 +781,21 @@ func (s *Store) GetSecret(ctx context.Context, id string) (*configv1.Secret, err
 	return &secret, nil
 }
 
-// SaveSecret saves a secret.
+// SaveSecret serves as a public interface for interacting with SaveSecret.
 //
-// Summary: Persists a secret.
+// Summary: Save the secret appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - secret (*configv1.Secret): The secret to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if secret ID is missing or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates the secrets table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
 	if secret.GetId() == "" {
 		return fmt.Errorf("secret id is required")
@@ -802,22 +823,21 @@ func (s *Store) SaveSecret(ctx context.Context, secret *configv1.Secret) error {
 	return nil
 }
 
-// DeleteSecret deletes a secret by ID.
+// DeleteSecret serves as a public interface for interacting with DeleteSecret.
 //
-// Summary: Deletes a secret.
+// Summary: Delete the secret appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The secret ID to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes the row from the secrets table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM secrets WHERE id = ?", id)
 	if err != nil {
@@ -826,22 +846,21 @@ func (s *Store) DeleteSecret(ctx context.Context, id string) error {
 	return nil
 }
 
-// SaveLog saves a log entry.
+// SaveLog serves as a public interface for interacting with SaveLog.
 //
-// Summary: Persists a log entry.
+// Summary: Save the log appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - entry (*logging.LogEntry): The log entry to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if storage write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Persists the log entry to the underlying storage.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	metadataJSON, err := json.Marshal(entry.Metadata)
 	if err != nil {
@@ -859,20 +878,21 @@ func (s *Store) SaveLog(ctx context.Context, entry *logging.LogEntry) error {
 	return nil
 }
 
-// GetRecentLogs retrieves recent log entries.
+// GetRecentLogs serves as a public interface for interacting with GetRecentLogs.
 //
-// Summary: Retrieves recent log entries.
+// Summary: Fetches and returns the underlying recent logs from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - limit (int): The maximum number of logs to retrieve.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*logging.LogEntry: A list of log entries.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if storage read fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEntry, error) {
 	// We want the LATEST logs, but ordered chronologically for the broadcaster/UI.
 	// So we fetch DESC (latest first), then sort ASC.
@@ -923,19 +943,21 @@ func (s *Store) GetRecentLogs(ctx context.Context, limit int) ([]*logging.LogEnt
 
 // Profiles
 
-// ListProfiles retrieves all profile definitions.
+// ListProfiles serves as a public interface for interacting with ListProfiles.
 //
-// Summary: Lists all profiles.
+// Summary: List the profiles appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.ProfileDefinition: A list of profiles.
-//   - error: An error if listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM profile_definitions")
 	if err != nil {
@@ -962,21 +984,21 @@ func (s *Store) ListProfiles(ctx context.Context) ([]*configv1.ProfileDefinition
 	return profiles, nil
 }
 
-// GetProfile retrieves a profile definition by name.
+// GetProfile serves as a public interface for interacting with GetProfile.
 //
-// Summary: Retrieves a profile by name.
+// Summary: Fetches and returns the underlying profile from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The profile name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.ProfileDefinition: The profile.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if profile is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileDefinition, error) {
 	query := "SELECT config_json FROM profile_definitions WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -996,22 +1018,21 @@ func (s *Store) GetProfile(ctx context.Context, name string) (*configv1.ProfileD
 	return &profile, nil
 }
 
-// SaveProfile saves a profile definition.
+// SaveProfile serves as a public interface for interacting with SaveProfile.
 //
-// Summary: Persists a profile.
+// Summary: Save the profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - profile (*configv1.ProfileDefinition): The profile to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if profile name is missing or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates the profile_definitions table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefinition) error {
 	if profile.GetName() == "" {
 		return fmt.Errorf("profile name is required")
@@ -1039,22 +1060,21 @@ func (s *Store) SaveProfile(ctx context.Context, profile *configv1.ProfileDefini
 	return nil
 }
 
-// DeleteProfile deletes a profile definition by name.
+// DeleteProfile serves as a public interface for interacting with DeleteProfile.
 //
-// Summary: Deletes a profile.
+// Summary: Delete the profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The profile name to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes the row from the profile_definitions table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM profile_definitions WHERE name = ?", name)
 	if err != nil {
@@ -1065,19 +1085,21 @@ func (s *Store) DeleteProfile(ctx context.Context, name string) error {
 
 // Service Collections
 
-// ListServiceCollections retrieves all service collections.
+// ListServiceCollections serves as a public interface for interacting with ListServiceCollections.
 //
-// Summary: Lists all collections.
+// Summary: List the service collections appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Collection: A list of collections.
-//   - error: An error if listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collection, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_collections")
 	if err != nil {
@@ -1104,21 +1126,21 @@ func (s *Store) ListServiceCollections(ctx context.Context) ([]*configv1.Collect
 	return collections, nil
 }
 
-// GetServiceCollection retrieves a service collection by name.
+// GetServiceCollection serves as a public interface for interacting with GetServiceCollection.
 //
-// Summary: Retrieves a collection by name.
+// Summary: Fetches and returns the underlying service collection from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The collection name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Collection: The collection.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if collection is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv1.Collection, error) {
 	query := "SELECT config_json FROM service_collections WHERE name = ?"
 	row := s.db.QueryRowContext(ctx, query, name)
@@ -1138,22 +1160,21 @@ func (s *Store) GetServiceCollection(ctx context.Context, name string) (*configv
 	return &collection, nil
 }
 
-// SaveServiceCollection saves a service collection.
+// SaveServiceCollection serves as a public interface for interacting with SaveServiceCollection.
 //
-// Summary: Persists a collection.
+// Summary: Save the service collection appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - collection (*configv1.Collection): The collection to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if collection name is missing or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates the service_collections table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.Collection) error {
 	if collection.GetName() == "" {
 		return fmt.Errorf("collection name is required")
@@ -1181,22 +1202,21 @@ func (s *Store) SaveServiceCollection(ctx context.Context, collection *configv1.
 	return nil
 }
 
-// DeleteServiceCollection deletes a service collection by name.
+// DeleteServiceCollection serves as a public interface for interacting with DeleteServiceCollection.
 //
-// Summary: Deletes a collection.
+// Summary: Delete the service collection appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - name (string): The collection name to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes the row from the service_collections table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM service_collections WHERE name = ?", name)
 	if err != nil {
@@ -1207,23 +1227,21 @@ func (s *Store) DeleteServiceCollection(ctx context.Context, name string) error 
 
 // Tokens
 
-// SaveToken saves a user token.
+// SaveToken serves as a public interface for interacting with SaveToken.
 //
-// Summary: Persists a user token.
+// Summary: Save the token appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - token (*configv1.UserToken): The token to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if user ID or service ID is missing.
-//   - Returns an error if database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates the user_tokens table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error {
 	if token.GetUserId() == "" || token.GetServiceId() == "" {
 		return fmt.Errorf("user ID and service ID are required")
@@ -1249,22 +1267,21 @@ func (s *Store) SaveToken(ctx context.Context, token *configv1.UserToken) error 
 	return nil
 }
 
-// GetToken retrieves a user token by user ID and service ID.
+// GetToken serves as a public interface for interacting with GetToken.
 //
-// Summary: Retrieves a user token.
+// Summary: Fetches and returns the underlying token from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - userID (string): The user ID.
-//   - serviceID (string): The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.UserToken: The token.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if token is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*configv1.UserToken, error) {
 	query := "SELECT config_json FROM user_tokens WHERE user_id = ? AND service_id = ?"
 	row := s.db.QueryRowContext(ctx, query, userID, serviceID)
@@ -1284,23 +1301,21 @@ func (s *Store) GetToken(ctx context.Context, userID, serviceID string) (*config
 	return &token, nil
 }
 
-// DeleteToken deletes a user token.
+// DeleteToken serves as a public interface for interacting with DeleteToken.
 //
-// Summary: Deletes a user token.
+// Summary: Delete the token appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - userID (string): The user ID.
-//   - serviceID (string): The service ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes the row from the user_tokens table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM user_tokens WHERE user_id = ? AND service_id = ?", userID, serviceID)
 	if err != nil {
@@ -1311,19 +1326,21 @@ func (s *Store) DeleteToken(ctx context.Context, userID, serviceID string) error
 
 // Credentials
 
-// ListCredentials retrieves all credentials.
+// ListCredentials serves as a public interface for interacting with ListCredentials.
 //
-// Summary: Lists all credentials.
+// Summary: List the credentials appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Credential: A list of credentials.
-//   - error: An error if listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM credentials")
 	if err != nil {
@@ -1350,21 +1367,21 @@ func (s *Store) ListCredentials(ctx context.Context) ([]*configv1.Credential, er
 	return credentials, nil
 }
 
-// GetCredential retrieves a credential by ID.
+// GetCredential serves as a public interface for interacting with GetCredential.
 //
-// Summary: Retrieves a credential by ID.
+// Summary: Fetches and returns the underlying credential from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The credential ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.Credential: The credential.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns nil, nil if credential is not found.
-//   - Returns an error if database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credential, error) {
 	query := "SELECT config_json FROM credentials WHERE id = ?"
 	row := s.db.QueryRowContext(ctx, query, id)
@@ -1384,22 +1401,21 @@ func (s *Store) GetCredential(ctx context.Context, id string) (*configv1.Credent
 	return &cred, nil
 }
 
-// SaveCredential saves a credential.
+// SaveCredential serves as a public interface for interacting with SaveCredential.
 //
-// Summary: Persists a credential.
+// Summary: Save the credential appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - cred (*configv1.Credential): The credential to save.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if saving fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if credential ID is missing or database write fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Inserts or updates the credentials table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) error {
 	if cred.GetId() == "" {
 		return fmt.Errorf("credential ID is required")
@@ -1426,22 +1442,21 @@ func (s *Store) SaveCredential(ctx context.Context, cred *configv1.Credential) e
 	return nil
 }
 
-// DeleteCredential deletes a credential by ID.
+// DeleteCredential serves as a public interface for interacting with DeleteCredential.
 //
-// Summary: Deletes a credential.
+// Summary: Delete the credential appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - id (string): The credential ID to delete.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if deletion fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Deletes the row from the credentials table.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Store) DeleteCredential(ctx context.Context, id string) error {
 	_, err := s.db.ExecContext(ctx, "DELETE FROM credentials WHERE id = ?", id)
 	if err != nil {

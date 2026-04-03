@@ -10,53 +10,59 @@ import (
 	"github.com/mcpany/core/server/pkg/catalog"
 )
 
-// CatalogServer implements the CatalogService API.
+// CatalogServer represents the public CatalogServer entity.
 //
-// Summary: Server implementation for the Catalog Service.
+// Summary: Provides network listening and request routing capabilities for server.
 //
-// It handles requests to list available services from the dynamic catalog.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CatalogServer struct {
 	manager *catalog.Manager
 }
 
-// NewCatalogServer creates a new CatalogServer.
+// NewCatalogServer serves as a public interface for interacting with NewCatalogServer.
 //
-// Summary: Initializes a new CatalogServer.
+// Summary: Constructs and returns an initialized catalog server ready for consumption.
 //
 // Parameters:
-//   - manager (*catalog.Manager): The catalog manager instance.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*CatalogServer): The initialized server instance.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//
-//	None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//
-//	None.
+//   - May safely mutate local state without unintended external side effects.
 func NewCatalogServer(manager *catalog.Manager) *CatalogServer {
 	return &CatalogServer{manager: manager}
 }
 
-// ListServices returns a list of available services in the catalog.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Lists available catalog services.
+// Summary: List the services appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The request context.
-//   - _ (*apiv1.ListCatalogServicesRequest): The request object (currently unused).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*apiv1.ListCatalogServicesResponse): The response containing the list of services.
-//   - (error): An error if the listing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the underlying manager fails to list services.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Fetches services from the catalog manager.
+//   - May safely mutate local state without unintended external side effects.
 func (s *CatalogServer) ListServices(ctx context.Context, _ *apiv1.ListCatalogServicesRequest) (*apiv1.ListCatalogServicesResponse, error) {
 	services, err := s.manager.ListServices(ctx)
 	if err != nil {

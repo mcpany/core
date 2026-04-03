@@ -12,41 +12,41 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 )
 
-// OAuth2Authenticator implements the Authenticator interface for OAuth2-based
-// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
-// Tokens) presented in the HTTP Authorization header.
+// OAuth2Authenticator represents the public OAuth2Authenticator entity.
 //
-// Summary: Represents a OAuth2Authenticator.
+// Summary: Defines the structured data model representing a auth authenticator.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string
 }
 
-// NewOAuth2Authenticator creates a new OAuth2Authenticator with the provided
-// configuration. It initializes the OIDC provider and creates a verifier for
-// validating ID tokens.
+// NewOAuth2Authenticator serves as a public interface for interacting with NewOAuth2Authenticator.
+//
+// Summary: Constructs and returns an initialized o auth authenticator ready for consumption.
 //
 // Parameters:
-//   - ctx: The context for the OIDC provider initialization.
-//   - config: The OAuth2 configuration, including the issuer URL and client ID.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - A new OAuth2Authenticator.
-//   - An error if the OIDC provider cannot be initialized.
-//
-// Summary: Initializes NewOAuth2Authenticator operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2Authenticator, error) {
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
@@ -75,31 +75,21 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 	}, nil
 }
 
-// Authenticate validates the JWT from the Authorization header of the request.
-// It checks for a "Bearer" token and verifies its signature, expiration, and
-// claims against the OIDC provider.
+// Authenticate serves as a public interface for interacting with Authenticate.
+//
+// Summary: Authenticate the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: The request context.
-//   - r: The HTTP request to authenticate.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - The context with the user's identity (email) on success.
-//   - An error if authentication fails.
-//
-// Summary: Executes Authenticate operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *OAuth2Authenticator) Authenticate(ctx context.Context, r *http.Request) (context.Context, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

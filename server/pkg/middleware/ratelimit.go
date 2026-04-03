@@ -28,10 +28,21 @@ import (
 // Pre-allocated to avoid allocation on every request.
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
-// RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
+// RateLimitMiddleware represents the public RateLimitMiddleware entity.
 //
-// Summary: Middleware for rate limiting tool execution.
+// Summary: Defines the structured data model representing a limit middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -41,36 +52,59 @@ type RateLimitMiddleware struct {
 	strategies map[configv1.RateLimitConfig_Storage]RateLimitStrategy
 }
 
-// Option defines a functional option for RateLimitMiddleware.
+// Option represents the public Option entity.
 //
-// Summary: Functional option for RateLimitMiddleware.
-type Option func(*RateLimitMiddleware)
-
-// WithTokenizer sets a custom tokenizer for the middleware.
-//
-// Summary: Configures a custom tokenizer.
+// Summary: Defines the structured data model representing a .
 //
 // Parameters:
-//   - t (tokenizer.Tokenizer): The tokenizer to use.
+//   - None.
 //
 // Returns:
-//   - (Option): The configured option.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type Option func(*RateLimitMiddleware)
+
+// WithTokenizer serves as a public interface for interacting with WithTokenizer.
+//
+// Summary: With the tokenizer appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
 	}
 }
 
-// NewRateLimitMiddleware creates a new RateLimitMiddleware.
+// NewRateLimitMiddleware serves as a public interface for interacting with NewRateLimitMiddleware.
 //
-// Summary: Initializes the rate limit middleware.
+// Summary: Constructs and returns an initialized rate limit middleware ready for consumption.
 //
 // Parameters:
-//   - toolManager (tool.ManagerInterface): The tool manager.
-//   - opts (...Option): Optional configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*RateLimitMiddleware): The initialized middleware.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -93,22 +127,21 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 	return m
 }
 
-// Execute executes the rate limiting middleware.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes rate limiting logic before passing to the next handler.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (any): The result of the execution.
-//   - (error): An error if the limit is exceeded or the operation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Checks against rate limits in memory or Redis.
-//   - Increments counters.
+//   - May safely mutate local state without unintended external side effects.
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

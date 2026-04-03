@@ -5,23 +5,21 @@ import { apiClient } from './client';
 import { Skill } from '@proto/config/v1/skill';
 
 /**
- * Summary: Document SkillService
+ * SkillService serves as a public interface for interacting with SkillService.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a service.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * SkillService provides methods to interact with the backend Skills API.
- * It handles listing, getting, creating, updating, and deleting skills.
- * It delegates to the centralized apiClient to ensure authentication consistency.
+ *   - None.
  */
 export const SkillService = {
   /**

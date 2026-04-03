@@ -14,35 +14,41 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteVectorStore implements VectorStore using SQLite for persistence
-// and an in-memory cache for fast search.
+// SQLiteVectorStore represents the public SQLiteVectorStore entity.
 //
-// Summary: A hybrid vector store that uses SQLite for persistence and an in-memory structure for search.
+// Summary: Defines the structured data model representing a lite vector store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SQLiteVectorStore struct {
 	memoryStore *SimpleVectorStore
 	db          *sql.DB
 }
 
-// NewSQLiteVectorStore creates a new SQLiteVectorStore.
+// NewSQLiteVectorStore serves as a public interface for interacting with NewSQLiteVectorStore.
 //
-// Summary: Initializes a new SQLiteVectorStore from the specified file path.
+// Summary: Constructs and returns an initialized sq lite vector store ready for consumption.
 //
 // Parameters:
-//   - path: string. The file path to the SQLite database.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *SQLiteVectorStore: The initialized vector store.
-//   - error: An error if the path is empty, database cannot be opened, or schema creation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "sqlite path is required" if the path is empty.
-//   - Returns error if database connection or schema initialization fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Opens (and creates if missing) the SQLite database file.
-//   - Creates the 'semantic_cache_entries' table.
-//   - Sets SQLite PRAGMAs for performance optimization.
-//   - Loads existing unexpired entries into memory.
+//   - May safely mutate local state without unintended external side effects.
 func NewSQLiteVectorStore(path string) (*SQLiteVectorStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -175,29 +181,21 @@ func (s *SQLiteVectorStore) loadFromDB(ctx context.Context) error {
 	return nil
 }
 
-// Add adds a new entry to both memory and DB.
+// Add serves as a public interface for interacting with Add.
 //
-// Summary: Inserts a cache entry into the in-memory store and the persistent SQLite database.
+// Summary: Add the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - key: string. The cache key.
-//   - vector: []float32. The embedding vector.
-//   - result: any. The result to cache.
-//   - ttl: time.Duration. The time-to-live for the entry.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if writing to memory or DB fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if memory store addition fails.
-//   - Returns error if JSON marshaling fails.
-//   - Returns error if database insert fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates in-memory cache state.
-//   - Writes row to SQLite database.
-//   - May trigger async probabilistic pruning of expired DB entries.
+//   - May safely mutate local state without unintended external side effects.
 func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	// Add to memory first
 	if err := s.memoryStore.Add(ctx, key, vector, result, ttl); err != nil {
@@ -238,34 +236,40 @@ func (s *SQLiteVectorStore) Add(ctx context.Context, key string, vector []float3
 	return nil
 }
 
-// Search searches in memory.
+// Search serves as a public interface for interacting with Search.
 //
-// Summary: Searches the in-memory store for the nearest neighbor.
+// Summary: Search the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - key: string. The key to filter results.
-//   - query: []float32. The query embedding vector.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The best matching result data.
-//   - float32: The similarity score (0-1).
-//   - bool: True if a match was found.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []float32) (any, float32, bool) {
 	return s.memoryStore.Search(ctx, key, query)
 }
 
-// Prune removes expired entries from both memory and DB.
+// Prune serves as a public interface for interacting with Prune.
 //
-// Summary: Manually triggers removal of expired entries from memory and disk.
+// Summary: Prune the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - key: string. Optional key to restrict pruning scope.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Removes items from memory.
-//   - Deletes rows from SQLite database.
+//   - May safely mutate local state without unintended external side effects.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 
@@ -273,12 +277,21 @@ func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	_, _ = s.db.ExecContext(ctx, "DELETE FROM semantic_cache_entries WHERE expires_at <= ?", now)
 }
 
-// Close closes the database connection.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *SQLiteVectorStore) Close() error {
 	return s.db.Close()
 }

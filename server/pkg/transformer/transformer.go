@@ -14,25 +14,41 @@ import (
 	"text/template"
 )
 
-// Transformer provides functionality to transform a map of data into a
-// structured string using a Go template. It supports multiple output formats
-// specified by the template, such as JSON, XML, or plain text.
+// Transformer represents the public Transformer entity.
 //
-// Summary: Data transformation engine using Go templates with caching and pooling optimization.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Transformer struct {
 	cache sync.Map
 	pool  sync.Pool
 }
 
-// NewTransformer creates and returns a new instance of Transformer.
+// NewTransformer serves as a public interface for interacting with NewTransformer.
 //
-// Summary: Initializes a new Transformer.
+// Summary: Constructs and returns an initialized transformer ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Transformer: The initialized transformer.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Initializes a sync.Pool for bytes.Buffer.
+//   - May safely mutate local state without unintended external side effects.
 func NewTransformer() *Transformer {
 	return &Transformer{
 		pool: sync.Pool{
@@ -43,26 +59,21 @@ func NewTransformer() *Transformer {
 	}
 }
 
-// Transform takes a map of data and a Go template string and returns a byte
-// slice containing the transformed output.
+// Transform serves as a public interface for interacting with Transform.
 //
-// Summary: Executes a Go template against provided data.
+// Summary: Transform the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - templateStr: string. The Go template to execute.
-//   - data: any. The input data context for the template.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []byte: The transformed output.
-//   - error: An error if template parsing or execution fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if template syntax is invalid.
-//   - Returns error if template execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Caches parsed templates.
-//   - Uses a buffer pool to reduce allocations.
+//   - May safely mutate local state without unintended external side effects.
 func (t *Transformer) Transform(templateStr string, data any) ([]byte, error) {
 	var tmpl *template.Template
 	var err error

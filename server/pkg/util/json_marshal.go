@@ -26,16 +26,21 @@ var (
 	}
 )
 
-// FastMarshalToString performs a high-performance JSON marshal into a string.
+// FastMarshalToString serves as a public interface for interacting with FastMarshalToString.
 //
-// Summary: Marshals to a string efficiently.
+// Summary: Fast the marshal to string appropriately based on current system conditions.
 //
 // Parameters:
-//   - v (interface{}): The value to marshal.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The marshaled string.
-//   - error: An error if marshaling fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func FastMarshalToString(v interface{}) (string, error) {
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
@@ -53,16 +58,21 @@ func FastMarshalToString(v interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-// FastMarshal performs a high-performance JSON marshal into a byte slice.
+// FastMarshal serves as a public interface for interacting with FastMarshal.
 //
-// Summary: Marshals to a byte slice efficiently.
+// Summary: Fast the marshal appropriately based on current system conditions.
 //
 // Parameters:
-//   - v (interface{}): The value to marshal.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []byte: The marshaled byte slice.
-//   - error: An error if marshaling fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func FastMarshal(v interface{}) ([]byte, error) {
 	return FastJSON.Marshal(v)
 }

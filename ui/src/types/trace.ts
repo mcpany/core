@@ -4,40 +4,40 @@
  */
 
 /**
- * Summary: Document SpanStatus
+ * SpanStatus represents the public SpanStatus entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a status.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the status of a span.
+ *   - None.
  */
 export type SpanStatus = 'success' | 'error' | 'pending';
 
 /**
- * Summary: Document Span
+ * Span represents the public Span entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents a span in a trace.
+ *   - None.
  */
 export interface Span {
   id: string;
@@ -54,21 +54,21 @@ export interface Span {
 }
 
 /**
- * Summary: Document Trace
+ * Trace represents the public Trace entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents a full trace.
+ *   - None.
  */
 export interface Trace {
   id: string;

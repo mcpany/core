@@ -219,9 +219,21 @@ func filterBuildTags(lines []string) []string {
 	return kept
 }
 
-// Block represents a block of comments.
+// Block represents the public Block entity.
 //
-// Summary: Represents Block.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Block struct {
 	lines       []string
 	isLicense   bool

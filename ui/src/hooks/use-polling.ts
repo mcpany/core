@@ -6,25 +6,21 @@
 import { useEffect, useRef } from 'react';
 
 /**
- * Summary: Document usePolling
+ * usePolling serves as a public interface for interacting with usePolling.
  *
- * Params:
- *   - Documented below.
+ * Summary: Use the polling appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - None
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * usePolling is a hook to poll a callback at a specified interval.
- * It automatically stops polling when the document is hidden and resumes when visible.
- *
- * @param callback - The function to call.
- * @param delay - The interval in milliseconds. If null, polling is paused.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function usePolling(callback: () => void, delay: number | null) {
   const savedCallback = useRef(callback);

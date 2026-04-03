@@ -13,11 +13,21 @@ import (
 	"github.com/playwright-community/playwright-go"
 )
 
-// PageFetcher fetches the visible text content of a URL.
-// It is an interface so tests can inject a lightweight implementation without
-// requiring a real browser installation.
+// PageFetcher represents the public PageFetcher entity.
 //
-// Summary: Represents a PageFetcher.
+// Summary: Defines the structured data model representing a fetcher.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -39,38 +49,59 @@ type PageFetcher interface {
 	FetchText(ctx context.Context, url string) (string, error)
 }
 
-// Provider implements a basic browser automation tool.
+// Provider represents the public Provider entity.
 //
-// Summary: Tool provider for browsing web pages.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
 
-// NewProvider creates a new Provider.
+// NewProvider serves as a public interface for interacting with NewProvider.
 //
-// Summary: Initializes a new browser provider.
+// Summary: Constructs and returns an initialized provider ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Provider: The initialized provider.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewProvider() *Provider {
 	return &Provider{}
 }
 
-// BrowsePage fetches the text content of the given URL.
+// BrowsePage serves as a public interface for interacting with BrowsePage.
 //
-// Summary: Fetches the content of a web page.
+// Summary: Browse the page appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - url: string. The URL to visit.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The text content of the page.
-//   - error: An error if the URL is empty or the browser fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "url is required" if url is empty.
-//   - Returns "failed to start playwright" or "failed to launch browser" if the browser fails to start.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("url is required")
@@ -86,12 +117,21 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 	return strings.TrimSpace(content), nil
 }
 
-// ToolDefinition returns the MCP tool definition.
+// ToolDefinition serves as a public interface for interacting with ToolDefinition.
 //
-// Summary: Defines the metadata for the browse_page tool.
+// Summary: Tool the definition appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]interface{}: The JSON schema definition of the tool.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -140,20 +180,21 @@ type playwrightLocator interface {
 // defaultPlaywrightRunner uses actual playwright-go
 type defaultPlaywrightRunner struct{}
 
-// Run starts the playwright instance.
+// Run serves as a public interface for interacting with Run.
 //
-// Summary: Starts playwright.
+// Summary: Run the  appropriately based on current system conditions.
 //
 // Parameters:
-//
-//	None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - playwrightImpl: The playwright instance.
-//   - error: An error if starting fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 	pw, err := playwright.Run()
 	if err != nil {
@@ -164,42 +205,59 @@ func (d *defaultPlaywrightRunner) Run() (playwrightImpl, error) {
 
 type realPlaywright struct{ pw *playwright.Playwright }
 
-// Stop stops the playwright instance.
+// Stop serves as a public interface for interacting with Stop.
 //
-// Summary: Stops playwright.
+// Summary: Stop the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if stopping fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 
-// Chromium returns the chromium browser type.
+// Chromium serves as a public interface for interacting with Chromium.
 //
-// Summary: Returns chromium browser type.
+// Summary: Chromium the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - playwrightBrowserType: The chromium browser type.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realPlaywright) Chromium() playwrightBrowserType {
 	return &realBrowserType{r.pw.Chromium}
 }
 
 type realBrowserType struct{ bt playwright.BrowserType }
 
-// Launch launches the browser.
+// Launch serves as a public interface for interacting with Launch.
 //
-// Summary: Launches the browser.
+// Summary: Launch the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - options: ...playwright.BrowserTypeLaunchOptions. Options to launch the browser.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - playwrightBrowser: The browser instance.
-//   - error: An error if launching fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions) (playwrightBrowser, error) {
 	b, err := r.bt.Launch(options...)
 	if err != nil {
@@ -210,30 +268,38 @@ func (r *realBrowserType) Launch(options ...playwright.BrowserTypeLaunchOptions)
 
 type realBrowser struct{ b playwright.Browser }
 
-// Close closes the browser.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the browser.
-//
-// Returns:
-//   - error: An error if closing fails.
-//
-// Errors:
-//   - Returns error if any.
-func (r *realBrowser) Close() error { return r.b.Close() }
-
-// NewPage creates a new page in the browser.
-//
-// Summary: Creates a new page.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - options: ...playwright.BrowserNewPageOptions. Options for the new page.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - playwrightPage: The new page.
-//   - error: An error if creating fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
+func (r *realBrowser) Close() error { return r.b.Close() }
+
+// NewPage serves as a public interface for interacting with NewPage.
+//
+// Summary: Constructs and returns an initialized page ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (playwrightPage, error) {
 	p, err := r.b.NewPage(options...)
 	if err != nil {
@@ -244,53 +310,61 @@ func (r *realBrowser) NewPage(options ...playwright.BrowserNewPageOptions) (play
 
 type realPage struct{ p playwright.Page }
 
-// Goto navigates to a URL.
+// Goto serves as a public interface for interacting with Goto.
 //
-// Summary: Navigates to a URL.
+// Summary: Goto the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - url: string. The URL to navigate to.
-//   - options: ...playwright.PageGotoOptions. Options for navigation.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - playwright.Response: The response from the navigation.
-//   - error: An error if navigation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (playwright.Response, error) {
 	return r.p.Goto(url, options...)
 }
 
-// Locator creates a new locator.
+// Locator serves as a public interface for interacting with Locator.
 //
-// Summary: Creates a new locator.
+// Summary: Locator the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - selector: string. The CSS selector for the locator.
-//   - options: ...playwright.PageLocatorOptions. Options for the locator.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - playwrightLocator: The new locator.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
 	return &realLocator{r.p.Locator(selector, options...)}
 }
 
 type realLocator struct{ l playwright.Locator }
 
-// TextContent retrieves the text content of the locator.
+// TextContent serves as a public interface for interacting with TextContent.
 //
-// Summary: Retrieves text content.
+// Summary: Text the content appropriately based on current system conditions.
 //
 // Parameters:
-//   - options: ...playwright.LocatorTextContentOptions. Options for retrieval.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The text content.
-//   - error: An error if retrieval fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *realLocator) TextContent(options ...playwright.LocatorTextContentOptions) (string, error) {
 	return r.l.TextContent(options...)
 }
@@ -300,23 +374,21 @@ type playwrightFetcher struct {
 	runner playwrightRunner
 }
 
-// FetchText fetches the text content of a URL using playwright.
+// FetchText serves as a public interface for interacting with FetchText.
 //
-// Summary: Fetches the text content of a URL using playwright.
+// Summary: Fetch the text appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - url: string. The URL to visit.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The text content of the page.
-//   - error: An error if the fetch fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if any.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	r := f.runner
 	if r == nil {

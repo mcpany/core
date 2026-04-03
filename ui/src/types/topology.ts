@@ -4,21 +4,21 @@
  */
 
 /**
- * Summary: Document NodeType
+ * NodeType represents the public NodeType entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a type.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the type of a node in the topology graph.
+ *   - None.
  */
 export type NodeType =
   | 'NODE_TYPE_UNSPECIFIED'
@@ -33,21 +33,21 @@ export type NodeType =
   | 'NODE_TYPE_WEBHOOK';
 
 /**
- * Summary: Document NodeStatus
+ * NodeStatus represents the public NodeStatus entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a status.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the operational status of a node.
+ *   - None.
  */
 export type NodeStatus =
   | 'NODE_STATUS_UNSPECIFIED'
@@ -56,21 +56,21 @@ export type NodeStatus =
   | 'NODE_STATUS_ERROR';
 
 /**
- * Summary: Document NodeMetrics
+ * NodeMetrics represents the public NodeMetrics entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a metrics.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Performance metrics associated with a node.
+ *   - None.
  */
 export interface NodeMetrics {
   /** Queries per second. */
@@ -82,21 +82,21 @@ export interface NodeMetrics {
 }
 
 /**
- * Summary: Document Node
+ * Node represents the public Node entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents a single node in the topology graph.
+ *   - None.
  */
 export interface Node {
   /** Unique identifier for the node. */
@@ -116,21 +116,21 @@ export interface Node {
 }
 
 /**
- * Summary: Document Graph
+ * Graph represents the public Graph entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the entire topology graph structure.
+ *   - None.
  */
 export interface Graph {
   /** List of client nodes connected to the system. */

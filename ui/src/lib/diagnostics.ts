@@ -6,21 +6,21 @@
 import { Trace } from "@/types/trace";
 
 /**
- * Summary: Document Diagnostic
+ * Diagnostic represents the public Diagnostic entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Diagnostic represents a finding from the trace analysis, indicating an error or warning.
+ *   - None.
  */
 export interface Diagnostic {
   /** The severity of the diagnostic. */
@@ -34,28 +34,21 @@ export interface Diagnostic {
 }
 
 /**
- * Summary: Document analyzeTrace
+ * analyzeTrace serves as a public interface for interacting with analyzeTrace.
  *
- * Params:
- *   - Documented below.
+ * Summary: Analyze the trace appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Analyzes a trace for common errors and returns a list of diagnostics.
- *
- * This function inspects the trace status and error messages to identify
- * known error patterns such as schema validation failures, permission issues,
- * JSON parsing errors, timeouts, and connection failures.
- *
- * @param trace - The trace object containing span data and status.
- * @returns An array of Diagnostic objects describing identified issues.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function analyzeTrace(trace: Trace): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];

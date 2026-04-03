@@ -11,34 +11,61 @@ import (
 	"github.com/mcpany/core/server/pkg/auth"
 )
 
-// RBACMiddleware provides middleware for Role-Based Access Control.
+// RBACMiddleware represents the public RBACMiddleware entity.
 //
-// Summary: Middleware for enforcing role-based access control policies.
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RBACMiddleware struct {
 	enforcer *auth.RBACEnforcer
 }
 
-// NewRBACMiddleware creates a new RBACMiddleware.
+// NewRBACMiddleware serves as a public interface for interacting with NewRBACMiddleware.
 //
-// Summary: Initializes the RBAC middleware.
+// Summary: Constructs and returns an initialized rbac middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *RBACMiddleware: The initialized middleware.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewRBACMiddleware() *RBACMiddleware {
 	return &RBACMiddleware{
 		enforcer: auth.NewRBACEnforcer(),
 	}
 }
 
-// RequireRole returns an HTTP middleware that requires the user to have the specified role.
+// RequireRole serves as a public interface for interacting with RequireRole.
 //
-// Summary: Enforces that the authenticated user possesses a specific role.
+// Summary: Require the role appropriately based on current system conditions.
 //
 // Parameters:
-//   - role: string. The required role.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The middleware function.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -61,15 +88,21 @@ func (m *RBACMiddleware) RequireRole(role string) func(http.Handler) http.Handle
 	}
 }
 
-// RequireAnyRole returns an HTTP middleware that requires the user to have at least one of the specified roles.
+// RequireAnyRole serves as a public interface for interacting with RequireAnyRole.
 //
-// Summary: Enforces that the authenticated user possesses at least one of the specified roles.
+// Summary: Require the any role appropriately based on current system conditions.
 //
 // Parameters:
-//   - roles: ...string. The list of allowed roles.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The middleware function.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -94,15 +127,21 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) func(http.Handler) http
 	}
 }
 
-// EnforcePolicy allows passing a custom policy function.
+// EnforcePolicy serves as a public interface for interacting with EnforcePolicy.
 //
-// Summary: Enforces a custom policy based on the user object.
+// Summary: Enforce the policy appropriately based on current system conditions.
 //
 // Parameters:
-//   - policy: func(user *configv1.User) bool. The policy function to evaluate.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - func(http.Handler) http.Handler: The middleware function.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *RBACMiddleware) EnforcePolicy(_ func(user *configv1.User) bool) func(http.Handler) http.Handler {
 	return func(_ http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

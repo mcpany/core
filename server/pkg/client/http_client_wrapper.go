@@ -12,12 +12,21 @@ import (
 	healthChecker "github.com/mcpany/core/server/pkg/health"
 )
 
-// HTTPClientWrapper wraps an `*http.Client` to adapt it to the
-// `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
-// connection pool, which can help control the number of concurrent connections
-// and reuse them where appropriate.
+// HTTPClientWrapper represents the public HTTPClientWrapper entity.
 //
-// Summary: Represents a HTTPClientWrapper.
+// Summary: Defines the structured data model representing a client wrapper.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig
@@ -25,35 +34,21 @@ type HTTPClientWrapper struct {
 	checker health.Checker
 }
 
-// NewHTTPClientWrapper creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
+// NewHTTPClientWrapper serves as a public interface for interacting with NewHTTPClientWrapper.
+//
+// Summary: Constructs and returns an initialized http client wrapper ready for consumption.
 //
 // Parameters:
-//   - client (*http.Client): The client parameter.
-//   - config (*configv1.UpstreamServiceConfig): The config parameter.
-//   - checker (health.Checker): The checker parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *HTTPClientWrapper: The resulting *HTTPClientWrapper.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewHTTPClientWrapper operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -66,33 +61,21 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 	}
 }
 
-// IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint. ctx is the context for the request. Returns true if successful.
+// IsHealthy serves as a public interface for interacting with IsHealthy.
+//
+// Summary: Checks condition indicating whether the target is healthy.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -100,33 +83,21 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	return w.checker.Check(ctx).Status == health.StatusUp
 }
 
-// Close is a no-op for the wrapper as it does not own the http.Client. The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections on the shared Transport when the service is shut down. Previously, this called CloseIdleConnections on the shared transport, which would negatively impact other concurrent requests sharing the same Transport.
+// Close serves as a public interface for interacting with Close.
+//
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }

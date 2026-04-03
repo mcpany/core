@@ -15,10 +15,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Version is the version of the mcpctl CLI.
-// It is set at build time via -ldflags.
+// Version represents the public Version entity.
 //
-// Summary: Represents Version.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var Version = "dev"
 
 // main is the entry point for the mcpctl CLI.

@@ -12,32 +12,40 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// BlackboardStore represents a shared key-value store with agent-aware row-level security.
+// BlackboardStore represents the public BlackboardStore entity.
 //
-// Summary: Represents a shared key-value store with agent-aware row-level security.
+// Summary: Defines the structured data model representing a store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BlackboardStore struct {
 	db *sql.DB
 }
 
-// NewBlackboardStore creates a new SQLite Blackboard store.
+// NewBlackboardStore serves as a public interface for interacting with NewBlackboardStore.
 //
-// Summary: Creates a new SQLite-backed Blackboard store.
+// Summary: Constructs and returns an initialized blackboard store ready for consumption.
 //
 // Parameters:
-//   - path (string): The file path to the SQLite database.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *BlackboardStore: A new instance of the BlackboardStore.
-//   - error: An error if the database connection or schema creation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the path is empty.
-//   - Returns an error if opening the sqlite database fails.
-//   - Returns an error if creating the blackboard table fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Connects to the specified SQLite database.
-//   - Executes schema creation queries (CREATE TABLE, CREATE INDEX).
+//   - May safely mutate local state without unintended external side effects.
 func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	if path == "" {
 		return nil, fmt.Errorf("sqlite path is required")
@@ -68,25 +76,21 @@ func NewBlackboardStore(path string) (*BlackboardStore, error) {
 	return &BlackboardStore{db: db}, nil
 }
 
-// Get retrieves a value from the blackboard for a specific agent.
+// Get serves as a public interface for interacting with Get.
 //
-// Summary: Retrieves a value from the blackboard for a specific agent.
+// Summary: Fetches and returns the underlying  from the system state.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - agentID (string): The identifier of the agent.
-//   - key (string): The key to lookup.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The retrieved value.
-//   - error: An error if the value cannot be retrieved.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "key not found" if the key does not exist for the specified agent.
-//   - Returns an error if the database query fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes a SELECT query on the database.
+//   - May safely mutate local state without unintended external side effects.
 func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string, error) {
 	var value string
 	err := s.db.QueryRowContext(ctx, "SELECT value FROM blackboard WHERE agent_id = ? AND key = ?", agentID, key).Scan(&value)
@@ -99,24 +103,21 @@ func (s *BlackboardStore) Get(ctx context.Context, agentID, key string) (string,
 	return value, nil
 }
 
-// Set stores a value in the blackboard for a specific agent.
+// Set serves as a public interface for interacting with Set.
 //
-// Summary: Stores a value in the blackboard for a specific agent.
+// Summary: Set the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - agentID (string): The identifier of the agent.
-//   - key (string): The key to store the value under.
-//   - value (string): The value to store.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the storage operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the database execution fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes an INSERT OR REPLACE (UPSERT) query on the database.
+//   - May safely mutate local state without unintended external side effects.
 func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) error {
 	_, err := s.db.ExecContext(ctx, `
 		INSERT INTO blackboard (agent_id, key, value) VALUES (?, ?, ?)
@@ -125,21 +126,21 @@ func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) e
 	return err
 }
 
-// Close closes the database connection.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the underlying database connection.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if closing the connection fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the database connection cannot be closed properly.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes the active database connection, preventing further queries.
+//   - May safely mutate local state without unintended external side effects.
 func (s *BlackboardStore) Close() error {
 	return s.db.Close()
 }

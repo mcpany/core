@@ -15,24 +15,76 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// DefaultClaudeModel is the default Claude model to use.
+// DefaultClaudeModel represents the public DefaultClaudeModel entity.
+//
+// Summary: Defines the structured data model representing a claude model.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const DefaultClaudeModel = "claude-3-5-sonnet-latest"
 
-// ClaudeCLI handles interactions with the Claude CLI tool for testing.
+// ClaudeCLI represents the public ClaudeCLI entity.
+//
+// Summary: Defines the structured data model representing a cli.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClaudeCLI struct {
 	t *testing.T
 }
 
-// NewClaudeCLI creates a new ClaudeCLI instance.
+// NewClaudeCLI serves as a public interface for interacting with NewClaudeCLI.
 //
-// t is the t.
+// Summary: Constructs and returns an initialized claude cli ready for consumption.
 //
-// Returns the result.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewClaudeCLI(t *testing.T) *ClaudeCLI {
 	return &ClaudeCLI{t: t}
 }
 
-// Install installs the Claude CLI tool.
+// Install serves as a public interface for interacting with Install.
+//
+// Summary: Install the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *ClaudeCLI) Install() {
 	c.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -52,10 +104,21 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 	return exec.CommandContext(context.Background(), claudePath, args...)
 }
 
-// AddMCP adds an MCP server to the Claude CLI configuration.
+// AddMCP serves as a public interface for interacting with AddMCP.
 //
-// name is the name of the resource.
-// endpoint is the endpoint.
+// Summary: Add the mcp appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	c.t.Helper()
 
@@ -74,9 +137,21 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 	require.NoError(c.t, err, "failed to configure claude-cli")
 }
 
-// RemoveMCP removes an MCP server from the Claude CLI configuration.
+// RemoveMCP serves as a public interface for interacting with RemoveMCP.
 //
-// name is the name of the resource.
+// Summary: Remove the mcp appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *ClaudeCLI) RemoveMCP(name string) {
 	c.t.Helper()
 	cmd := c.claudeCommand("mcp", "remove", name)
@@ -86,13 +161,21 @@ func (c *ClaudeCLI) RemoveMCP(name string) {
 	}
 }
 
-// Run executes a prompt against the Claude CLI.
+// Run serves as a public interface for interacting with Run.
 //
-// apiKey is the apiKey.
-// prompt is the prompt.
+// Summary: Run the  appropriately based on current system conditions.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (c *ClaudeCLI) Run(apiKey, prompt string) (string, error) {
 	c.t.Helper()
 	var outputBuffer strings.Builder

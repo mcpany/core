@@ -17,24 +17,41 @@ const (
 	entanglementShardKey esbContextKey = "x-entanglement-shard"
 )
 
-// ESBMiddleware (Entangled State Broker) provides side-channel-immune speculative guarding
-// and enforces that requests are cryptographically bound to a mission-root intent.
+// ESBMiddleware represents the public ESBMiddleware entity.
 //
-// Summary: Implements the Entangled State Broker.
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ESBMiddleware struct {
 	// Enable/disable the middleware
 	enabled bool
 }
 
-// NewESBMiddleware creates a new instance of the ESBMiddleware.
+// NewESBMiddleware serves as a public interface for interacting with NewESBMiddleware.
+//
+// Summary: Constructs and returns an initialized esb middleware ready for consumption.
 //
 // Parameters:
-//   - config (*configv1.Middleware): The configuration for the middleware.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (*ESBMiddleware): The newly created middleware.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Summary: Creates a new ESBMiddleware.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	enabled := true
 	if config != nil {
@@ -45,20 +62,21 @@ func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	}
 }
 
-// Execute applies the ESB logic to the incoming MCP request.
-// It verifies the presence of required headers and injects Temporal Shard Jitter (TSJ).
+// Execute serves as a public interface for interacting with Execute.
+//
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context of the request.
-//   - method (string): The MCP method being called.
-//   - req (mcp.Request): The incoming request.
-//   - next (mcp.MethodHandler): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - (mcp.Result): The result of the request execution.
-//   - (error): An error if the request fails validation or execution.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Summary: Executes the ESB middleware logic.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if !m.enabled {
 		return next(ctx, method, req)

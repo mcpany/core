@@ -7,25 +7,21 @@ import { ServiceTemplate } from "@/lib/templates";
 import { UpstreamServiceConfig } from "@/lib/client";
 
 /**
- * Summary: Document applyTemplateFields
+ * applyTemplateFields serves as a public interface for interacting with applyTemplateFields.
  *
- * Params:
- *   - Documented below.
+ * Summary: Apply the template fields appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Applies user-provided field values to a service template's configuration.
- *
- * @param template The service template.
- * @param fieldValues A map of field names to their values.
- * @returns A new UpstreamServiceConfig object with the values applied.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function applyTemplateFields(
   template: ServiceTemplate,

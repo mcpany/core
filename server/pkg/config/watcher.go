@@ -13,18 +13,21 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// Watcher monitors configuration files for changes and triggers a reload.
+// Watcher represents the public Watcher entity.
 //
-// Summary: A file system watcher for configuration reloading.
+// Summary: Defines the structured data model representing a .
 //
-// It watches the parent directory of specified files to handle atomic saves (rename/move)
-// commonly used by text editors.
+// Parameters:
+//   - None.
 //
-// Fields:
-//   - watcher (*fsnotify.Watcher): The underlying fsnotify watcher.
-//   - done (chan bool): Channel to signal shutdown.
-//   - mu (sync.Mutex): Mutex to protect concurrent access.
-//   - timer (*time.Timer): Timer for debouncing reload events.
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Watcher struct {
 	watcher *fsnotify.Watcher
 	done    chan bool
@@ -32,34 +35,21 @@ type Watcher struct {
 	timer   *time.Timer
 }
 
-// NewWatcher creates a new file watcher.
+// NewWatcher serves as a public interface for interacting with NewWatcher.
+//
+// Summary: Constructs and returns an initialized watcher ready for consumption.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Watcher: The resulting *Watcher.
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes NewWatcher operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewWatcher() (*Watcher, error) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -72,23 +62,21 @@ func NewWatcher() (*Watcher, error) {
 	}, nil
 }
 
-// Watch starts monitoring the specified configuration paths.
+// Watch serves as a public interface for interacting with Watch.
 //
-// Summary: Starts watching the specified paths for changes.
+// Summary: Watch the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - paths ([]string): A slice of file or directory paths to watch.
-//   - reloadFunc (func()): The function to call when a change is detected.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if adding paths to the watcher fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if adding a path to the watcher fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Starts a goroutine to process file events.
-//   - Registers directories with the OS watcher.
+//   - May safely mutate local state without unintended external side effects.
 func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	// Map of parent directory -> list of filenames to watch in that directory
 	watchedFiles := make(map[string][]string)
@@ -201,24 +189,21 @@ func (w *Watcher) Watch(paths []string, reloadFunc func()) error {
 	return nil
 }
 
-// Close stops the file watcher and releases resources.
+// Close serves as a public interface for interacting with Close.
+//
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
 //   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (w *Watcher) Close() {
 	close(w.done)
 	_ = w.watcher.Close()

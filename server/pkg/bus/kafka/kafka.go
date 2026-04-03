@@ -28,9 +28,21 @@ type readerInterface interface {
 	Close() error
 }
 
-// Bus is a Kafka-backed implementation of the Bus interface.
+// Bus represents the public Bus entity.
 //
-// Summary: Represents a Bus.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
@@ -39,28 +51,21 @@ type Bus[T any] struct {
 	readerCreator func(config kafkago.ReaderConfig) readerInterface
 }
 
-// New creates and initializes a new KafkaBus.
+// New serves as a public interface for interacting with New.
+//
+// Summary: Constructs and returns an initialized  ready for consumption.
 //
 // Parameters:
-//   - config: *bus.KafkaBus. The configuration settings for the Kafka bus.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Bus[T]: A pointer to the initialized Kafka bus.
-//   - error: An error if no brokers are provided or initialization fails.
-//
-// Summary: Initializes New operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	if len(config.GetBrokers()) == 0 {
 		return nil, fmt.Errorf("kafka brokers are missing")
@@ -83,31 +88,21 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	}, nil
 }
 
-// Publish sends a message to a Kafka topic.
+// Publish serves as a public interface for interacting with Publish.
 //
-// The message is marshaled to JSON and sent to the configured topic prefix + topic.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - topic: string. The topic to publish to.
-//   - msg: T. The message payload.
-//
-// Returns:
-//   - error: An error if marshaling or publishing fails.
-//
-// Summary: Executes Publish operation.
+// Summary: Publish the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -124,32 +119,21 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	return err
 }
 
-// Subscribe subscribes to a Kafka topic.
+// Subscribe serves as a public interface for interacting with Subscribe.
 //
-// It starts a goroutine that continuously reads messages from the topic and invokes
-// the provided handler.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the subscription.
-//   - topic: string. The topic to subscribe to.
-//   - handler: func(T). The callback function invoked for each message.
-//
-// Returns:
-//   - func(): A function that unsubscribes the handler when called.
-//
-// Summary: Executes Subscribe operation.
+// Summary: Subscribe the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -224,31 +208,21 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 	return unsubscribe
 }
 
-// SubscribeOnce subscribes to a topic for a single message.
+// SubscribeOnce serves as a public interface for interacting with SubscribeOnce.
 //
-// It ensures that the handler is called only once for the next message received.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the subscription.
-//   - topic: string. The topic to subscribe to.
-//   - handler: func(T). The callback function invoked for the single message.
-//
-// Returns:
-//   - func(): A function that unsubscribes the handler if called before the message is received.
-//
-// Summary: Executes SubscribeOnce operation.
+// Summary: Subscribe the once appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -266,12 +240,21 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 	return unsub
 }
 
-// Close closes the Kafka writer.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the Kafka connection.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

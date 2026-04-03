@@ -10,47 +10,59 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// GRPCProvider discovers services via gRPC reflection.
+// GRPCProvider represents the public GRPCProvider entity.
 //
-// Summary: Represents a GRPCProvider.
+// Summary: Defines the structured data model representing a provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GRPCProvider struct {
 	Endpoint string // e.g., "localhost:50051"
 }
 
-// Name returns the name of the provider.
+// Name serves as a public interface for interacting with Name.
 //
-// Summary: Executes Name operation.
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
 }
 
-// Discover attempts to find services and return their configurations.
+// Discover serves as a public interface for interacting with Discover.
 //
-// Summary: Executes Discover operation.
+// Summary: Discover the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

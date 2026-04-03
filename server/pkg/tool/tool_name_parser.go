@@ -10,17 +10,21 @@ import (
 	"github.com/mcpany/core/server/pkg/consts"
 )
 
-// ParseToolName deconstructs a fully qualified tool name into its namespace (service ID) and the bare tool name.
+// ParseToolName serves as a public interface for interacting with ParseToolName.
 //
-// Summary: Parses a fully qualified tool name.
+// Summary: Parse the tool name appropriately based on current system conditions.
 //
 // Parameters:
-//   - toolName: string. The fully qualified tool name to parse.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - namespace: string. The service ID/namespace.
-//   - tool: string. The bare tool name.
-//   - err: error. An error if the tool name is invalid.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	namespace, tool, found := strings.Cut(toolName, consts.ToolNameServiceSeparator)
 	if !found {
@@ -36,16 +40,21 @@ func ParseToolName(toolName string) (namespace string, tool string, err error) {
 	return namespace, tool, nil
 }
 
-// GetFullyQualifiedToolName constructs a fully qualified tool name from a service ID and a method name.
+// GetFullyQualifiedToolName serves as a public interface for interacting with GetFullyQualifiedToolName.
 //
-// Summary: Constructs a fully qualified tool name.
+// Summary: Fetches and returns the underlying fully qualified tool name from the system state.
 //
 // Parameters:
-//   - serviceID: string. The unique identifier of the service.
-//   - methodName: string. The name of the tool/method within the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The combined, fully qualified tool name.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func GetFullyQualifiedToolName(serviceID, methodName string) string {
 	return fmt.Sprintf("%s%s%s", serviceID, consts.ToolNameServiceSeparator, methodName)
 }

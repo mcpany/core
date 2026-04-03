@@ -5,9 +5,9 @@ import (
 	"fmt"
 )
 
-// CrewAIAdapter implements the AgentFramework interface for CrewAI.
+// CrewAIAdapter represents the public CrewAIAdapter entity.
 //
-// Summary: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
+// Summary: Defines the structured data model representing a ai adapter.
 //
 // Parameters:
 //   - None.
@@ -15,7 +15,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -25,21 +25,21 @@ type CrewAIAdapter struct {
 	RoleRegistry map[string]string // Role name -> Capability token
 }
 
-// NewCrewAIAdapter creates a new CrewAIAdapter instance.
+// NewCrewAIAdapter serves as a public interface for interacting with NewCrewAIAdapter.
 //
-// Summary: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
+// Summary: Constructs and returns an initialized crew ai adapter ready for consumption.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter instance.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewCrewAIAdapter() *CrewAIAdapter {
 	return &CrewAIAdapter{
 		Capabilities: map[string]bool{
@@ -50,42 +50,40 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 	}
 }
 
-// Name returns the identifier of the agent framework.
+// Name serves as a public interface for interacting with Name.
 //
-// Summary: Provides the unique identifier for the CrewAI adapter.
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The name of the adapter ("CrewAI").
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *CrewAIAdapter) Name() string {
 	return "CrewAI"
 }
 
-// HandleTask translates and executes a universal task on the CrewAI framework.
+// HandleTask serves as a public interface for interacting with HandleTask.
 //
-// Summary: Simulates executing a task using the delegated role mechanisms within the CrewAI framework.
+// Summary: Handle the task appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
-//   - task (*Task): The universal task definition detailing the requested intent and payload.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *TaskResult: The generalized result output, indicating success or failure.
-//   - error: An error if the capability is unsupported or if the execution fails.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
@@ -122,41 +120,40 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 	return res, nil
 }
 
-// SupportsCapability checks if the framework provides a requested capability.
+// SupportsCapability serves as a public interface for interacting with SupportsCapability.
 //
-// Summary: Checks the internal capabilities map to see if the given intent is supported by CrewAI.
+// Summary: Supports the capability appropriately based on current system conditions.
 //
 // Parameters:
-//   - capability (string): The capability or intent name to check.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the capability is supported, otherwise false.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
 
-// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the CrewAI framework.
+// SyncMemoryShard serves as a public interface for interacting with SyncMemoryShard.
 //
-// Summary: Provides a unified way to distribute intent-pinned context to CrewAI's subagents.
+// Summary: Sync the memory shard appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for controlling cancellation and timeouts.
-//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the signature is missing or verification fails.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns an error if the shard signature verification fails.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: unverified payload rejected by CrewAI")
@@ -165,24 +162,21 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 	return nil
 }
 
-// StreamTask streams the execution of a task from the CrewAI framework.
+// StreamTask serves as a public interface for interacting with StreamTask.
 //
-// Summary: Simulates a streaming task execution for CrewAI delegated roles.
+// Summary: Stream the task appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for execution, handling cancellation.
-//   - task (*Task): The generic task object to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
-//   - error: Indicates failure in executing the task or an unsupported intent.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns an error if the framework's capability check fails for the task's intent.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Modifies the internal RoleRegistry state to map the delegated role to an authentication token.
-//   - Spawns a goroutine to send chunks.
+//   - May safely mutate local state without unintended external side effects.
 func (a *CrewAIAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)

@@ -19,21 +19,21 @@ import { Credential, Authentication } from '@proto/config/v1/auth';
 import { BrowserHeaders } from 'browser-headers';
 
 /**
- * Summary: Document UpstreamServiceConfig
+ * UpstreamServiceConfig represents the public UpstreamServiceConfig entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a service config.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Extended UpstreamServiceConfig to include runtime error information.
+ *   - None.
  */
 export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, 'lastError' | 'toolCount' | 'commandLineService'> {
     /**
@@ -64,21 +64,21 @@ export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, 
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
- * Summary: Document ServiceTemplate
+ * ServiceTemplate represents the public ServiceTemplate entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a template.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * ServiceTemplate defines a template for an upstream service.
+ *   - None.
  */
 export interface ServiceTemplate {
     id: string;
@@ -160,25 +160,21 @@ const rpc = new GrpcWebImpl(getBaseUrl(), {
 const registrationClient = new RegistrationServiceClientImpl(rpc);
 
 /**
- * Summary: Document fetchWithAuth
+ * fetchWithAuth serves as a public interface for interacting with fetchWithAuth.
  *
- * Params:
- *   - Documented below.
+ * Summary: Fetch the with auth appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Fetches data with authentication headers attached.
- *
- * @param input The request info or URL.
- * @param init The request initialization options.
- * @returns The response from the fetch request.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export const fetchWithAuth = async (input: RequestInfo | URL, init?: RequestInit) => {
     const headers = new Headers(init?.headers);
@@ -214,21 +210,21 @@ const dedupeRequests = <T>(key: string, fn: () => Promise<T>): Promise<T> => {
 };
 
 /**
- * Summary: Document SecretDefinition
+ * SecretDefinition represents the public SecretDefinition entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a definition.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Definition of a secret stored in the system.
+ *   - None.
  */
 export interface SecretDefinition {
     /** Unique identifier for the secret. */
@@ -248,21 +244,21 @@ export interface SecretDefinition {
 }
 
 /**
- * Summary: Document ResourceContent
+ * ResourceContent represents the public ResourceContent entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a content.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Content of a resource.
+ *   - None.
  */
 export interface ResourceContent {
     /** The URI of the resource. */
@@ -276,21 +272,21 @@ export interface ResourceContent {
 }
 
 /**
- * Summary: Document ReadResourceResponse
+ * ReadResourceResponse represents the public ReadResourceResponse entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a resource response.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Response for reading a resource.
+ *   - None.
  */
 export interface ReadResourceResponse {
     /** List of resource contents. */
@@ -306,21 +302,21 @@ interface RawValidateServiceResponse {
 }
 
 /**
- * Summary: Document CheckResult
+ * CheckResult represents the public CheckResult entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a result.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Result of a single system health check.
+ *   - None.
  */
 export interface CheckResult {
     /** The status of the check (e.g., "ok", "degraded", "error"). */
@@ -334,21 +330,21 @@ export interface CheckResult {
 }
 
 /**
- * Summary: Document DoctorReport
+ * DoctorReport represents the public DoctorReport entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a report.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Full doctor report containing system health status.
+ *   - None.
  */
 export interface DoctorReport {
     /** Overall system status. */
@@ -360,21 +356,21 @@ export interface DoctorReport {
 }
 
 /**
- * Summary: Document ToolFailureStats
+ * ToolFailureStats represents the public ToolFailureStats entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a failure stats.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Tool failure statistics.
+ *   - None.
  */
 export interface ToolFailureStats {
     name: string;
@@ -384,21 +380,21 @@ export interface ToolFailureStats {
 }
 
 /**
- * Summary: Document ToolAnalytics
+ * ToolAnalytics represents the public ToolAnalytics entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a analytics.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Tool usage analytics.
+ *   - None.
  */
 export interface ToolAnalytics {
     name: string;
@@ -409,21 +405,21 @@ export interface ToolAnalytics {
 
 
 /**
- * Summary: Document Metric
+ * Metric represents the public Metric entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a .
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Metric definition for dashboard.
+ *   - None.
  */
 export interface Metric {
     label: string;
@@ -436,21 +432,21 @@ export interface Metric {
 
 
 /**
- * Summary: Document SystemStatus
+ * SystemStatus represents the public SystemStatus entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a status.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the current status and health of the system.
+ *   - None.
  */
 export interface SystemStatus {
     /** The number of seconds the server has been running. */
@@ -468,40 +464,40 @@ export interface SystemStatus {
 }
 
 /**
- * Summary: Document ServiceStatus
+ * ServiceStatus represents the public ServiceStatus entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a status.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * ServiceStatus represents the possible health states of a service.
+ *   - None.
  */
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "inactive" | "unknown";
 
 /**
- * Summary: Document ServiceHealth
+ * ServiceHealth represents the public ServiceHealth entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a health.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * ServiceHealth describes the current health information of a service.
+ *   - None.
  */
 export interface ServiceHealth {
   /** The unique identifier of the service. */
@@ -519,21 +515,21 @@ export interface ServiceHealth {
 }
 
 /**
- * Summary: Document HealthHistoryPoint
+ * HealthHistoryPoint represents the public HealthHistoryPoint entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a history point.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * HealthHistoryPoint represents a single data point in the health history of a service.
+ *   - None.
  */
 export interface HealthHistoryPoint {
   /** The timestamp of the health check in milliseconds. */
@@ -543,21 +539,21 @@ export interface HealthHistoryPoint {
 }
 
 /**
- * Summary: Document ServiceHealthResponse
+ * ServiceHealthResponse represents the public ServiceHealthResponse entity.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a health response.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * ServiceHealthResponse represents the response for the health dashboard.
+ *   - None.
  */
 export interface ServiceHealthResponse {
   services: ServiceHealth[];
@@ -582,21 +578,21 @@ const getMetadata = () => {
 };
 
 /**
- * Summary: Document apiClient
+ * apiClient serves as a public interface for interacting with apiClient.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a client.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * API Client for interacting with the MCP Any server.
+ *   - None.
  */
 export const apiClient = {
     /**

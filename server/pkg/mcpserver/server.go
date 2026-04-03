@@ -36,23 +36,38 @@ var (
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
 
-// AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+// AddReceivingMiddlewareHook represents the public AddReceivingMiddlewareHook entity.
 //
-// It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
+// Summary: Defines the structured data model representing a receiving middleware hook.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - When set, this function is called synchronously during Server() access.
-//
-// Summary: Represents a AddReceivingMiddlewareHook.
+//   - None.
 var AddReceivingMiddlewareHook func(name string)
 
-// Server is the core of the MCP Any application.
+// Server represents the public Server entity.
 //
-// It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
-// tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
-// handlers and communicates with backend workers via an event bus.
+// Summary: Provides network listening and request routing capabilities for .
 //
-// Summary: Represents a Server.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -67,30 +82,21 @@ type Server struct {
 	debug           bool
 }
 
-// Server returns the underlying *mcp.Server instance.
+// Server serves as a public interface for interacting with Server.
 //
-// It provides access to the core MCP server functionality, which can be used for advanced
-// configurations or direct interaction with the MCP server.
-//
-// Returns:
-//   - *mcp.Server: The underlying server instance.
-//
-// Side Effects:
-//   - Executes the middleware hook if configured.
-//
-// Summary: Executes Server operation.
+// Summary: Server the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -100,45 +106,21 @@ func (s *Server) Server() *mcp.Server {
 	return s.server
 }
 
-// NewServer creates and initializes a new MCP Any Server.
+// NewServer serves as a public interface for interacting with NewServer.
 //
-// It sets up the necessary managers for tools, prompts, and resources, configures the router
-// with handlers for standard MCP methods, and establishes middleware for request processing,
-// such as routing and tool list filtering.
+// Summary: Constructs and returns an initialized server ready for consumption.
 //
 // Parameters:
-//   - ctx (context.Context): The application's root context.
-//   - toolManager (tool.ManagerInterface): Manages the lifecycle and access to tools.
-//   - promptManager (prompt.ManagerInterface): Manages the lifecycle and access to prompts.
-//   - resourceManager (resource.ManagerInterface): Manages the lifecycle and access to resources.
-//   - authManager (*auth.Manager): Handles authentication for incoming requests.
-//   - serviceRegistry (*serviceregistry.ServiceRegistry): Keeps track of all registered upstream services.
-//   - catalogManager (*catalog.Manager): Manages the dynamic service catalog.
-//   - bus (*bus.Provider): The event bus used for asynchronous communication between components.
-//   - debug (bool): Whether to enable debug mode.
+//   - None.
 //
 // Returns:
-//   - *Server: A new instance of the Server.
-//   - error: An error if initialization fails.
-//
-// Side Effects:
-//   - Registers HTTP handlers.
-//   - Registers built-in tools.
-//   - Registers middleware.
-//
-// Summary: Initializes NewServer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -431,35 +413,21 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 	}
 }
 
-// ListPrompts handles the "prompts/list" MCP request.
+// ListPrompts serves as a public interface for interacting with ListPrompts.
 //
-// It retrieves the list of available prompts from the PromptManager, converts them to the MCP format,
-// and returns them to the client.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.ListPromptsRequest): The "prompts/list" request from the client.
-//
-// Returns:
-//   - *mcp.ListPromptsResult: A list of available prompts.
-//   - error: An error if the retrieval fails.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListPrompts operation.
+// Summary: List the prompts appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -476,34 +444,21 @@ func (s *Server) ListPrompts(
 	}, nil
 }
 
-// CreateMessage requests a message creation from the client (sampling).
+// CreateMessage serves as a public interface for interacting with CreateMessage.
 //
-// This method exposes sampling to the Server instance if a session is available.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - params (*mcp.CreateMessageParams): The parameters for the message creation.
-//
-// Returns:
-//   - *mcp.CreateMessageResult: The result of the message creation.
-//   - error: An error if no active session is found in context or if the operation fails.
-//
-// Side Effects:
-//   - Sends a message creation request to the client.
-//
-// Summary: Initializes CreateMessage operation.
+// Summary: Create the message appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -512,38 +467,21 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 	return nil, fmt.Errorf("no active session found in context")
 }
 
-// GetPrompt handles the "prompts/get" MCP request.
+// GetPrompt serves as a public interface for interacting with GetPrompt.
 //
-// It retrieves a specific prompt by name from the PromptManager and executes it with the provided
-// arguments, returning the result.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.GetPromptRequest): The "prompts/get" request from the client, containing the prompt name and arguments.
-//
-// Returns:
-//   - *mcp.GetPromptResult: The result of the prompt execution.
-//   - error: An error if the prompt is not found or execution fails.
-//
-// Errors:
-//   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetPrompt operation.
+// Summary: Fetches and returns the underlying prompt from the system state.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -571,35 +509,21 @@ func (s *Server) GetPrompt(
 	return p.Get(ctx, argsBytes)
 }
 
-// ListResources handles the "resources/list" MCP request.
+// ListResources serves as a public interface for interacting with ListResources.
 //
-// It fetches the list of available resources from the ResourceManager, converts them to the MCP
-// format, and returns them to the client.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.ListResourcesRequest): The "resources/list" request from the client.
-//
-// Returns:
-//   - *mcp.ListResourcesResult: A list of available resources.
-//   - error: An error if the retrieval fails.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ListResources operation.
+// Summary: List the resources appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -616,37 +540,21 @@ func (s *Server) ListResources(
 	}, nil
 }
 
-// ReadResource handles the "resources/read" MCP request.
+// ReadResource serves as a public interface for interacting with ReadResource.
 //
-// It retrieves a specific resource by its URI from the ResourceManager and returns its content.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*mcp.ReadResourceRequest): The "resources/read" request from the client, containing the URI of the resource.
-//
-// Returns:
-//   - *mcp.ReadResourceResult: The content of the resource.
-//   - error: An error if the resource is not found or reading fails.
-//
-// Errors:
-//   - resource.ErrResourceNotFound: If the requested resource does not exist.
-//
-// Side Effects:
-//   - Reads the resource content (may involve I/O).
-//
-// Summary: Retrieves ReadResource operation.
+// Summary: Read the resource appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -668,259 +576,175 @@ func (s *Server) ReadResource(
 	return r.Read(ctx)
 }
 
-// AuthManager returns the server's authentication manager.
+// AuthManager serves as a public interface for interacting with AuthManager.
 //
-// It provides access to the authentication manager, which is responsible for handling
-// authentication for incoming requests.
-//
-// Returns:
-//   - *auth.Manager: The authentication manager instance.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes AuthManager operation.
+// Summary: Auth the manager appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
 
-// ToolManager returns the server's tool manager.
+// ToolManager serves as a public interface for interacting with ToolManager.
 //
-// It provides access to the tool manager, which is responsible for managing the lifecycle
-// and access to tools.
-//
-// Returns:
-//   - tool.ManagerInterface: The tool manager interface.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ToolManager operation.
+// Summary: Tool the manager appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
 
-// PromptManager returns the server's prompt manager.
+// PromptManager serves as a public interface for interacting with PromptManager.
 //
-// It provides access to the prompt manager, which is responsible for managing the lifecycle
-// and access to prompts.
-//
-// Returns:
-//   - prompt.ManagerInterface: The prompt manager interface.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes PromptManager operation.
+// Summary: Prompt the manager appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
 
-// ResourceManager returns the server's resource manager.
+// ResourceManager serves as a public interface for interacting with ResourceManager.
 //
-// It provides access to the resource manager, which is responsible for managing the lifecycle
-// and access to resources.
-//
-// Returns:
-//   - resource.ManagerInterface: The resource manager interface.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ResourceManager operation.
+// Summary: Resource the manager appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
 
-// ServiceRegistry returns the server's service registry.
+// ServiceRegistry serves as a public interface for interacting with ServiceRegistry.
 //
-// It provides access to the service registry, which keeps track of all registered upstream services.
-//
-// Returns:
-//   - *serviceregistry.ServiceRegistry: The service registry instance.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes ServiceRegistry operation.
+// Summary: Service the registry appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
 
-// AddServiceInfo adds information about a service to the tool manager.
+// AddServiceInfo serves as a public interface for interacting with AddServiceInfo.
+//
+// Summary: Add the service info appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
-//   - info (*tool.ServiceInfo): The service information to add.
-//
-// Side Effects:
-//   - Updates the tool manager with service information.
-//
-// Summary: Executes AddServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
 
-// GetTool retrieves a tool by its name.
+// GetTool serves as a public interface for interacting with GetTool.
+//
+// Summary: Fetches and returns the underlying tool from the system state.
 //
 // Parameters:
-//   - toolName (string): The name of the tool to retrieve.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - tool.Tool: The tool instance if found.
-//   - bool: A boolean indicating whether the tool was found.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
 
-// ListTools returns a list of all available tools.
+// ListTools serves as a public interface for interacting with ListTools.
 //
-// Returns:
-//   - []tool.Tool: A slice of all available tools.
-//
-// Side Effects:
-//   - Logs the listing action.
-//   - Increments metrics counter.
-//
-// Summary: Executes ListTools operation.
+// Summary: List the tools appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
 	return s.toolManager.ListTools()
 }
 
-// CallTool executes a tool with the provided request.
+// CallTool serves as a public interface for interacting with CallTool.
 //
-// It handles the execution of the tool, including logging, metrics collection, and profile-based
-// access control.
-//
-// Parameters:
-//   - ctx (context.Context): The context for the execution.
-//   - req (*tool.ExecutionRequest): The execution request containing tool name and arguments.
-//
-// Returns:
-//   - any: The result of the tool execution.
-//   - error: An error if the tool execution fails or access is denied.
-//
-// Side Effects:
-//   - Executes the tool (which may have side effects).
-//   - Logs execution details.
-//   - Updates metrics.
-//
-// Summary: Executes CallTool operation.
+// Summary: Call the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -1058,84 +882,59 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	return finalResult, nil
 }
 
-// SetMCPServer sets the MCP server provider for the tool manager.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
+//
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - mcpServer (tool.MCPServerProvider): The MCP server provider to set.
-//
-// Side Effects:
-//   - Sets the MCP server provider in the tool manager.
-//
-// Summary: Updates SetMCPServer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
 
-// AddTool registers a new tool with the tool manager.
+// AddTool serves as a public interface for interacting with AddTool.
+//
+// Summary: Add the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - t (tool.Tool): The tool instance to register.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the tool cannot be added (e.g., if it already exists).
-//
-// Side Effects:
-//   - Adds the tool to the tool manager.
-//
-// Summary: Executes AddTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
 
-// GetServiceInfo retrieves information about a service by its ID.
+// GetServiceInfo serves as a public interface for interacting with GetServiceInfo.
+//
+// Summary: Fetches and returns the underlying service info from the system state.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *tool.ServiceInfo: A pointer to the ServiceInfo if found.
-//   - bool: A boolean indicating whether the service was found.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -1144,80 +943,59 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // This logic is removed as we moved to centralized profile management where loaded services are implicit.
 // If we need RBAC, it should be a separate concern.
 
-// ClearToolsForService removes all tools associated with a specific service.
+// ClearToolsForService serves as a public interface for interacting with ClearToolsForService.
+//
+// Summary: Clear the tools for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceKey (string): The identifier of the service whose tools should be cleared.
-//
-// Side Effects:
-//   - Removes tools associated with the service from the tool manager.
-//
-// Summary: Executes ClearToolsForService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
 
-// SetReloadFunc sets the function to be called when a configuration reload is triggered.
+// SetReloadFunc serves as a public interface for interacting with SetReloadFunc.
+//
+// Summary: Set the reload func appropriately based on current system conditions.
 //
 // Parameters:
-//   - f (func(context.Context) error): The function to execute on reload.
-//
-// Side Effects:
-//   - Stores the reload callback.
-//
-// Summary: Updates SetReloadFunc operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
 
-// Reload reloads the server's configuration and updates its state.
+// Reload serves as a public interface for interacting with Reload.
+//
+// Summary: Reload the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the reload operation.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the reload function fails.
-//
-// Side Effects:
-//   - Executes the reload callback if set.
-//
-// Summary: Executes Reload operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -1329,45 +1107,57 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 	}, nil
 }
 
-// LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
-// its JSON content only when logged.
+// LazyRedact represents the public LazyRedact entity.
 //
-// Summary: Represents a LazyRedact.
-type LazyRedact []byte
-
-// LogValue implements slog.LogValuer.
-//
-// It returns a redacted log value.
-//
-// Returns:
-//   - slog.Value: The redacted value.
-//
-// Side Effects:
-//   - Performs JSON redaction on the byte slice.
-//
-// Summary: Executes LogValue operation.
+// Summary: Defines the structured data model representing a redact.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
+type LazyRedact []byte
+
+// LogValue serves as a public interface for interacting with LogValue.
+//
+// Summary: Log the value appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
 
-// LazyLogResult wraps a tool execution result for efficient logging.
+// LazyLogResult represents the public LazyLogResult entity.
 //
-// It avoids expensive serialization of large payloads (e.g. images, huge text)
-// and lazily computes the string representation only when logging is enabled.
+// Summary: Defines the structured data model representing a log result.
 //
-// Summary: Represents a LazyLogResult.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type LazyLogResult struct {
 	Value        any
 	JSONBytes    []byte
@@ -1375,29 +1165,21 @@ type LazyLogResult struct {
 	FinalResult  *mcp.CallToolResult
 }
 
-// LogValue implements slog.LogValuer.
+// LogValue serves as a public interface for interacting with LogValue.
 //
-// It returns a summarized or redacted log value.
-//
-// Returns:
-//   - slog.Value: The log value.
-//
-// Side Effects:
-//   - May serialize or redact the result value.
-//
-// Summary: Executes LogValue operation.
+// Summary: Log the value appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

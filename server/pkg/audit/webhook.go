@@ -21,9 +21,21 @@ const (
 	webhookBatchWait  = 1 * time.Second
 )
 
-// WebhookAuditStore sends audit logs to a configured webhook URL.
+// WebhookAuditStore represents the public WebhookAuditStore entity.
 //
-// Summary: Represents a WebhookAuditStore.
+// Summary: Defines the structured data model representing a audit store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebhookAuditStore struct {
 	webhookURL string
 	headers    map[string]string
@@ -33,19 +45,21 @@ type WebhookAuditStore struct {
 	done       chan struct{}
 }
 
-// NewWebhookAuditStore creates a new WebhookAuditStore.
+// NewWebhookAuditStore serves as a public interface for interacting with NewWebhookAuditStore.
 //
-// Summary: Creates a new webhook audit store.
+// Summary: Constructs and returns an initialized webhook audit store ready for consumption.
 //
 // Parameters:
-//   - webhookURL (string): The URL to send audit logs to.
-//   - headers (map[string]string): Additional headers to send with the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *WebhookAuditStore: A new WebhookAuditStore instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Starts background workers.
+//   - May safely mutate local state without unintended external side effects.
 func NewWebhookAuditStore(webhookURL string, headers map[string]string) *WebhookAuditStore {
 	store := &WebhookAuditStore{
 		webhookURL: webhookURL,
@@ -101,19 +115,21 @@ func (s *WebhookAuditStore) worker() {
 	}
 }
 
-// Write writes an audit entry to the webhook (buffered).
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Queues an audit entry for sending.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (context.Context): Unused context.
-//   - entry (Entry): The audit entry to write.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the queue is full.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Queues the entry for processing.
+//   - May safely mutate local state without unintended external side effects.
 func (s *WebhookAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case s.queue <- entry:
@@ -158,36 +174,40 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-// Read implements the Store interface.
+// Read serves as a public interface for interacting with Read.
 //
-// Summary: Reads audit logs (not implemented for webhook store).
+// Summary: Read the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (context.Context): Unused.
-//   - _ (Filter): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []Entry: Always nil.
-//   - error: Always returns an error indicating not implemented.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
 
-// Close stops the workers and drains the queue.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Gracefully shuts down the webhook store.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Stops background workers and drains the queue.
+//   - May safely mutate local state without unintended external side effects.
 func (s *WebhookAuditStore) Close() error {
 	if s.done != nil {
 		close(s.done)

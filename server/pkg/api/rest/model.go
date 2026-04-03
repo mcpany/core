@@ -3,24 +3,41 @@
 
 package rest
 
-// ValidateConfigRequest represents the request body for config validation.
+// ValidateConfigRequest represents the public ValidateConfigRequest entity.
 //
-// Summary: Request payload for config validation.
+// Summary: Defines the structured data model representing a config request.
 //
 // Parameters:
-//   - Content (string): The raw YAML/JSON content of the configuration file.
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidateConfigRequest struct {
 	// Content is the raw YAML/JSON content of the configuration file.
 	Content string `json:"content"`
 }
 
-// ValidateConfigResponse represents the response body for config validation.
+// ValidateConfigResponse represents the public ValidateConfigResponse entity.
 //
-// Summary: Response payload for config validation.
+// Summary: Defines the structured data model representing a config response.
 //
 // Parameters:
-//   - Valid (bool): Indicates whether the configuration is valid.
-//   - Errors ([]string): A list of validation errors, if any.
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidateConfigResponse struct {
 	// Valid indicates whether the configuration is valid.
 	Valid bool `json:"valid"`
@@ -28,13 +45,21 @@ type ValidateConfigResponse struct {
 	Errors []string `json:"errors,omitempty"`
 }
 
-// ValidationResult represents the result of the validation logic.
+// ValidationResult represents the public ValidationResult entity.
 //
-// Summary: Internal result of validation logic.
+// Summary: Defines the structured data model representing a result.
 //
 // Parameters:
-//   - Valid (bool): True if the configuration is valid.
-//   - Errors ([]string): A list of error messages if validation failed.
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ValidationResult struct {
 	// Valid is true if the configuration is valid.
 	Valid bool

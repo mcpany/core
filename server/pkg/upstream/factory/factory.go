@@ -23,10 +23,21 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
 )
 
-// Factory defines the interface for a factory that creates upstream service
-// instances.
+// Factory represents the public Factory entity.
 //
-// Summary: Interface for creating upstream services.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -42,27 +53,41 @@ type Factory interface {
 	NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error)
 }
 
-// UpstreamServiceFactory is a concrete implementation of the Factory interface.
-// It creates different types of upstream services based on the service
-// configuration.
+// UpstreamServiceFactory represents the public UpstreamServiceFactory entity.
 //
-// Summary: Concrete factory for creating upstream services.
+// Summary: Defines the structured data model representing a service factory.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
 }
 
-// NewUpstreamServiceFactory creates a new UpstreamServiceFactory.
+// NewUpstreamServiceFactory serves as a public interface for interacting with NewUpstreamServiceFactory.
 //
-// Summary: Creates a new UpstreamServiceFactory.
+// Summary: Constructs and returns an initialized upstream service factory ready for consumption.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The connection pool manager used by upstreams that require
-//     connection pooling (e.g., gRPC, HTTP, WebSocket).
-//   - globalSettings (*configv1.GlobalSettings): The global configuration settings.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Factory: A new Factory instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -70,17 +95,21 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 	}
 }
 
-// NewUpstream creates and returns an appropriate upstream.Upstream implementation
-// based on the type of service specified in the configuration.
+// NewUpstream serves as a public interface for interacting with NewUpstream.
 //
-// Summary: Creates a new upstream service based on configuration.
+// Summary: Constructs and returns an initialized upstream ready for consumption.
 //
 // Parameters:
-//   - config (*configv1.UpstreamServiceConfig): The configuration for the upstream service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - upstream.Upstream: A new upstream service instance.
-//   - error: An error if the service type is unknown.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

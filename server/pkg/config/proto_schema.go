@@ -15,31 +15,41 @@ type schemaGenerator struct {
 	defs map[string]interface{}
 }
 
-// GenerateSchemaFromProto generates a jsonschema from a protobuf message using reflection.
+// GenerateSchemaFromProto serves as a public interface for interacting with GenerateSchemaFromProto.
 //
-// Summary: Generates a JSON schema object from a protobuf message descriptor.
+// Summary: Generate the schema from proto appropriately based on current system conditions.
 //
 // Parameters:
-//   - msg: protoreflect.Message. The protobuf message to generate the schema from.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *jsonschema.Schema: The generated JSON schema.
-//   - error: An error if the schema generation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func GenerateSchemaFromProto(msg protoreflect.Message) (*jsonschema.Schema, error) {
 	schemaMap := GenerateSchemaMapFromProto(msg)
 	return CompileSchema(schemaMap)
 }
 
-// GenerateSchemaMapFromProto generates a raw JSON schema map from a protobuf message using reflection.
-// This is useful if you want to export the schema as JSON.
+// GenerateSchemaMapFromProto serves as a public interface for interacting with GenerateSchemaMapFromProto.
 //
-// Summary: Generates a raw JSON schema map from a protobuf message.
+// Summary: Generate the schema map from proto appropriately based on current system conditions.
 //
 // Parameters:
-//   - msg: protoreflect.Message. The protobuf message to generate the schema from.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]interface{}: The generated JSON schema map.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{} {
 	gen := &schemaGenerator{
 		defs: make(map[string]interface{}),
@@ -54,16 +64,21 @@ func GenerateSchemaMapFromProto(msg protoreflect.Message) map[string]interface{}
 	}
 }
 
-// CompileSchema compiles a raw JSON schema map into a jsonschema.Schema object.
+// CompileSchema serves as a public interface for interacting with CompileSchema.
 //
-// Summary: Compiles a JSON schema map into a valid schema object.
+// Summary: Compile the schema appropriately based on current system conditions.
 //
 // Parameters:
-//   - schemaMap: map[string]interface{}. The schema map to compile.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *jsonschema.Schema: The compiled schema.
-//   - error: An error if compilation fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func CompileSchema(schemaMap map[string]interface{}) (*jsonschema.Schema, error) {
 	compiler := jsonschema.NewCompiler()
 	url := "config.schema.json"

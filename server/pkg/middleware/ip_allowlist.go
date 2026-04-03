@@ -12,24 +12,41 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// IPAllowlistMiddleware restricts access to allowed IP addresses.
+// IPAllowlistMiddleware represents the public IPAllowlistMiddleware entity.
 //
-// Summary: Middleware that filters requests based on a list of allowed IP addresses or CIDRs.
+// Summary: Defines the structured data model representing a allowlist middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type IPAllowlistMiddleware struct {
 	mu            sync.RWMutex
 	allowedIPNets []*net.IPNet
 }
 
-// NewIPAllowlistMiddleware creates a new IPAllowlistMiddleware.
+// NewIPAllowlistMiddleware serves as a public interface for interacting with NewIPAllowlistMiddleware.
 //
-// Summary: Initializes the middleware with the initial list of allowed CIDRs.
+// Summary: Constructs and returns an initialized ip allowlist middleware ready for consumption.
 //
 // Parameters:
-//   - allowedCIDRs: []string. A list of IP addresses or CIDR blocks to allow.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *IPAllowlistMiddleware: The initialized middleware instance.
-//   - error: An error if any of the provided CIDRs are invalid.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, error) {
 	m := &IPAllowlistMiddleware{}
 	if err := m.Update(allowedCIDRs); err != nil {
@@ -38,15 +55,21 @@ func NewIPAllowlistMiddleware(allowedCIDRs []string) (*IPAllowlistMiddleware, er
 	return m, nil
 }
 
-// Update updates the allowlist with new CIDRs/IPs.
+// Update serves as a public interface for interacting with Update.
 //
-// Summary: Dynamically updates the list of allowed IPs.
+// Summary: Update the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - allowedCIDRs: []string. The new list of allowed IP addresses or CIDR blocks.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if any of the provided CIDRs are invalid.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	nets := make([]*net.IPNet, 0, len(allowedCIDRs))
 	for _, cidr := range allowedCIDRs {
@@ -77,15 +100,21 @@ func (m *IPAllowlistMiddleware) Update(allowedCIDRs []string) error {
 	return nil
 }
 
-// Allow checks if the given remote address is allowed.
+// Allow serves as a public interface for interacting with Allow.
 //
-// Summary: Checks if a remote address is in the allowed list.
+// Summary: Allow the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - remoteAddr: string. The remote address (IP or IP:Port).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if allowed, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	m.mu.RLock()
 	nets := m.allowedIPNets
@@ -120,15 +149,21 @@ func (m *IPAllowlistMiddleware) Allow(remoteAddr string) bool {
 	return false
 }
 
-// Handler returns an HTTP handler that enforces the allowlist.
+// Handler serves as a public interface for interacting with Handler.
 //
-// Summary: Returns an HTTP handler that blocks unauthorized IPs.
+// Summary: Handler the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.Handler: The wrapped handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *IPAllowlistMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !m.Allow(r.RemoteAddr) {

@@ -20,16 +20,21 @@ VAR_CONST_PATTERN = re.compile(r'^(var|const)\s+([A-Z]\w*)\s+')
 
 def has_summary(doc_lines):
     """
-    Summary: has_summary.
+    has_summary operation.
+
+    Summary: Checks condition indicating whether the target has summary.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     for line in doc_lines:
         if "Summary:" in line:
@@ -38,16 +43,21 @@ def has_summary(doc_lines):
 
 def has_parameters(doc_lines):
     """
-    Summary: has_parameters.
+    has_parameters operation.
+
+    Summary: Checks condition indicating whether the target has parameters.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     for line in doc_lines:
         if "Parameters:" in line:
@@ -56,16 +66,21 @@ def has_parameters(doc_lines):
 
 def has_returns(doc_lines):
     """
-    Summary: has_returns.
+    has_returns operation.
+
+    Summary: Checks condition indicating whether the target has returns.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     for line in doc_lines:
         if "Returns:" in line:
@@ -74,16 +89,21 @@ def has_returns(doc_lines):
 
 def check_file(filepath):
     """
-    Summary: check_file.
+    check_file operation.
+
+    Summary: Check the file appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     with open(filepath, 'r') as f:
         lines = f.readlines()
@@ -164,16 +184,21 @@ def check_file(filepath):
 
 def scan_dir(root_dir):
     """
-    Summary: scan_dir.
+    scan_dir operation.
+
+    Summary: Scan the dir appropriately based on current system conditions.
 
     Parameters:
-      - None.
+      - Check signature.
 
     Returns:
-      - None.
+      - Expected state or data.
 
     Throws/Errors:
-      - None.
+      - Propagates errors.
+
+    Side Effects:
+      - Depends on implementation.
     """
     count = 0
     for root, dirs, files in os.walk(root_dir):

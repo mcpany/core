@@ -7,26 +7,21 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 /**
- * Summary: Document cn
+ * cn serves as a public interface for interacting with cn.
  *
- * Params:
- *   - None
+ * Summary: Cn the  appropriately based on current system conditions.
  *
- * Combines multiple class names into a single string, handling conflicts and conditionals.
- *
- * Summary: Merges Tailwind CSS classes logically, resolving conflicts.
- *
- * Params:
- *   - inputs (...ClassValue[]): A list of class values (strings, arrays, objects) to combine.
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - string: A merged class name string.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

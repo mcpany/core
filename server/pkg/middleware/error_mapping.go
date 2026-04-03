@@ -13,39 +13,57 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// ErrorMappingMiddleware normalizes diverse upstream errors into standard MCP errors.
+// ErrorMappingMiddleware represents the public ErrorMappingMiddleware entity.
 //
-// Summary: Normalizes arbitrary tool execution errors.
-type ErrorMappingMiddleware struct{}
-
-// NewErrorMappingMiddleware creates a new error mapping middleware.
-//
-// Summary: Initializes the middleware responsible for translating internal errors into safe external responses.
+// Summary: Defines the structured data model representing a mapping middleware.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - mcp.Middleware: The initialized error mapping middleware.
-//
-// Throws/Errors:
 //   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+type ErrorMappingMiddleware struct{}
+
+// NewErrorMappingMiddleware serves as a public interface for interacting with NewErrorMappingMiddleware.
+//
+// Summary: Constructs and returns an initialized error mapping middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewErrorMappingMiddleware() *ErrorMappingMiddleware {
 	return &ErrorMappingMiddleware{}
 }
 
-// Execute performs the middleware logic, wrapping the next handler.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes middleware logic.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the execution.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *ErrorMappingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	res, err := next(ctx, req)
 	if err != nil {

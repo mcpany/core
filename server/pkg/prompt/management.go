@@ -12,11 +12,21 @@ import (
 	xsync "github.com/puzpuzpuz/xsync/v4"
 )
 
-// ManagerInterface defines the interface for a prompt manager.
+// ManagerInterface represents the public ManagerInterface entity.
 //
-// It manages the lifecycle, registration, and retrieval of prompts within the system.
+// Summary: Defines the required contract and behavior that interface implementations must satisfy.
 //
-// Summary: Represents a ManagerInterface.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ManagerInterface interface {
 	// AddPrompt registers a new prompt.
 	//
@@ -59,11 +69,21 @@ type ManagerInterface interface {
 	SetMCPServer(mcpServer MCPServerProvider)
 }
 
-// Manager is a thread-safe manager for registering and retrieving prompts.
+// Manager represents the public Manager entity.
 //
-// It supports concurrent access and uses caching for efficient list operations.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
 //
-// Summary: Represents a Manager.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	prompts       *xsync.Map[string, Prompt]
 	mcpServer     MCPServerProvider
@@ -71,79 +91,63 @@ type Manager struct {
 	cachedPrompts []Prompt
 }
 
-// NewManager creates and returns a new, empty Manager.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Returns:
-//   - *Manager: A pointer to the newly created Manager.
-//
-// Summary: Initializes NewManager operation.
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewManager() *Manager {
 	return &Manager{
 		prompts: xsync.NewMap[string, Prompt](),
 	}
 }
 
-// SetMCPServer provides the Manager with a reference to the MCP server.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
+//
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - mcpServer: MCPServerProvider. The MCP server provider.
-//
-// Summary: Updates SetMCPServer operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
 	defer pm.mu.Unlock()
 	pm.mcpServer = mcpServer
 }
 
-// AddPrompt registers a new prompt with the manager.
+// AddPrompt serves as a public interface for interacting with AddPrompt.
 //
-// If a prompt with the same name already exists, it will be overwritten, and a warning
-// will be logged.
-//
-// Parameters:
-//   - prompt: Prompt. The prompt to add.
-//
-// Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the list cache.
-//
-// Summary: Executes AddPrompt operation.
+// Summary: Add the prompt appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (pm *Manager) AddPrompt(prompt Prompt) {
 	promptName := prompt.Prompt().Name
 	if existingPrompt, loaded := pm.prompts.LoadAndStore(promptName, prompt); loaded {
@@ -158,30 +162,21 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 	pm.mu.Unlock()
 }
 
-// UpdatePrompt updates an existing prompt in the manager.
+// UpdatePrompt serves as a public interface for interacting with UpdatePrompt.
 //
-// If the prompt does not exist, it will be added.
-//
-// Parameters:
-//   - prompt: Prompt. The prompt definition to update.
-//
-// Side Effects:
-//   - Updates the internal prompt registry.
-//   - Invalidates the list cache.
-//
-// Summary: Executes UpdatePrompt operation.
+// Summary: Update the prompt appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -189,53 +184,41 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.mu.Unlock()
 }
 
-// GetPrompt retrieves a prompt from the manager by its name.
+// GetPrompt serves as a public interface for interacting with GetPrompt.
+//
+// Summary: Fetches and returns the underlying prompt from the system state.
 //
 // Parameters:
-//   - name: string. The name of the prompt.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Prompt: The prompt instance.
-//   - bool: True if found, false otherwise.
-//
-// Summary: Retrieves GetPrompt operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
 }
 
-// ListPrompts returns a slice containing all the prompts currently registered.
+// ListPrompts serves as a public interface for interacting with ListPrompts.
 //
-// It uses a read-through cache to improve performance.
-//
-// Returns:
-//   - []Prompt: A slice of currently registered prompts.
-//
-// Summary: Executes ListPrompts operation.
+// Summary: List the prompts appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (pm *Manager) ListPrompts() []Prompt {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Update/Clear).
@@ -274,28 +257,21 @@ func (pm *Manager) ListPrompts() []Prompt {
 	return result
 }
 
-// ClearPromptsForService removes all prompts associated with a given service.
+// ClearPromptsForService serves as a public interface for interacting with ClearPromptsForService.
+//
+// Summary: Clear the prompts for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID: string. The unique identifier of the service.
-//
-// Side Effects:
-//   - Removes matching prompts from the registry.
-//   - Invalidates the list cache.
-//
-// Summary: Executes ClearPromptsForService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (pm *Manager) ClearPromptsForService(serviceID string) {
 	changed := false
 	pm.prompts.Range(func(key string, value Prompt) bool {

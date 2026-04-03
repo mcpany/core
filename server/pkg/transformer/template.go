@@ -12,10 +12,21 @@ import (
 	"github.com/valyala/fasttemplate"
 )
 
-// TextTemplate provides a simple wrapper around Go's standard text/template
-// for rendering strings with dynamic data.
+// TextTemplate represents the public TextTemplate entity.
 //
-// Summary: High-performance template engine using fasttemplate.
+// Summary: Defines the structured data model representing a template.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TextTemplate struct {
 	template *fasttemplate.Template
 	raw      string
@@ -24,21 +35,21 @@ type TextTemplate struct {
 	IsJSON   bool
 }
 
-// NewTemplate parses a template string and creates a new TextTemplate.
+// NewTemplate serves as a public interface for interacting with NewTemplate.
 //
-// Summary: Initializes a new TextTemplate.
+// Summary: Constructs and returns an initialized template ready for consumption.
 //
 // Parameters:
-//   - templateString: string. The template source.
-//   - startTag: string. The start delimiter (e.g. "{{").
-//   - endTag: string. The end delimiter (e.g. "}}").
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *TextTemplate: The parsed template.
-//   - error: An error if parsing fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Auto-detects if the template output is likely JSON to enable automatic escaping.
+//   - May safely mutate local state without unintended external side effects.
 func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error) {
 	tpl, err := fasttemplate.NewTemplate(templateString, startTag, endTag)
 	if err != nil {
@@ -63,23 +74,21 @@ func NewTemplate(templateString, startTag, endTag string) (*TextTemplate, error)
 	}, nil
 }
 
-// Render executes the template with the provided parameters and returns the
-// resulting string.
+// Render serves as a public interface for interacting with Render.
 //
-// Summary: Renders the template with data.
+// Summary: Render the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - params: map[string]any. The data map for variable substitution.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The rendered output.
-//   - error: An error if a key is missing or rendering fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if a required tag is missing in params.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Automatically escapes strings if the template is detected as JSON.
+//   - May safely mutate local state without unintended external side effects.
 func (t *TextTemplate) Render(params map[string]any) (string, error) {
 	return t.template.ExecuteFuncStringWithErr(func(w io.Writer, tag string) (int, error) {
 		val, ok := params[tag]

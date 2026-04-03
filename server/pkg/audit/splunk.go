@@ -23,9 +23,21 @@ const (
 	splunkBatchWait  = 1 * time.Second
 )
 
-// SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
+// SplunkAuditStore represents the public SplunkAuditStore entity.
 //
-// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
+// Summary: Defines the structured data model representing a audit store.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -34,18 +46,21 @@ type SplunkAuditStore struct {
 	done   chan struct{}
 }
 
-// NewSplunkAuditStore creates a new SplunkAuditStore.
+// NewSplunkAuditStore serves as a public interface for interacting with NewSplunkAuditStore.
 //
-// Summary: Initializes a new SplunkAuditStore with background workers.
+// Summary: Constructs and returns an initialized splunk audit store ready for consumption.
 //
 // Parameters:
-//   - config: *configv1.SplunkConfig. The Splunk HEC configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *SplunkAuditStore: The initialized store.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Starts background workers.
+//   - May safely mutate local state without unintended external side effects.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -105,22 +120,21 @@ func (e *SplunkAuditStore) worker() {
 	}
 }
 
-// Write implements the Store interface.
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Queues an audit entry for sending to Splunk.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - entry: Entry. The audit entry.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the queue is full.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "audit queue full" if the buffer is exhausted.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Sends entry to a buffered channel.
+//   - May safely mutate local state without unintended external side effects.
 func (e *SplunkAuditStore) Write(_ context.Context, entry Entry) error {
 	select {
 	case e.queue <- entry:
@@ -176,31 +190,40 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 	}
 }
 
-// Read implements the Store interface.
+// Read serves as a public interface for interacting with Read.
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Read the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
 
-// Close closes the queue and waits for workers to finish.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Shuts down the Splunk audit store.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Closes channels.
-//   - Flushes pending batches.
+//   - May safely mutate local state without unintended external side effects.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

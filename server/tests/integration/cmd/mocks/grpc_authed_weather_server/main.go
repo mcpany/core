@@ -39,17 +39,21 @@ var weatherData = map[string]string{
 	"tokyo":    "Rainy, 20°C",
 }
 
-// GetWeather returns the weather for a specific location.
+// GetWeather serves as a public interface for interacting with GetWeather.
+//
+// Summary: Fetches and returns the underlying weather from the system state.
 //
 // Parameters:
-//
-//	ctx: The context for the request.
-//	req: The request containing the location.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
+//   - Returns the expected domain model and an error upon failure.
 //
-//	*weatherV1.GetWeatherResponse: The response containing the weather description.
-//	error: An error if the location is not found.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *server) GetWeather(_ context.Context, req *weatherV1.GetWeatherRequest) (*weatherV1.GetWeatherResponse, error) {
 	log.Printf("INFO grpc_authed_weather_server: GetWeather called location=%s", req.GetLocation())
 	weather, ok := weatherData[req.GetLocation()]

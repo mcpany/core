@@ -13,9 +13,21 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CFIAConfig defines the configuration for Context-File Integrity Attestation.
+// CFIAConfig represents the public CFIAConfig entity.
 //
-// Summary: Configuration for Context-File Integrity Attestation (CFIA) Middleware.
+// Summary: Defines the structured data model representing a config.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CFIAConfig struct {
 	// Enabled determines if the CFIA middleware is active.
 	Enabled bool `json:"enabled"`
@@ -27,57 +39,61 @@ type CFIAConfig struct {
 	ArgumentName string `json:"argument_name"`
 }
 
-// CFIAMiddleware implements Context-File Integrity Attestation.
-// It intercepts requests to read local files, calculates their hashes,
-// and ensures they match known-good, hardware-attested manifests to
-// prevent Deceptive Context Injection.
+// CFIAMiddleware represents the public CFIAMiddleware entity.
 //
-// Summary: Represents the CFIA Middleware.
-type CFIAMiddleware struct {
-	config CFIAConfig
-}
-
-// NewCFIAMiddleware creates a new CFIAMiddleware instance.
-//
-// Summary: Creates a new Context-File Integrity Attestation middleware instance.
+// Summary: Defines the structured data model representing a middleware.
 //
 // Parameters:
-//   - config (CFIAConfig): The configuration settings.
+//   - None.
 //
 // Returns:
-//   - *CFIAMiddleware: The resulting CFIA middleware instance.
+//   - None.
 //
 // Errors:
 //   - None.
 //
 // Side Effects:
 //   - None.
+type CFIAMiddleware struct {
+	config CFIAConfig
+}
+
+// NewCFIAMiddleware serves as a public interface for interacting with NewCFIAMiddleware.
+//
+// Summary: Constructs and returns an initialized cfia middleware ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 	return &CFIAMiddleware{
 		config: config,
 	}
 }
 
-// Execute enforces context-file integrity before proceeding to the next handler.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the Context-File Integrity Attestation check on the request.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result if the file hash matches or isn't required.
-//   - error: An error if integrity verification fails (hash mismatch or missing).
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the requested file's hash does not match the attested hash.
-//   - Returns an error if the file cannot be read for hashing.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Reads the target file from the filesystem.
-//   - Logs validation outcomes (success or failure).
+//   - May safely mutate local state without unintended external side effects.
 func (m *CFIAMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !m.config.Enabled {
 		return next(ctx, req)

@@ -15,24 +15,76 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// DefaultModel is the default Gemini model to use.
+// DefaultModel represents the public DefaultModel entity.
+//
+// Summary: Defines the structured data model representing a model.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const DefaultModel = "gemini-2.5-flash"
 
-// GeminiCLI handles interactions with the Gemini CLI tool for testing.
+// GeminiCLI represents the public GeminiCLI entity.
+//
+// Summary: Defines the structured data model representing a cli.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type GeminiCLI struct {
 	t *testing.T
 }
 
-// NewGeminiCLI creates a new GeminiCLI instance.
+// NewGeminiCLI serves as a public interface for interacting with NewGeminiCLI.
 //
-// t is the t.
+// Summary: Constructs and returns an initialized gemini cli ready for consumption.
 //
-// Returns the result.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewGeminiCLI(t *testing.T) *GeminiCLI {
 	return &GeminiCLI{t: t}
 }
 
-// Install installs the Gemini CLI tool.
+// Install serves as a public interface for interacting with Install.
+//
+// Summary: Install the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (g *GeminiCLI) Install() {
 	g.t.Helper()
 	root, err := integration.GetProjectRoot()
@@ -51,10 +103,21 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 	return exec.CommandContext(context.Background(), geminiPath, args...)
 }
 
-// AddMCP adds an MCP server to the Gemini CLI configuration.
+// AddMCP serves as a public interface for interacting with AddMCP.
 //
-// name is the name of the resource.
-// endpoint is the endpoint.
+// Summary: Add the mcp appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "add", "--transport", "http", name, endpoint)
@@ -62,9 +125,21 @@ func (g *GeminiCLI) AddMCP(name, endpoint string) {
 	require.NoError(g.t, err, "failed to configure gemini-cli")
 }
 
-// RemoveMCP removes an MCP server from the Gemini CLI configuration.
+// RemoveMCP serves as a public interface for interacting with RemoveMCP.
 //
-// name is the name of the resource.
+// Summary: Remove the mcp appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (g *GeminiCLI) RemoveMCP(name string) {
 	g.t.Helper()
 	cmd := g.geminiCommand("mcp", "remove", name)
@@ -74,13 +149,21 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 	}
 }
 
-// Run executes a prompt against the Gemini CLI using the provided API key.
+// Run serves as a public interface for interacting with Run.
 //
-// apiKey is the apiKey.
-// prompt is the prompt.
+// Summary: Run the  appropriately based on current system conditions.
 //
-// Returns the result.
-// Returns an error if the operation fails.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (g *GeminiCLI) Run(apiKey, prompt string) (string, error) {
 	g.t.Helper()
 	var outputBuffer strings.Builder

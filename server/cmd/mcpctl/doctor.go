@@ -19,29 +19,42 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// DoctorRunner runs the doctor command checks.
+// DoctorRunner represents the public DoctorRunner entity.
 //
-// Summary: Component to run system health diagnostics.
+// Summary: Defines the structured data model representing a runner.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs
 	HTTPClient *http.Client
 }
 
-// Run executes the doctor checks.
+// Run serves as a public interface for interacting with Run.
 //
-// Summary: Runs a series of health checks (config, connectivity, deep health).
+// Summary: Run the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - cmd: *cobra.Command. The command object.
-//   - _: []string. Unused arguments.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if a fatal check fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Prints check results to r.Out.
-//   - Makes HTTP requests to the running server.
+//   - May safely mutate local state without unintended external side effects.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {

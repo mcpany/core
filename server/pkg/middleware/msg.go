@@ -13,11 +13,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MetadataSanitizationGateway implements the MSG specification for scrubbing
-// malicious instructions from agent-ingested external metadata.
-// MetadataSanitizationGateway scrubs sensitive metadata from tool requests and responses.
+// MetadataSanitizationGateway represents the public MetadataSanitizationGateway entity.
 //
-// Summary: Protects sensitive system metadata from leaking to downstream components.
+// Summary: Defines the structured data model representing a sanitization gateway.
 //
 // Parameters:
 //   - None.
@@ -25,7 +23,10 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type MetadataSanitizationGateway struct {
 	config *configv1.MetadataSanitizationConfig
@@ -33,18 +34,21 @@ type MetadataSanitizationGateway struct {
 	imperativeRules []*regexp.Regexp
 }
 
-// NewMetadataSanitizationGateway initializes a new gateway instance.
+// NewMetadataSanitizationGateway serves as a public interface for interacting with NewMetadataSanitizationGateway.
 //
-// Summary: Creates a new MetadataSanitizationGateway ready for use.
+// Summary: Constructs and returns an initialized metadata sanitization gateway ready for consumption.
 //
 // Parameters:
-//   - cfg (*configv1.MetadataSanitizationConfig): The configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *MetadataSanitizationGateway: The initialized gateway.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
 		cfg = &configv1.MetadataSanitizationConfig{}
@@ -82,18 +86,21 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 	return msg
 }
 
-// Middleware returns an MCP handler that wraps the next handler in the chain.
+// Middleware serves as a public interface for interacting with Middleware.
 //
-// Summary: Applies the sanitization rules to the incoming request and outgoing response.
+// Summary: Middleware the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - mcp.Middleware: The middleware constructor.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
 	if !m.config.Enabled {
 		return noOpMiddleware

@@ -17,6 +17,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * ServiceRegistryItem represents the public ServiceRegistryItem entity.
+ *
+ * Summary: Defines the structured data model representing a registry item.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -27,21 +44,21 @@ export interface ServiceRegistryItem {
 }
 
 /**
- * Summary: Document SERVICE_REGISTRY
+ * SERVICE_REGISTRY serves as a public interface for interacting with SERVICE_REGISTRY.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a registry.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Registry of popular services with their default configurations.
+ *   - None.
  */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---

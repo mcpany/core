@@ -14,33 +14,21 @@ import (
 	"github.com/mcpany/core/server/pkg/validation"
 )
 
-// NewHTTPClientWithTLS creates a new *http.Client configured with the specified
-// TLS settings. It supports setting a custom CA certificate, a client
-// certificate and key, the server name for SNI, and skipping verification.
+// NewHTTPClientWithTLS serves as a public interface for interacting with NewHTTPClientWithTLS.
 //
-// It also configures the client with a SafeDialer to prevent SSRF attacks against
-// cloud metadata services (LinkLocal addresses) and optionally private networks.
+// Summary: Constructs and returns an initialized http client with tls ready for consumption.
 //
 // Parameters:
-//   - tlsConfig: The TLS settings to apply to the HTTP client's transport.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *http.Client: A configured *http.Client.
-//   - error: An error if the TLS configuration is invalid or files cannot be read.
-//
-// Summary: Initializes NewHTTPClientWithTLS operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewHTTPClientWithTLS(tlsConfig *configv1.TLSConfig) (*http.Client, error) {
 	var tlsClientConfig *tls.Config
 

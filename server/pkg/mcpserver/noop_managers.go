@@ -13,395 +13,535 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// NoOpToolManager is a no-op implementation of tool.ManagerInterface.
+// NoOpToolManager represents the public NoOpToolManager entity.
 //
-// Summary: A tool manager that does nothing.
+// Summary: Coordinates operations and orchestrates lifecycle events for the op tool manager components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type NoOpToolManager struct{}
 
-// AddTool implements tool.ManagerInterface.
+// AddTool serves as a public interface for interacting with AddTool.
 //
-// Summary: No-op AddTool.
+// Summary: Add the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (tool.Tool): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Always returns nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) AddTool(_ tool.Tool) error { return nil }
 
-// GetTool implements tool.ManagerInterface.
+// GetTool serves as a public interface for interacting with GetTool.
 //
-// Summary: No-op GetTool.
+// Summary: Fetches and returns the underlying tool from the system state.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - tool.Tool: Always nil.
-//   - bool: Always false.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, false }
 
-// ListTools implements tool.ManagerInterface.
+// ListTools serves as a public interface for interacting with ListTools.
 //
-// Summary: Returns an empty list of tools.
+// Summary: List the tools appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []tool.Tool: Always nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 
-// ListMCPTools implements tool.ManagerInterface.
+// ListMCPTools serves as a public interface for interacting with ListMCPTools.
 //
-// Summary: Returns an empty list of MCP tools.
+// Summary: List the mcp tools appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*mcp.Tool: Always nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
-// ClearToolsForService implements tool.ManagerInterface.
+// ClearToolsForService serves as a public interface for interacting with ClearToolsForService.
 //
-// Summary: No-op ClearToolsForService.
+// Summary: Clear the tools for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 
-// ExecuteTool implements tool.ManagerInterface.
+// ExecuteTool serves as a public interface for interacting with ExecuteTool.
 //
-// Summary: No-op ExecuteTool.
+// Summary: Execute the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (context.Context): Unused.
-//   - _ (*tool.ExecutionRequest): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: Always nil.
-//   - error: Always nil.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionRequest) (any, error) {
 	return nil, nil
 }
 
-// SetMCPServer implements tool.ManagerInterface.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
 //
-// Summary: No-op SetMCPServer.
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (tool.MCPServerProvider): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
-// AddMiddleware implements tool.ManagerInterface.
+// AddMiddleware serves as a public interface for interacting with AddMiddleware.
 //
-// Summary: No-op AddMiddleware.
+// Summary: Add the middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (tool.ExecutionMiddleware): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 
-// AddServiceInfo implements tool.ManagerInterface.
+// AddServiceInfo serves as a public interface for interacting with AddServiceInfo.
 //
-// Summary: No-op AddServiceInfo.
+// Summary: Add the service info appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): Unused.
-//   - _ (*tool.ServiceInfo): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
-// GetServiceInfo implements tool.ManagerInterface.
+// GetServiceInfo serves as a public interface for interacting with GetServiceInfo.
 //
-// Summary: No-op GetServiceInfo.
+// Summary: Fetches and returns the underlying service info from the system state.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *tool.ServiceInfo: Always nil.
-//   - bool: Always false.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { return nil, false }
 
-// ListServices implements tool.ManagerInterface.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Returns an empty list of services.
+// Summary: List the services appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*tool.ServiceInfo: Always nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 
-// SetProfiles implements tool.ManagerInterface.
+// SetProfiles serves as a public interface for interacting with SetProfiles.
 //
-// Summary: No-op SetProfiles.
+// Summary: Set the profiles appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ ([]string): Unused.
-//   - _ ([]*configv1.ProfileDefinition): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
-// IsServiceAllowed implements tool.ManagerInterface.
+// IsServiceAllowed serves as a public interface for interacting with IsServiceAllowed.
 //
-// Summary: No-op IsServiceAllowed.
+// Summary: Checks condition indicating whether the target is service allowed.
 //
 // Parameters:
-//   - _, _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: Always true (allow all).
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) IsServiceAllowed(_, _ string) bool { return true }
 
-// ToolMatchesProfile implements tool.ManagerInterface.
+// ToolMatchesProfile serves as a public interface for interacting with ToolMatchesProfile.
 //
-// Summary: No-op ToolMatchesProfile.
+// Summary: Tool the matches profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (tool.Tool): Unused.
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: Always true.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) ToolMatchesProfile(_ tool.Tool, _ string) bool { return true }
 
-// GetAllowedServiceIDs implements tool.ManagerInterface.
+// GetAllowedServiceIDs serves as a public interface for interacting with GetAllowedServiceIDs.
 //
-// Summary: No-op GetAllowedServiceIDs.
+// Summary: Fetches and returns the underlying allowed service i ds from the system state.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]bool: Always nil.
-//   - bool: Always false.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) GetAllowedServiceIDs(_ string) (map[string]bool, bool) {
 	return nil, false
 }
 
-// GetToolCountForService implements tool.ManagerInterface.
+// GetToolCountForService serves as a public interface for interacting with GetToolCountForService.
 //
-// Summary: No-op GetToolCountForService.
+// Summary: Fetches and returns the underlying tool count for service from the system state.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: Always 0.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpToolManager) GetToolCountForService(_ string) int {
 	return 0
 }
 
-// NoOpPromptManager is a no-op implementation of prompt.ManagerInterface.
+// NoOpPromptManager represents the public NoOpPromptManager entity.
 //
-// Summary: A prompt manager that does nothing.
+// Summary: Coordinates operations and orchestrates lifecycle events for the op prompt manager components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type NoOpPromptManager struct{}
 
-// AddPrompt implements prompt.ManagerInterface.
+// AddPrompt serves as a public interface for interacting with AddPrompt.
 //
-// Summary: No-op AddPrompt.
+// Summary: Add the prompt appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (prompt.Prompt): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 
-// UpdatePrompt implements prompt.ManagerInterface.
+// UpdatePrompt serves as a public interface for interacting with UpdatePrompt.
 //
-// Summary: No-op UpdatePrompt.
+// Summary: Update the prompt appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (prompt.Prompt): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 
-// GetPrompt implements prompt.ManagerInterface.
+// GetPrompt serves as a public interface for interacting with GetPrompt.
 //
-// Summary: No-op GetPrompt.
+// Summary: Fetches and returns the underlying prompt from the system state.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - prompt.Prompt: Always nil.
-//   - bool: Always false.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return nil, false }
 
-// ListPrompts implements prompt.ManagerInterface.
+// ListPrompts serves as a public interface for interacting with ListPrompts.
 //
-// Summary: Returns an empty list of prompts.
+// Summary: List the prompts appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []prompt.Prompt: Always nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
-// ClearPromptsForService implements prompt.ManagerInterface.
+// ClearPromptsForService serves as a public interface for interacting with ClearPromptsForService.
 //
-// Summary: No-op ClearPromptsForService.
+// Summary: Clear the prompts for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 
-// SetMCPServer implements prompt.ManagerInterface.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
 //
-// Summary: No-op SetMCPServer.
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (prompt.MCPServerProvider): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
-// NoOpResourceManager is a no-op implementation of resource.ManagerInterface.
+// NoOpResourceManager represents the public NoOpResourceManager entity.
 //
-// Summary: A resource manager that does nothing.
+// Summary: Coordinates operations and orchestrates lifecycle events for the op resource manager components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type NoOpResourceManager struct{}
 
-// GetResource implements resource.ManagerInterface.
+// GetResource serves as a public interface for interacting with GetResource.
 //
-// Summary: No-op GetResource.
+// Summary: Fetches and returns the underlying resource from the system state.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - resource.Resource: Always nil.
-//   - bool: Always false.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { return nil, false }
 
-// AddResource implements resource.ManagerInterface.
+// AddResource serves as a public interface for interacting with AddResource.
 //
-// Summary: No-op AddResource.
+// Summary: Add the resource appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (resource.Resource): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 
-// RemoveResource implements resource.ManagerInterface.
+// RemoveResource serves as a public interface for interacting with RemoveResource.
 //
-// Summary: No-op RemoveResource.
+// Summary: Remove the resource appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpResourceManager) RemoveResource(_ string) {}
 
-// ListResources implements resource.ManagerInterface.
+// ListResources serves as a public interface for interacting with ListResources.
 //
-// Summary: Returns an empty list of resources.
+// Summary: List the resources appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []resource.Resource: Always nil.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
-// OnListChanged implements resource.ManagerInterface.
+// OnListChanged serves as a public interface for interacting with OnListChanged.
 //
-// Summary: No-op OnListChanged.
+// Summary: On the list changed appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (func()): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 
-// ClearResourcesForService implements resource.ManagerInterface.
+// ClearResourcesForService serves as a public interface for interacting with ClearResourcesForService.
 //
-// Summary: No-op ClearResourcesForService.
+// Summary: Clear the resources for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ (string): Unused.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}

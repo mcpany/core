@@ -17,6 +17,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Tool represents the public Tool entity.
+ *
+ * Summary: Provides tool execution capabilities for .
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export interface Tool {
   name: string;
   description: string;
@@ -25,22 +42,21 @@ export interface Tool {
 }
 
 /**
- * Summary: Document BuiltInTools
+ * BuiltInTools serves as a public interface for interacting with BuiltInTools.
  *
- * Params:
- *   - None
+ * Summary: Defines the structured data model representing a in tools.
+ *
+ * Parameters:
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * BuiltInTools contains the definitions and implementations of standard tools
- * provided by the server, such as calculator, echo, and system info.
+ *   - None.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
@@ -138,26 +154,21 @@ export const BuiltInTools: Record<string, Tool> = {
 };
 
 /**
- * Summary: Document executeTool
+ * executeTool serves as a public interface for interacting with executeTool.
  *
- * Params:
- *   - Documented below.
+ * Summary: Execute the tool appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - Documented below.
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * executeTool executes a built-in tool by name with the provided arguments.
- *
- * @param toolName - The name of the tool to execute.
- * @param args - The arguments for the tool execution.
- * @returns The result of the tool execution.
- * @throws Error if the tool is not found or execution fails.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export async function executeTool(toolName: string, args: any) {
   const tool = BuiltInTools[toolName];

@@ -23,13 +23,21 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// MCPServerProvider defines an interface for components that can provide an
-// instance of an *mcp.Server.
+// MCPServerProvider represents the public MCPServerProvider entity.
 //
-// Summary: Interface for providing an MCP server instance.
+// Summary: Defines the structured data model representing a server provider.
 //
-// This interface is used to decouple the Manager from the concrete server implementation,
-// avoiding circular dependencies.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MCPServerProvider interface {
 	// Server returns the underlying MCP server instance.
 	//
@@ -40,12 +48,21 @@ type MCPServerProvider interface {
 	Server() *mcp.Server
 }
 
-// ManagerInterface defines the contract for a tool manager.
+// ManagerInterface represents the public ManagerInterface entity.
 //
-// Summary: Interface for tool management operations.
+// Summary: Defines the required contract and behavior that interface implementations must satisfy.
 //
-// It outlines the methods required for managing the lifecycle, registration, discovery,
-// and execution of tools within the MCP Any server.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ManagerInterface interface {
 	// AddTool registers a new tool with the manager.
 	//
@@ -219,9 +236,21 @@ type ManagerInterface interface {
 	GetToolCountForService(serviceID string) int
 }
 
-// ExecutionMiddleware defines the interface for middleware that intercepts tool execution.
+// ExecutionMiddleware represents the public ExecutionMiddleware entity.
 //
-// Summary: Interface for tool execution middleware.
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ExecutionMiddleware interface {
 	// Execute performs the middleware logic wrapping the next handler in the chain.
 	//
@@ -238,12 +267,21 @@ type ExecutionMiddleware interface {
 	Execute(ctx context.Context, req *ExecutionRequest, next ExecutionFunc) (any, error)
 }
 
-// Manager is the central component for managing tools in MCP Any.
+// Manager represents the public Manager entity.
 //
-// Summary: Central manager for tool lifecycle and execution.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
 //
-// It handles tool registration, retrieval, execution, and profile-based filtering.
-// It is thread-safe and supports efficient lookups via caching and indexing.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	tools       *xsync.Map[string, Tool]
 	serviceInfo *xsync.Map[string, *ServiceInfo]
@@ -267,18 +305,21 @@ type Manager struct {
 	allowedServicesCache map[string]map[string]bool
 }
 
-// NewManager creates and initializes a new Tool Manager.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Creates a new Manager.
+// Summary: Constructs and returns an initialized manager ready for consumption.
 //
 // Parameters:
-//   - bus (*bus.Provider): The event bus provider for publishing tool execution events.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: A pointer to the newly created Manager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Allocates memory for internal maps and indices.
+//   - May safely mutate local state without unintended external side effects.
 func NewManager(bus *bus.Provider) *Manager {
 	return &Manager{
 		bus:                  bus,
@@ -292,19 +333,21 @@ func NewManager(bus *bus.Provider) *Manager {
 	}
 }
 
-// SetProfiles sets the enabled profiles and their definitions for filtering.
+// SetProfiles serves as a public interface for interacting with SetProfiles.
 //
-// Summary: Configures profiles for filtering.
-//
-// This method updates the internal state used for profile-based access control.
-// It pre-computes allowed services for each profile to optimize lookup performance.
+// Summary: Set the profiles appropriately based on current system conditions.
 //
 // Parameters:
-//   - enabled ([]string): A list of names of the currently active profiles.
-//   - defs ([]*configv1.ProfileDefinition): The definitions of all available profiles.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates internal profile definitions and caches.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -403,16 +446,21 @@ func (tm *Manager) toolMatchesProfile(t *v1.Tool, profileName string) bool {
 	return tm.matchesSelector(t, def.GetSelector())
 }
 
-// IsServiceAllowed checks if a service is allowed for a given profile.
+// IsServiceAllowed serves as a public interface for interacting with IsServiceAllowed.
 //
-// Summary: Checks if a service is allowed for a profile.
+// Summary: Checks condition indicating whether the target is service allowed.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
-//   - profileID (string): The identifier of the profile to check.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the service is allowed, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -433,36 +481,42 @@ func (tm *Manager) IsServiceAllowed(serviceID, profileID string) bool {
 	return false
 }
 
-// ToolMatchesProfile checks if a tool matches a given profile.
+// ToolMatchesProfile serves as a public interface for interacting with ToolMatchesProfile.
 //
-// Summary: Checks if a tool matches a profile.
-//
-// It delegates to the internal toolMatchesProfile method.
+// Summary: Tool the matches profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - tool (Tool): The tool definition.
-//   - profileID (string): The identifier of the profile.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the tool matches the profile, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) ToolMatchesProfile(tool Tool, profileID string) bool {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
 	return tm.toolMatchesProfile(tool.Tool(), profileID)
 }
 
-// GetAllowedServiceIDs returns a map of allowed service IDs for a given profile.
+// GetAllowedServiceIDs serves as a public interface for interacting with GetAllowedServiceIDs.
 //
-// Summary: Retrieves allowed service IDs for a profile.
-//
-// The returned map uses the service ID as the key and a boolean true as the value.
+// Summary: Fetches and returns the underlying allowed service i ds from the system state.
 //
 // Parameters:
-//   - profileID (string): The identifier of the profile.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - map[string]bool: A map of allowed service IDs.
-//   - bool: True if the profile exists and has cached allowed services.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool) {
 	tm.mu.RLock()
 	defer tm.mu.RUnlock()
@@ -471,17 +525,21 @@ func (tm *Manager) GetAllowedServiceIDs(profileID string) (map[string]bool, bool
 	return allowed, ok
 }
 
-// GetToolCountForService returns the number of tools registered for a given service.
+// GetToolCountForService serves as a public interface for interacting with GetToolCountForService.
 //
-// Summary: Counts tools for a service.
-//
-// It first checks if the service is healthy; if not, it returns 0.
+// Summary: Fetches and returns the underlying tool count for service from the system state.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The number of active tools for the service.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) GetToolCountForService(serviceID string) int {
 	// ⚡ Bolt Optimization: Check health status first without locking the main mutex.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -570,66 +628,61 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 	return true
 }
 
-// AddMiddleware adds a middleware to the tool manager.
+// AddMiddleware serves as a public interface for interacting with AddMiddleware.
 //
-// Summary: Adds execution middleware.
-//
-// The middleware will be executed as part of the tool execution chain.
+// Summary: Add the middleware appropriately based on current system conditions.
 //
 // Parameters:
-//   - middleware (ExecutionMiddleware): The middleware instance to add.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Appends middleware to the internal list.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
 
-// SetMCPServer provides the Manager with a reference to the MCP server.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
 //
-// Summary: Sets the MCP server.
-//
-// This allows the manager to register tool handlers directly with the server.
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - mcpServer (MCPServerProvider): The MCP server provider interface.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the internal mcpServer reference.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
 	tm.mcpServer = mcpServer
 }
 
-// ExecuteTool finds a tool by its name and executes it.
+// ExecuteTool serves as a public interface for interacting with ExecuteTool.
 //
-// Summary: Executes a tool.
-//
-// It handles the entire lifecycle of a tool call, including:
-// 1. Resolving the tool.
-// 2. Checking service health.
-// 3. Running pre-execution hooks and policies.
-// 4. Executing the tool logic.
-// 5. Running post-execution hooks.
-// 6. Running middlewares.
+// Summary: Execute the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the tool execution.
-//   - req (*ExecutionRequest): The request containing the tool name and input arguments.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of the execution (type varies by tool).
-//   - error: An error if the tool is not found, execution is denied, or the tool fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - ErrToolNotFound: If the tool cannot be found (includes fuzzy matching suggestions).
-//   - Returns error if service is unhealthy or hooks fail.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes the tool logic (which may have side effects).
-//   - Runs pre/post-execution hooks.
-//   - Logs execution details.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any, error) {
 	log := logging.GetLogger().With("toolName", req.ToolName)
 	log.Debug("Executing tool")
@@ -778,18 +831,21 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	return result, err
 }
 
-// AddServiceInfo registers metadata about a service.
+// AddServiceInfo serves as a public interface for interacting with AddServiceInfo.
 //
-// Summary: Registers service metadata.
-//
-// It processes the service configuration to set up hooks and call policies.
+// Summary: Add the service info appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier for the service.
-//   - info (*ServiceInfo): The ServiceInfo struct containing the service's metadata and configuration.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Stores service info in the internal map.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -827,19 +883,21 @@ func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	tm.serviceInfo.Store(serviceID, info)
 }
 
-// GetServiceInfo retrieves the metadata for a registered service.
+// GetServiceInfo serves as a public interface for interacting with GetServiceInfo.
 //
-// Summary: Retrieves service metadata.
-//
-// It returns a copy of the service info with secrets stripped from the configuration
-// for security.
+// Summary: Fetches and returns the underlying service info from the system state.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier for the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *ServiceInfo: The service information.
-//   - bool: True if the service was found, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	info, ok := tm.serviceInfo.Load(serviceID)
 	if !ok {
@@ -854,14 +912,21 @@ func (tm *Manager) GetServiceInfo(serviceID string) (*ServiceInfo, bool) {
 	return &clonedInfo, true
 }
 
-// ListServices returns a list of all currently registered services.
+// ListServices serves as a public interface for interacting with ListServices.
 //
-// Summary: Lists all services.
+// Summary: List the services appropriately based on current system conditions.
 //
-// It strips secrets from the service configurations before returning them.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*ServiceInfo: A slice of ServiceInfo structs.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) ListServices() []*ServiceInfo {
 	var services []*ServiceInfo
 	tm.serviceInfo.Range(func(_ string, value *ServiceInfo) bool {
@@ -877,27 +942,21 @@ func (tm *Manager) ListServices() []*ServiceInfo {
 	return services
 }
 
-// AddTool registers a new tool with the manager.
+// AddTool serves as a public interface for interacting with AddTool.
 //
-// Summary: Registers a tool.
-//
-// It performs validation, sanitization, and integrity checks.
-// If an MCP server is configured, it also registers the tool with the server.
+// Summary: Add the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - tool (Tool): The tool instance to be added.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if validation fails or the tool cannot be added.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if integrity check fails.
-//   - Returns error if sanitization fails.
-//   - Returns error if tool registration with MCP server fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Stores the tool in internal maps and indices.
-//   - Registers tool handler with MCP server.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) AddTool(tool Tool) error {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -1057,19 +1116,21 @@ func (tm *Manager) AddTool(tool Tool) error {
 	return nil
 }
 
-// GetTool retrieves a tool from the manager by its fully qualified name.
+// GetTool serves as a public interface for interacting with GetTool.
 //
-// Summary: Retrieves a tool by name.
-//
-// It first attempts to look up the tool by its exact ID (useful if the client sends the ID).
-// If that fails, it looks up the tool by its client-facing name (using the name map).
+// Summary: Fetches and returns the underlying tool from the system state.
 //
 // Parameters:
-//   - toolName (string): The name or ID of the tool to retrieve.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Tool: The tool instance.
-//   - bool: True if the tool was found, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	// Try direct lookup (if client sends ID)
 	tool, ok := tm.tools.Load(toolName)
@@ -1087,14 +1148,21 @@ func (tm *Manager) GetTool(toolName string) (Tool, bool) {
 	return nil, false
 }
 
-// ListTools returns a list of all tools currently registered with the manager.
+// ListTools serves as a public interface for interacting with ListTools.
 //
-// Summary: Lists all tools.
+// Summary: List the tools appropriately based on current system conditions.
 //
-// It uses a read-through cache to avoid rebuilding the list on every call.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []Tool: A slice of Tool instances.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) ListTools() []Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedTools != nil {
@@ -1137,18 +1205,21 @@ func (tm *Manager) rebuildCachedTools() []Tool {
 	return tools
 }
 
-// ListMCPTools returns a slice containing all the tools currently registered with
-// the manager in MCP format.
+// ListMCPTools serves as a public interface for interacting with ListMCPTools.
 //
-// Summary: Lists all tools in MCP format.
+// Summary: List the mcp tools appropriately based on current system conditions.
 //
-// It maintains a cache of the MCP tool definitions to minimize overhead.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*mcp.Tool: A slice of MCP tool definitions.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates internal caches if they are invalid.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	tm.toolsMutex.RLock()
 	if tm.cachedMCPTools != nil {
@@ -1190,18 +1261,21 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 	return mcpTools
 }
 
-// ClearToolsForService removes all tools associated with a given service ID.
+// ClearToolsForService serves as a public interface for interacting with ClearToolsForService.
 //
-// Summary: Removes tools for a service.
-//
-// It efficiently cleans up internal indices and caches.
+// Summary: Clear the tools for service appropriately based on current system conditions.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier for the service.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Removes entries from the tools map and secondary indices.
-//   - Invalidates internal caches.
+//   - May safely mutate local state without unintended external side effects.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

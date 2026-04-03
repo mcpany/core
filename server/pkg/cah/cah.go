@@ -9,9 +9,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// MonitorAgent represents a security/policy validator in the quorum.
+// MonitorAgent represents the public MonitorAgent entity.
 //
-// Summary: Evaluates a request and returns a cryptographically bound signature.
+// Summary: Defines the structured data model representing a agent.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MonitorAgent interface {
 	// ValidateRequest evaluates a request and returns a cryptographically bound
 	// signature if approved, or an error if rejected.
@@ -20,33 +32,42 @@ type MonitorAgent interface {
 	ID() string
 }
 
-// CAHAdapter acts as the central arbiter for verifying agent interactions.
+// CAHAdapter represents the public CAHAdapter entity.
 //
-// Summary: Manages a decentralized quorum of MonitorAgents to collect approvals.
+// Summary: Defines the structured data model representing a adapter.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CAHAdapter struct {
 	monitors        []MonitorAgent
 	quorumThreshold int
 	timeout         time.Duration
 }
 
-// NewCAHAdapter creates a new Cognitive Attestation Hub (CAH) Adapter.
+// NewCAHAdapter serves as a public interface for interacting with NewCAHAdapter.
 //
-// Summary: Initializes and returns a new CAHAdapter instance.
+// Summary: Constructs and returns an initialized cah adapter ready for consumption.
 //
 // Parameters:
-//   - monitors: A list of MonitorAgent instances that form the quorum.
-//   - threshold: The minimum number of approvals required to proceed.
-//   - timeout: The maximum time to wait for quorum consensus.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *CAHAdapter: A new CAHAdapter instance.
-//   - error: An error if the threshold is greater than the number of monitors or less than 1.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if threshold is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration) (*CAHAdapter, error) {
 	if threshold < 1 {
 		return nil, fmt.Errorf("quorum threshold must be at least 1")
@@ -62,26 +83,21 @@ func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration
 	}, nil
 }
 
-// ValidateWithQuorum initiates a consensus gathering process for a given request.
+// ValidateWithQuorum serves as a public interface for interacting with ValidateWithQuorum.
 //
-// Summary: Starts a consensus gathering process among the monitor quorum.
+// Summary: Validate the with quorum appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: The context for the request.
-//   - requestID: A unique identifier for the request being validated.
-//   - intent: The declared intent of the request (e.g., "read_file", "execute_command").
-//   - payload: The serialized payload of the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: A list of cryptographic signatures from the approving monitors.
-//   - error: An error if quorum is not reached within the timeout.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the context deadline is exceeded.
-//   - Returns an error if the required number of approvals is not met.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Interacts with all configured MonitorAgent instances.
+//   - May safely mutate local state without unintended external side effects.
 func (c *CAHAdapter) ValidateWithQuorum(ctx context.Context, requestID string, intent string, payload []byte) ([]string, error) {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()

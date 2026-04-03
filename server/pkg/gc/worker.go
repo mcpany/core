@@ -14,9 +14,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Config defines the configuration for the GC Worker.
+// Config represents the public Config entity.
 //
-// Summary: Represents a Config.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
@@ -24,40 +36,40 @@ type Config struct {
 	Paths    []string
 }
 
-// Worker implements a background worker for garbage collection.
+// Worker represents the public Worker entity.
 //
-// Summary: Represents a Worker.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Worker struct {
 	config Config
 }
 
-// New creates a new GC Worker. config holds the configuration settings. Returns the result.
+// New serves as a public interface for interacting with New.
+//
+// Summary: Constructs and returns an initialized  ready for consumption.
 //
 // Parameters:
-//   - config (Config): The config parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Worker: The resulting *Worker.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Initializes New operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
@@ -70,33 +82,21 @@ func New(config Config) *Worker {
 	}
 }
 
-// Start runs the GC worker in the background. It returns immediately and runs cleanup periodically until the context is canceled.
+// Start serves as a public interface for interacting with Start.
+//
+// Summary: Start the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Start operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

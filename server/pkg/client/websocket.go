@@ -10,41 +10,40 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
-// connection pool, implementing the pool.ClosableClient interface.
+// WebsocketClientWrapper represents the public WebsocketClientWrapper entity.
 //
-// Summary: Represents a WebsocketClientWrapper.
+// Summary: Defines the structured data model representing a client wrapper.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }
 
-// IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
+// IsHealthy serves as a public interface for interacting with IsHealthy.
+//
+// Summary: Checks condition indicating whether the target is healthy.
 //
 // Parameters:
-//   - _ (context.Context): The _ parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if successful, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -52,33 +51,21 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	return err == nil
 }
 
-// Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
+// Close serves as a public interface for interacting with Close.
+//
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if the operation fails or is invalid.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

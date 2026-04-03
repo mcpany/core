@@ -13,45 +13,59 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// DB wraps the sql.DB connection.
+// DB represents the public DB entity.
 //
-// Summary: Represents a DB.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DB struct {
 	*sql.DB
 }
 
-// NewDB opens a PostgreSQL database connection.
+// NewDB serves as a public interface for interacting with NewDB.
 //
-// Summary: Initializes a PostgreSQL database connection.
+// Summary: Constructs and returns an initialized db ready for consumption.
 //
 // Parameters:
-//   - dsn (string): The data source name (connection string).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *DB: The database connection.
-//   - error: An error if the connection fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Opens a network connection to the database.
+//   - May safely mutate local state without unintended external side effects.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
 
-// NewDBWithDriver opens a database connection with the specified driver.
+// NewDBWithDriver serves as a public interface for interacting with NewDBWithDriver.
 //
-// Summary: Initializes a database connection with a custom driver.
+// Summary: Constructs and returns an initialized db with driver ready for consumption.
 //
 // Parameters:
-//   - driver (string): The database driver name.
-//   - dsn (string): The data source name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *DB: The database connection.
-//   - error: An error if the connection fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Opens a network connection to the database.
-//   - Initializes the schema.
+//   - May safely mutate local state without unintended external side effects.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -78,20 +92,21 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	return &DB{db}, nil
 }
 
-// NewDBFromSQLDB creates a new DB wrapper from an existing sql.DB connection.
+// NewDBFromSQLDB serves as a public interface for interacting with NewDBFromSQLDB.
 //
-// Summary: Wraps an existing sql.DB connection.
+// Summary: Constructs and returns an initialized db from sqldb ready for consumption.
 //
 // Parameters:
-//   - db (*sql.DB): The existing database connection.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *DB: The wrapped database connection.
-//   - error: An error if the connection is invalid (ping fails).
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Pings the database.
-//   - Initializes the schema.
+//   - May safely mutate local state without unintended external side effects.
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

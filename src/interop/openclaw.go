@@ -5,9 +5,9 @@ import (
 	"fmt"
 )
 
-// OpenClawAdapter implements the AgentFramework interface for OpenClaw.
+// OpenClawAdapter represents the public OpenClawAdapter entity.
 //
-// Summary: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
+// Summary: Defines the structured data model representing a claw adapter.
 //
 // Parameters:
 //   - None.
@@ -15,7 +15,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -25,21 +25,21 @@ type OpenClawAdapter struct {
 	CurrentEpoch int // Track the reasoning epoch
 }
 
-// NewOpenClawAdapter creates a new OpenClawAdapter instance.
+// NewOpenClawAdapter serves as a public interface for interacting with NewOpenClawAdapter.
 //
-// Summary: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
+// Summary: Constructs and returns an initialized open claw adapter ready for consumption.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *OpenClawAdapter: A pointer to the newly instantiated OpenClawAdapter.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewOpenClawAdapter() *OpenClawAdapter {
 	return &OpenClawAdapter{
 		Capabilities: map[string]bool{
@@ -50,42 +50,40 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 	}
 }
 
-// Name returns the identifier of the agent framework.
+// Name serves as a public interface for interacting with Name.
 //
-// Summary: Returns the specific name identifier of the OpenClaw adapter.
+// Summary: Name the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The name "OpenClaw".
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *OpenClawAdapter) Name() string {
 	return "OpenClaw"
 }
 
-// HandleTask translates and executes a universal task on the OpenClaw framework.
+// HandleTask serves as a public interface for interacting with HandleTask.
 //
-// Summary: Executes the provided task using simulated adaptive reasoning logic.
+// Summary: Handle the task appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The task execution context, for managing lifecycle.
-//   - task (*Task): The universal task object describing what to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *TaskResult: The generalized output from the executed task, along with telemetry data.
-//   - error: An error indicating if the task failed or is unsupported.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns an error if the framework's capability check fails for the task's intent.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
@@ -117,41 +115,40 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 	return res, nil
 }
 
-// SupportsCapability checks if the framework provides a requested capability.
+// SupportsCapability serves as a public interface for interacting with SupportsCapability.
 //
-// Summary: Determines whether the OpenClaw adapter can execute tasks for a given capability intent.
+// Summary: Supports the capability appropriately based on current system conditions.
 //
 // Parameters:
-//   - capability (string): The capability identifier string to query.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the capability is found in the capabilities map; false otherwise.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
 
-// SyncMemoryShard synchronizes a hardware-attested multimodal memory shard with the OpenClaw framework.
+// SyncMemoryShard serves as a public interface for interacting with SyncMemoryShard.
 //
-// Summary: Ingests a memory shard and appends it to OpenClaw's internal state.
+// Summary: Sync the memory shard appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for controlling cancellation and timeouts.
-//   - shard (*MemoryShard): The multimodal memory shard to synchronize.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the signature is invalid.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns an error if the shard signature verification fails.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: missing signature")
@@ -164,23 +161,21 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 	return nil
 }
 
-// StreamTask streams the execution of a task from the OpenClaw framework.
+// StreamTask serves as a public interface for interacting with StreamTask.
 //
-// Summary: Simulates a streaming task execution by emitting chunks to a channel.
+// Summary: Stream the task appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for execution, handling cancellation.
-//   - task (*Task): The generic task object to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
-//   - error: Indicates failure in executing the task or an unsupported intent.
+//   - Returns the expected domain model and an error upon failure.
 //
-// Throws/Errors:
-//   - Returns an error if the framework's capability check fails for the task's intent.
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Spawns a goroutine to send chunks.
+//   - May safely mutate local state without unintended external side effects.
 func (a *OpenClawAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)

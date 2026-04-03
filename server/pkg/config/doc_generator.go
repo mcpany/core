@@ -21,27 +21,21 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// GenerateDocumentation generates Markdown documentation for the tools defined in the configuration.
+// GenerateDocumentation serves as a public interface for interacting with GenerateDocumentation.
 //
-// Summary: Generates Markdown documentation for configured tools.
-//
-// It iterates through the configured upstream services, registers their tools, and produces a
-// Markdown formatted string describing each tool and its input schema.
+// Summary: Generate the documentation appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the operation.
-//   - cfg (*configv1.McpAnyServerConfig): The server configuration containing upstream service definitions.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: A string containing the generated Markdown documentation.
-//   - error: An error if documentation generation fails (e.g., if a service cannot be initialized).
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns an error if an upstream service factory fails to create an upstream.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Initializes upstream services which may have side effects (though typically only on execution).
-//   - Prints warnings to stderr if service registration fails.
+//   - May safely mutate local state without unintended external side effects.
 func GenerateDocumentation(ctx context.Context, cfg *configv1.McpAnyServerConfig) (string, error) {
 	busProvider, _ := bus.NewProvider(nil)
 	toolManager := tool.NewManager(busProvider)

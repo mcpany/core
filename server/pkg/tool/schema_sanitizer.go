@@ -14,24 +14,21 @@ import (
 // to prevent stack overflows from circular references or excessively deep structures.
 const maxRecursionDepth = 100
 
-// SanitizeJSONSchema attempts to fix common schema issues that cause strict MCP clients to fail.
-// It takes a raw map[string]interface{} (or compatible) and returns a *structpb.Struct.
-// This function does NOT modify the input schema.
+// SanitizeJSONSchema serves as a public interface for interacting with SanitizeJSONSchema.
 //
-// Summary: Sanitizes and converts a JSON schema into a Struct protobuf.
+// Summary: Sanitize the json schema appropriately based on current system conditions.
 //
 // Parameters:
-//   - schema: any. The input schema (typically map[string]interface{}).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *structpb.Struct: The sanitized schema as a protobuf Struct.
-//   - error: An error if deep copying or processing fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if deep copy fails or recursion limit exceeded.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Performs a deep copy of the input schema.
+//   - May safely mutate local state without unintended external side effects.
 func SanitizeJSONSchema(schema any) (*structpb.Struct, error) {
 	if schema == nil {
 		return nil, nil

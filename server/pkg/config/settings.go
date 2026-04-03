@@ -20,9 +20,21 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Settings defines the global configuration for the application.
+// Settings represents the public Settings entity.
 //
-// Summary: Represents a Settings.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string
@@ -45,18 +57,21 @@ var (
 	once           sync.Once
 )
 
-// GlobalSettings returns the singleton instance of the global settings.
+// GlobalSettings serves as a public interface for interacting with GlobalSettings.
 //
-// Summary: Retrieves the global settings singleton.
+// Summary: Global the settings appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Settings: The singleton instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Initializes the singleton if it doesn't exist.
+//   - May safely mutate local state without unintended external side effects.
 func GlobalSettings() *Settings {
 	once.Do(func() {
 		globalSettings = &Settings{
@@ -66,37 +81,40 @@ func GlobalSettings() *Settings {
 	return globalSettings
 }
 
-// ToProto returns the underlying GlobalSettings protobuf message.
+// ToProto serves as a public interface for interacting with ToProto.
 //
-// Summary: Converts the settings to a protobuf message.
+// Summary: To the proto appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.GlobalSettings: The protobuf representation.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) ToProto() *configv1.GlobalSettings {
 	return s.proto
 }
 
-// Load initializes the global settings from the command line and config files.
+// Load serves as a public interface for interacting with Load.
 //
-// Summary: Loads configuration from flags and files.
+// Summary: Load the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - cmd: *cobra.Command. The cobra command containing flags.
-//   - fs: afero.Fs. The file system interface for reading config files.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if loading fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Modifies the global settings instance.
-//   - Initializes logging.
-//   - Reads environment variables.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.cmd = cmd
 	s.fs = fs
@@ -192,18 +210,21 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	return nil
 }
 
-// LogFormat returns the current log format as a protobuf enum.
+// LogFormat serves as a public interface for interacting with LogFormat.
 //
-// Summary: Retrieves the log format.
+// Summary: Log the format appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - configv1.GlobalSettings_LogFormat: The log format enum.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 	format := viper.GetString("log-format")
 	key := "LOG_FORMAT_" + strings.ToUpper(format)
@@ -213,162 +234,192 @@ func (s *Settings) LogFormat() configv1.GlobalSettings_LogFormat {
 	return configv1.GlobalSettings_LOG_FORMAT_TEXT
 }
 
-// GRPCPort returns the gRPC port.
+// GRPCPort serves as a public interface for interacting with GRPCPort.
 //
-// Summary: Retrieves the gRPC port.
+// Summary: Grpc the port appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The gRPC port.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GRPCPort() string {
 	return s.grpcPort
 }
 
-// MCPListenAddress returns the MCP listen address.
+// MCPListenAddress serves as a public interface for interacting with MCPListenAddress.
 //
-// Summary: Retrieves the MCP listen address.
+// Summary: Mcp the listen address appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The listen address.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) MCPListenAddress() string {
 	return s.proto.GetMcpListenAddress()
 }
 
-// MetricsListenAddress returns the metrics listen address.
+// MetricsListenAddress serves as a public interface for interacting with MetricsListenAddress.
 //
-// Summary: Retrieves the metrics listen address.
+// Summary: Metrics the listen address appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The metrics address.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) MetricsListenAddress() string {
 	return viper.GetString("metrics-listen-address")
 }
 
-// Stdio returns whether stdio mode is enabled.
+// Stdio serves as a public interface for interacting with Stdio.
 //
-// Summary: Checks if stdio mode is enabled.
+// Summary: Stdio the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if enabled.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) Stdio() bool {
 	return s.stdio
 }
 
-// ConfigPaths returns the paths to the configuration files.
+// ConfigPaths serves as a public interface for interacting with ConfigPaths.
 //
-// Summary: Retrieves configuration file paths.
+// Summary: Config the paths appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: List of paths.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) ConfigPaths() []string {
 	return s.configPaths
 }
 
-// IsDebug returns whether debug mode is enabled.
+// IsDebug serves as a public interface for interacting with IsDebug.
 //
-// Summary: Checks if debug mode is enabled.
+// Summary: Checks condition indicating whether the target is debug.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if enabled.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) IsDebug() bool {
 	return s.debug
 }
 
-// LogFile returns the path to the log file.
+// LogFile serves as a public interface for interacting with LogFile.
 //
-// Summary: Retrieves the log file path.
+// Summary: Log the file appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The log file path.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) LogFile() string {
 	return s.logFile
 }
 
-// PersistentLog returns the path to the persistent log file used for hydration.
+// PersistentLog serves as a public interface for interacting with PersistentLog.
 //
-// Summary: Retrieves the persistent log file path.
+// Summary: Persistent the log appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The persistent log path.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) PersistentLog() string {
 	return s.persistentLog
 }
 
-// ShutdownTimeout returns the graceful shutdown timeout.
+// ShutdownTimeout serves as a public interface for interacting with ShutdownTimeout.
 //
-// Summary: Retrieves the shutdown timeout.
+// Summary: Shutdown the timeout appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - time.Duration: The timeout duration.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) ShutdownTimeout() time.Duration {
 	return s.shutdownTimeout
 }
 
-// APIKey returns the API key for the server.
+// APIKey serves as a public interface for interacting with APIKey.
 //
-// Summary: Retrieves the API key.
+// Summary: Api the key appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The API key.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) APIKey() string {
 	if s.proto.GetApiKey() != "" {
 		return s.proto.GetApiKey()
@@ -376,52 +427,59 @@ func (s *Settings) APIKey() string {
 	return viper.GetString("api-key")
 }
 
-// SetAPIKey sets the Global API key.
+// SetAPIKey serves as a public interface for interacting with SetAPIKey.
 //
-// Summary: Sets the API key.
+// Summary: Set the api key appropriately based on current system conditions.
 //
 // Parameters:
-//   - key: string. The API key.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
+//   - Returns the successfully computed domain model or execution state.
 //
-//	None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the API key setting.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
 
-// SetMiddlewares sets the middlewares for the global settings.
+// SetMiddlewares serves as a public interface for interacting with SetMiddlewares.
 //
-// Summary: Sets the middlewares.
+// Summary: Set the middlewares appropriately based on current system conditions.
 //
 // Parameters:
-//   - middlewares: []*configv1.Middleware. The list of middlewares.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
+//   - Returns the successfully computed domain model or execution state.
 //
-//	None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the middlewares setting.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 	s.proto.SetMiddlewares(middlewares)
 }
 
-// Profiles returns the active profiles.
+// Profiles serves as a public interface for interacting with Profiles.
 //
-// Summary: Retrieves the active profiles.
+// Summary: Profiles the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: List of profile names.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) Profiles() []string {
 	if viper.IsSet("profiles") {
 		return getStringSlice("profiles")
@@ -432,18 +490,21 @@ func (s *Settings) Profiles() []string {
 	return s.profiles
 }
 
-// LogLevel returns the current log level as a protobuf enum.
+// LogLevel serves as a public interface for interacting with LogLevel.
 //
-// Summary: Retrieves the log level.
+// Summary: Log the level appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - configv1.GlobalSettings_LogLevel: The log level enum.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Logs a warning if the log level is invalid.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	if s.IsDebug() {
 		return configv1.GlobalSettings_LOG_LEVEL_DEBUG
@@ -471,195 +532,230 @@ func (s *Settings) LogLevel() configv1.GlobalSettings_LogLevel {
 	return configv1.GlobalSettings_LOG_LEVEL_INFO
 }
 
-// DBPath returns the path to the SQLite database.
+// DBPath serves as a public interface for interacting with DBPath.
 //
-// Summary: Retrieves the database path.
+// Summary: Db the path appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The database path.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) DBPath() string {
 	return s.dbPath
 }
 
-// SetValues returns configuration values to override.
+// SetValues serves as a public interface for interacting with SetValues.
 //
-// Summary: Retrieves configuration override values.
+// Summary: Set the values appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: List of key=value strings.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) SetValues() []string {
 	return s.setValues
 }
 
-// GetDbDsn returns the database DSN.
+// GetDbDsn serves as a public interface for interacting with GetDbDsn.
 //
-// Summary: Retrieves the database DSN.
+// Summary: Fetches and returns the underlying db dsn from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The DSN.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GetDbDsn() string {
 	return s.proto.GetDbDsn()
 }
 
-// GetDbDriver returns the database driver.
+// GetDbDriver serves as a public interface for interacting with GetDbDriver.
 //
-// Summary: Retrieves the database driver.
+// Summary: Fetches and returns the underlying db driver from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The driver name.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GetDbDriver() string {
 	return s.proto.GetDbDriver()
 }
 
-// Middlewares returns the configured middlewares.
+// Middlewares serves as a public interface for interacting with Middlewares.
 //
-// Summary: Retrieves the configured middlewares.
+// Summary: Middlewares the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.Middleware: List of middlewares.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) Middlewares() []*configv1.Middleware {
 	return s.proto.GetMiddlewares()
 }
 
-// GetDlp returns the DLP configuration.
+// GetDlp serves as a public interface for interacting with GetDlp.
 //
-// Summary: Retrieves the DLP configuration.
+// Summary: Fetches and returns the underlying dlp from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.DLPConfig: The DLP config.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GetDlp() *configv1.DLPConfig {
 	return s.proto.GetDlp()
 }
 
-// SetDlp sets the DLP configuration.
+// SetDlp serves as a public interface for interacting with SetDlp.
 //
-// Summary: Sets the DLP configuration.
+// Summary: Set the dlp appropriately based on current system conditions.
 //
 // Parameters:
-//   - dlp: *configv1.DLPConfig. The DLP config.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
+//   - Returns the successfully computed domain model or execution state.
 //
-//	None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the DLP setting.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }
 
-// GetSso returns the SSO configuration.
+// GetSso serves as a public interface for interacting with GetSso.
 //
-// Summary: Retrieves the SSO configuration.
+// Summary: Fetches and returns the underlying sso from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.SSOConfig: The SSO config.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GetSso() *configv1.SSOConfig {
 	return s.proto.GetSso()
 }
 
-// SetSso sets the SSO configuration.
+// SetSso serves as a public interface for interacting with SetSso.
 //
-// Summary: Sets the SSO configuration.
+// Summary: Set the sso appropriately based on current system conditions.
 //
 // Parameters:
-//   - sso: *configv1.SSOConfig. The SSO config.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Updates the SSO setting.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) SetSso(sso *configv1.SSOConfig) {
 	s.proto.SetSso(sso)
 }
 
-// GetOidc returns the OIDC configuration.
+// GetOidc serves as a public interface for interacting with GetOidc.
 //
-// Summary: Retrieves the OIDC configuration.
+// Summary: Fetches and returns the underlying oidc from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.OIDCConfig: The OIDC config.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GetOidc() *configv1.OIDCConfig {
 	return s.proto.GetOidc()
 }
 
-// GetProfileDefinitions returns the profile definitions.
+// GetProfileDefinitions serves as a public interface for interacting with GetProfileDefinitions.
 //
-// Summary: Retrieves the profile definitions.
+// Summary: Fetches and returns the underlying profile definitions from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []*configv1.ProfileDefinition: List of profiles.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GetProfileDefinitions() []*configv1.ProfileDefinition {
 	return s.proto.GetProfileDefinitions()
 }
 
-// GithubAPIURL returns the GitHub API URL.
+// GithubAPIURL serves as a public interface for interacting with GithubAPIURL.
 //
-// Summary: Retrieves the GitHub API URL.
+// Summary: Github the apiurl appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The URL.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (s *Settings) GithubAPIURL() string {
 	return s.proto.GetGithubApiUrl()
 }

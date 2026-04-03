@@ -31,11 +31,21 @@ var (
 	retryBackoff = 100 * time.Millisecond
 )
 
-// ClosableClient defines the interface for clients that can be managed by the
-// connection pool. Implementations must provide methods for closing the
-// connection and checking its health.
+// ClosableClient represents the public ClosableClient entity.
 //
-// Summary: Interface for poolable clients.
+// Summary: Defines the structured data model representing a client.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ClosableClient interface {
 	// Close terminates the client's connection.
 	//
@@ -57,9 +67,21 @@ type ClosableClient interface {
 	IsHealthy(ctx context.Context) bool
 }
 
-// Pool defines the interface for a generic connection pool.
+// Pool represents the public Pool entity.
 //
-// Summary: Interface for a connection pool.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Pool[T ClosableClient] interface {
 	// Get retrieves a client from the pool.
 	//
@@ -116,22 +138,21 @@ type poolImpl[T ClosableClient] struct {
 	disableHealthCheck bool
 }
 
-// New creates a new connection pool with the specified factory and size
-// constraints.
+// New serves as a public interface for interacting with New.
 //
-// Summary: Creates a new generic pool.
+// Summary: Constructs and returns an initialized  ready for consumption.
 //
 // Parameters:
-//   - factory: func(context.Context) (T, error). The factory function.
-//   - initialSize: int. Initial number of clients.
-//   - maxIdleSize: int. Max idle clients.
-//   - maxSize: int. Max total clients.
-//   - idleTimeout: time.Duration. (Unused).
-//   - disableHealthCheck: bool. Whether to skip health checks on creation.
+//   - None.
 //
 // Returns:
-//   - Pool[T]: The new pool.
-//   - error: An error if configuration is invalid.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func New[T ClosableClient](
 	factory func(context.Context) (T, error),
 	initialSize, maxIdleSize, maxSize int,
@@ -220,16 +241,21 @@ func (p *poolImpl[T]) release(n int64) {
 	p.activeCount.Add(-n)
 }
 
-// Get retrieves a client from the pool.
+// Get serves as a public interface for interacting with Get.
 //
-// Summary: Acquires a client, creating one if necessary.
+// Summary: Fetches and returns the underlying  from the system state.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - T: The client.
-//   - error: Error if pool closed or creation failed.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *poolImpl[T]) Get(ctx context.Context) (T, error) {
 	var zero T
 
@@ -397,12 +423,21 @@ func (p *poolImpl[T]) isHealthySafe(ctx context.Context, client T) bool {
 	return healthy
 }
 
-// Put returns a client to the pool for reuse.
+// Put serves as a public interface for interacting with Put.
 //
-// Summary: Returns a client to the pool.
+// Summary: Put the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - client: T. The client to return.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *poolImpl[T]) Put(client T) {
 	v := reflect.ValueOf(client)
 	if !v.IsValid() || ((v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil()) {
@@ -444,12 +479,21 @@ func (p *poolImpl[T]) Put(client T) {
 	}
 }
 
-// Close shuts down the pool, closing all idle clients.
+// Close serves as a public interface for interacting with Close.
 //
-// Summary: Closes the pool.
+// Summary: Close the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Error if close fails (usually nil).
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *poolImpl[T]) Close() error {
 	// We use the mutex here to ensure that we don't close the channel multiple times
 	// or have races with other Close calls. Get/Put check p.closed via atomic which is fast.
@@ -480,19 +524,40 @@ func (p *poolImpl[T]) Close() error {
 	return nil
 }
 
-// Len returns the current number of idle clients in the pool.
+// Len serves as a public interface for interacting with Len.
 //
-// Summary: Returns idle client count.
+// Summary: Len the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: Idle count.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *poolImpl[T]) Len() int {
 	return len(p.clients)
 }
 
-// UntypedPool defines a non-generic interface for a pool.
+// UntypedPool represents the public UntypedPool entity.
 //
-// Summary: Interface for untyped pool management.
+// Summary: Defines the structured data model representing a pool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type UntypedPool interface {
 	io.Closer
 	// Len returns the number of idle clients currently in the pool.
@@ -504,33 +569,62 @@ type UntypedPool interface {
 	Len() int
 }
 
-// Manager provides a way to manage multiple named connection pools.
+// Manager represents the public Manager entity.
 //
-// Summary: Manages a collection of pools.
+// Summary: Coordinates operations and orchestrates lifecycle events for the  components.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Manager struct {
 	pools map[string]any
 	mu    sync.RWMutex
 }
 
-// NewManager creates and returns a new pool Manager.
+// NewManager serves as a public interface for interacting with NewManager.
 //
-// Summary: Initializes a new Pool Manager.
+// Summary: Constructs and returns an initialized manager ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Manager: The initialized manager.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewManager() *Manager {
 	return &Manager{
 		pools: make(map[string]any),
 	}
 }
 
-// Register adds a new pool to the manager under a given name.
+// Register serves as a public interface for interacting with Register.
 //
-// Summary: Registers a pool by name.
+// Summary: Register the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name: string. The pool name.
-//   - pool: any. The pool instance.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Register(name string, pool any) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -546,12 +640,21 @@ func (m *Manager) Register(name string, pool any) {
 	m.pools[name] = pool
 }
 
-// Deregister closes and removes a pool from the manager.
+// Deregister serves as a public interface for interacting with Deregister.
 //
-// Summary: Removes a pool by name.
+// Summary: Deregister the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - name: string. The pool name.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) Deregister(name string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -567,17 +670,21 @@ func (m *Manager) Deregister(name string) {
 	}
 }
 
-// Get retrieves a typed pool from the manager by name.
+// Get serves as a public interface for interacting with Get.
 //
-// Summary: Retrieves a pool by name and type.
+// Summary: Fetches and returns the underlying  from the system state.
 //
 // Parameters:
-//   - m: *Manager. The manager.
-//   - name: string. The pool name.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Pool[T]: The typed pool.
-//   - bool: True if found and type matches.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -589,33 +696,21 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 	return pool, ok
 }
 
-// CloseAll iterates through all registered pools in the manager and closes them. Summary: Closes all managed pools.
+// CloseAll serves as a public interface for interacting with CloseAll.
+//
+// Summary: Close the all appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes CloseAll operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
 //   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

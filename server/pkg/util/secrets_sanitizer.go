@@ -7,12 +7,21 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// StripSecretsFromService removes sensitive information from the service configuration.
+// StripSecretsFromService serves as a public interface for interacting with StripSecretsFromService.
 //
-// Summary: Removes sensitive information from service configuration.
+// Summary: Strip the secrets from service appropriately based on current system conditions.
 //
 // Parameters:
-//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -61,12 +70,21 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	}
 }
 
-// StripSecretsFromProfile removes sensitive information from the profile definition.
+// StripSecretsFromProfile serves as a public interface for interacting with StripSecretsFromProfile.
 //
-// Summary: Removes sensitive information from profile definition.
+// Summary: Strip the secrets from profile appropriately based on current system conditions.
 //
 // Parameters:
-//   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -76,12 +94,21 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	}
 }
 
-// StripSecretsFromCollection removes sensitive information from the service collection.
+// StripSecretsFromCollection serves as a public interface for interacting with StripSecretsFromCollection.
 //
-// Summary: Removes sensitive information from service collection.
+// Summary: Strip the secrets from collection appropriately based on current system conditions.
 //
 // Parameters:
-//   - collection (*configv1.Collection): The service collection to strip secrets from.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -91,12 +118,21 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 	}
 }
 
-// StripSecretsFromAuth removes sensitive values from the authentication config.
+// StripSecretsFromAuth serves as a public interface for interacting with StripSecretsFromAuth.
 //
-// Summary: Removes sensitive values from authentication config.
+// Summary: Strip the secrets from auth appropriately based on current system conditions.
 //
 // Parameters:
-//   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -308,13 +344,21 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 	}
 }
 
-// HydrateSecretsInService populates the service configuration with resolved secret values.
+// HydrateSecretsInService serves as a public interface for interacting with HydrateSecretsInService.
 //
-// Summary: Populates service configuration with resolved secret values.
+// Summary: Hydrate the secrets in service appropriately based on current system conditions.
 //
 // Parameters:
-//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
-//   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

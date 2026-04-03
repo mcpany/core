@@ -13,9 +13,21 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// SystemStatusResponse represents the response from the system status API.
+// SystemStatusResponse represents the public SystemStatusResponse entity.
 //
-// Summary: Represents a SystemStatusResponse.
+// Summary: Defines the structured data model representing a status response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

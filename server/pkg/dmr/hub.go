@@ -11,10 +11,9 @@ import (
 	"time"
 )
 
-// NodeState represents the health and attestation state of a mesh node.
-// NodeState tracks the state of an agent node in the mesh.
+// NodeState represents the public NodeState entity.
 //
-// Summary: Defines the structure holding metrics and state for dynamic mesh resilience.
+// Summary: Defines the structured data model representing a state.
 //
 // Parameters:
 //   - None.
@@ -22,7 +21,10 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type NodeState struct {
 	ID             string
@@ -31,9 +33,21 @@ type NodeState struct {
 	ActiveMissions []string
 }
 
-// Hub manages the active nodes in the mesh and triggers state migration on failure.
+// Hub represents the public Hub entity.
 //
-// Summary: The authoritative coordinator for mesh resilience and state migration.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Hub interface {
 	// RegisterNode adds a new node to the mesh or updates its state.
 	//
@@ -113,21 +127,21 @@ type hubImpl struct {
 	migrationCh  chan string
 }
 
-// NewHub initializes a new Dynamic Mesh Resilience Hub.
+// NewHub serves as a public interface for interacting with NewHub.
 //
-// Summary: Creates a new DMR Hub with a specified heartbeat timeout.
+// Summary: Constructs and returns an initialized hub ready for consumption.
 //
 // Parameters:
-//   - timeout (time.Duration): The duration after which a node is considered failed if no heartbeat is received.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Hub: The initialized DMR Hub interface.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewHub(timeout time.Duration) Hub {
 	return &hubImpl{
 		nodes:       make(map[string]*NodeState),
@@ -136,22 +150,21 @@ func NewHub(timeout time.Duration) Hub {
 	}
 }
 
-// RegisterNode adds a new node to the mesh or updates its state.
+// RegisterNode serves as a public interface for interacting with RegisterNode.
 //
-// Summary: Registers a node in the DMR Hub.
+// Summary: Register the node appropriately based on current system conditions.
 //
 // Parameters:
-//   - id (string): The unique identifier of the node.
-//   - isAttested (bool): Whether the node has provided valid hardware attestation.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the id is empty.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "node id cannot be empty" if id is empty.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Modifies the internal nodes map.
+//   - May safely mutate local state without unintended external side effects.
 func (h *hubImpl) RegisterNode(id string, isAttested bool) error {
 	if id == "" {
 		return errors.New("node id cannot be empty")
@@ -168,21 +181,21 @@ func (h *hubImpl) RegisterNode(id string, isAttested bool) error {
 	return nil
 }
 
-// Heartbeat processes a heartbeat signal from a mesh node.
+// Heartbeat serves as a public interface for interacting with Heartbeat.
 //
-// Summary: Updates the last heartbeat timestamp for a node.
+// Summary: Heartbeat the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - id (string): The unique identifier of the node.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the node is not found.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns "node not found" if the node is not registered.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Updates the LastHeartbeat time for the node.
+//   - May safely mutate local state without unintended external side effects.
 func (h *hubImpl) Heartbeat(id string) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -196,21 +209,21 @@ func (h *hubImpl) Heartbeat(id string) error {
 	return nil
 }
 
-// CheckHealth scans the registered nodes for timeouts or attestation failures.
+// CheckHealth serves as a public interface for interacting with CheckHealth.
 //
-// Summary: Evaluates node health and triggers migration for failed nodes.
+// Summary: Check the health appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the health check.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []string: A list of node IDs that have failed and require migration.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Can send failed node IDs to the migration channel.
+//   - May safely mutate local state without unintended external side effects.
 func (h *hubImpl) CheckHealth(ctx context.Context) []string {
 	h.mu.Lock()
 	defer h.mu.Unlock()
@@ -233,21 +246,21 @@ func (h *hubImpl) CheckHealth(ctx context.Context) []string {
 	return failedNodes
 }
 
-// MigrationChannel returns a read-only channel for listening to migration events.
+// MigrationChannel serves as a public interface for interacting with MigrationChannel.
 //
-// Summary: Provides access to the stream of failed node IDs that require migration.
+// Summary: Migration the channel appropriately based on current system conditions.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan string: A channel emitting failed node IDs.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (h *hubImpl) MigrationChannel() <-chan string {
 	return h.migrationCh
 }

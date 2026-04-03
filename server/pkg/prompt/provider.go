@@ -11,25 +11,40 @@ type mcpServerProvider struct {
 	server *mcp.Server
 }
 
-// Server returns the underlying MCP server instance.
+// Server serves as a public interface for interacting with Server.
 //
-// Summary: Retrieves the MCP server.
+// Summary: Server the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.Server: The MCP server instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *mcpServerProvider) Server() *mcp.Server {
 	return p.server
 }
 
-// NewMCPServerProvider creates a new MCPServerProvider.
+// NewMCPServerProvider serves as a public interface for interacting with NewMCPServerProvider.
 //
-// Summary: Initializes a provider for the MCP server.
+// Summary: Constructs and returns an initialized mcp server provider ready for consumption.
 //
 // Parameters:
-//   - server: *mcp.Server. The server instance to wrap.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - MCPServerProvider: The initialized provider.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
 	return &mcpServerProvider{server: server}
 }

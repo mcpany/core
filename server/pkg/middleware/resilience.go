@@ -11,46 +11,62 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// ResilienceMiddleware provides circuit breaker and retry functionality for tool executions.
+// ResilienceMiddleware represents the public ResilienceMiddleware entity.
 //
-// Summary: Middleware that wraps tool executions with circuit breakers, retries, and timeouts.
+// Summary: Defines the structured data model representing a middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ResilienceMiddleware struct {
 	toolManager tool.ManagerInterface
 	managers    sync.Map // map[string]*resilience.Manager (serviceID -> Manager)
 }
 
-// NewResilienceMiddleware creates a new ResilienceMiddleware.
+// NewResilienceMiddleware serves as a public interface for interacting with NewResilienceMiddleware.
 //
-// Summary: Initializes the ResilienceMiddleware with a tool manager.
+// Summary: Constructs and returns an initialized resilience middleware ready for consumption.
 //
 // Parameters:
-//   - toolManager: tool.ManagerInterface. The manager for retrieving tool and service information.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *ResilienceMiddleware: The initialized middleware.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewResilienceMiddleware(toolManager tool.ManagerInterface) *ResilienceMiddleware {
 	return &ResilienceMiddleware{
 		toolManager: toolManager,
 	}
 }
 
-// Execute executes the resilience middleware.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the tool call within a resilience wrapper (circuit breaker, retry).
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The tool execution request.
-//   - next: tool.ExecutionFunc. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if the execution or resilience policy fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Checks circuit breaker state.
-//   - May retry the execution on failure.
-//   - Records success/failure to update circuit breaker stats.
+//   - May safely mutate local state without unintended external side effects.
 func (m *ResilienceMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

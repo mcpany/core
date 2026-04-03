@@ -17,6 +17,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * STACK_CONFIG_SCHEMA serves as a public interface for interacting with STACK_CONFIG_SCHEMA.
+ *
+ * Summary: Defines the structured data model representing a confi schema.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export const STACK_CONFIG_SCHEMA = {
   uri: "http://mcp-any/stack-config.json",
   fileMatch: ["*"],

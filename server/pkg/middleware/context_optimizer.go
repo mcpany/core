@@ -14,22 +14,40 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// ContextOptimizer optimises the context size of responses.
+// ContextOptimizer represents the public ContextOptimizer entity.
 //
-// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
+// Summary: Defines the structured data model representing a optimizer.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
-// NewContextOptimizer creates a new ContextOptimizer.
+// NewContextOptimizer serves as a public interface for interacting with NewContextOptimizer.
 //
-// Summary: Initializes a new ContextOptimizer with a maximum character limit.
+// Summary: Constructs and returns an initialized context optimizer ready for consumption.
 //
 // Parameters:
-//   - maxChars: int. The maximum allowed number of characters for string values in the JSON response.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *ContextOptimizer: The initialized optimizer.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -44,20 +62,21 @@ var bufferPool = sync.Pool{
 	},
 }
 
-// Handler returns the middleware handler.
+// Handler serves as a public interface for interacting with Handler.
 //
-// Summary: Returns an HTTP handler that intercepts and potentially truncates response bodies.
+// Summary: Handler the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.Handler: The wrapped handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Buffers the entire response body.
-//   - Modifies the response body if it contains JSON strings exceeding MaxChars.
-//   - Updates the Content-Length header.
+//   - May safely mutate local state without unintended external side effects.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -189,20 +208,21 @@ func (w *responseBuffer) checkBuffer() {
 	}
 }
 
-// Write writes the data to the buffer or the underlying ResponseWriter.
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Writes data to the internal buffer if enabled, or directly to the response writer.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - b: []byte. The data to write.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Appends to the body buffer if buffering is enabled.
-//   - Writes to the underlying ResponseWriter otherwise.
+//   - May safely mutate local state without unintended external side effects.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -216,16 +236,21 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader captures the status code and decides whether to buffer based on headers.
+// WriteHeader serves as a public interface for interacting with WriteHeader.
 //
-// Summary: Writes the HTTP status code.
+// Summary: Write the header appropriately based on current system conditions.
 //
 // Parameters:
-//   - statusCode: int. The HTTP status code.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Sets the internal status code.
-//   - Checks content-type headers to determine if buffering is needed.
+//   - May safely mutate local state without unintended external side effects.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

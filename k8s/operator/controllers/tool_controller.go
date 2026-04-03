@@ -14,9 +14,21 @@ import (
 	mcpanyv1alpha1 "github.com/mcpany/core/operator/api/v1alpha1"
 )
 
-// ToolReconciler reconciles a Tool object.
+// ToolReconciler represents the public ToolReconciler entity.
 //
-// Summary: Controller for reconciling Tool resources.
+// Summary: Defines the structured data model representing a reconciler.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -26,22 +38,21 @@ type ToolReconciler struct {
 // +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=mcpany.mcp.so,resources=tools/finalizers,verbs=update
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
+// Reconcile serves as a public interface for interacting with Reconcile.
 //
-// Summary: Reconciles a Tool object.
+// Summary: Reconcile the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: ctrl.Request. The reconciliation request.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - ctrl.Result: The result of the reconciliation.
-//   - error: Any error that occurred.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Reads and updates Tool resources in the cluster.
-//   - May create or update related resources.
+//   - May safely mutate local state without unintended external side effects.
 func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
@@ -50,15 +61,21 @@ func (r *ToolReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	return ctrl.Result{}, nil
 }
 
-// SetupWithManager sets up the controller with the Manager.
+// SetupWithManager serves as a public interface for interacting with SetupWithManager.
 //
-// Summary: Sets up the controller with the Manager.
+// Summary: Setup the with manager appropriately based on current system conditions.
 //
 // Parameters:
-//   - mgr: ctrl.Manager. The controller manager.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: Any error that occurred during setup.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (r *ToolReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&mcpanyv1alpha1.Tool{}).

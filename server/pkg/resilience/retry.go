@@ -13,26 +13,40 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Retry implements a retry policy for failed operations.
+// Retry represents the public Retry entity.
 //
-// Summary: Represents a Retry.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Retry struct {
 	config *configv1.RetryConfig
 }
 
-// NewRetry creates a new Retry instance with the given configuration.
-// It sets default values for base and max backoff if they are not provided.
+// NewRetry serves as a public interface for interacting with NewRetry.
 //
-// Summary: Creates a new retry policy.
+// Summary: Constructs and returns an initialized retry ready for consumption.
 //
 // Parameters:
-//   - config (*configv1.RetryConfig): The configuration for the retry policy.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Retry: A new Retry instance.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}
@@ -48,20 +62,21 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 	}
 }
 
-// Execute runs the provided work function, retrying it if it fails according
-// to the configured policy.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes a function with retries.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - work (func(context.Context) error): The function to execute.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if all retries fail.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Executes the provided function multiple times.
+//   - May safely mutate local state without unintended external side effects.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

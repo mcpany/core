@@ -9,9 +9,21 @@ import (
 	"fmt"
 )
 
-// Runtime defines the interface for a WASM plugin runtime.
+// Runtime represents the public Runtime entity.
 //
-// Summary: Represents a Runtime.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
@@ -31,9 +43,21 @@ type Runtime interface {
 	Close() error
 }
 
-// Plugin defines an instantiated WASM plugin.
+// Plugin represents the public Plugin entity.
 //
-// Summary: Represents a Plugin.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	//
@@ -54,56 +78,57 @@ type Plugin interface {
 	Close() error
 }
 
-// MockRuntime is a placeholder implementation.
+// MockRuntime represents the public MockRuntime entity.
 //
-// Summary: Represents a MockRuntime.
-type MockRuntime struct{}
-
-// NewMockRuntime creates a new MockRuntime.
-//
-// Returns:
-//   - *MockRuntime: A new mock runtime instance.
-//
-// Summary: Initializes NewMockRuntime operation.
+// Summary: Defines the structured data model representing a runtime.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
+type MockRuntime struct{}
+
+// NewMockRuntime serves as a public interface for interacting with NewMockRuntime.
+//
+// Summary: Constructs and returns an initialized mock runtime ready for consumption.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }
 
-// LoadPlugin loads a plugin.
+// LoadPlugin serves as a public interface for interacting with LoadPlugin.
+//
+// Summary: Load the plugin appropriately based on current system conditions.
 //
 // Parameters:
-//   - _ : The context (unused).
-//   - bytecode: The bytecode to load.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - Plugin: A mock plugin.
-//   - error: An error if the bytecode is empty.
-//
-// Summary: Executes LoadPlugin operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
 		return nil, fmt.Errorf("btyecode cannot be empty")
@@ -111,57 +136,57 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 	return &MockPlugin{}, nil
 }
 
-// Close closes the runtime.
+// Close serves as a public interface for interacting with Close.
 //
-// Returns:
-//   - error: Always returns nil.
-//
-// Summary: Executes Close operation.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockRuntime) Close() error {
 	return nil
 }
 
-// MockPlugin is a mock plugin.
+// MockPlugin represents the public MockPlugin entity.
 //
-// Summary: Represents a MockPlugin.
-type MockPlugin struct{}
-
-// Execute executes a function.
+// Summary: Defines the structured data model representing a plugin.
 //
 // Parameters:
-//   - _ : The context (unused).
-//   - function: The function name to execute.
-//   - _ : The arguments (unused).
+//   - None.
 //
 // Returns:
-//   - []byte: The result ("success").
-//   - error: An error if the function name is "error".
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
+type MockPlugin struct{}
+
+// Execute serves as a public interface for interacting with Execute.
+//
+// Summary: Execute the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
 		return nil, fmt.Errorf("simulated error")
@@ -169,24 +194,21 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 	return []byte("success"), nil
 }
 
-// Close closes the plugin.
+// Close serves as a public interface for interacting with Close.
 //
-// Returns:
-//   - error: Always returns nil.
-//
-// Summary: Executes Close operation.
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (p *MockPlugin) Close() error {
 	return nil
 }

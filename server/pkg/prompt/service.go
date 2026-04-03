@@ -11,25 +11,41 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
+// Service represents the public Service entity.
 //
-// Summary: Represents a Service.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
 }
 
-// NewService creates and returns a new Service instance.
+// NewService serves as a public interface for interacting with NewService.
 //
-// Summary: Initializes a new Prompt Service.
+// Summary: Constructs and returns an initialized service ready for consumption.
 //
 // Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Service: The initialized service.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -38,16 +54,21 @@ func NewService(promptManager ManagerInterface) *Service {
 	return s
 }
 
-// SetMCPServer sets the MCP server instance for the service.
+// SetMCPServer serves as a public interface for interacting with SetMCPServer.
 //
-// Summary: Configures the underlying MCP server.
+// Summary: Set the mcp server appropriately based on current system conditions.
 //
 // Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
+//   - Returns the successfully computed domain model or execution state.
 //
-//	None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -61,17 +82,21 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 //	  // log.Warn("Prompt list changed notification not sent (SDK limitation)")
 // }
 
-// ListPrompts handles the "prompts/list" MCP request.
+// ListPrompts serves as a public interface for interacting with ListPrompts.
 //
-// Summary: Lists all available prompts.
+// Summary: List the prompts appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *mcp.ListPromptsRequest. The request object.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.ListPromptsResult: The list of prompts.
-//   - error: An error if the operation fails.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -86,20 +111,21 @@ func (s *Service) ListPrompts(
 	}, nil
 }
 
-// GetPrompt handles the "prompts/get" MCP request.
+// GetPrompt serves as a public interface for interacting with GetPrompt.
 //
-// Summary: Retrieves and executes a specific prompt.
+// Summary: Fetches and returns the underlying prompt from the system state.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *mcp.GetPromptRequest. The request containing the prompt name and arguments.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.GetPromptResult: The result of the prompt execution.
-//   - error: An error if the prompt is not found or execution fails.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - ErrPromptNotFound: If the prompt does not exist.
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (s *Service) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,

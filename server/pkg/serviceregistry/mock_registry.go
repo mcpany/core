@@ -11,98 +11,80 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
+// MockServiceRegistry represents the public MockServiceRegistry entity.
 //
-// Summary: Represents a MockServiceRegistry.
+// Summary: Defines the structured data model representing a service registry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MockServiceRegistry struct {
 	mock.Mock
 }
 
-// RegisterService registers a new upstream service based on the provided configuration.
+// RegisterService serves as a public interface for interacting with RegisterService.
+//
+// Summary: Register the service appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The registration context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of discovered tools.
-//   - []*configv1.ResourceDefinition: A list of discovered resources.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Executes RegisterService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig *configv1.UpstreamServiceConfig) (string, []*configv1.ToolDefinition, []*configv1.ResourceDefinition, error) {
 	args := m.Called(ctx, serviceConfig)
 	return args.String(0), args.Get(1).([]*configv1.ToolDefinition), args.Get(2).([]*configv1.ResourceDefinition), args.Error(3)
 }
 
-// UnregisterService removes a service from the registry.
+// UnregisterService serves as a public interface for interacting with UnregisterService.
+//
+// Summary: Unregister the service appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the unregistration.
-//   - serviceName (string): The name of the service to remove.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - error: An error if the service is not found or shutdown fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Executes UnregisterService operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
 }
 
-// GetAllServices returns a list of all currently registered services.
+// GetAllServices serves as a public interface for interacting with GetAllServices.
 //
-// Returns:
-//   - []*configv1.UpstreamServiceConfig: A list of all registered service configurations.
-//   - error: An error if retrieval fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetAllServices operation.
+// Summary: Fetches and returns the underlying all services from the system state.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfig, error) {
 	args := m.Called()
 	if args.Get(0) == nil {
@@ -111,31 +93,21 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 	return args.Get(0).([]*configv1.UpstreamServiceConfig), args.Error(1)
 }
 
-// GetServiceInfo retrieves the metadata for a service by its ID.
+// GetServiceInfo serves as a public interface for interacting with GetServiceInfo.
+//
+// Summary: Fetches and returns the underlying service info from the system state.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *tool.ServiceInfo: The service metadata.
-//   - bool: True if the service was found, false otherwise.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetServiceInfo operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
 	if info, ok := args.Get(0).(*tool.ServiceInfo); ok {
@@ -144,31 +116,21 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 	return nil, args.Bool(1)
 }
 
-// GetServiceConfig returns the configuration for a given service ID.
+// GetServiceConfig serves as a public interface for interacting with GetServiceConfig.
+//
+// Summary: Fetches and returns the underlying service config from the system state.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.UpstreamServiceConfig: The service configuration.
-//   - bool: True if the service was found, false otherwise.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetServiceConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.UpstreamServiceConfig, bool) {
 	args := m.Called(serviceID)
 	if config, ok := args.Get(0).(*configv1.UpstreamServiceConfig); ok {
@@ -177,31 +139,21 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 	return nil, args.Bool(1)
 }
 
-// GetServiceError returns the last known registration or health error for a service.
+// GetServiceError serves as a public interface for interacting with GetServiceError.
+//
+// Summary: Fetches and returns the underlying service error from the system state.
 //
 // Parameters:
-//   - serviceID (string): The unique identifier of the service.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The error message.
-//   - bool: True if an error is present, false otherwise.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Retrieves GetServiceError operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *MockServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	args := m.Called(serviceID)
 	return args.String(0), args.Bool(1)

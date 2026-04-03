@@ -9,22 +9,21 @@ import (
 	"strings"
 )
 
-// IsEnvVarAllowed checks if an environment variable is allowed to be accessed
-// by the configuration system.
+// IsEnvVarAllowed serves as a public interface for interacting with IsEnvVarAllowed.
 //
-// Summary: Validates if an environment variable is safe to expose to the configuration system.
-//
-// Security Policy:
-//  1. Block `MCPANY_*` variables by default to prevent exfiltration of server secrets
-//     (like MCPANY_API_KEY, MCPANY_DB_DSN) via configuration injection.
-//  2. Allow explicitly whitelisted variables via `MCPANY_ALLOWED_ENV` (comma-separated).
-//  3. In Strict Mode (`MCPANY_STRICT_ENV_MODE=true`), block ALL variables unless whitelisted.
+// Summary: Checks condition indicating whether the target is env var allowed.
 //
 // Parameters:
-//   - name: The name of the environment variable to check.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if the environment variable is allowed, false otherwise.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func IsEnvVarAllowed(name string) bool {
 	// 1. Check Allowlist
 	allowedEnv := os.Getenv("MCPANY_ALLOWED_ENV")

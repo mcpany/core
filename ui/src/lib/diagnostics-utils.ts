@@ -17,6 +17,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * DiagnosticResult represents the public DiagnosticResult entity.
+ *
+ * Summary: Defines the structured data model representing a result.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;
@@ -26,24 +43,21 @@ export interface DiagnosticResult {
 }
 
 /**
- * Summary: Document analyzeConnectionError
+ * analyzeConnectionError serves as a public interface for interacting with analyzeConnectionError.
  *
- * Params:
- *   - Documented below.
+ * Summary: Analyze the connection error appropriately based on current system conditions.
+ *
+ * Parameters:
+ *   - Refer to the function signature for strongly-typed input arguments.
  *
  * Returns:
- *   - Documented below.
+ *   - Returns the expected domain model or execution state.
  *
- * Errors:
- *   - None
+ * Throws/Errors:
+ *   - Propagates exceptions from underlying validation layers.
  *
  * Side Effects:
- *   - None
- *
- * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
- *
- * @param error - The raw error string received from the backend or network.
- * @returns A structured DiagnosticResult containing the category, severity, and suggested remediation.
+ *   - May mutate state or perform network I/O depending on implementation.
  */
 export function analyzeConnectionError(error: string): DiagnosticResult {
   const err = error.toLowerCase();

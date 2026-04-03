@@ -10,11 +10,21 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Message defines the interface that all messages exchanged on the event bus must
-// implement. It provides a standard way to manage correlation IDs for tracking
-// requests and their corresponding responses.
+// Message represents the public Message entity.
 //
-// Summary: Represents a Message.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
@@ -26,94 +36,99 @@ type Message interface {
 	SetCorrelationID(id string)
 }
 
-// BaseMessage provides a default implementation of the Message interface. It
-// includes a correlation ID field (`CID`) and can be embedded in other message
-// structs to provide a common mechanism for message tracking.
+// BaseMessage represents the public BaseMessage entity.
 //
-// Summary: Represents a BaseMessage.
+// Summary: Defines the structured data model representing a message.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
 
-// CorrelationID returns the correlation ID of the message. This ID is used to associate requests with their corresponding responses in asynchronous workflows.
+// CorrelationID serves as a public interface for interacting with CorrelationID.
+//
+// Summary: Correlation the id appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - string: The resulting string.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Executes CorrelationID operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
 
-// SetCorrelationID sets the correlation ID for the message. This is typically called by the message publisher to assign a unique ID to a request.
+// SetCorrelationID serves as a public interface for interacting with SetCorrelationID.
+//
+// Summary: Set the correlation id appropriately based on current system conditions.
 //
 // Parameters:
-//   - id (string): The id parameter.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - None
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None
-//
-// Summary: Updates SetCorrelationID operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }
 
-// ServiceRegistrationRequest is a message sent to the bus to request the
-// registration of a new upstream service. It contains the service's
-// configuration and the context for the request.
+// ServiceRegistrationRequest represents the public ServiceRegistrationRequest entity.
 //
-// Summary: Represents a ServiceRegistrationRequest.
+// Summary: Defines the structured data model representing a registration request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceRegistrationRequest struct {
 	BaseMessage
 	Context context.Context
 	Config  *configv1.UpstreamServiceConfig
 }
 
-// ServiceRegistrationResult is a message published in response to a
-// ServiceRegistrationRequest. It contains the outcome of the registration
-// process, including the generated service key, a list of any tools that were
-// discovered, or an error if the registration failed.
+// ServiceRegistrationResult represents the public ServiceRegistrationResult entity.
 //
-// Summary: Represents a ServiceRegistrationResult.
+// Summary: Defines the structured data model representing a registration result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceRegistrationResult struct {
 	BaseMessage
 	ServiceKey          string
@@ -122,11 +137,21 @@ type ServiceRegistrationResult struct {
 	Error               error
 }
 
-// ToolExecutionRequest is a message sent to the bus to request the execution of
-// a specific tool on an upstream service. It includes the name of the tool and
-// its inputs in raw JSON format.
+// ToolExecutionRequest represents the public ToolExecutionRequest entity.
 //
-// Summary: Represents a ToolExecutionRequest.
+// Summary: Defines the structured data model representing a execution request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
@@ -134,46 +159,102 @@ type ToolExecutionRequest struct {
 	ToolInputs json.RawMessage
 }
 
-// ToolExecutionResult is a message published in response to a
-// ToolExecutionRequest. It contains the result of the tool execution, in raw
-// JSON format, or an error if the execution failed.
+// ToolExecutionResult represents the public ToolExecutionResult entity.
 //
-// Summary: Represents a ToolExecutionResult.
+// Summary: Defines the structured data model representing a execution result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
 	Error  error
 }
 
-// ServiceListRequest is a message sent to the bus to request a list of all
-// registered services.
+// ServiceListRequest represents the public ServiceListRequest entity.
 //
-// Summary: Represents a ServiceListRequest.
+// Summary: Defines the structured data model representing a list request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceListRequest struct {
 	BaseMessage
 }
 
-// ServiceListResult is a message published in response to a
-// ServiceListRequest. It contains a list of all registered services.
+// ServiceListResult represents the public ServiceListResult entity.
 //
-// Summary: Represents a ServiceListResult.
+// Summary: Defines the structured data model representing a list result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceListResult struct {
 	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
 	Error    error
 }
 
-// ServiceGetRequest is a message sent to the bus to request a specific service.
+// ServiceGetRequest represents the public ServiceGetRequest entity.
 //
-// Summary: Represents a ServiceGetRequest.
+// Summary: Defines the structured data model representing a get request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
 }
 
-// ServiceGetResult is a message published in response to a ServiceGetRequest.
+// ServiceGetResult represents the public ServiceGetResult entity.
 //
-// Summary: Represents a ServiceGetResult.
+// Summary: Defines the structured data model representing a get result.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

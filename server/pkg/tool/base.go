@@ -35,25 +35,40 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 	}, nil
 }
 
-// Tool returns the protobuf definition of the tool.
+// Tool serves as a public interface for interacting with Tool.
 //
-// Summary: Retrieves the protobuf definition.
+// Summary: Tool the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *v1.Tool: The protobuf tool definition.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP tool definition.
+// MCPTool serves as a public interface for interacting with MCPTool.
 //
-// Summary: Retrieves the MCP-compliant tool definition.
+// Summary: Mcp the tool appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Lazily converts the proto definition to MCP format on first call.
+//   - May safely mutate local state without unintended external side effects.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -65,53 +80,59 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
+// IsStreaming serves as a public interface for interacting with IsStreaming.
 //
-// Summary: Retrieves the cache configuration (always nil for baseTool).
+// Summary: Checks condition indicating whether the target is streaming.
 //
-// Returns:
-//   - *configv1.CacheConfig: Always returns nil.
-//
-// IsStreaming returns true if the tool supports streaming execution.
-//
-// Summary: Checks if the tool supports streaming execution.
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: True if streaming is supported.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *baseTool) IsStreaming() bool {
 	return false
 }
 
-// StreamExecute handles the streaming execution of the tool.
+// StreamExecute serves as a public interface for interacting with StreamExecute.
 //
-// Summary: Executes the tool in streaming mode.
+// Summary: Stream the execute appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request payload.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	return nil, nil // Should be implemented by embedding struct if supported
 }
 
-// GetCacheConfig returns the cache configuration for the tool.
+// GetCacheConfig serves as a public interface for interacting with GetCacheConfig.
 //
-// Summary: Retrieves the cache configuration for the tool.
+// Summary: Fetches and returns the underlying cache config from the system state.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *configv1.CacheConfig: Always returns nil for baseTool.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

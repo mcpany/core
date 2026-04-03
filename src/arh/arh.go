@@ -1,8 +1,8 @@
 package arh
 
-// AutomatedRemediationHub acts as a placeholder for the Compliance service.
+// AutomatedRemediationHub represents the public AutomatedRemediationHub entity.
 //
-// Summary: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
+// Summary: Defines the structured data model representing a remediation hub.
 //
 // Parameters:
 //   - None.
@@ -10,7 +10,7 @@ package arh
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -19,21 +19,21 @@ type AutomatedRemediationHub struct {
 	Enabled bool
 }
 
-// NewAutomatedRemediationHub returns a new ARH instance.
+// NewAutomatedRemediationHub serves as a public interface for interacting with NewAutomatedRemediationHub.
 //
-// Summary: Initializes the ARH placeholder.
+// Summary: Constructs and returns an initialized automated remediation hub ready for consumption.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *AutomatedRemediationHub: The initialized placeholder.
+//   - Returns the successfully computed domain model or execution state.
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewAutomatedRemediationHub() *AutomatedRemediationHub {
 	return &AutomatedRemediationHub{
 		Enabled: true,

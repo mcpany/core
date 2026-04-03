@@ -12,17 +12,41 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-// LoginRequest is the request body for login.
+// LoginRequest represents the public LoginRequest entity.
 //
-// Summary: Represents a LoginRequest.
+// Summary: Defines the structured data model representing a request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// LoginResponse is the response body for login.
+// LoginResponse represents the public LoginResponse entity.
 //
-// Summary: Represents a LoginResponse.
+// Summary: Defines the structured data model representing a response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

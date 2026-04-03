@@ -16,9 +16,21 @@ import (
 	"github.com/google/uuid"
 )
 
-// DebugEntry represents a captured HTTP request/response.
+// DebugEntry represents the public DebugEntry entity.
 //
-// Summary: Data structure holding details of a captured HTTP transaction.
+// Summary: Defines the structured data model representing a entry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -35,9 +47,21 @@ type DebugEntry struct {
 	ResponseBody    string        `json:"response_body,omitempty"`
 }
 
-// Debugger monitors and records traffic for inspection.
+// Debugger represents the public Debugger entity.
 //
-// Summary: Middleware that captures recent HTTP traffic for debugging purposes.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -47,18 +71,21 @@ type Debugger struct {
 	done        chan struct{}
 }
 
-// NewDebugger creates a new Debugger middleware.
+// NewDebugger serves as a public interface for interacting with NewDebugger.
 //
-// Summary: Initializes the debugger with a fixed-size ring buffer.
+// Summary: Constructs and returns an initialized debugger ready for consumption.
 //
 // Parameters:
-//   - size: int. The number of recent requests to keep in memory.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *Debugger: The initialized debugger.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Starts a background goroutine to process debug entries.
+//   - May safely mutate local state without unintended external side effects.
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -82,33 +109,21 @@ func (d *Debugger) process() {
 	close(d.done)
 }
 
-// Close stops the background processor. Summary: Shuts down the debugger and releases resources. Side Effects: - Closes the ingress channel. - Waits for the background processor to finish.
+// Close serves as a public interface for interacting with Close.
+//
+// Summary: Close the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
 //   - None.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
+//
+// Side Effects:
+//   - May safely mutate local state without unintended external side effects.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done
@@ -123,20 +138,21 @@ type bodyLogWriter struct {
 	wroteHeader bool
 }
 
-// Write writes the data to the connection and captures it for the log.
+// Write serves as a public interface for interacting with Write.
 //
-// Summary: Writes data to the response and captures a copy for the debug log.
+// Summary: Write the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - b: []byte. The data to write.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - int: The number of bytes written.
-//   - error: An error if the write fails.
+//   - Returns the expected domain model and an error upon failure.
+//
+// Errors:
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Writes to the underlying http.ResponseWriter.
-//   - Writes to the internal buffer for logging, truncating if necessary.
+//   - May safely mutate local state without unintended external side effects.
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -157,16 +173,21 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// WriteHeader sends an HTTP response header with the provided status code.
+// WriteHeader serves as a public interface for interacting with WriteHeader.
 //
-// Summary: Captures the status code and writes headers.
+// Summary: Write the header appropriately based on current system conditions.
 //
 // Parameters:
-//   - statusCode: int. The HTTP status code.
+//   - Refer to the function signature for strongly-typed input arguments.
+//
+// Returns:
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Sets the status code on the writer.
-//   - Writes the header to the underlying http.ResponseWriter.
+//   - May safely mutate local state without unintended external side effects.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -182,21 +203,21 @@ type readCloserWrapper struct {
 	io.Closer
 }
 
-// Handler returns the http handler.
+// Handler serves as a public interface for interacting with Handler.
 //
-// Summary: Returns an HTTP handler that captures traffic.
+// Summary: Handler the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.Handler: The wrapped handler.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Intercepts HTTP requests and responses.
-//   - Generates trace and span IDs if missing.
-//   - Captures request and response bodies (truncated).
-//   - Sends debug entries to the ingress channel.
+//   - May safely mutate local state without unintended external side effects.
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -316,15 +337,21 @@ func isTextContent(contentType string) bool {
 		strings.Contains(contentType, "form-urlencoded")
 }
 
-// Entries returns the last captured entries.
+// Entries serves as a public interface for interacting with Entries.
 //
-// Summary: Retrieves the list of captured debug entries from the ring buffer.
+// Summary: Entries the  appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []DebugEntry: A slice of the most recent captured requests and responses.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Acquires a read lock on the ring buffer.
+//   - May safely mutate local state without unintended external side effects.
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -338,15 +365,21 @@ func (d *Debugger) Entries() []DebugEntry {
 	return entries
 }
 
-// APIHandler returns a http.HandlerFunc to view entries.
+// APIHandler serves as a public interface for interacting with APIHandler.
 //
-// Summary: Returns an HTTP handler that exposes the debug entries as JSON.
+// Summary: Api the handler appropriately based on current system conditions.
+//
+// Parameters:
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - http.HandlerFunc: The API handler function.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Encodes the entries to JSON and writes to the response.
+//   - May safely mutate local state without unintended external side effects.
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

@@ -9,9 +9,21 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Limiter interface defines the methods required for a rate limiter.
+// Limiter represents the public Limiter entity.
 //
-// Summary: Represents a Limiter.
+// Summary: Defines the structured data model representing a .
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Limiter interface {
 	// Allow checks if the request is allowed.
 	//
@@ -35,9 +47,21 @@ type Limiter interface {
 	Update(rps float64, burst int)
 }
 
-// RateLimitStrategy defines the interface for creating rate limiters.
+// RateLimitStrategy represents the public RateLimitStrategy entity.
 //
-// Summary: Represents a RateLimitStrategy.
+// Summary: Defines the structured data model representing a limit strategy.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RateLimitStrategy interface {
 	// Create creates a new Limiter instance.
 	//

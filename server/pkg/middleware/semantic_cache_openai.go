@@ -13,9 +13,21 @@ import (
 	"time"
 )
 
-// OpenAIEmbeddingProvider implements EmbeddingProvider for OpenAI.
+// OpenAIEmbeddingProvider represents the public OpenAIEmbeddingProvider entity.
 //
-// Summary: Provides vector embeddings using the OpenAI API.
+// Summary: Defines the structured data model representing a ai embedding provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type OpenAIEmbeddingProvider struct {
 	apiKey  string
 	model   string
@@ -23,20 +35,21 @@ type OpenAIEmbeddingProvider struct {
 	client  *http.Client
 }
 
-// NewOpenAIEmbeddingProvider creates a new OpenAIEmbeddingProvider.
+// NewOpenAIEmbeddingProvider serves as a public interface for interacting with NewOpenAIEmbeddingProvider.
 //
-// Summary: Initializes a new OpenAIEmbeddingProvider with the given API key and model.
+// Summary: Constructs and returns an initialized open ai embedding provider ready for consumption.
 //
 // Parameters:
-//   - apiKey: string. The OpenAI API key.
-//   - model: string. The model ID (defaults to "text-embedding-3-small" if empty).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - *OpenAIEmbeddingProvider: The initialized provider.
+//   - Returns the successfully computed domain model or execution state.
+//
+// Errors:
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - Sets a default model and base URL.
-//   - Initializes an HTTP client with a timeout.
+//   - May safely mutate local state without unintended external side effects.
 func NewOpenAIEmbeddingProvider(apiKey, model string) *OpenAIEmbeddingProvider {
 	if model == "" {
 		model = "text-embedding-3-small"
@@ -64,26 +77,21 @@ type openAIEmbeddingResponse struct {
 	} `json:"error,omitempty"`
 }
 
-// Embed generates an embedding vector for the given text using the OpenAI API.
+// Embed serves as a public interface for interacting with Embed.
 //
-// Summary: Calls the OpenAI API to generate an embedding for the input text.
+// Summary: Embed the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - text: string. The text to embed.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - []float32: The generated embedding vector.
-//   - error: An error if the API call fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if request marshaling or creation fails.
-//   - Returns error if the HTTP request fails.
-//   - Returns error if the API returns a non-200 status code or an error object.
-//   - Returns error if no embedding data is found in the response.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Makes an external HTTP POST request to the OpenAI API.
+//   - May safely mutate local state without unintended external side effects.
 func (p *OpenAIEmbeddingProvider) Embed(ctx context.Context, text string) ([]float32, error) {
 	reqBody := openAIEmbeddingRequest{
 		Input:          text,

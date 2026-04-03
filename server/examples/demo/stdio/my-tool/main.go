@@ -11,10 +11,9 @@ import (
 	"os"
 )
 
-// Request represents a tool request.
-// Request represents an incoming tool request.
+// Request represents the public Request entity.
 //
-// Summary: Defines the JSON structure of requests sent to the tool.
+// Summary: Defines the structured data model representing a .
 //
 // Parameters:
 //   - None.
@@ -22,16 +21,18 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type Request struct {
 	Name string `json:"name"`
 }
 
-// Response represents a tool response.
-// Response represents an outgoing tool response.
+// Response represents the public Response entity.
 //
-// Summary: Defines the JSON structure of responses returned by the tool.
+// Summary: Defines the structured data model representing a .
 //
 // Parameters:
 //   - None.
@@ -39,7 +40,10 @@ type Request struct {
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type Response struct {
 	Message string `json:"message"`

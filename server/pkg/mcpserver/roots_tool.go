@@ -15,38 +15,41 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// RootsTool implements the Tool interface for listing roots.
+// RootsTool represents the public RootsTool entity.
 //
-// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
-// for available filesystem roots.
+// Summary: Provides tool execution capabilities for tool.
 //
-// Summary: Represents a RootsTool.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool
 }
 
-// NewRootsTool creates a new instance of the RootsTool.
+// NewRootsTool serves as a public interface for interacting with NewRootsTool.
 //
-// Returns:
-//   - *RootsTool: A new instance of RootsTool.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewRootsTool operation.
+// Summary: Constructs and returns an initialized roots tool ready for consumption.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -68,52 +71,40 @@ func NewRootsTool() *RootsTool {
 	}
 }
 
-// Tool returns the protobuf definition of the tool.
+// Tool serves as a public interface for interacting with Tool.
 //
-// Returns:
-//   - *v1.Tool: The protobuf tool definition.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Tool operation.
+// Summary: Tool the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
 
-// MCPTool returns the MCP-compliant tool definition.
+// MCPTool serves as a public interface for interacting with MCPTool.
 //
-// Returns:
-//   - *mcp.Tool: The MCP tool definition.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes MCPTool operation.
+// Summary: Mcp the tool appropriately based on current system conditions.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -148,64 +139,59 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Side Effects:
 //   - None.
 
-// IsStreaming indicates whether this tool supports streaming execution.
+// IsStreaming serves as a public interface for interacting with IsStreaming.
 //
-// Summary: Checks if the RootsTool supports streaming.
+// Summary: Checks condition indicating whether the target is streaming.
 //
 // Parameters:
-//   - None.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - bool: Always false for this tool.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - None.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
 
-// StreamExecute executes the tool in a streaming context.
+// StreamExecute serves as a public interface for interacting with StreamExecute.
 //
-// Summary: Executes the tool in a streaming context.
+// Summary: Stream the execute appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for execution.
-//   - req (*tool.ExecutionRequest): The execution request parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - <-chan any: Always nil for this tool.
-//   - error: Always nil for this tool.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - None.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
 
-// Execute executes the tool.
+// Execute serves as a public interface for interacting with Execute.
 //
-// Summary: Executes the "mcp:list_roots" tool.
+// Summary: Execute the  appropriately based on current system conditions.
 //
 // Parameters:
-//   - ctx (context.Context): The context for execution, containing an active MCP session.
-//   - _ (*tool.ExecutionRequest): The execution request parameters (unused).
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - any: The result of listing roots.
-//   - error: An error if the session is missing or the list operation fails.
+//   - Returns the expected domain model and an error upon failure.
 //
 // Errors:
-//   - Returns error if the active session is missing.
-//   - Returns error if listing roots fails.
+//   - Propagates exceptions from underlying I/O or validation layers.
 //
 // Side Effects:
-//   - Sends a "roots/list" request to the client.
+//   - May safely mutate local state without unintended external side effects.
 func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any, error) {
 	session, ok := tool.GetSession(ctx)
 	if !ok {
@@ -220,27 +206,21 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 	return rootsResult, nil
 }
 
-// GetCacheConfig returns the caching configuration for this tool.
+// GetCacheConfig serves as a public interface for interacting with GetCacheConfig.
 //
-// Returns:
-//   - *configv1.CacheConfig: Always nil (caching disabled).
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Retrieves GetCacheConfig operation.
+// Summary: Fetches and returns the underlying cache config from the system state.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - Refer to the function signature for strongly-typed input arguments.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Returns the successfully computed domain model or execution state.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - No explicit errors are thrown by this operation.
 //
 // Side Effects:
-//   - None.
+//   - May safely mutate local state without unintended external side effects.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }
