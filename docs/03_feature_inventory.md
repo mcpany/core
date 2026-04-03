@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Discovery-Phase Path Normalizer (DPPN)**: (P0) Authoritative security service performing OS-agnostic path normalization and semantic validation of discovery-time command paths (`cliPath`) to neutralize CVE-2026-25593.
+- **Action-Chain Sovereignty Dashboard (ACSD)**: (P0) High-fidelity UI component providing real-time, cryptographically bound visualization of automated agent workflow sequences to bridge the enterprise visibility gap.
+- **Shadow AI Interdiction (SAII) Hub**: (P1) Advanced security middleware for monitoring and automatically revoking capabilities from ungoverned inter-agent coordination and un-attested skill grafting.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with mandatory **DPPN** integration to neutralize discovery-time RCE exploits.
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Designated as the primary data provider for the new **Action-Chain Sovereignty Dashboard (ACSD)**.

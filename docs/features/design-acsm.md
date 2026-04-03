@@ -42,3 +42,10 @@ Autonomous agents operate at speeds that exceed human intervention capabilities.
 
 ## 7. Evolutionary Changelog
 * **2026-07-08:** Initial Document Creation.
+
+### Update: 2026-07-25 - Radical Action Transparency via ACSD
+**Context:** Today's market sync highlighted a massive visibility gap in enterprise AI usage, with 81% of organizations lacking insight into agentic workflows.
+**Architecture Adjustment:**
+* Integrating the **Action-Chain Sovereignty Dashboard (ACSD)** as the primary visibility layer for ACSM.
+* Exposing cryptographically bound reasoning traces and intent-alignment scores directly to the UI to facilitate real-time governance.
+**Security Impact:** Bridges the enterprise compliance gap by providing verifiable provenance for every autonomous system change.

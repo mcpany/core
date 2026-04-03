@@ -218,6 +218,10 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Discovery-Phase Path Normalizer (DPPN)**: Authoritative path resolution service to neutralize unsanitized cliPath injections in tool discovery metadata. (Added: 2026-07-25)
+*   **[P1] Shadow AI Interdiction (SAII) Hub**: Advanced security middleware for monitoring and revoking ungoverned inter-agent coordination. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
