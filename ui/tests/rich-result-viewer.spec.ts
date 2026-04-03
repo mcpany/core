@@ -4,9 +4,25 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Rich Result Viewer', () => {
   const serviceName = 'rich-result-test-service';
+
+  test.beforeEach(async ({ request, page }) => {
+    // Seed user and login before tests
+    await seedUser(request, "e2e-rich-result-admin");
+
+    await page.goto('/login');
+    await page.fill('input[name="username"]', 'e2e-rich-result-admin');
+    await page.fill('input[name="password"]', 'password');
+    await page.click('button[type="submit"]');
+    await expect(page).toHaveURL('/', { timeout: 15000 });
+  });
+
+  test.afterEach(async ({ request }) => {
+    await cleanupUser(request, "e2e-rich-result-admin");
+  });
 
   test.beforeAll(async ({ request }) => {
     // Clean up
@@ -48,9 +64,21 @@ test.describe('Rich Result Viewer', () => {
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
   });
 
-  test('Rich Result Viewer displays sleek error card on failure', async ({ page, request }) => {
+  test('Rich Result Viewer displays sleek error card on failure', async ({ page }) => {
     // Navigate to the tools page
     await page.goto('/tools');
+
+    // Backend registration is async, retry until tools are loaded
+    for (let i = 0; i < 10; i++) {
+        try {
+            await expect(page.getByText('fail_tool').first()).toBeVisible({ timeout: 5000 });
+            break;
+        } catch (e) {
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
+        }
+    }
 
     // Search for the failing tool
     await page.getByPlaceholder('Search tools...').fill('fail_tool');
@@ -75,6 +103,18 @@ test.describe('Rich Result Viewer', () => {
 
   test('Tool Inspector renders rich table result for complex data', async ({ page }) => {
     await page.goto('/tools');
+
+    // Backend registration is async, retry until tools are loaded
+    for (let i = 0; i < 10; i++) {
+        try {
+            await expect(page.getByText('get_complex_data').first()).toBeVisible({ timeout: 5000 });
+            break;
+        } catch (e) {
+            await page.reload();
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(2000);
+        }
+    }
 
     // Search for the test tool
     await page.getByPlaceholder('Search tools...').fill('get_complex_data');
