@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Post-Quantum Mesh Handshake (QRMH) Provider**: (P0) Authoritative security service implementing NIST-standard quantum-resistant algorithms (Kyber/Dilithium) for inter-agent tunnels to ensure long-term auditability.
+- **Autonomous Topology Optimizer (ATO)**: (P0) High-speed coordination service performing real-time graph analysis of the agent mesh to minimize MTTC and neutralize topology drift.
+- **Mission-Abandonment Protocol (MAP) Enforcer**: (P0) Lifecycle security service mandating hardware-attested triggers for forceful resource reclamation upon user mission cancellation.
+- **Consensus-Driven State Committer**: (P1) Integrity middleware for the Shared Blackboard utilizing multi-agent signatures for high-trust state mutations.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **QRMH-compliant** fast-path resumption within quantum-resistant tunnels.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Elevated to support **Consensus-Driven** multi-signature commits for decentralized integrity.
