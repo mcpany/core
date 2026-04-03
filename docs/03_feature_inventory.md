@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Enclave-Aware Session Migration (EASM) Provider**: (P0) Authoritative migration service utilizing hardware-attested handovers to move active reasoning sessions between disparate physical TPM enclaves.
+- **Compact Capability Tokens (CCT) Service**: (P1) Performance-optimizing identity service issuing cryptographically minimized, hardware-bound tokens for low-latency peer discovery.
+- **Asynchronous Reflection Hub**: (P1) Distributed coordination service facilitating non-blocking "Teammate Reflection Quorums" for speculative state mutations.
+- **Recursive Nesting Guard (RNG)**: (P0) Security extension for the DCG middleware performing fragment-level semantic analysis across sharded nesting depths.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **EASM-compliant** cross-enclave session handovers.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Designated as the primary enforcement point for **CCT-compliant** capability masking.

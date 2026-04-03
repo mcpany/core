@@ -57,3 +57,6 @@ The Zero-Knowledge Discovery Broker (ZKDB) evolves the discovery process by mand
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+* **2026-07-25: Compact Mesh Discovery Update**
+    **Context:** Today's market sync revealed that IBEM and TRQ handshakes are causing "Attestation Exhaustion."
+    **Architecture Adjustment:** Integrating **Compact Capability Tokens (CCT)** into the unmasking flow. Instead of returning full JSON-RPC schemas during the unmask phase, ZKDB now issues hardware-bound CCTs that provide a compressed, cryptographically signed view of the schema, reducing peer-to-peer discovery payload size by 40%.
