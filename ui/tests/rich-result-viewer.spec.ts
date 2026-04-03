@@ -19,7 +19,8 @@ test.describe('Rich Result Viewer', () => {
         command_line_service: {
           command: 'echo',
           tools: [
-            { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' }
+            { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' },
+            { name: 'fail_tool', call_id: 'call2', description: 'Always fails' }
           ],
           calls: {
             'call1': {
@@ -29,6 +30,9 @@ test.describe('Rich Result Viewer', () => {
                   { name: 'Bob', role: 'User', id: 2 }
                 ])
               ]
+            },
+            'call2': {
+                args: ['{"error": "Simulated internal error"}']
             }
           }
         }
@@ -39,6 +43,31 @@ test.describe('Rich Result Viewer', () => {
 
   test.afterAll(async ({ request }) => {
     await request.delete(`/api/v1/services/${serviceName}`).catch(() => { });
+  });
+
+  test('Rich Result Viewer displays sleek error card on failure', async ({ page, request }) => {
+    // Navigate to the tools page
+    await page.goto('/tools');
+
+    // Search for the failing tool
+    await page.getByPlaceholder('Search tools...').fill('fail_tool');
+    await expect(page.getByText('rich-result-test-service.fail_tool').first()).toBeVisible({ timeout: 10000 });
+
+    // Open inspector
+    await page.getByRole('row', { name: 'rich-result-test-service.fail_tool' }).getByRole('button', { name: 'Inspect' }).click();
+
+    // Execute tool
+    await page.getByRole('button', { name: 'Execute' }).click();
+
+    // Verify the Error Card is displayed instead of raw JSON
+    const errorTab = page.getByRole('tab', { name: 'Error' });
+    await expect(errorTab).toBeVisible({ timeout: 10000 });
+    await expect(errorTab).toHaveAttribute('data-state', 'active');
+
+    // Check for elements within the Error Card
+    await expect(page.getByRole('heading', { name: 'Execution Failed' })).toBeVisible();
+    // Wait for the specific error text
+    await expect(page.getByText(/Simulated internal error|An unknown error occurred/i)).toBeVisible();
   });
 
   test('Tool Inspector renders rich table result for complex data', async ({ page }) => {

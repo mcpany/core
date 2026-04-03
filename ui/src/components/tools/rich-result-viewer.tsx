@@ -8,11 +8,13 @@
 import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
+import { FileJson, Table as TableIcon, Terminal, FileText, AlertTriangle } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { SmartTable } from "./smart-table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 
 interface RichResultViewerProps {
@@ -146,8 +148,24 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
+    const isError = useMemo(() => {
+        if (result && typeof result === 'object') {
+            return result.isError === true || result.error !== undefined;
+        }
+        return false;
+    }, [result]);
+
+    const errorMessage = useMemo(() => {
+        if (isError && result) {
+             if (typeof result.error === 'string') return result.error;
+             if (typeof result.error === 'object') return JSON.stringify(result.error, null, 2);
+             if (typeof result.message === 'string') return result.message;
+        }
+        return "An unknown error occurred during execution.";
+    }, [isError, result]);
+
     const { isTableEligible, tableData } = useMemo(() => {
-        if (mcpContent) return { isTableEligible: false, tableData: [] };
+        if (mcpContent || isError) return { isTableEligible: false, tableData: [] };
 
         // 1. Array of objects
         if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
@@ -206,18 +224,23 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = isError ? "error" : (mcpContent ? "rendered" : (isTableEligible ? "table" : "json"));
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
                 <TabsList>
-                    {mcpContent && (
+                    {isError && (
+                        <TabsTrigger value="error" className="flex items-center gap-2 text-destructive data-[state=active]:text-destructive data-[state=active]:bg-destructive/10">
+                            <AlertTriangle className="h-4 w-4" /> Error
+                        </TabsTrigger>
+                    )}
+                    {!isError && mcpContent && (
                         <TabsTrigger value="rendered" className="flex items-center gap-2">
                             <FileText className="h-4 w-4" /> Rendered
                         </TabsTrigger>
                     )}
-                    {isTableEligible && (
+                    {!isError && isTableEligible && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
                             <TableIcon className="h-4 w-4" /> Table
                         </TabsTrigger>
@@ -232,6 +255,24 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                     )}
                 </TabsList>
             </div>
+
+            {isError && (
+                <TabsContent value="error" className="mt-0">
+                    <Card className="border-destructive/30 bg-destructive/5 shadow-inner">
+                        <CardContent className="pt-6 pb-6 flex flex-col items-center justify-center text-center space-y-4">
+                            <div className="h-12 w-12 rounded-full bg-destructive/20 flex items-center justify-center">
+                                <AlertTriangle className="h-6 w-6 text-destructive" />
+                            </div>
+                            <div className="space-y-1 max-w-md">
+                                <h3 className="font-semibold text-destructive tracking-tight">Execution Failed</h3>
+                                <p className="text-sm text-muted-foreground whitespace-pre-wrap font-mono bg-background/50 p-3 rounded-md border border-destructive/20 mt-2 text-left overflow-x-auto">
+                                    {errorMessage}
+                                </p>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            )}
 
             {mcpContent && (
                 <TabsContent value="rendered" className="border rounded-md bg-card">

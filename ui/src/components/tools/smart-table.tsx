@@ -253,7 +253,7 @@ export function SmartTable({ data }: SmartTableProps) {
     <div className="flex flex-col space-y-4 h-full">
         <div className="flex items-center">
             <div className="relative max-w-sm w-full">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder="Search all columns..."
                     value={globalFilter}
@@ -261,25 +261,25 @@ export function SmartTable({ data }: SmartTableProps) {
                         setGlobalFilter(e.target.value);
                         setCurrentPage(1); // Reset to first page on search
                     }}
-                    className="pl-8 h-9"
+                    className="pl-9 h-9 bg-muted/40 border-border/60 focus-visible:ring-1 focus-visible:ring-primary/50 transition-shadow"
                 />
             </div>
         </div>
-        <div className="rounded-lg border border-border/50 bg-card overflow-hidden shadow-sm flex-1 flex flex-col">
+        <div className="rounded-xl border border-border/40 bg-card overflow-hidden shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] flex-1 flex flex-col">
             <ScrollArea className="flex-1 w-full relative">
                 <Table>
-                    <TableHeader className="bg-muted/30 sticky top-0 backdrop-blur-md z-10 shadow-sm">
+                    <TableHeader className="bg-background/80 sticky top-0 backdrop-blur-xl z-10 border-b border-border/40">
                         <TableRow className="hover:bg-transparent">
                             {columns.map(col => (
                                 <TableHead
                                     key={col}
-                                    className="whitespace-nowrap h-10 cursor-pointer select-none transition-colors hover:bg-muted/50 px-4 group relative"
+                                    className="whitespace-nowrap h-11 cursor-pointer select-none transition-colors hover:bg-muted/40 px-4 group relative border-r border-border/20 last:border-r-0"
                                     onClick={() => handleSort(col)}
                                     style={{ width: columnWidths[col] ? `${columnWidths[col]}px` : 'auto', minWidth: columnWidths[col] ? `${columnWidths[col]}px` : '100px' }}
                                 >
                                     <div className="flex items-center justify-between overflow-hidden">
-                                        <span className="font-medium truncate mr-2" title={col}>{col}</span>
-                                        <span className="text-muted-foreground/30 group-hover:text-muted-foreground flex items-center flex-shrink-0">
+                                        <span className="font-semibold text-foreground/80 truncate mr-2 tracking-tight" title={col}>{col}</span>
+                                        <span className="text-muted-foreground/40 group-hover:text-primary/70 flex items-center flex-shrink-0 transition-colors">
                                             {sortConfig.key === col ? (
                                                 sortConfig.direction === 'asc' ? <ChevronUp className="h-3.5 w-3.5 text-primary" /> : <ChevronDown className="h-3.5 w-3.5 text-primary" />
                                             ) : (
@@ -298,17 +298,20 @@ export function SmartTable({ data }: SmartTableProps) {
                     <TableBody>
                         {paginatedData.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                                    No data available.
+                                <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
+                                    <div className="flex flex-col items-center justify-center space-y-2">
+                                        <Search className="h-6 w-6 text-muted-foreground/30" />
+                                        <p>No results found.</p>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ) : (
                             paginatedData.map((row, i) => (
-                                <TableRow key={i} className="hover:bg-muted/30 transition-colors group/row">
+                                <TableRow key={i} className="hover:bg-muted/40 transition-colors group/row border-b-border/40">
                                     {columns.map(col => (
                                         <TableCell
                                             key={col}
-                                            className="py-2.5 px-4"
+                                            className="py-3 px-4 text-foreground/90"
                                             style={{ width: columnWidths[col] ? `${columnWidths[col]}px` : 'auto', maxWidth: columnWidths[col] ? `${columnWidths[col]}px` : undefined, overflow: columnWidths[col] ? 'hidden' : undefined }}
                                         >
                                             {renderCell(row[col], col, i)}
@@ -324,7 +327,7 @@ export function SmartTable({ data }: SmartTableProps) {
         </div>
 
         {totalPages > 1 && (
-            <div className="flex items-center justify-between px-2 text-sm text-muted-foreground mt-2">
+            <div className="flex items-center justify-between px-1 text-sm text-muted-foreground mt-2">
                 <div>
                     Showing <span className="font-medium text-foreground">{(currentPage - 1) * itemsPerPage + 1}</span> to <span className="font-medium text-foreground">{Math.min(currentPage * itemsPerPage, sortedData.length)}</span> of <span className="font-medium text-foreground">{sortedData.length}</span> entries
                 </div>
