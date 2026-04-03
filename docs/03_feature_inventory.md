@@ -1931,6 +1931,15 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Dynamic Shard Migration (DSM) Hub**: (P0) Authoritative coordination service for real-time migration of context shards to high-density reasoning nodes.
+- **Hardware-Attested Lineage Token (HALT) Provider**: (P0) Identity service issuing TPM-signed tokens that encode the complete, hash-chained parentage of a sub-mission.
+- **Mesh Deadlock Resolver**: (P0) Kernel-level arbiter for the AMT broker resolving migration contention and circular locks.
+- **Multi-modal Layer-7 Sanitizer (ML7S)**: (P0) Upgrade for the SMS performing semantic deconstruction of SVG and Image metadata to block hidden instructions.
+
 ### Priority Shifts
-- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
-- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Evolving to host the **DSM Hub** for active state migration.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Elevated with mandatory **ML7S** support for non-textual instruction detection.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **HALT-compliant** lineage propagation.

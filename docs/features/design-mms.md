@@ -54,3 +54,11 @@ The **Multimodal Monologue Scrubber (MMS)** is a semantic security middleware fo
 *   Integrating **Path-Complexity Analysis** into the SVG deconstructor.
 *   Mandating that all SVG paths conform to a "Simplicity Baseline" before being exposed to high-trust specialists.
 **Security Impact:** Neutralizes "Visual Prompt Injection" via adversarial path geometry.
+
+### Update: 2026-07-25 - Multi-modal Layer-7 Sanitization (ML7S)
+**Context:** Today's market sync and Gemini CLI v0.59.0 confirm that sanitization must move to Layer-7 for all multimodal inputs. Imperative instructions are now being detected in Image EXIF data and hidden SVG metadata that bypass textual filters.
+**Architecture Adjustment:**
+*   Upgrading MMS to support **ML7S-compliant** deconstruction.
+*   Implementing mandatory EXIF stripping and structural metadata scanning for all image-based reasoning fragments.
+*   Integrating with the **Layer-7 Semantic Inspection Hub** for unified cross-modal instruction matching.
+**Security Impact:** Blocks "Invisible Instructions" smuggled via non-textual metadata, ensuring absolute mission-root sovereignty across all cognitive modalities.

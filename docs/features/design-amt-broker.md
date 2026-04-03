@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mesh Deadlock Resolution
+**Context:** Today's market sync revealed that Dynamic Shard Migration (DSM) is occasionally causing circular locks in distributed meshes, leading to coordination stalls.
+**Architecture Adjustment:**
+*   Integrating a **Mesh Deadlock Resolver** into the AMT Broker.
+*   Implementing mandatory priority-weighted mission-root rules for all inter-node lock requests.
+*   Enforcing monotonic timestamps for shard migration handshakes to ensure deterministic resolution of circular dependencies.
+**Security Impact:** Prevents "Coordination DoS" attacks where malicious subagents attempt to stall the mesh by creating intentional circular shard locks.
