@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+* **[P0] Alias-Bound Path Validator (ABPV)**: Recursive deconstruction and validation of tool parameter aliases to prevent sandbox escapes. (Added: 2026-07-25)
+* **[P1] Plan-Phase Context Scrutinizer**: Real-time semantic scanner for project context files during read-only planning phases. (Added: 2026-07-25)
+* **[P1] ClawHub Behavioral Auditor**: Sandboxed "Burn-In" profiling for marketplace-sourced skills. (Added: 2026-07-25)
+* **[P0] Lock-Free State Sharding (LFSS)**: Implementation of CRDT-based Blackboard sharding for non-blocking coordination. (Added: 2026-07-25)

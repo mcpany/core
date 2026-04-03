@@ -1,4 +1,16 @@
 # Feature Inventory: MCP Any
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Alias-Bound Path Validator (ABPV)**: (P0) Advanced security service for recursively deconstructing tool-specific parameter aliases (e.g., `mediaUrl`) to ensure resolution within hardware-attested `localRoots`.
+- **Plan-Phase Context Scrutinizer**: (P1) Security middleware for real-time semantic scanning of project-local context files during the read-only planning phase to block instruction smuggling.
+- **ClawHub Behavioral Profiler**: (P1) Authoritative forensic service for real-time sandboxed "Burn-In" profiling of marketplace-sourced skills to verify behavioral manifests.
+- **Lock-Free State Sharding (LFSS)**: (P0) High-performance storage architecture evolving the Blackboard to use CRDT-based sharding for non-blocking horizontal coordination.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving into the **LFSS** architecture to resolve MTTC bottlenecks.
+- **Behavioral Skill Profiler**: (Re-affirmed P0) Elevated with mandatory support for **ClawHub marketplace** behavioral matching.
+
 
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
