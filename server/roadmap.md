@@ -436,8 +436,9 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-04-03 Evolution)
 *   **[P0] Active Subagent Reaper**: Lifecycle monitor to terminate "Ghost" subagents and purge orphaned state. (Added: 2026-04-03)
-*   **[P0] Tool Metadata Sanitizer**: Security middleware to detect "Context Poisoning" in tool structural metadata. (Added: 2026-04-03)
-*   **[P1] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03)
+*   **[P0] Structural Metadata Sanitizer**: Security middleware to detect "Context Poisoning" in tool structural metadata. (Added: 2026-04-03)
+*   **[P0] Immutable Configuration Anchor**: Hardware-attested security service for project-local config protection. (Added: 2026-04-03)
+*   **[P0] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03)
 *   **[P1] Subagent Heartbeat Provider**: Standardized liveness reporting for subagent session management. (Added: 2026-04-03)
 
 #### Upcoming (2026-04-04 Evolution)

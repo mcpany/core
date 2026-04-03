@@ -818,6 +818,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Subagent Lifecycle Governance**: MCP Any will move from a passive router to an "Active Reaper." We will implement mandatory session-bound heartbeat monitors for all subagents. If an intent branch is pruned, the gateway will forcefully terminate associated subagent sessions and purge their "Ghost" state from the Blackboard.
 - **Structural Metadata Sanitization**: We are introducing a "Metadata Validator" that treats tool schemas (descriptions, examples) as untrusted content. All structural metadata will be scanned for imperative instructions and "Context Poisoning" patterns before being exposed to the LLM.
 - **DCA-Native Negotiation Broker**: To support Gemini's "Distributed Capability Auction," MCP Any will act as the high-speed "Auction House." We will provide a low-latency bus for agent bidding, ensuring that swarm coordination doesn't become a bottleneck while maintaining Zero-Trust validation of every bid.
+- **Immutable Configuration Anchoring**: To neutralize "Repository Configuration Poisoning," we are mandating hardware-attested anchors for all project-local configurations. MCP Any will cryptographically bind settings files (e.g., `.claude/settings.json`) to a user-authorized session, ensuring that malicious hooks committed to a repository cannot be ingested without explicit, hardware-bound re-attestation.
 
 ---
 ---
@@ -1550,3 +1551,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+## Strategic Evolution: [2026-04-03]
+### Focus: Active Lifecycle Governance & Metadata Integrity
+**Context**: Today's findings on "Ghost Reasoning" (OpenClaw) and "Metadata-Layer Context Poisoning" (Claude Code CVE-2026-42001) confirm that subagent autonomy has outpaced governance. Simultaneously, the rise of "Repository Configuration Poisoning" reveals a new exploit pattern where malicious settings bypass standard workspace trust.
+**Strategic Pivot**:
+- **Active Subagent Lifecycle Governance**: MCP Any will evolve to act as the authoritative "Swarm Execution Monitor." We will implement mandatory heartbeat monitors for all subagents to ensure "Ghost" sessions are purged and orphaned state is reclaimed.
+- **Structural Metadata Sanitization**: We are introducing a "Metadata Validator" that treats tool schemas (descriptions, examples) as untrusted content. All structural metadata will be scanned for imperative instructions and "Context Poisoning" patterns before being exposed to the LLM.
+- **Immutable Configuration Anchoring**: To neutralize "Repository Configuration Poisoning," we are mandating hardware-attested anchors for all project-local configurations. MCP Any will cryptographically bind settings files to a user-authorized session, ensuring that malicious hooks committed to a repository cannot be silently ingested.

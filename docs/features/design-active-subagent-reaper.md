@@ -49,6 +49,13 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 ## 7. Evolutionary Changelog
 * **2026-04-03:** Initial Document Creation.
 
+### Update: 2026-04-03 - Intent-Bound Lifecycle Enforcement
+**Context:** Today's research confirms that "Ghost Reasoning" stems from subagents lacking a cryptographically bound termination signal from the parent mission root.
+**Architecture Adjustment:**
+* Mandating the **binding of subagent lifecycle to the parent's cryptographic intent**.
+* Implementation of **forceful termination for orphaned sessions** at the gateway layer, ensuring that WebSocket and API connections are severed immediately upon parent intent pruning.
+**Security Impact:** Prevents "Lifecycle Zombies" from polluting the shared state and consuming unauthorized compute resources.
+
 ### Update: 2026-04-04 - Lease-Bound Process Tree Isolation
 **Context:** Today's market sync on "Cross-Framework State Leakage" highlights that WebSocket termination alone is insufficient if sub-processes (e.g., local python executors) remain active.
 **Architecture Adjustment:**

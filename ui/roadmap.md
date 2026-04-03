@@ -194,7 +194,8 @@
 - [ ] **[P1] Consensus Delegation Console**: (2026-04-02) UI for managing and reviewing delegated authority tokens for time-critical tasks.
 - [ ] **[P0] Subagent Reaper Dashboard**: (2026-04-03) Real-time visualization of agent heartbeats and termination events for "Ghost" subagents.
 - [ ] **[P0] Metadata Poisoning Alert Center**: (2026-04-03) Security UI for inspecting tool structural metadata flagged for context poisoning instructions.
-- [ ] **[P1] DCA Auction Monitor**: (2026-04-03) Visual tracker for agent capability bidding and allocation latency.
+- [ ] **[P0] DCA Auction Monitor**: (2026-04-03) Visual tracker for agent capability bidding and allocation latency. (Promoted to P0 on 2026-04-03)
+- [ ] **[P0] Configuration Anchor Dashboard**: (2026-04-03) UI for managing hardware-locked configuration anchors and reviewing repository hooks.
 - [ ] **[P0] DCA Negotiation Dashboard**: (2026-04-04) Real-time visualization of subagent bidding and HAN broker latency.
 - [ ] **[P0] Metadata Provenance Viewer**: (2026-04-04) UI for verifying the cryptographic lineage and signing status of tool metadata.
 - [ ] **[P0] Metadata Poisoning Alert Hub**: (2026-04-04) Security dashboard for reviewing and approving redacted metadata fragments.

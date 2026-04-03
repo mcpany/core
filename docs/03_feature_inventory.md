@@ -1261,11 +1261,13 @@
 
 ### Proposed Additions
 - **Active Subagent Reaper**: (P0) Lifecycle monitor that forcefully terminates orphaned or "Ghost" subagent sessions when their parent intent branch is pruned.
-- **Tool Metadata Sanitizer**: (P0) Security middleware that scans JSON schemas and tool descriptions for imperative instructions (Context Poisoning) before LLM ingestion.
-- **DCA Auction Broker**: (P1) High-speed negotiation bus for the "Distributed Capability Auction" protocol, managing agent tool bidding.
+- **Structural Metadata Sanitizer**: (P0) Security middleware that scans JSON schemas and tool descriptions for imperative instructions (Context Poisoning) before LLM ingestion.
+- **Immutable Configuration Anchor**: (P0) Hardware-attested security service that cryptographically binds project-local settings to a user-authorized session to neutralize repository poisoning.
+- **DCA Auction Broker**: (P0) High-speed negotiation bus for the "Distributed Capability Auction" protocol, managing agent tool bidding. (Promoted to P0)
 - **Subagent Heartbeat Provider**: (P1) Standardized heartbeat protocol for subagents to report liveness and intent alignment to the Reaper.
 
 ### Priority Shifts
+- **DCA Auction Broker**: (Promoted from P1 to P0) Critical for neutralizing "Negotiation Exhaustion" in high-velocity swarms.
 - **Speculative Execution Guard**: Re-affirmed as **P0**. Now requires integration with the Subagent Reaper to ensure speculative "Zombies" are purged.
 - **Branch-Purity Blackboard Validator**: (Re-affirmed P0) Expanded to detect "Ghost State" injected by non-terminated subagents.
 

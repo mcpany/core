@@ -50,6 +50,13 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 ## 7. Evolutionary Changelog
 * **2026-03-09:** Initial Document Creation.
 
+### Update: 2026-04-03 - Immutable Configuration Anchoring
+**Context:** Today's market sync revealed a new exploit pattern where malicious repository settings bypass standard workspace trust.
+**Architecture Adjustment:**
+* Introducing **Hardware-Locked Configuration Anchors (HLCA)**. Project-local settings will be cryptographically bound to a user-authorized session.
+* Mandatory validation of HLCA signatures before any configuration file (e.g., `.claude/settings.json`, `GEMINI.md`) is ingested by the agent.
+**Security Impact:** Prevents "Repository Configuration Poisoning" and silent RCE from committed malicious hooks.
+
 ### Update: 2026-04-09 - Defending Against Sandbox Escapes (CVE-2026-25725)
 **Context**: Today's research into CVE-2026-25725 reveals that "Partial Sandboxing" fails when agents can create configuration files that did not exist at startup.
 **Architecture Adjustment**:
