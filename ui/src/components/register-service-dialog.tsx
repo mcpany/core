@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -73,6 +74,65 @@ const detectSensitiveData = (text: string) => {
  *
  * @param serviceToEdit - The serviceToEdit.
  */
+
+function AuthConfigurationCard({ auth }: { auth: any }) {
+    if (!auth) return null;
+
+    const authType = auth.oauth2 ? "OAuth2" : auth.apiKey ? "API Key" : auth.basic ? "Basic Auth" : auth.bearerAuth ? "Bearer Token" : "Unknown";
+
+    return (
+        <div className="border rounded-md bg-card/50 shadow-sm overflow-hidden text-sm">
+            <div className="bg-muted/50 px-3 py-2 border-b flex items-center justify-between">
+                <span className="font-semibold text-muted-foreground">Authentication Details</span>
+                <Badge variant="outline" className="bg-primary/10">{authType}</Badge>
+            </div>
+            <div className="p-3 space-y-3">
+                {auth.oauth2 && (
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium text-muted-foreground">Grant Type</div>
+                        <div className="font-mono text-xs">{auth.oauth2.grantType || 'authorization_code'}</div>
+                        <div className="font-medium text-muted-foreground">Client ID</div>
+                        <div className="font-mono text-xs truncate" title={auth.oauth2.clientId?.plainText || auth.oauth2.clientId?.envVar || "Secret"}>{(auth.oauth2.clientId?.plainText || auth.oauth2.clientId?.envVar || "***")}</div>
+                        {auth.oauth2.scopes && (
+                            <>
+                                <div className="font-medium text-muted-foreground">Scopes</div>
+                                <div className="font-mono text-xs truncate" title={auth.oauth2.scopes}>{auth.oauth2.scopes}</div>
+                            </>
+                        )}
+                        {auth.oauth2.tokenUrl && (
+                            <>
+                                <div className="font-medium text-muted-foreground">Token URL</div>
+                                <div className="font-mono text-xs truncate" title={auth.oauth2.tokenUrl}>{auth.oauth2.tokenUrl}</div>
+                            </>
+                        )}
+                    </div>
+                )}
+                {auth.apiKey && (
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium text-muted-foreground">Parameter Name</div>
+                        <div className="font-mono text-xs">{auth.apiKey.paramName || '-'}</div>
+                        <div className="font-medium text-muted-foreground">Location</div>
+                        <div className="font-mono text-xs">{auth.apiKey.in || 'HEADER'}</div>
+                    </div>
+                )}
+                {auth.basic && (
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="font-medium text-muted-foreground">Username</div>
+                        <div className="font-mono text-xs">{auth.basic.username || '-'}</div>
+                    </div>
+                )}
+                {auth.bearerAuth && (
+                    <div className="grid grid-cols-2 gap-2">
+                         <div className="font-medium text-muted-foreground">Format</div>
+                         <div className="font-mono text-xs">Bearer Token</div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);
   const [credentials, setCredentials] = useState<Credential[]>([]);
@@ -597,11 +657,11 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     <div className="space-y-2">
                         <h3 className="text-sm font-medium">Current Configuration</h3>
                         {form.watch("upstreamAuth") ? (
-                            <div className="text-sm border p-2 rounded">
-                                <pre className="whitespace-pre-wrap break-all">
-                                    {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
-                                </pre>
-                                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
+                            <div className="space-y-3">
+                                <AuthConfigurationCard auth={form.watch("upstreamAuth")} />
+                                <Button type="button" variant="outline" size="sm" onClick={() => form.setValue("upstreamAuth", undefined)}>
+                                    Clear Authentication
+                                </Button>
                             </div>
                         ) : (
                             <div className="text-sm text-muted-foreground italic">No authentication configured.</div>

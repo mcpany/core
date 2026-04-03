@@ -11,15 +11,18 @@ test.describe('Upstream Auth Display', () => {
         description: 'Test credential for checking beautiful auth display',
         authentication: {
           oauth2: {
-            clientId: 'test-client-id-e2e',
+            client_id: { plainText: 'test-client-id-e2e' },
             scopes: 'read,write,admin',
-            tokenUrl: 'https://auth.example.com/oauth/token',
-            grantType: 'authorization_code'
+            token_url: 'https://auth.example.com/oauth/token',
+            grant_type: 'authorization_code'
           }
         }
       }
     });
 
+    if (!response.ok()) {
+       console.log("Failed to seed credential:", await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
@@ -76,6 +79,7 @@ test.describe('Upstream Auth Display', () => {
     // The previous implementation had: {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
     // which would display things like "oauth2": {
     await expect(page.locator('pre')).not.toContainText('"oauth2": {');
+    await expect(page.locator('pre')).not.toContainText('"client_id":');
     await expect(page.locator('pre')).not.toContainText('"clientId":');
   });
 });
