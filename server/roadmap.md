@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Cross-Node Lease Orchestrator (CNLO)**: Authoritative lease synchronization service to mirror TPM-signed mission capabilities across distributed physical nodes. (Added: 2026-07-25)
+*   **[P1] Epistemic Quorum Gating (EQG)**: Security extension that monitors hardware-attested uncertainty headers and escalates tool calls based on real-time reasoning confidence scores. (Added: 2026-07-25)
+*   **[P0] Instruction-Anchor Reinforcement (IAR)**: Cognitive security service to dynamically inject attention-reinforcement tokens for pinned mission-root anchors. (Added: 2026-07-25)
+*   **[P0] Fast-Path Mesh Resumption (v2)**: Advanced tunnel resumption using hardware-bound mission-lineage tokens to neutralize recursive handshake storms. (Added: 2026-07-25)
