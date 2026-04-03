@@ -66,6 +66,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
       # This action manages the Bazel/Bazelisk installation and
       # automatically handles the GitHub Action Cache API for you.
       - name: Set up Bazel
