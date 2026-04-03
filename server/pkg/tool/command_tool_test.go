@@ -288,3 +288,76 @@ func TestCommandTool_Tool(t *testing.T) {
 	cmdTool := tool.NewCommandTool(toolProto, service, configv1.CommandLineCallDefinition_builder{}.Build(), nil, "call-id")
 	assert.Equal(t, toolProto, cmdTool.Tool())
 }
+
+func TestCommandTool_Execute_EdgeCases(t *testing.T) {
+	t.Parallel()
+
+	t.Run("dry run", func(t *testing.T) {
+		t.Parallel()
+		callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+		cmdTool := newCommandTool("echo", callDef)
+		req := &tool.ExecutionRequest{
+			ToolInputs: []byte(`{}`),
+			DryRun:     true,
+		}
+
+		result, err := cmdTool.Execute(context.Background(), req)
+		require.NoError(t, err)
+
+		resultMap, ok := result.(map[string]interface{})
+		require.True(t, ok)
+		assert.True(t, resultMap["dry_run"].(bool))
+	})
+
+	t.Run("policy block", func(t *testing.T) {
+		t.Parallel()
+		callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+		service := (&configv1.CommandLineUpstreamService_builder{
+			Command: proto.String("echo"),
+		}).Build()
+
+		toolProto := v1.Tool_builder{
+			Name: proto.String("test-tool"),
+		}.Build()
+
+		policies := []*configv1.Policy{
+			{
+				Action: configv1.Policy_ACTION_DENY,
+				Condition: &configv1.Condition{
+					Rule: &configv1.Condition_Cel{
+						Cel: "true",
+					},
+				},
+			},
+		}
+
+		cmdTool := tool.NewCommandTool(
+			toolProto,
+			service,
+			callDef,
+			policies,
+			"call-id",
+		)
+
+		req := &tool.ExecutionRequest{
+			ToolInputs: []byte(`{}`),
+		}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "tool execution blocked by policy")
+	})
+
+	t.Run("invalid json input", func(t *testing.T) {
+		t.Parallel()
+		callDef := configv1.CommandLineCallDefinition_builder{}.Build()
+		cmdTool := newCommandTool("echo", callDef)
+		req := &tool.ExecutionRequest{
+			ToolInputs: []byte(`{"invalid": json`),
+		}
+
+		_, err := cmdTool.Execute(context.Background(), req)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
+	})
+}

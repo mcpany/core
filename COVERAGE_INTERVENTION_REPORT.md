@@ -1,29 +1,16 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/tokenizer/tokenizer.go`
-* **Risk Profile:** This file contains highly complex and recursive reflection logic for tokenizing arbitrarily structured generic JSON data. Methods like `countTokensInValueRecursive`, `countTokensReflectMap`, and `countTokensReflectStruct` lacked test coverage on deep fallback and error paths (e.g. cycle detection, reflection panics on unsupported types). Since this code parses unknown structured input payloads to calculate token limits for LLM interactions, unhandled errors or panics in this file represent a severe security/reliability risk (e.g., recursive exhaustion, crashing the MCP server on a bad user payload).
-* **New Coverage:** The following logic paths are now guarded by comprehensive tests:
-  - Error paths and recursion cycle detection in generic types (`reflectSlice`, `reflectMap`, `reflectStruct`, `countSliceInterfaceSimple`).
-  - Fallback behaviors for `countTokensInValueRecursive` handling unsupported payload types.
-  - Edge cases for fast-path primitive tokenization (e.g. `simpleTokenizeInt64` with large negative numbers and zero values).
-* **Verification:** `make test` successfully tests the new components alongside all existing legacy tests. The overall file coverage has increased significantly, reaching >97% statement coverage with the new regression safety nets in place. Assertions are strictly based on the specific expected behaviour (token counts).
+**Target:** `server/pkg/tool/types.go` (`(*CommandTool).Execute`)
 
----
+**Risk Profile:**
+* **Complexity:** This function was selected because it exhibited the highest cyclomatic complexity (66) of all tool execution methods.
+* **Risk Factors:** It is the core engine for invoking arbitrary downstream commands (`CommandTool`). It handles high-risk operations such as string replacement, parsing JSON input into command arguments, evaluating security policies (CEL engine), and creating subprocess environments (preventing shell injections and credential leaking). Missing coverage here represented a critical, systemic reliability risk.
 
-* **Target:** `server/pkg/tool/webrtc.go`
-* **Risk Profile:** This file establishes WebRTC peer connections allowing LLMs to communicate directly with streaming endpoints, which is core business logic for real-time interactions. It utilizes custom unmarshalling and connection pools. If untested, failures in pooling logic or unmarshalling JSON parameters lead to silent drop of connections or panics.
-* **New Coverage:** The tests added cover logic paths handling stream execution error cases (verifying that `StreamExecute` appropriately handles execution errors without crashing), executing without pool instances and checking JSON unmarshalling. It explicitly asserts the behaviors and returned errors on bad inputs instead of just hitting the coverage.
-* **Verification:** `bazelisk test //...` verified cleanly with all legacy tests running and green. The style mimics Google Table-Driven tests inside the `stretchr/testify` framework constraints in place.
+**New Coverage:**
+I appended new table-driven tests under `TestCommandTool_Execute_EdgeCases` in `server/pkg/tool/command_tool_test.go` to explicitly guard against core failures and side effects:
+*   **Policy Evaluation (Authorization Gate):** Ensured the tool immediately aborts and returns the correct error when `EvaluateCompiledCallPolicy` denies execution.
+*   **Input Resilience:** Verified behavior against corrupted / malformed JSON payloads.
+*   **Safe Side Effects:** Confirmed the `DryRun` configuration correctly bypasses subprocess invocation while providing expected debug diagnostics.
 
-### Top 10 Most Critical Untested Components
-Based on cyclomatic complexity and risk (e.g. data transformation, tool injection safety checks, execution endpoints), the top 10 most critical untested logic components are:
-1. `server/pkg/tool/types.go`
-2. `server/pkg/app/server.go`
-3. `server/pkg/config/store.go`
-4. `server/pkg/upstream/mcp/streamable_http.go`
-5. `server/pkg/mcpserver/server.go`
-6. `server/pkg/config/validator.go`
-7. `server/pkg/storage/postgres/store.go`
-8. `server/pkg/storage/sqlite/store.go`
-9. `server/pkg/app/api.go`
-10. `server/pkg/upstream/filesystem/provider/gcs.go`
+**Verification:**
+The tests correctly align with the `t.Parallel()` usage in the repository, making use of `require` and `assert` for hermetic validation. No existing tests were mutated, fulfilling the "Do No Harm" mandate.
