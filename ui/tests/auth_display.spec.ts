@@ -48,10 +48,12 @@ test.describe('Upstream Auth Display', () => {
 
     // Verify dialog opened
     await expect(page.getByRole('dialog')).toBeVisible();
-    await expect(page.getByText('New Service')).toBeVisible(); // Using the correct header
+    await expect(page.getByText('Select Service Template')).toBeVisible();
+    await page.getByText('Custom Service').click();
+    await expect(page.getByText('Configure Service')).toBeVisible();
 
     // Navigate to Advanced tab or Authentication step (using 'Advanced' tab structure per component)
-    await page.getByRole('tab', { name: 'Advanced' }).click();
+    await page.getByRole('tab', { name: 'Authentication' }).click();
 
     // There should be a "Select From Credentials" dropdown or combo box. Let's find it.
     // The dialog fetches credentials. We need to wait for it.
