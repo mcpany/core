@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "@/components/tools/schema-viewer";
 import { UniversalSchemaForm as SchemaForm, Schema } from "@/components/shared/universal-schema-form";
+import { JsonView } from "@/components/ui/json-view";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 import { Switch } from "@/components/ui/switch";
 import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
