@@ -45,6 +45,7 @@ func TestTool_Execute_Coverage(t *testing.T) {
 			callDef,
 			[]*configv1.CallPolicy{invalidPolicy},
 			"broken_tool_call",
+			false,
 		)
 
 		req := &tool.ExecutionRequest{
@@ -69,6 +70,7 @@ func TestTool_Execute_Coverage(t *testing.T) {
 			callDef,
 			nil,
 			"users_call",
+			false,
 		)
 
 		// Expect query with arguments: age=25, name=nil (missing in input)
@@ -102,6 +104,7 @@ func TestTool_Execute_Coverage(t *testing.T) {
 			callDef,
 			nil,
 			"empty_call",
+			false,
 		)
 
 		mock.ExpectQuery("SELECT \\* FROM users WHERE 1=0").
@@ -132,6 +135,7 @@ func TestTool_Execute_Coverage(t *testing.T) {
 			callDef,
 			nil,
 			"null_call",
+			false,
 		)
 
 		rows := sqlmock.NewRows([]string{"id", "name"}).
@@ -166,6 +170,7 @@ func TestTool_Execute_Coverage(t *testing.T) {
 			callDef,
 			nil,
 			"iter_error_call",
+			false,
 		)
 
 		// Simulate error immediately (on first row)
@@ -198,6 +203,7 @@ func TestTool_Execute_Coverage(t *testing.T) {
 			callDef,
 			nil,
 			"close_error_call",
+			false,
 		)
 
 		// CloseError is propagated to rows.Err() because rows.Next() calls rows.Close() on completion.

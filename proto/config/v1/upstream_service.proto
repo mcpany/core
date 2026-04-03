@@ -359,6 +359,8 @@ message SqlUpstreamService {
   string dsn = 2;
   // A map of call definitions, keyed by their unique ID.
   map<string, SqlCallDefinition> calls = 3;
+  // If true, enforce read-only mode for all calls.
+  bool read_only = 4 [json_name = "read_only"];
 }
 
 // FilesystemUpstreamService defines a service that exposes a local filesystem safely.

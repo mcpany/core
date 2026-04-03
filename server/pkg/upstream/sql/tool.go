@@ -17,6 +17,8 @@ import (
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
+	"regexp"
+	"strings"
 	"github.com/mcpany/core/server/pkg/tool"
 	"github.com/mcpany/core/server/pkg/util"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -64,7 +66,7 @@ type Tool struct {
 //
 // Side Effects:
 //   - None.
-func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
+func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string, readOnly bool) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
 		tool:     t,
@@ -75,7 +77,26 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 	}
 	if err != nil {
 		to.initError = fmt.Errorf("failed to compile call policies: %w", err)
+		return to
 	}
+
+	if readOnly {
+		query := callDef.GetQuery()
+
+		// Remove multi-line comments
+		reMulti := regexp.MustCompile(`(?s)/\*.*?\*/`)
+		query = reMulti.ReplaceAllString(query, "")
+
+		// Remove single-line comments
+		reSingle := regexp.MustCompile(`--.*`)
+		query = reSingle.ReplaceAllString(query, "")
+
+		queryUpper := strings.ToUpper(strings.TrimSpace(query))
+		if !strings.HasPrefix(queryUpper, "SELECT") && !strings.HasPrefix(queryUpper, "EXPLAIN") && !strings.HasPrefix(queryUpper, "WITH") {
+			to.initError = fmt.Errorf("read-only mode is enabled: only SELECT, EXPLAIN, and WITH queries are allowed")
+		}
+	}
+
 	return to
 }
 

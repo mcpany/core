@@ -179,7 +179,7 @@ func (u *Upstream) Register(
 			Tags:         []string{"upstream:sql"},
 		}.Build()
 
-		sqlTool := NewTool(t, u.db, callDef, serviceConfig.GetCallPolicies(), id)
+		sqlTool := NewTool(t, u.db, callDef, serviceConfig.GetCallPolicies(), id, sqlConfig.GetReadOnly())
 
 		if err := toolManager.AddTool(sqlTool); err != nil {
 			return "", nil, nil, fmt.Errorf("failed to add tool %s: %w", toolName, err)

@@ -29,7 +29,7 @@ func TestTool_Execute(t *testing.T) {
 		ParameterOrder: []string{"age"},
 	}.Build()
 
-	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("get_users")}.Build(), db, callDef, nil, "get_users_call")
+	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("get_users")}.Build(), db, callDef, nil, "get_users_call", false)
 
 	t.Run("success", func(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "name"}).
@@ -104,9 +104,46 @@ func TestTool_Execute(t *testing.T) {
 				Ttl: durationpb.New(60 * time.Second),
 			}.Build(),
 		}.Build()
-		cachedTool := NewTool(v1.Tool_builder{Name: proto.String("cached_tool")}.Build(), db, cachedCallDef, nil, "cached_tool_call")
+		cachedTool := NewTool(v1.Tool_builder{Name: proto.String("cached_tool")}.Build(), db, cachedCallDef, nil, "cached_tool_call", false)
 		assert.NotNil(t, cachedTool.GetCacheConfig())
 		assert.Equal(t, int64(60), cachedTool.GetCacheConfig().GetTtl().GetSeconds())
+	})
+
+	t.Run("read only mode", func(t *testing.T) {
+		readOnlyCallDef := configv1.SqlCallDefinition_builder{
+			Query:          proto.String("UPDATE users SET name = ? WHERE id = ?"),
+			ParameterOrder: []string{"name", "id"},
+		}.Build()
+
+		readOnlyTool := NewTool(v1.Tool_builder{Name: proto.String("update_users")}.Build(), db, readOnlyCallDef, nil, "update_users_call", true)
+
+		req := &tool.ExecutionRequest{
+			ToolName:   "update_users",
+			ToolInputs: []byte(`{}`),
+		}
+
+		_, err := readOnlyTool.Execute(context.Background(), req)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "read-only mode is enabled: only SELECT, EXPLAIN, and WITH queries are allowed")
+
+		readOnlyCallDefSelect := configv1.SqlCallDefinition_builder{
+			Query:          proto.String("/* multi-line\n comment */ -- single line\n WITH cte AS (SELECT 1) SELECT * FROM users"),
+			ParameterOrder: []string{},
+		}.Build()
+
+		readOnlyToolSelect := NewTool(v1.Tool_builder{Name: proto.String("get_users")}.Build(), db, readOnlyCallDefSelect, nil, "get_users_call", true)
+
+		rows := sqlmock.NewRows([]string{"id", "name"}).AddRow(1, "Alice")
+		mock.ExpectQuery(".*").WillReturnRows(rows)
+
+		inputsBytes, _ := json.Marshal(map[string]interface{}{})
+		reqSelect := &tool.ExecutionRequest{
+			ToolName:   "get_users",
+			ToolInputs: inputsBytes,
+		}
+
+		_, err = readOnlyToolSelect.Execute(context.Background(), reqSelect)
+		require.NoError(t, err)
 	})
 
 	t.Run("policy blocked", func(t *testing.T) {
@@ -119,7 +156,7 @@ func TestTool_Execute(t *testing.T) {
 			DefaultAction: configv1.CallPolicy_ALLOW.Enum(),
 		}.Build()
 
-		blockedTool := NewTool(v1.Tool_builder{Name: proto.String("blocked_tool")}.Build(), db, callDef, []*configv1.CallPolicy{policy}, "blocked_tool_call")
+		blockedTool := NewTool(v1.Tool_builder{Name: proto.String("blocked_tool")}.Build(), db, callDef, []*configv1.CallPolicy{policy}, "blocked_tool_call", false)
 
 		inputs := map[string]interface{}{
 			"age": 20,

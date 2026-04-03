@@ -146,7 +146,7 @@ func TestSQLUpstream_Execute_Errors(t *testing.T) {
 		Query: proto.String("SELECT * FROM non_existent_table"),
 	}.Build()
 
-	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("test")}.Build(), db, callDef, nil, "test_call")
+	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("test")}.Build(), db, callDef, nil, "test_call", false)
 
 	// Case 1: Invalid Input JSON
 	req := &tool.ExecutionRequest{
@@ -184,7 +184,7 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 		Query:          proto.String("SELECT ? IS NULL as is_null"),
 		ParameterOrder: []string{"missing_param"},
 	}.Build()
-	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("test_null")}.Build(), db, callDef, nil, "test_null_call")
+	toolInstance := NewTool(v1.Tool_builder{Name: proto.String("test_null")}.Build(), db, callDef, nil, "test_null_call", false)
 
 	req := &tool.ExecutionRequest{
 		ToolName:   "test_null",
@@ -201,7 +201,7 @@ func TestSQLTool_Execute_EdgeCases(t *testing.T) {
 	callDefBlob := configv1.SqlCallDefinition_builder{
 		Query: proto.String("SELECT data FROM edge_cases WHERE id = 1"),
 	}.Build()
-	toolInstanceBlob := NewTool(v1.Tool_builder{Name: proto.String("test_blob")}.Build(), db, callDefBlob, nil, "test_blob_call")
+	toolInstanceBlob := NewTool(v1.Tool_builder{Name: proto.String("test_blob")}.Build(), db, callDefBlob, nil, "test_blob_call", false)
 	reqBlob := &tool.ExecutionRequest{
 		ToolName:   "test_blob",
 		ToolInputs: json.RawMessage(`{}`),
@@ -224,7 +224,7 @@ func TestSQLTool_Methods(t *testing.T) {
 	toolInstance := NewTool(v1.Tool_builder{
 		Name:      proto.String("test_tool"),
 		ServiceId: proto.String("service"),
-	}.Build(), db, callDef, nil, "test_tool_call")
+	}.Build(), db, callDef, nil, "test_tool_call", false)
 
 	assert.NotNil(t, toolInstance.Tool())
 	assert.Equal(t, "test_tool", toolInstance.Tool().GetName())
@@ -243,13 +243,13 @@ func TestSQLTool_GetCacheConfig(t *testing.T) {
 				Ttl: durationpb.New(time.Second * 60),
 			}.Build(),
 		}.Build()
-		toolInstance := NewTool(nil, nil, callDef, nil, "")
+		toolInstance := NewTool(nil, nil, callDef, nil, "", false)
 		assert.NotNil(t, toolInstance.GetCacheConfig())
 		assert.Equal(t, int64(60), toolInstance.GetCacheConfig().GetTtl().GetSeconds())
 	})
 
 	t.Run("Returns Nil when CallDef is Nil", func(t *testing.T) {
-		toolInstance := NewTool(nil, nil, nil, nil, "")
+		toolInstance := NewTool(nil, nil, nil, nil, "", false)
 		assert.Nil(t, toolInstance.GetCacheConfig())
 	})
 }
