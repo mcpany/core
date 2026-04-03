@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attestation Compression Broker (ACB)**: (P0) Authoritative trust service implementing the RAC standard to merge and compress multi-node hardware signatures.
+- **Speculative Shard Prefetcher (SSP)**: (P0) Coordination middleware that pre-loads context shards based on predicted teammate trajectories to neutralize "Cognitive Stall."
+- **Probabilistic Buffer Hardening (PBH) Middleware**: (P0) Security service mandating hardware-locked buffers for speculative results to prevent mission-root state pollution.
+- **Linearized Lineage Attestation (LLA) Provider**: (P1) Identity extension providing computationally efficient proofs of the complete "Chain of Command" for deep meshes.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ACB** integration for high-performance meshes.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Designated as a mandatory strategic pillar to support **GIAA-compliant** mission permanence.
