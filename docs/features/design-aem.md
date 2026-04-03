@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Entropy-Aware Governance Integration
+**Context:** Today's market sync revealed that passive reasoning monitoring is insufficient against high-velocity "Reasoning Drift" in autonomous swarms.
+**Architecture Adjustment:**
+* Integrating hardware-attested Reasoning Entropy Attestation (REA) scores into the AEM Engine.
+* Adding a `REA Validator` component to Section 4 to perform real-time verification of model-provided entropy metrics.
+**Security Impact:** Prevents hallucination-driven tool execution by revoking capabilities before high-entropy reasoning leads to state corruption.

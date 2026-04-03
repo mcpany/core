@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Lease Continuity (ALC) Provider**: (P0) Advanced coordination service facilitating the seamless, hardware-attested transfer of mission-bound capability leases between verified teammates.
+- **Adaptive Tunneling Optimization (ATO) Middleware**: (P1) Performance-optimizing service for the AMT Broker that dynamically adjusts compression and encryption profiles based on real-time mesh latency.
+- **Reasoning Entropy Attestation (REA) Validator**: (P0) Security extension for the AEM integrating hardware-attested entropy scores to detect and block hallucination-driven tool calls.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Now elevated with mandatory **REA-compliant** entropy validation.
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Elevated priority due to identified "Cognitive Stall" bottlenecks in parallel teammate coordination.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
