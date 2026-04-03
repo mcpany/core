@@ -14,12 +14,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Activity, ShieldCheck, ChevronRight, CheckCircle2, Server, Lock, Fingerprint } from "lucide-react";
+import { Activity, ShieldCheck, ChevronRight, CheckCircle2, Server, Lock, Fingerprint, RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
-// Mock data for the A2A Agent Chain tracer
 import { useTraces } from "@/hooks/use-traces";
 import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Summary: Provides a hardware-attested timeline interface for tracking multi-agent handoffs.
@@ -35,7 +36,7 @@ import { format } from "date-fns";
  */
 export function AgentChainTracer() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const { traces } = useTraces();
+  const { traces, loading, refresh } = useTraces();
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -47,11 +48,18 @@ export function AgentChainTracer() {
     else if (trace.status === "error") status = "speculative";
 
     let details = "No details provided.";
+    let detailsIsJson = false;
+
     if (trace.rootSpan?.errorMessage) {
       details = trace.rootSpan.errorMessage;
     } else if (trace.rootSpan?.input) {
       try {
-        details = typeof trace.rootSpan.input === "string" ? trace.rootSpan.input : JSON.stringify(trace.rootSpan.input);
+        if (typeof trace.rootSpan.input === "string") {
+          details = trace.rootSpan.input;
+        } else {
+          details = JSON.stringify(trace.rootSpan.input, null, 2);
+          detailsIsJson = true;
+        }
       } catch (e) {}
     }
 
@@ -63,6 +71,7 @@ export function AgentChainTracer() {
       latency: `${trace.totalDuration || 0}ms`,
       hash: trace.id ? trace.id.substring(0, 12) : "0x000",
       details,
+      detailsIsJson,
       timestamp: trace.timestamp ? format(new Date(trace.timestamp), "HH:mm:ss.SSS") : ""
     };
   });
@@ -79,18 +88,51 @@ export function AgentChainTracer() {
             Hardware-attested visualization of multi-agent task handoffs and reasoning chains.
           </CardDescription>
         </div>
-        <div className="flex gap-2">
-          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-sm backdrop-blur-md">
             <ShieldCheck className="w-3 h-3 mr-1" />
             TPM Signed
           </Badge>
-          <Badge variant="outline" className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20">
+          <Badge variant="outline" className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 shadow-sm backdrop-blur-md">
             <Activity className="w-3 h-3 mr-1" />
             Live Trace
           </Badge>
+          <Button variant="ghost" size="icon" onClick={refresh} className="h-8 w-8 rounded-full hover:bg-muted/50 transition-colors">
+            <RefreshCcw className={cn("h-4 w-4", loading && "animate-spin")} />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="pt-4">
+        {loading && chainData.length === 0 ? (
+          <div className="space-y-4 relative pl-6 border-l-2 border-muted-foreground/10">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="relative">
+                <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full border-2 bg-background z-10 border-muted-foreground/20" />
+                <div className="rounded-lg border bg-card/20 p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-3" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                    <Skeleton className="h-5 w-16 rounded-md" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : chainData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="rounded-full bg-muted/50 p-3 mb-4">
+              <Activity className="h-6 w-6 text-muted-foreground/50" />
+            </div>
+            <h3 className="text-sm font-medium text-foreground">No trace data available</h3>
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+              Traces will appear here once multi-agent handoffs occur in the system.
+            </p>
+          </div>
+        ) : (
         <div className="relative pl-6 border-l-2 border-muted-foreground/20 space-y-6">
           {chainData.map((step, index) => (
             <div key={step.id} className="relative group">
@@ -153,7 +195,13 @@ export function AgentChainTracer() {
                       </div>
                     </div>
                     <div className="col-span-2 mt-2">
-                      <p className="text-sm text-muted-foreground leading-relaxed">{step.details}</p>
+                      {step.detailsIsJson ? (
+                        <pre className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-md border border-border/50 overflow-x-auto">
+                          <code>{step.details}</code>
+                        </pre>
+                      ) : (
+                        <p className="text-sm text-muted-foreground leading-relaxed">{step.details}</p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -161,6 +209,7 @@ export function AgentChainTracer() {
             </div>
           ))}
         </div>
+        )}
       </CardContent>
     </Card>
   );

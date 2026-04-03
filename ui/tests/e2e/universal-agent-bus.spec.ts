@@ -27,4 +27,26 @@ test.describe('Universal Agent Bus', () => {
 
     await expect(page.locator('.text-xl.font-semibold', { hasText: 'Agent Chain Tracer (A2A)' })).toBeVisible();
   });
+
+  test('should display seeded traces on the Agent Chain Tracer timeline', async ({ page, request }) => {
+    // 1. Seed the database with trace data
+    const response = await request.post('/api/v1/debug/traces', {
+      data: {}
+    });
+    expect(response.ok()).toBeTruthy();
+
+    // 2. Navigate to the page
+    await page.goto('/universal-agent-bus');
+
+    // 3. Verify the timeline elements appear instead of the empty state
+    await expect(page.locator('text=orchestrator-task')).toBeVisible();
+    await expect(page.locator('text=search-tool')).toBeVisible();
+
+    // 4. Expand one of the trace elements to verify details
+    const firstTraceRow = page.locator('.relative.group').first();
+    await firstTraceRow.click();
+
+    // 5. Verify the formatted JSON payload exists in the expanded view
+    await expect(page.locator('pre code')).toContainText('query');
+  });
 });
