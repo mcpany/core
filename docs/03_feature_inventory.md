@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Teammate Handshake (ATH) Gateway**: (P0) Authoritative security middleware mandating hardware-attested identity exchanges for all inter-teammate task claiming.
+- **Mesh-Resident Identity Attestation (MRIA) Hub**: (P0) Core identity service issuing hardware-attested, session-bound tokens that persist across physical mesh nodes.
+- **Dynamic Mesh Resilience (DMR) Controller**: (P0) Stability service facilitating real-time re-sharding and migration of mission-critical state upon subagent failure.
+- **Hardware-Attested Cost Attribution (HACA) Provider**: (P0) Advanced economic security service cryptographically attributing token/compute usage to specific mission-root branches.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **ATH-compliant** handshake enforcement.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P1) Evolving to support **DMR-compliant** state migration proofs.
