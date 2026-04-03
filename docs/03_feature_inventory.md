@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Resident Ephemeral Keys (MREK) Provider**: (P0) Authoritative key management service facilitating sub-5ms mesh resumption via hardware-locked ephemeral tickets.
+- **Automated Lease Reconciliation (ALR) Engine**: (P0) Security service for automated real-time auditing and reconciliation of mission-bound hardware leases.
+- **Temporal Shard Isolation (TSI) Hub**: (P0) Advanced state security middleware utilizing hardware-enclave timers to enforce strict temporal access windows for shards.
+- **Distributed Cohesion Arbiter**: (P1) Authoritative synchronization service for maintaining hardware-attested state consistency across distributed nodes.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **MREK** integration to solve tunneling latency.
+- **Hardware-Locked Attention Persistence (HLAP)**: (Re-affirmed P0) Designated as a critical component of the **TSI Hub** to neutralize attention-leakage.

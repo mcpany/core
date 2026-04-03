@@ -62,3 +62,4 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Integrating Mesh-Resident Ephemeral Keys (MREK) to resolve P2P tunneling overhead and ensure mission-root cohesion across distributed nodes.

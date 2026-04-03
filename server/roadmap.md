@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Mesh-Resident Ephemeral Keys (MREK) Provider**: Implement hardware-locked "Mesh Ticket" issuance for sub-5ms AMT resumption. (Added: 2026-07-25)
+*   **[P0] Automated Lease Reconciliation (ALR) Engine**: Automate the real-time auditing and revocation of mission-bound hardware leases. (Added: 2026-07-25)
+*   **[P0] Temporal Shard Isolation (TSI) Hub**: Upgrade ESB to enforce strict temporal access windows for shared state shards. (Added: 2026-07-25)
+*   **[P1] Distributed Cohesion Arbiter**: Implement cross-node hardware-attested state synchronization to prevent mission divergence. (Added: 2026-07-25)
