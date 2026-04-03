@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Active Attention Heartbeats (AAH)**: (P0) Authoritative attention auditing service that injects periodic guardrail probes into the LLM context to prevent "Context-Window Ghosting."
+- **Hidden-Channel Interceptor (HCI)**: (P0) Advanced security middleware evolving the SCI to monitor OS-level side-channels (inode timing, flock patterns) for agent collusion.
+- **Immutable Workspace Snapshot (IWS) Controller**: (P0) High-speed environment recovery service facilitating sub-200ms OS-level rollbacks in response to security breaches.
+- **Sub-Quantum Mesh Attestation (SQMA) Provider**: (P1) Security service implementing lattice-based cryptographic handshakes for long-term mesh integrity.
+
+### Priority Shifts
+- **Shadow Coordination Interceptor (SCI)**: (Re-affirmed P0) Evolving into the **Hidden-Channel Interceptor (HCI)** to counter out-of-band collusion.
+- **Project-Local Snapshot (PLSS) Sync**: (Re-affirmed P0) Now elevated with the requirement for **IWS-compliant** rapid recovery.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

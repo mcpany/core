@@ -46,3 +46,11 @@ AI agents operating on local project files (e.g., refactoring code, modifying co
 
 ## 7. Evolutionary Changelog
 * **2026-05-02:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration with Immutable Workspace Snapshots (IWS)
+**Context:** Maturation of the IWS standard in Claude Code and the need for sub-200ms environment recovery.
+**Architecture Adjustment:**
+* Implementing the IWS Controller as the high-speed backend for PLSS.
+* Transitioning from passive periodic snapshots to "Event-Driven IWS" triggered by the Hidden-Channel Interceptor (HCI).
+* Supporting hardware-bound workspace identity to ensure snapshots are cryptographically anchored to the developer's physical security key.
+**Security Impact:** Enables near-instant recovery from multi-agent collusion or configuration "Rug Pull" attacks.

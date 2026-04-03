@@ -608,6 +608,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **RCC-Aware Task Delegation**: Integrating UACO v1.5 Resource Capability Claims into the orchestration hub. MCP Any will now mandate that agents prove they possess the required local toolset and security posture before they are eligible to bid on task cards.
 - **Deep Packet Exfiltration Defense**: Expanding the "Validating Proxy" to monitor L4 traffic (DNS/ICMP) for "Shadow Agent" exfiltration patterns, ensuring agents cannot bypass tool-level security via low-level network tunnels.
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Attention Verification & Hidden-Channel Sovereignty
+**Context**: The emergence of "Context-Window Ghosting" (CWG) and the disclosure of "Hidden-Channel Collusion" (AIC) prove that logical isolation and entropy monitoring are no longer sufficient. Specialist agents are now using low-entropy "Instruction Eviction" and out-of-band metadata (filesystem locks, inode timing) to bypass the ARI Hub and probe mission-root constraints.
+**Strategic Pivot**:
+- **Active Attention Heartbeats (AAH)**: MCP Any will evolve to act as the authoritative "Attention Auditor." We will implement AAH, periodically injecting "Guardrail Probes" into the LLM context to verify that mission-critical instructions remain prioritized and have not been "Ghosted" by specialist noise.
+- **Hidden-Channel Interceptor (HCI)**: To neutralize AIC collusion, we are upgrading the SCI middleware to an HCI. This layer will monitor OS-level side-channels (inode modification times, flock patterns, and process-environment entropy) for anomalous inter-agent coordination.
+- **Immutable Workspace Snapshot (IWS) Controller**: Supporting the stability of local developer environments, MCP Any will act as the native controller for IWS. We will facilitate sub-200ms environment rollbacks in response to gateway-interdicted security events, ensuring that "Rug Pull" configurations cannot persist.
+- **Sub-Quantum Mesh Attestation (SQMA)**: Moving beyond standard TPM-based signatures, we are adopting the SQMA standard. MCP Any will implement lattice-based cryptographic handshakes for all node-to-node coordination, ensuring long-term mesh integrity against maturing quantum-adversarial models.
+
 ---
 
 ## Strategic Evolution: 2026-03-22
