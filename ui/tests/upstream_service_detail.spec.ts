@@ -115,7 +115,7 @@ test.describe("Upstream Service Detail Page", () => {
   test("expands tool row to view schema in DefinitionsTable", async ({
     page,
   }) => {
-    await page.goto(`/service/${serviceName}`);
+    await page.goto(`/upstream-services/${serviceName}`);
 
     // Wait for the page to load
     await expect(
