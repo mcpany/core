@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Persistent Memory Mesh (PMM)**: (P0) Authoritative continuity service providing hardware-attested, encrypted state snapshots to persist mission-root context across process boundaries.
+- **Built-in Command Validator (BCV)**: (P0) Security middleware performing real-time semantic analysis of shell commands to gate built-ins (export, set, alias) and prevent environment poisoning.
+- **Adversarial PR Description Scanner**: (P0) Metadata-aware content gate scanning high-trust metadata (PR descriptions) for embedded prompt injection payloads (CVE-2025-53773 defense).
+
+### Priority Shifts
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Elevated with mandatory support for **Adversarial PR Description** scanning.
+- **Environment Sovereignty Enforcer (ESE)**: (Re-affirmed P0) Elevated with mandatory **Environment Pinning** to hardware-locked mission roots.
