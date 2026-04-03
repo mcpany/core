@@ -1934,3 +1934,12 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-03] (Iteration 2) Updates
+
+### Proposed Additions
+- **Unified Lifecycle Bridge**: (P1) Bridge for translating MCP Any termination signals into native AutoGen v0.4 and OpenClaw calls, ensuring cross-framework cleanup.
+- **Structural Integrity Attestation**: (P0) Cryptographic validation for tool schemas to prevent "Hidden Context" injection via structural metadata (CVE-2026-42001 defense).
+
+### Priority Shifts
+- **Tool Metadata Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Structural Integrity Attestation** to counter metadata poisoning.

@@ -70,3 +70,10 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-04-03 - Unified Lifecycle Bridging (AutoGen v0.4 Support)
+**Context:** The major rewrite of AutoGen v0.4 to a modular, event-driven architecture introduces challenges in deterministic agent termination. Existing process-bound reaping is insufficient for agents that communicate via purely asynchronous event buses.
+**Architecture Adjustment:**
+*   **Event-Driven Termination Bus**: Introducing a dedicated "Termination Topic" in the MCP Any event bus. The Reaper will broadcast `TERMINATE_INTENT_EVENT` to all connected framework adapters.
+*   **Framework-Specific Hooks**: AutoGen v0.4 adapter will map these events to internal `CancellationToken` or `AgentEvent.Stop` signals. Process-driven frameworks (CrewAI, OpenClaw) will continue to use SIGTERM/WebSocket closure.
+**Security Impact:** Ensures that "Event-Resident Zombies" in AutoGen v0.4 are purged alongside process-resident zombies, maintaining mesh-wide state consistency.
