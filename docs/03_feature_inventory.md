@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hierarchical Mission Lease Orchestrator (HMLO)**: (P0) Authoritative lease management service for "Lease Chaining," facilitating subsetted hardware-locked sub-leases.
+- **Lease-Entropy Interlock Middleware**: (P0) High-speed safety service resolving "Lease Deadlocks" by monitoring reasoning entropy during delegation.
+- **ARRT-Compliant Provenance Validator**: (P0) Identity middleware supporting Audit-Ready Reasoning Traces for real-time mesh forensics.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Elevated with mandatory support for **Recursive Tunneling (RT)** and lineage verification.
+- **Hardware-Locked Mission Lease (HLML)**: (Re-affirmed P0) Now elevated with the requirement for **HMLO-compliant** hierarchical sub-leasing.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

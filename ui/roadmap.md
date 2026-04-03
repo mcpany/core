@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Recursive Mission-Root Lineage Visualizer**: (2026-07-25) Visual tracker for multi-hop hardware-attested lineage and chained lease inheritance.
+- [ ] **[P0] Lease-Entropy Interlock Monitor**: (2026-07-25) Real-time visualization of agent reasoning entropy and budget reclamation triggers.
+- [ ] **[P0] ARRT Reasoning Forensic Tool**: (2026-07-25) Native UI for indexing and searching Audit-Ready Reasoning Traces across the mesh.
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)

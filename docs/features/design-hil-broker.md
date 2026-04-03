@@ -45,3 +45,10 @@ As agent swarms grow in complexity, the "Implicit Trust" of subagents becomes a 
 
 ## 7. Evolutionary Changelog
 * **2026-05-03:** Initial Document Creation.
+
+### Update: 2026-07-25 - Support for Lease Chaining & Entropy Interlocks
+**Context:** Today's research on Claude Code v3.2.1 confirms that "Lease Chaining" is now standard for deep sub-delegations. Additionally, "Lease Deadlocks" due to reasoning entropy require an interlock mechanism.
+**Architecture Adjustment:**
+- Evolving the `HILBroker` to support **Lease Chaining**. Sub-leases can now be issued from existing leases with strictly subsetted permissions.
+- Integrating the **Lease-Entropy Interlock Middleware**. This service monitors reasoning entropy before issuing a chained lease, ensuring the parent still has sufficient mission-alignment.
+**Security Impact:** Prevents "Lease Fragmentation" and "Entropy Drift" by mandating that child sub-tasks remain strictly bounded by both parent capability and parent reasoning stability.

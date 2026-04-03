@@ -10,6 +10,11 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Hierarchical Mission Lease Orchestrator (HMLO)**: Authoritative lease management service for "Lease Chaining" and subsetted capability enforcement. (Added: 2026-07-25)
+*   **[P0] Lease-Entropy Interlock Middleware**: High-speed safety service resolving "Lease Deadlocks" by monitoring real-time reasoning entropy. (Added: 2026-07-25)
+*   **[P0] ARRT-Compliant Provenance Validator**: Identity middleware supporting Audit-Ready Reasoning Traces for real-time mesh forensics. (Added: 2026-07-25)
+*   **[P0] RAMT (Recursive Attested Mesh Tunneling)**: Performance-optimized support for infinite node hops with recursive lineage validation. (Added: 2026-07-25)
 
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.

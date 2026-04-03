@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Enabling Recursive Attested Mesh Tunneling (RAMT)
+**Context:** Today's market sync revealed OpenClaw's shift to Recursive Tunneling (v3.7.0). Single-hop AMT is no longer sufficient for multi-node swarms (A -> B -> C).
+**Architecture Adjustment:**
+- Evolving the "Mesh Handshake" to support **Recursive Lineage Validation**.
+- Handshake tokens now carry a nested cryptographic proof of all intermediary nodes.
+- Introducing a "Lineage Cache" in the Tunnel Session Store to reduce the 200ms attestation overhead discovered in nested meshes.
+**Security Impact:** Prevents "Intermediary Spoofing" by ensuring the target node can verify the entire path back to the user's primary hardware-root.
