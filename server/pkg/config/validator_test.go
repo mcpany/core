@@ -597,7 +597,7 @@ func TestValidateMcpService_StdioConnection(t *testing.T) {
 	}
 }
 
-func TestValidateCommandExists(t *testing.T) {
+func TestValidateCommandExists_Extended(t *testing.T) {
 	// Mock execLookPath
 	oldLookPath := execLookPath
 	defer func() { execLookPath = oldLookPath }()
@@ -1362,6 +1362,156 @@ func TestValidateGlobalSettings_Extended(t *testing.T) {
 			} else {
 				assert.Empty(t, errs)
 			}
+		})
+	}
+}
+
+func TestValidateCommandExists(t *testing.T) {
+	ctx := context.Background()
+	skipCtx := context.WithValue(ctx, SkipFilesystemCheckKey, true)
+
+	// Create a temporary directory and file for testing
+	tmpDir := t.TempDir()
+
+	// Create a dummy executable file
+	execPath := filepath.Join(tmpDir, "dummy_exec")
+	err := os.WriteFile(execPath, []byte("#!/bin/sh\necho hi"), 0755)
+	require.NoError(t, err)
+
+	// Create a dummy non-executable file
+	nonExecPath := filepath.Join(tmpDir, "dummy_nonexec")
+	err = os.WriteFile(nonExecPath, []byte("hello"), 0644)
+	require.NoError(t, err)
+
+	// A directory
+	dirPath := filepath.Join(tmpDir, "dummy_dir")
+	err = os.Mkdir(dirPath, 0755)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name         string
+		ctx          context.Context
+		command      string
+		workingDir   string
+		expectErr    bool
+		errSubstring string
+	}{
+		{
+			name:      "Skip Filesystem Check",
+			ctx:       skipCtx,
+			command:   "/some/fake/absolute/path/that/does/not/exist",
+			expectErr: false,
+		},
+		{
+			name:         "Absolute Path - Directory",
+			ctx:          ctx,
+			command:      dirPath,
+			expectErr:    true,
+			errSubstring: "is a directory, not an executable",
+		},
+		{
+			name:         "Absolute Path - Not Exist",
+			ctx:          ctx,
+			command:      filepath.Join(tmpDir, "doesnotexist"),
+			expectErr:    true,
+			errSubstring: "executable not found",
+		},
+		{
+			name:      "Absolute Path - Exists",
+			ctx:       ctx,
+			command:   execPath,
+			expectErr: false,
+		},
+		{
+			name:         "Relative Path - Directory (With WorkingDir)",
+			ctx:          ctx,
+			command:      "./dummy_dir",
+			workingDir:   tmpDir,
+			expectErr:    true,
+			errSubstring: "is a directory, not an executable",
+		},
+		{
+			name:      "Relative Path - Exists (With WorkingDir)",
+			ctx:       ctx,
+			command:   "./dummy_exec",
+			workingDir:   tmpDir,
+			expectErr: false,
+		},
+		{
+			name:         "Relative Path - Not Exist (With WorkingDir, Also Not In PATH)",
+			ctx:          ctx,
+			command:      "dummy_non_existent_command_12345",
+			workingDir:   tmpDir,
+			expectErr:    true,
+			errSubstring: "not found in PATH",
+		},
+		{
+			name:         "Command Not Found in PATH",
+			ctx:          ctx,
+			command:      "this_command_should_not_exist_in_path_123",
+			expectErr:    true,
+			errSubstring: "not found in PATH",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := validateCommandExists(tt.ctx, tt.command, tt.workingDir)
+			if tt.expectErr {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.errSubstring)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestFindSimilarEnvVar(t *testing.T) {
+	// Let's set a unique env var for testing
+	testEnvKey := "UNIQUE_TEST_ENV_VAR_FOR_SIMILARITY"
+	t.Setenv(testEnvKey, "test")
+
+	// Short env var to test length constraints
+	shortEnvKey := "A"
+	t.Setenv(shortEnvKey, "test")
+
+	tests := []struct {
+		name     string
+		target   string
+		expected string
+	}{
+		{
+			name:     "Target Too Short - No Match",
+			target:   "B", // Close to "A" but < 3 chars, so should not match
+			expected: "",
+		},
+		{
+			name:     "Find Exact Match (Skipped) - Returns Similar if any, else empty",
+			target:   testEnvKey,
+			expected: "", // Assuming no other close matches
+		},
+		{
+			name:     "Find Similar - One Typo",
+			target:   "UNIQUE_TEST_ENV_VAR_FOR_SIMILARITX", // 1 char diff
+			expected: testEnvKey,
+		},
+		{
+			name:     "Find Similar - Few Typos",
+			target:   "UNIQUE_TEST_ENV_VER_FOR_SIMILARIT", // 2 char diffs
+			expected: testEnvKey,
+		},
+		{
+			name:     "No Similar Found",
+			target:   "COMPLETELY_UNRELATED_STRING_XYZ_123",
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := findSimilarEnvVar(tt.target)
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }
