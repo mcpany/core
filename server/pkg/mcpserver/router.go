@@ -36,9 +36,6 @@ type Router struct {
 //
 // Summary: Creates a new Router instance.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *Router: A new, initialized Router.
 //
@@ -58,9 +55,6 @@ func NewRouter() *Router {
 //   - method (string): The method name.
 //   - handler (MethodHandler): The handler function.
 //
-// Returns:
-//   - None.
-//
 // Side Effects:
 //   - Updates the internal handler map.
 func (r *Router) Register(method string, handler MethodHandler) {
@@ -78,8 +72,6 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //   - MethodHandler: The handler function if found.
 //   - bool: A boolean indicating whether a handler was found (true) or not (false).
 //
-// Side Effects:
-//   - None.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

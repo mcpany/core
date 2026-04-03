@@ -42,8 +42,6 @@ type RedactingWriter struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *RedactingWriter) Write(p []byte) (n int, err error) {
 	// Attempt to redact JSON. RedactJSON handles validation internally.
 	// If it's not valid JSON (e.g. partial write), it returns original input.

@@ -107,8 +107,6 @@ func (d *Debugger) process() {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (d *Debugger) Close() {
 	close(d.ingress)
 	<-d.done

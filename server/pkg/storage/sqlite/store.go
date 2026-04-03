@@ -32,8 +32,6 @@ type Store struct {
 // Returns:
 //   - *Store: A pointer to a new Store.
 //
-// Side Effects:
-//   - None.
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
@@ -63,8 +61,6 @@ func (s *Store) Close() error {
 // Returns:
 //   - bool: True always for DB store.
 //
-// Side Effects:
-//   - None.
 func (s *Store) HasConfigSources() bool {
 	return true
 }

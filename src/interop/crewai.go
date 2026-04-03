@@ -8,18 +8,6 @@ import (
 // CrewAIAdapter implements the AgentFramework interface for CrewAI.
 //
 // Summary: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type CrewAIAdapter struct {
 	Capabilities map[string]bool
 	RoleRegistry map[string]string // Role name -> Capability token
@@ -29,17 +17,8 @@ type CrewAIAdapter struct {
 //
 // Summary: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter instance.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewCrewAIAdapter() *CrewAIAdapter {
 	return &CrewAIAdapter{
 		Capabilities: map[string]bool{
@@ -54,17 +33,8 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 //
 // Summary: Provides the unique identifier for the CrewAI adapter.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - string: The name of the adapter ("CrewAI").
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *CrewAIAdapter) Name() string {
 	return "CrewAI"
 }
@@ -81,11 +51,8 @@ func (a *CrewAIAdapter) Name() string {
 //   - *TaskResult: The generalized result output, indicating success or failure.
 //   - error: An error if the capability is unsupported or if the execution fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
-//
-// Side Effects:
-//   - None.
 func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)
@@ -131,12 +98,6 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 //
 // Returns:
 //   - bool: True if the capability is supported, otherwise false.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
@@ -152,11 +113,8 @@ func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error if the signature is missing or verification fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the shard signature verification fails.
-//
-// Side Effects:
-//   - None.
 func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: unverified payload rejected by CrewAI")
@@ -177,7 +135,7 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

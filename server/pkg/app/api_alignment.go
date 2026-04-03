@@ -34,17 +34,12 @@ var currentAIAStatus = []SubagentStatus{
 //
 // Summary: Retrieves the current status of AIA heartbeats and semantic drift across subagents.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The HTTP handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleActiveIntentAlignment() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log := logging.GetLogger()

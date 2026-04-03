@@ -41,9 +41,6 @@ type Registry struct {
 //
 // Summary: Creates a new webhook registry.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *Registry: A pointer to a new, empty Registry.
 //
@@ -87,8 +84,6 @@ func (r *Registry) Register(name string, handler Handler) {
 //   - Handler: The registered handler, if found.
 //   - bool: True if the handler exists, false otherwise.
 //
-// Side Effects:
-//   - None.
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

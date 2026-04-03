@@ -37,9 +37,6 @@ type Upstream struct {
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
@@ -51,8 +48,6 @@ type Upstream struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		clientFactory: defaultClientFactory,
@@ -80,9 +75,6 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
@@ -94,8 +86,6 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -133,8 +123,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	_ context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -247,9 +235,6 @@ type vectorCallable struct {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Call operation.
 //
 // Parameters:
@@ -261,8 +246,6 @@ type vectorCallable struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	return c.handler(ctx, req.Arguments)
 }

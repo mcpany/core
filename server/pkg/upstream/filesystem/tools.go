@@ -26,8 +26,6 @@ import (
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func getTools(prov provider.Provider, fs afero.Fs, readOnly bool, rootPaths map[string]string) []filesystemToolDef {
 	return []filesystemToolDef{
 		listDirectoryTool(prov, fs),

@@ -55,8 +55,6 @@ type DefaultBus[T any] struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func New[T any]() *DefaultBus[T] {
 	return &DefaultBus[T]{
 		subscribers:    make(map[string]map[uintptr]chan T),
@@ -88,8 +86,6 @@ func New[T any]() *DefaultBus[T] {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 	b.mu.RLock()
 	defer b.mu.RUnlock()
@@ -148,8 +144,6 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -217,8 +211,6 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (b *DefaultBus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	var once sync.Once
 	var unsub func()

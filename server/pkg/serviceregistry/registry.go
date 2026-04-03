@@ -147,8 +147,6 @@ type ServiceRegistry struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManager prompt.ManagerInterface, resourceManager resource.ManagerInterface, authManager *auth.Manager) *ServiceRegistry {
 	return &ServiceRegistry{
 		serviceConfigs:  make(map[string]*config.UpstreamServiceConfig),
@@ -205,8 +203,6 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *config.UpstreamServiceConfig) (string, []*config.ToolDefinition, []*config.ResourceDefinition, error) {
 	r.mu.Lock()
 
@@ -354,8 +350,6 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -371,9 +365,6 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 //   - *tool.ServiceInfo: The service metadata.
 //   - bool: True if the service was found, false otherwise.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetServiceInfo operation.
 //
 // Parameters:
@@ -385,8 +376,6 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -415,9 +404,6 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 //   - *config.UpstreamServiceConfig: The service configuration.
 //   - bool: True if the service was found, false otherwise.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetServiceConfig operation.
 //
 // Parameters:
@@ -429,8 +415,6 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -473,8 +457,6 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -517,9 +499,6 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 //   - string: The error message.
 //   - bool: True if an error exists, false otherwise.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetServiceError operation.
 //
 // Parameters:
@@ -531,8 +510,6 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -563,8 +540,6 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) StartHealthChecks(ctx context.Context, interval time.Duration) {
 	go func() {
 		ticker := time.NewTicker(interval)
@@ -663,8 +638,6 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -688,9 +661,6 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 //   - []*config.UpstreamServiceConfig: A list of all registered service configurations.
 //   - error: An error if retrieval fails.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetAllServices operation.
 //
 // Parameters:
@@ -702,8 +672,6 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *ServiceRegistry) GetAllServices() ([]*config.UpstreamServiceConfig, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

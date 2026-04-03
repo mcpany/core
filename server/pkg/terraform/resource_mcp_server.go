@@ -39,8 +39,6 @@ type ResourceMCPServer struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func Schema() map[string]interface{} {
 	return map[string]interface{}{
 		"name": map[string]interface{}{
@@ -88,8 +86,6 @@ func Schema() map[string]interface{} {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
 	return nil
@@ -121,8 +117,6 @@ func Create(_ *ResourceMCPServer) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func Read(name string) (*ResourceMCPServer, error) {
 	return &ResourceMCPServer{
 		Name:    name,

@@ -30,8 +30,6 @@ type GraphQLProvider struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *GraphQLProvider) Name() string {
 	return "graphql"
 }
@@ -49,8 +47,6 @@ func (p *GraphQLProvider) Name() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *GraphQLProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

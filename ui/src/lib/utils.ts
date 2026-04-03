@@ -25,9 +25,7 @@ import { twMerge } from "tailwind-merge"
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

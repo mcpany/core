@@ -41,8 +41,6 @@ const RolesContextKey authContextKey = "user_roles"
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 	return context.WithValue(ctx, RolesContextKey, roles)
 }
@@ -73,8 +71,6 @@ func ContextWithRoles(ctx context.Context, roles []string) context.Context {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func RolesFromContext(ctx context.Context) ([]string, bool) {
 	val, ok := ctx.Value(RolesContextKey).([]string)
 	return val, ok
@@ -111,8 +107,6 @@ type RBACEnforcer struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewRBACEnforcer() *RBACEnforcer {
 	return &RBACEnforcer{}
 }
@@ -143,8 +137,6 @@ func NewRBACEnforcer() *RBACEnforcer {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 	if user == nil {
 		return false
@@ -178,8 +170,6 @@ func (e *RBACEnforcer) HasRole(user *configv1.User, role string) bool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 	if user == nil {
 		return false
@@ -218,8 +208,6 @@ func (e *RBACEnforcer) HasAnyRole(user *configv1.User, roles []string) bool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *RBACEnforcer) HasRoleInContext(ctx context.Context, role string) bool {
 	roles, ok := RolesFromContext(ctx)
 	if !ok {

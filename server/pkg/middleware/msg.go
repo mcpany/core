@@ -19,14 +19,6 @@ import (
 //
 // Summary: Protects sensitive system metadata from leaking to downstream components.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type MetadataSanitizationGateway struct {
 	config *configv1.MetadataSanitizationConfig
 	// Pre-compiled regular expressions for speed
@@ -43,8 +35,6 @@ type MetadataSanitizationGateway struct {
 // Returns:
 //   - *MetadataSanitizationGateway: The initialized gateway.
 //
-// Throws/Errors:
-//   - None.
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
 		cfg = &configv1.MetadataSanitizationConfig{}
@@ -86,14 +76,9 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 //
 // Summary: Applies the sanitization rules to the incoming request and outgoing response.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - mcp.Middleware: The middleware constructor.
 //
-// Throws/Errors:
-//   - None.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
 	if !m.config.Enabled {
 		return noOpMiddleware

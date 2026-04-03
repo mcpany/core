@@ -8,18 +8,6 @@ import (
 // OpenClawAdapter implements the AgentFramework interface for OpenClaw.
 //
 // Summary: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type OpenClawAdapter struct {
 	Capabilities map[string]bool
 	CurrentEpoch int // Track the reasoning epoch
@@ -29,17 +17,8 @@ type OpenClawAdapter struct {
 //
 // Summary: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *OpenClawAdapter: A pointer to the newly instantiated OpenClawAdapter.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewOpenClawAdapter() *OpenClawAdapter {
 	return &OpenClawAdapter{
 		Capabilities: map[string]bool{
@@ -54,17 +33,8 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 //
 // Summary: Returns the specific name identifier of the OpenClaw adapter.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - string: The name "OpenClaw".
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *OpenClawAdapter) Name() string {
 	return "OpenClaw"
 }
@@ -81,11 +51,8 @@ func (a *OpenClawAdapter) Name() string {
 //   - *TaskResult: The generalized output from the executed task, along with telemetry data.
 //   - error: An error indicating if the task failed or is unsupported.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
-//
-// Side Effects:
-//   - None.
 func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
@@ -126,12 +93,6 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 //
 // Returns:
 //   - bool: True if the capability is found in the capabilities map; false otherwise.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
@@ -147,11 +108,8 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the shard signature verification fails.
-//
-// Side Effects:
-//   - None.
 func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: missing signature")
@@ -176,7 +134,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

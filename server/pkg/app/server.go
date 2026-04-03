@@ -214,12 +214,6 @@ type Runner interface {
 // Application ...
 //
 // Summary: Represents the Application.
-// Parameters:
-//   - None.
-// Returns:
-//   - None.
-// Throws/Errors:
-//   - None.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface

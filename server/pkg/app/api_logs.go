@@ -21,9 +21,6 @@ var upgrader = websocket.Upgrader{
 //
 // Summary: Handles WebSocket logs.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //

@@ -315,8 +315,6 @@ type playwrightFetcher struct {
 // Errors:
 //   - Returns error if any.
 //
-// Side Effects:
-//   - None.
 func (f *playwrightFetcher) FetchText(_ context.Context, url string) (string, error) {
 	r := f.runner
 	if r == nil {

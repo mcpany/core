@@ -39,8 +39,6 @@ type MockClientConn struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewMockClientConn(t *testing.T) *MockClientConn {
 	return &MockClientConn{
 		t:       t,
@@ -65,8 +63,6 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
 	m.clients[method] = client
 }
@@ -94,8 +90,6 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ interface{}, _ ...grpc.CallOption) error {
 	// Not implemented for this mock
 	return nil
@@ -124,8 +118,6 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *MockClientConn) NewStream(_ context.Context, _ *grpc.StreamDesc, method string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
 	if client, ok := m.clients[method]; ok {
 		return client.(grpc.ClientStream), nil

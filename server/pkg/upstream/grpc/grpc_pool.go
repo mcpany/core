@@ -50,8 +50,6 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *poolWithChecker[T]) Close() error {
 	if p.checker != nil {
 		p.checker.Stop()
@@ -96,8 +94,6 @@ func (p *poolWithChecker[T]) Close() error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewGrpcPool(
 	minSize, maxSize int,
 	idleTimeout time.Duration,

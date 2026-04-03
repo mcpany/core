@@ -6,15 +6,7 @@
 //
 // Summary: Application-wide constants.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 package appconsts

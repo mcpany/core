@@ -64,8 +64,6 @@ var (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 	globalAlertConfigMu.Lock()
 	defer globalAlertConfigMu.Unlock()
@@ -113,8 +111,6 @@ type HTTPServiceWithHealthCheck interface {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewChecker(uc *configv1.UpstreamServiceConfig) health.Checker {
 	if uc == nil {
 		return nil

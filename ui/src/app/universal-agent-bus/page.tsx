@@ -34,9 +34,6 @@ import { LazyMcpDashboard } from "@/components/dashboard/lazy-mcp-dashboard";
  *
  * Summary: Renders a dashboard with metrics for the Universal Agent Bus.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - JSX.Element: The rendered layout for the agent bus dashboard.
  *

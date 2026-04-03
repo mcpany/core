@@ -48,8 +48,6 @@ type DiscoverySandboxMiddleware struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewDiscoverySandboxMiddleware(config DiscoverySandboxConfig) *DiscoverySandboxMiddleware {
 	return &DiscoverySandboxMiddleware{
 		config: config,

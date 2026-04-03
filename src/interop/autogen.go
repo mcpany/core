@@ -8,18 +8,6 @@ import (
 // AutoGenAdapter implements the AgentFramework interface for AutoGen.
 //
 // Summary: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type AutoGenAdapter struct {
 	Capabilities map[string]bool
 	ChatHistory  []string // Maintain stateful checkpoints
@@ -29,17 +17,8 @@ type AutoGenAdapter struct {
 //
 // Summary: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *AutoGenAdapter: A newly created pointer to an AutoGenAdapter instance.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewAutoGenAdapter() *AutoGenAdapter {
 	return &AutoGenAdapter{
 		Capabilities: map[string]bool{
@@ -54,17 +33,8 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 //
 // Summary: Retrieves the exact name identifier for the AutoGen adapter.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - string: The name "AutoGen".
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *AutoGenAdapter) Name() string {
 	return "AutoGen"
 }
@@ -81,11 +51,8 @@ func (a *AutoGenAdapter) Name() string {
 //   - *TaskResult: Contains the status, output, and telemetry information from the subagent.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
-//
-// Side Effects:
-//   - None.
 func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
@@ -128,12 +95,6 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 //
 // Returns:
 //   - bool: Indicates whether the given capability is supported.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 	return a.Capabilities[capability]
 }
@@ -149,11 +110,8 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the shard signature verification fails.
-//
-// Side Effects:
-//   - None.
 func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: signature required for ingestion")
@@ -175,7 +133,7 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

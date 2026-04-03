@@ -69,8 +69,6 @@ func IsDockerSocketAccessible() bool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func CloseDockerClient() {
 	if dockerClient != nil {
 		_ = dockerClient.Close()

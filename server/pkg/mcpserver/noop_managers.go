@@ -45,28 +45,18 @@ func (m *NoOpToolManager) GetTool(_ string) (tool.Tool, bool) { return nil, fals
 //
 // Summary: Returns an empty list of tools.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []tool.Tool: Always nil.
 //
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) ListTools() []tool.Tool { return nil }
 
 // ListMCPTools implements tool.ManagerInterface.
 //
 // Summary: Returns an empty list of MCP tools.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []*mcp.Tool: Always nil.
 //
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 
 // ClearToolsForService implements tool.ManagerInterface.
@@ -76,11 +66,6 @@ func (m *NoOpToolManager) ListMCPTools() []*mcp.Tool { return nil }
 // Parameters:
 //   - _ (string): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) ClearToolsForService(_ string) {}
 
 // ExecuteTool implements tool.ManagerInterface.
@@ -105,11 +90,6 @@ func (m *NoOpToolManager) ExecuteTool(_ context.Context, _ *tool.ExecutionReques
 // Parameters:
 //   - _ (tool.MCPServerProvider): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 
 // AddMiddleware implements tool.ManagerInterface.
@@ -119,11 +99,6 @@ func (m *NoOpToolManager) SetMCPServer(_ tool.MCPServerProvider) {}
 // Parameters:
 //   - _ (tool.ExecutionMiddleware): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 
 // AddServiceInfo implements tool.ManagerInterface.
@@ -134,11 +109,6 @@ func (m *NoOpToolManager) AddMiddleware(_ tool.ExecutionMiddleware) {}
 //   - _ (string): Unused.
 //   - _ (*tool.ServiceInfo): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) AddServiceInfo(_ string, _ *tool.ServiceInfo) {}
 
 // GetServiceInfo implements tool.ManagerInterface.
@@ -157,14 +127,9 @@ func (m *NoOpToolManager) GetServiceInfo(_ string) (*tool.ServiceInfo, bool) { r
 //
 // Summary: Returns an empty list of services.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []*tool.ServiceInfo: Always nil.
 //
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 
 // SetProfiles implements tool.ManagerInterface.
@@ -175,11 +140,6 @@ func (m *NoOpToolManager) ListServices() []*tool.ServiceInfo { return nil }
 //   - _ ([]string): Unused.
 //   - _ ([]*configv1.ProfileDefinition): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpToolManager) SetProfiles(_ []string, _ []*configv1.ProfileDefinition) {}
 
 // IsServiceAllowed implements tool.ManagerInterface.
@@ -244,11 +204,6 @@ type NoOpPromptManager struct{}
 // Parameters:
 //   - _ (prompt.Prompt): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 
 // UpdatePrompt implements prompt.ManagerInterface.
@@ -258,11 +213,6 @@ func (m *NoOpPromptManager) AddPrompt(_ prompt.Prompt) {}
 // Parameters:
 //   - _ (prompt.Prompt): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpPromptManager) UpdatePrompt(_ prompt.Prompt) {}
 
 // GetPrompt implements prompt.ManagerInterface.
@@ -281,14 +231,9 @@ func (m *NoOpPromptManager) GetPrompt(_ string) (prompt.Prompt, bool) { return n
 //
 // Summary: Returns an empty list of prompts.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []prompt.Prompt: Always nil.
 //
-// Side Effects:
-//   - None.
 func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 
 // ClearPromptsForService implements prompt.ManagerInterface.
@@ -298,11 +243,6 @@ func (m *NoOpPromptManager) ListPrompts() []prompt.Prompt { return nil }
 // Parameters:
 //   - _ (string): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 
 // SetMCPServer implements prompt.ManagerInterface.
@@ -312,11 +252,6 @@ func (m *NoOpPromptManager) ClearPromptsForService(_ string) {}
 // Parameters:
 //   - _ (prompt.MCPServerProvider): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpPromptManager) SetMCPServer(_ prompt.MCPServerProvider) {}
 
 // NoOpResourceManager is a no-op implementation of resource.ManagerInterface.
@@ -343,11 +278,6 @@ func (m *NoOpResourceManager) GetResource(_ string) (resource.Resource, bool) { 
 // Parameters:
 //   - _ (resource.Resource): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 
 // RemoveResource implements resource.ManagerInterface.
@@ -357,25 +287,15 @@ func (m *NoOpResourceManager) AddResource(_ resource.Resource) {}
 // Parameters:
 //   - _ (string): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpResourceManager) RemoveResource(_ string) {}
 
 // ListResources implements resource.ManagerInterface.
 //
 // Summary: Returns an empty list of resources.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - []resource.Resource: Always nil.
 //
-// Side Effects:
-//   - None.
 func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 
 // OnListChanged implements resource.ManagerInterface.
@@ -385,11 +305,6 @@ func (m *NoOpResourceManager) ListResources() []resource.Resource { return nil }
 // Parameters:
 //   - _ (func()): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 
 // ClearResourcesForService implements resource.ManagerInterface.
@@ -399,9 +314,4 @@ func (m *NoOpResourceManager) OnListChanged(_ func()) {}
 // Parameters:
 //   - _ (string): Unused.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (m *NoOpResourceManager) ClearResourcesForService(_ string) {}

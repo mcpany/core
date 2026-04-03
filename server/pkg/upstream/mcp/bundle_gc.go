@@ -41,9 +41,6 @@ var (
 // Parameters:
 //   - serviceID (string): The service ID.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - None.
 //
@@ -60,9 +57,6 @@ func trackBundle(serviceID string) {
 // Parameters:
 //   - serviceID (string): The service ID.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - None.
 //
@@ -77,12 +71,6 @@ func untrackBundle(serviceID string) {
 // triggerGC checks if it's time to run garbage collection and starts it in a background goroutine if necessary.
 //
 // Summary: Triggers garbage collection.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
 //
 // Errors:
 //   - None.
@@ -109,9 +97,6 @@ func triggerGC() {
 //
 // Parameters:
 //   - baseDir (string): The base directory.
-//
-// Returns:
-//   - None.
 //
 // Errors:
 //   - None.

@@ -3,9 +3,6 @@
  *
  * Summary: Protocol buffer definition for MCP Options.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - string: The proto definition.
  *
@@ -88,9 +85,6 @@ extend google.protobuf.MethodOptions {
  * Defines the User Service proto.
  *
  * Summary: Protocol buffer definition for the User Service.
- *
- * Parameters:
- *   - None.
  *
  * Returns:
  *   - string: The proto definition.

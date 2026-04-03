@@ -27,8 +27,6 @@ import (
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "read_file",
@@ -92,8 +90,6 @@ func readFileTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func writeFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "write_file",
@@ -291,8 +287,6 @@ func safeRemove(fs afero.Fs, path string, recursive bool) error {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "move_file",
@@ -356,8 +350,6 @@ func moveFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystem
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func deleteFileTool(prov provider.Provider, fs afero.Fs, readOnly bool) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "delete_file",

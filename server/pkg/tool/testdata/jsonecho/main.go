@@ -13,12 +13,6 @@ import (
 //
 // Summary: Executes json echo tool.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Exits with 1 on failure.
 //

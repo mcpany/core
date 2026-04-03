@@ -56,8 +56,6 @@ type Worker struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func New(config Config) *Worker {
 	if config.Interval <= 0 {
 		config.Interval = 1 * time.Hour // Default 1 hour
@@ -95,8 +93,6 @@ func New(config Config) *Worker {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	if !w.config.Enabled {
 		logging.GetLogger().Info("Global GC worker is disabled")

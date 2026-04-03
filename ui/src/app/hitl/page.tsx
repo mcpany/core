@@ -19,9 +19,6 @@ import { HitlDashboard } from "@/components/hitl/hitl-dashboard";
  *
  * Summary: Renders the root page view for the HITL dashboard.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - JSX.Element: The rendered page layout containing the HITL dashboard.
  *

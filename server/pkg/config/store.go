@@ -123,12 +123,6 @@ type yamlEngine struct {
 // Parameters:
 //   - skip (bool): The parameter.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Updates SetSkipValidation operation.
 //
 // Parameters:
@@ -140,8 +134,6 @@ type yamlEngine struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *yamlEngine) SetSkipValidation(skip bool) {
 	e.skipValidation = skip
 }
@@ -150,12 +142,6 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //
 // Parameters:
 //   - ignore (bool): The parameter.
-//
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Updates SetIgnoreEnv operation.
 //
@@ -168,8 +154,6 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
 }
@@ -186,9 +170,6 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
@@ -200,8 +181,6 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 	// First, unmarshal YAML into a generic map.
 	var yamlMap map[string]interface{}
@@ -233,9 +212,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes UnmarshalFromMap operation.
 //
 // Parameters:
@@ -247,8 +223,6 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *yamlEngine) UnmarshalFromMap(yamlMap map[string]interface{}, v proto.Message, originalBytes []byte) error {
 	return e.unmarshalInternal(yamlMap, v, originalBytes)
 }
@@ -365,9 +339,6 @@ type textprotoEngine struct{}
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
@@ -379,8 +350,6 @@ type textprotoEngine struct{}
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -400,9 +369,6 @@ type jsonEngine struct{}
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
@@ -414,8 +380,6 @@ type jsonEngine struct{}
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (e *jsonEngine) Unmarshal(b []byte, v proto.Message) error {
 	if err := protojson.Unmarshal(b, v); err != nil {
 		// Detect if the user is using Claude Desktop config format
@@ -742,12 +706,6 @@ type FileStore struct {
 
 // SetSkipValidation configures whether to skip schema validation during loading.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Updates SetSkipValidation operation.
 //
 // Parameters:
@@ -759,19 +717,11 @@ type FileStore struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
 
 // SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
-//
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Updates SetIgnoreMissingEnv operation.
 //
@@ -784,8 +734,6 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *FileStore) SetIgnoreMissingEnv(ignore bool) {
 	s.IgnoreMissingEnv = ignore
 }
@@ -843,8 +791,6 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *FileStore) HasConfigSources() bool {
 	return len(s.paths) > 0
 }
@@ -1494,8 +1440,6 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (ms *MultiStore) HasConfigSources() bool {
 	for _, s := range ms.stores {
 		if s.HasConfigSources() {

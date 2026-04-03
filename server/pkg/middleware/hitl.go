@@ -64,8 +64,6 @@ type HITLMiddleware struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewHITLMiddleware(config HITLConfig, busProvider *bus.Provider) *HITLMiddleware {
 	return &HITLMiddleware{
 		config: config,

@@ -36,8 +36,6 @@ import (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func HydrateFromFile(path string) error {
 	lines, err := util.ReadLastNLines(path, 1000)
 	if err != nil {

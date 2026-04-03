@@ -11,17 +11,9 @@ import (
 //
 // Summary: Filesystem tool definition.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 type filesystemToolDef struct {
 	Name        string
 	Description string

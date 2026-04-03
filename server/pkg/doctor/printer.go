@@ -36,8 +36,6 @@ import (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func PrintResults(w io.Writer, results []CheckResult) {
 	if w == nil {
 		w = os.Stdout

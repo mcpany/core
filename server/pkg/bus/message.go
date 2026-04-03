@@ -60,8 +60,6 @@ type BaseMessage struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
@@ -91,8 +89,6 @@ func (m *BaseMessage) CorrelationID() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }

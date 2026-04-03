@@ -41,8 +41,6 @@ import (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func LoggingMiddleware(log *slog.Logger) mcp.Middleware {
 	if log == nil {
 		log = logging.GetLogger()

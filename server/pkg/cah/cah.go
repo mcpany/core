@@ -45,8 +45,6 @@ type CAHAdapter struct {
 // Errors:
 //   - Returns an error if threshold is invalid.
 //
-// Side Effects:
-//   - None.
 func NewCAHAdapter(monitors []MonitorAgent, threshold int, timeout time.Duration) (*CAHAdapter, error) {
 	if threshold < 1 {
 		return nil, fmt.Errorf("quorum threshold must be at least 1")

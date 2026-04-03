@@ -91,8 +91,6 @@ type Manager struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewManager() *Manager {
 	m := &Manager{
 		alerts: make(map[string]*Alert),
@@ -141,8 +139,6 @@ func (m *Manager) seedData() {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) ListAlerts() []*Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -182,8 +178,6 @@ func (m *Manager) ListAlerts() []*Alert {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetAlert(id string) *Alert {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -215,8 +209,6 @@ func (m *Manager) GetAlert(id string) *Alert {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) CreateAlert(alert *Alert) *Alert {
 	m.mu.Lock()
 	if alert.ID == "" {
@@ -283,8 +275,6 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetAlertStats() *AlertStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -343,8 +333,6 @@ func (m *Manager) GetAlertStats() *AlertStats {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) DeleteAlert(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -381,8 +369,6 @@ func (m *Manager) DeleteAlert(id string) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 	m.mu.Lock()
 	existing, ok := m.alerts[id]
@@ -453,8 +439,6 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetWebhookURL() string {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -486,8 +470,6 @@ func (m *Manager) GetWebhookURL() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) SetWebhookURL(url string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -519,8 +501,6 @@ func (m *Manager) SetWebhookURL(url string) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) ListRules() []*AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -559,8 +539,6 @@ func (m *Manager) ListRules() []*AlertRule {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetRule(id string) *AlertRule {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -592,8 +570,6 @@ func (m *Manager) GetRule(id string) *AlertRule {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -631,8 +607,6 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -676,8 +650,6 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) DeleteRule(id string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

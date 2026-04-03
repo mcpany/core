@@ -336,9 +336,6 @@ func (m *AuditMiddleware) Broadcast(entry audit.Entry) {
 //
 // Summary: Subscribes to audit events with history.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - chan any: A channel receiving new audit entries.
 //   - []any: A slice of historical audit entries.
@@ -356,8 +353,6 @@ func (m *AuditMiddleware) SubscribeWithHistory() (chan any, []any) {
 // Returns:
 //   - []any: A slice of audit entries.
 //
-// Side Effects:
-//   - None.
 func (m *AuditMiddleware) GetHistory() []any {
 	return m.broadcaster.GetHistory()
 }
@@ -444,8 +439,6 @@ func (m *AuditMiddleware) Close() error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *AuditMiddleware) Write(ctx context.Context, entry audit.Entry) error {
 	m.mu.RLock()
 	store := m.store

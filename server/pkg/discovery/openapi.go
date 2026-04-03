@@ -30,8 +30,6 @@ type OpenAPIProvider struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *OpenAPIProvider) Name() string {
 	return "openapi"
 }
@@ -49,8 +47,6 @@ func (p *OpenAPIProvider) Name() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *OpenAPIProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

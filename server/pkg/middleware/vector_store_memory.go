@@ -50,8 +50,6 @@ type VectorEntry struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewSimpleVectorStore() *SimpleVectorStore {
 	return &SimpleVectorStore{
 		items:      make(map[string][]*VectorEntry),
@@ -82,8 +80,6 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32, result any, ttl time.Duration) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -133,8 +129,6 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -186,8 +180,6 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *SimpleVectorStore) Prune(_ context.Context, key string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -10,9 +10,6 @@ import { Badge } from "@/components/ui/badge";
 /**
  * Summary: Visualizes granular capability tokens grouped by agent roles within a grid layout.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - React.JSX.Element: The rendered ScopesDashboard interface.
  *

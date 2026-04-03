@@ -75,8 +75,6 @@ type MockRuntime struct{}
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewMockRuntime() *MockRuntime {
 	return &MockRuntime{}
 }
@@ -102,8 +100,6 @@ func NewMockRuntime() *MockRuntime {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, error) {
 	if len(bytecode) == 0 {
 		return nil, fmt.Errorf("btyecode cannot be empty")
@@ -127,8 +123,6 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *MockRuntime) Close() error {
 	return nil
 }
@@ -160,8 +154,6 @@ type MockPlugin struct{}
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([]byte, error) {
 	if function == "error" {
 		return nil, fmt.Errorf("simulated error")
@@ -185,8 +177,6 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *MockPlugin) Close() error {
 	return nil
 }

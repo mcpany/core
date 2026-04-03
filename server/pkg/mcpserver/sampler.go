@@ -59,7 +59,7 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 //   - *mcp.CreateMessageResult: The result of the message creation from the client.
 //   - error: An error if no active session is available or if the request fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the session is nil.
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
@@ -79,7 +79,7 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //   - *mcp.ListRootsResult: The list of roots returned by the client.
 //   - error: An error if no active session is available or if the request fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the session is nil.
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {

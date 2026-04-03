@@ -46,8 +46,6 @@ type AIABroker struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewAIABroker(config AIABrokerConfig) *AIABroker {
 	return &AIABroker{
 		config: config,

@@ -45,8 +45,6 @@ type httpPool struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err

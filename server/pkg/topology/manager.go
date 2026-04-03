@@ -290,9 +290,6 @@ func (m *Manager) RecordActivity(sessionID string, meta map[string]interface{}, 
 //
 // Summary: gracefully shuts down the Topology Manager.
 //
-// Parameters:
-//   - None.
-//
 // Side Effects:
 //   - Closes the shutdown channel, stopping the background loop.
 func (m *Manager) Close() {
@@ -309,8 +306,6 @@ func (m *Manager) Close() {
 // Returns:
 //   - Stats: The aggregated statistics.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetStats(serviceID string) Stats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -361,8 +356,6 @@ func (m *Manager) GetStats(serviceID string) Stats {
 //   - avgLatency (time.Duration): The average latency over the window.
 //   - errorRate (float64): The error rate over the window.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) (avgLatency time.Duration, errorRate float64) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -414,8 +407,6 @@ func (m *Manager) GetRecentServiceStats(serviceID string, window time.Duration) 
 // Returns:
 //   - []TrafficPoint: A slice of traffic data points.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) GetTrafficHistory(serviceID string) []TrafficPoint {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

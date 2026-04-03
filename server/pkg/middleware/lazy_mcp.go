@@ -38,8 +38,6 @@ type LazyMCPMiddleware struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 	return &LazyMCPMiddleware{
 		config: config,
@@ -61,8 +59,6 @@ func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string) *mcp.ListToolsResult {
 	if !m.config.Enabled || intent == "" {
 		return res

@@ -8,18 +8,6 @@ import (
 // AgentFramework represents a standardized AI framework to interact with.
 //
 // Summary: Defines the standard interface that all agent frameworks must implement to integrate with the universal bus.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type AgentFramework interface {
 	// Name returns the identifier of the agent framework.
 	//
@@ -31,7 +19,7 @@ type AgentFramework interface {
 	// Returns:
 	//   - string: The name of the agent framework.
 	//
-	// Throws/Errors:
+	// Errors/Throws:
 	//   - None.
 	//
 	// Side Effects:
@@ -51,7 +39,7 @@ type AgentFramework interface {
 	//   - *TaskResult: The generalized output from the agent framework.
 	//   - error: An error if the task execution fails.
 	//
-	// Throws/Errors:
+	// Errors/Throws:
 	//   - Returns an error if the framework does not support the requested capability or if execution fails.
 	//
 	// Side Effects:
@@ -69,7 +57,7 @@ type AgentFramework interface {
 	// Returns:
 	//   - bool: True if the capability is supported, false otherwise.
 	//
-	// Throws/Errors:
+	// Errors/Throws:
 	//   - None.
 	//
 	// Side Effects:
@@ -88,7 +76,7 @@ type AgentFramework interface {
 	// Returns:
 	//   - error: An error if the shard synchronization fails or signature is invalid.
 	//
-	// Throws/Errors:
+	// Errors/Throws:
 	//   - Returns an error if the synchronization process fails.
 	//
 	// Side Effects:
@@ -108,7 +96,7 @@ type AgentFramework interface {
 	//   - <-chan *TaskResult: A read-only channel emitting streamed task results.
 	//   - error: An error if the task execution fails to start.
 	//
-	// Throws/Errors:
+	// Errors/Throws:
 	//   - Returns an error if the framework does not support the capability or initialization fails.
 	//
 	// Side Effects:
@@ -119,18 +107,6 @@ type AgentFramework interface {
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
 //
 // Summary: A data structure that holds text context and an optional multimodal payload, with cryptographic lineage.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type MemoryShard struct {
 	ShardID           string `json:"shard_id"`
 	Intent            string `json:"intent"`
@@ -143,18 +119,6 @@ type MemoryShard struct {
 // Task represents a universal task definition for the Agent Bus.
 //
 // Summary: A data structure that holds the definition of a task to be routed to an agent framework.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type Task struct {
 	ID        string            `json:"id"`
 	Framework string            `json:"framework"`
@@ -165,18 +129,6 @@ type Task struct {
 // TaskResult holds the generalized output from an agent framework.
 //
 // Summary: A data structure that contains the result of an executed task.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type TaskResult struct {
 	TaskID    string            `json:"task_id"`
 	Status    string            `json:"status"`
@@ -188,18 +140,6 @@ type TaskResult struct {
 // AdapterHub manages the registration and routing of tasks to different agent frameworks.
 //
 // Summary: A central hub that maintains registered agent adapters and routes tasks to the appropriate one.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type AdapterHub struct {
 	adapters map[string]AgentFramework
 }
@@ -208,17 +148,8 @@ type AdapterHub struct {
 //
 // Summary: Creates and returns a new instance of AdapterHub with an empty registry.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *AdapterHub: A pointer to the newly created AdapterHub.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func NewAdapterHub() *AdapterHub {
 	return &AdapterHub{
 		adapters: make(map[string]AgentFramework),
@@ -231,15 +162,6 @@ func NewAdapterHub() *AdapterHub {
 //
 // Parameters:
 //   - adapter (AgentFramework): The adapter implementation to register.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
 }
@@ -256,12 +178,9 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 //   - *TaskResult: The result of the task execution.
 //   - error: An error if routing or execution fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns "no adapter registered for framework" if the requested framework is not found.
 //   - Returns any error produced by the adapter during task execution.
-//
-// Side Effects:
-//   - None.
 func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	adapter, exists := h.adapters[task.Framework]
 	if !exists {
@@ -282,7 +201,7 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 //   - <-chan *TaskResult: A read-only channel emitting streamed task results.
 //   - error: An error if routing or execution fails to start.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns "no adapter registered for framework" if the requested framework is not found.
 //   - Returns any error produced by the adapter during task execution initialization.
 //

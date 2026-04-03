@@ -22,14 +22,9 @@ type ErrorMappingMiddleware struct{}
 //
 // Summary: Initializes the middleware responsible for translating internal errors into safe external responses.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - mcp.Middleware: The initialized error mapping middleware.
 //
-// Throws/Errors:
-//   - None.
 func NewErrorMappingMiddleware() *ErrorMappingMiddleware {
 	return &ErrorMappingMiddleware{}
 }

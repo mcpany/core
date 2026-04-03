@@ -1,39 +1,33 @@
-# MCP Any
+# MCP Any - The Universal Adapter for AI Agents
 
 ## Elevator Pitch
-**What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+**What is this project and why does it exist?**
+MCP Any is the ultimate Universal Adapter for AI agents. It exists to solve the "adapter fatigue" problem in the AI ecosystem. Instead of writing custom boilerplate code to connect AI agents to every new tool or service, developers can use MCP Any to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. It acts as the backbone of interoperable autonomous systems, eliminating the need for custom coding.
 
 ## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
+MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions.
 
-**Key Design Patterns & Features:**
-- **Dynamic Tool Registration**: Add and modify capabilities purely via configuration files at runtime.
-- **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution and contain side effects safely.
+**Stack and Design Patterns:**
+- **Dynamic Tool Registration**: Add and modify capabilities purely via configuration files at runtime without rebuilding the server.
+- **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution and contain side effects securely.
 - **Upstream Authentication**: Out-of-the-box identity federation with various standard identity providers.
-- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain boundary domains between differing agent systems.
+- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain clear boundary domains between differing agent systems.
 
 ### High-Level Flow
 ```mermaid
 graph TD
-    classDef agent fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef core fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef target fill:#bfb,stroke:#333,stroke-width:2px;
-
-    A[Client Application / Agent Framework]:::agent -->|Model Context Protocol| B(MCP Any Adapter Hub):::core
-
+    A[Client Application / Agent Framework] -->|Model Context Protocol| B(MCP Any Adapter Hub)
     subgraph Config [Capability Configurations]
         B --> C{Dynamic Router}
     end
-
-    C -->|REST/OpenAPI Specs| D[REST/HTTP API]:::target
-    C -->|Protobuf/Reflection| E[gRPC Service]:::target
-    C -->|GraphQL Schema| F[GraphQL Endpoint]:::target
-    C -->|Standard I/O| G[Command Line Tools]:::target
+    C -->|REST/OpenAPI Specs| D[REST/HTTP API]
+    C -->|Protobuf/Reflection| E[gRPC Service]
+    C -->|GraphQL Schema| F[GraphQL Endpoint]
+    C -->|Standard I/O| G[Command Line Tools]
 ```
 
 ## Getting Started
-Follow these step-by-step instructions to get a "Hello World" instance running locally:
+Follow these step-by-step instructions from `git clone` to a `Hello World` execution.
 
 1. **Clone the repository:**
    ```bash
@@ -41,16 +35,17 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
    cd core
    ```
 
-2. **Ensure dependencies:**
-   Make sure you have `bazelisk` and `make` installed and available in your `PATH`.
+2. **Ensure dependencies are installed:**
+   Ensure `bazelisk` and `make` are installed and available in your `PATH`. For UI components, ensure `node` and `npm` are available.
 
 3. **Run a Hello World example:**
    ```bash
    bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
    ```
+   This will start the server and load the basic capabilities.
 
 ## Development
-We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
+Maintaining a clean and tested repository is critical to our "Gold Standard". Here is how to run the core development tasks:
 
 ```bash
 # Run the test suite to ensure no code logic breaks
@@ -64,8 +59,10 @@ bazelisk build //server/cmd/mcpany
 ```
 
 ## Configuration
-MCP Any uses environment variables and secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios, but here are the core variables:
+MCP Any uses environment variables and secrets to configure the runtime environment safely.
 
+**Required Secrets and Environment Variables:**
 - `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
-- `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
+- `MCPANY_CONFIG_PATH`: Absolute path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
 - `MCPANY_LOG_LEVEL`: Adjust the verbosity of application logging. Options: `debug`, `info`, `warn`, `error`. (Default: `info`)
+- `MCPANY_JWT_SECRET`: (Required for auth) The secret key used to sign and verify JSON Web Tokens.

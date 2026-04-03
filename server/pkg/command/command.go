@@ -88,14 +88,9 @@ func NewExecutor(containerEnv *configv1.ContainerEnvironment) Executor {
 //
 // Summary: Creates a new local command executor.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - Executor: A new local Executor instance.
 //
-// Side Effects:
-//   - None.
 func NewLocalExecutor() Executor {
 	return &localExecutor{}
 }
@@ -548,9 +543,6 @@ func (c *closeWriter) Write(p []byte) (n int, err error) {
 // Close closes the write side of the connection.
 //
 // Summary: Closes the write side of the connection.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
 //   - error: An error if closing fails.

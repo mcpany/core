@@ -28,7 +28,7 @@ def has_summary(doc_lines):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     for line in doc_lines:
@@ -46,7 +46,7 @@ def has_parameters(doc_lines):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     for line in doc_lines:
@@ -64,7 +64,7 @@ def has_returns(doc_lines):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     for line in doc_lines:
@@ -82,7 +82,7 @@ def check_file(filepath):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     with open(filepath, 'r') as f:
@@ -172,7 +172,7 @@ def scan_dir(root_dir):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     count = 0

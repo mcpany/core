@@ -55,9 +55,6 @@ type OpenAPIUpstream struct { //nolint:revive
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
@@ -69,8 +66,6 @@ type OpenAPIUpstream struct { //nolint:revive
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -88,9 +83,6 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewOpenAPIUpstream operation.
 //
 // Parameters:
@@ -102,8 +94,6 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewOpenAPIUpstream() upstream.Upstream {
 	cache := ttlcache.New[string, *openapi3.T](
 		ttlcache.WithTTL[string, *openapi3.T](5 * time.Minute),
@@ -149,8 +139,6 @@ func NewOpenAPIUpstream() upstream.Upstream {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *OpenAPIUpstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -343,9 +331,6 @@ type httpClientImpl struct {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Do operation.
 //
 // Parameters:
@@ -357,8 +342,6 @@ type httpClientImpl struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (c *httpClientImpl) Do(req *http.Request) (*http.Response, error) {
 	return c.client.Do(req)
 }

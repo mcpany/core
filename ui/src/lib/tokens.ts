@@ -22,9 +22,7 @@
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function estimateTokens(input: any): number {
     if (!input) return 0;
 
@@ -64,9 +62,7 @@ export function estimateTokens(input: any): number {
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function estimateMessageTokens(messages: any[]): number {
     return messages.reduce((acc, msg) => {
         let content = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content || "");
@@ -96,9 +92,7 @@ export function estimateMessageTokens(messages: any[]): number {
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function formatTokenCount(count: number): string {
     if (count >= 1000) {
         return (count / 1000).toFixed(1) + 'k';
@@ -125,9 +119,7 @@ export function formatTokenCount(count: number): string {
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function calculateCost(tokens: number): number {
     // Generic blended rate: $5 per 1M tokens ($0.005 per 1k)
     // This is roughly average for GPT-4o input/output blend or Claude 3.5 Sonnet.
@@ -154,9 +146,7 @@ export function calculateCost(tokens: number): number {
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function formatCost(cost: number): string {
     if (cost === 0) return "$0.00";
     if (cost < 0.01) return `$${cost.toFixed(4)}`;

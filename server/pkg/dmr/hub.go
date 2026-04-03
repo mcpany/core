@@ -16,14 +16,6 @@ import (
 //
 // Summary: Defines the structure holding metrics and state for dynamic mesh resilience.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type NodeState struct {
 	ID             string
 	LastHeartbeat  time.Time
@@ -126,8 +118,6 @@ type hubImpl struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewHub(timeout time.Duration) Hub {
 	return &hubImpl{
 		nodes:       make(map[string]*NodeState),
@@ -237,17 +227,12 @@ func (h *hubImpl) CheckHealth(ctx context.Context) []string {
 //
 // Summary: Provides access to the stream of failed node IDs that require migration.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - <-chan string: A channel emitting failed node IDs.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (h *hubImpl) MigrationChannel() <-chan string {
 	return h.migrationCh
 }

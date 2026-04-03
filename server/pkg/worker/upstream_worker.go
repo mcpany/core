@@ -47,8 +47,6 @@ type UpstreamWorker struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *UpstreamWorker {
 	return &UpstreamWorker{
 		bus:         bus,
@@ -74,8 +72,6 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *UpstreamWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "UpstreamWorker")
@@ -152,8 +148,6 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *UpstreamWorker) Stop() {
 	w.wg.Wait()
 }

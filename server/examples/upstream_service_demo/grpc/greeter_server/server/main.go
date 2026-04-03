@@ -32,7 +32,7 @@ type server struct {
 //   - *pb.HelloReply: The hello reply.
 //   - error: An error if it fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - error: If the context is canceled.
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())

@@ -49,8 +49,6 @@ type AuditHandler struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewAuditHandler(next slog.Handler, config *configv1.AuditConfig) *AuditHandler {
 	h := &AuditHandler{
 		next:   next,
@@ -121,8 +119,6 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
 }
@@ -153,8 +149,6 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 	// 1. Export the record
 	if err := h.Export(ctx, r); err != nil {
@@ -190,8 +184,6 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -225,8 +217,6 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (h *AuditHandler) WithGroup(name string) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithGroup(name),
@@ -261,8 +251,6 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (h *AuditHandler) Export(ctx context.Context, r slog.Record) error {
 	if h.store == nil {
 		return nil

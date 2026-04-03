@@ -47,9 +47,7 @@ export type SecretHandlingMode = 'redact' | 'template' | 'unsafe';
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function sanitizeServiceConfig(service: UpstreamServiceConfig, mode: SecretHandlingMode): UpstreamServiceConfig {
     // Deep clone to avoid mutating original
     const clone = structuredClone(service);

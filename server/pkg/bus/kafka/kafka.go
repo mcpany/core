@@ -59,8 +59,6 @@ type Bus[T any] struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 	if len(config.GetBrokers()) == 0 {
 		return nil, fmt.Errorf("kafka brokers are missing")
@@ -106,8 +104,6 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 	payload, err := json.Marshal(msg)
 	if err != nil {
@@ -148,8 +144,6 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")
@@ -247,8 +241,6 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func()) {
 	if handler == nil {
 		logging.GetLogger().Error("kafka bus: handler cannot be nil")

@@ -22,9 +22,6 @@ import { Input } from "@/components/ui/input";
  *
  * Summary: Renders a dashboard for reviewing and managing pending HITL approvals.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - JSX.Element: The rendered dashboard component.
  *
@@ -46,9 +43,6 @@ interface HITLApproval {
  * Renders a dashboard for reviewing and managing pending HITL approvals.
  *
  * Summary: Displays a dashboard component for HITL (Human-in-the-Loop) approvals.
- *
- * Parameters:
- *   - None.
  *
  * Returns:
  *   - JSX.Element: The rendered dashboard component.

@@ -614,8 +614,6 @@ func Get[T ClosableClient](m *Manager, name string) (Pool[T], bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *Manager) CloseAll() {
 	m.mu.Lock()
 	defer m.mu.Unlock()

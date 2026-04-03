@@ -98,7 +98,7 @@ func (s *Service) ListPrompts(
 //   - *mcp.GetPromptResult: The result of the prompt execution.
 //   - error: An error if the prompt is not found or execution fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - ErrPromptNotFound: If the prompt does not exist.
 func (s *Service) GetPrompt(
 	ctx context.Context,

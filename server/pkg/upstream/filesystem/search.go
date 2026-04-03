@@ -31,8 +31,6 @@ import (
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func searchFilesTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "search_files",

@@ -21,14 +21,9 @@ import (
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := auth.UserFromContext(ctx)
@@ -69,14 +64,9 @@ func (a *Application) handleGetUserPreferences(w http.ResponseWriter, r *http.Re
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleUpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, ok := auth.UserFromContext(ctx)

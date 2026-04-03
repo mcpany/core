@@ -75,8 +75,6 @@ func listDirectoryTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func getFileInfoTool(prov provider.Provider, fs afero.Fs) filesystemToolDef {
 	return filesystemToolDef{
 		Name:        "get_file_info",

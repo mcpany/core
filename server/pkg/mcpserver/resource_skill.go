@@ -49,9 +49,6 @@ var _ resource.Resource = &SkillResource{}
 // Returns:
 //   - *SkillResource: A new instance of SkillResource pointing to the skill's documentation.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewSkillResource operation.
 //
 // Parameters:
@@ -63,8 +60,6 @@ var _ resource.Resource = &SkillResource{}
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewSkillResource(s *skill.Skill) *SkillResource {
 	return &SkillResource{
 		skill: s,
@@ -82,9 +77,6 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 // Returns:
 //   - *SkillResource: A new instance of SkillResource pointing to the specified asset.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewSkillAssetResource operation.
 //
 // Parameters:
@@ -96,8 +88,6 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
 		skill:     s,
@@ -110,9 +100,6 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 // Returns:
 //   - string: The resource URI.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes URI operation.
 //
 // Parameters:
@@ -124,8 +111,6 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SkillResource) URI() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("skills://%s/SKILL.md", r.skill.Name)
@@ -138,9 +123,6 @@ func (r *SkillResource) URI() string {
 // Returns:
 //   - string: The resource name.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Name operation.
 //
 // Parameters:
@@ -152,8 +134,6 @@ func (r *SkillResource) URI() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -166,9 +146,6 @@ func (r *SkillResource) Name() string {
 // Returns:
 //   - string: The service identifier ("skills").
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Service operation.
 //
 // Parameters:
@@ -180,8 +157,6 @@ func (r *SkillResource) Name() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
@@ -190,9 +165,6 @@ func (r *SkillResource) Service() string {
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes Resource operation.
 //
@@ -205,8 +177,6 @@ func (r *SkillResource) Service() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SkillResource) Resource() *mcp.Resource {
 	mimeType := "text/markdown"
 	if r.assetPath != "" {
@@ -300,8 +270,6 @@ func (r *SkillResource) resolvePath() (string, error) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SkillResource) Read(_ context.Context) (*mcp.ReadResourceResult, error) {
 	realPath, err := r.resolvePath()
 	if err != nil {
@@ -395,9 +363,6 @@ func isTextMime(mimeType string) bool {
 // Returns:
 //   - error: Always returns nil.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
@@ -409,8 +374,6 @@ func isTextMime(mimeType string) bool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -442,8 +405,6 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func RegisterSkillResources(rm resource.ManagerInterface, sm *skill.Manager) error {
 	skills, err := sm.ListSkills()
 	if err != nil {

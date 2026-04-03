@@ -16,14 +16,6 @@ import (
 //
 // Summary: Defines the JSON structure of requests sent to the tool.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type Request struct {
 	Name string `json:"name"`
 }
@@ -33,14 +25,6 @@ type Request struct {
 //
 // Summary: Defines the JSON structure of responses returned by the tool.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type Response struct {
 	Message string `json:"message"`
 }

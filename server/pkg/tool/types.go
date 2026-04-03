@@ -454,8 +454,6 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *GRPCTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -478,8 +476,6 @@ func (t *GRPCTool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *GRPCTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -507,8 +503,6 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -835,8 +829,6 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -859,8 +851,6 @@ func (t *HTTPTool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *HTTPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -888,8 +878,6 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1643,8 +1631,6 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1667,8 +1653,6 @@ func (t *MCPTool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *MCPTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -1696,8 +1680,6 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -1984,8 +1966,6 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2008,8 +1988,6 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *OpenAPITool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2037,8 +2015,6 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -2448,8 +2424,6 @@ func NewLocalCommandTool(
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2472,8 +2446,6 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2501,8 +2473,6 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -2928,8 +2898,6 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2952,8 +2920,6 @@ func (t *CommandTool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *CommandTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -2981,8 +2947,6 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDefinition == nil {
 		return nil
@@ -3425,8 +3389,6 @@ type threadSafeBuffer struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()
@@ -3449,8 +3411,6 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (tsb *threadSafeBuffer) String() string {
 	tsb.mu.Lock()
 	defer tsb.mu.Unlock()

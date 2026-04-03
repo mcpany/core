@@ -34,9 +34,6 @@ type RecursiveContextManager struct {
 
 // NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *RecursiveContextManager: A pointer to the newly created manager instance.
 //
@@ -57,8 +54,6 @@ type RecursiveContextManager struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewRecursiveContextManager() *RecursiveContextManager {
 	return &RecursiveContextManager{
 		sessions: make(map[string]*SessionState),
@@ -92,8 +87,6 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl time.Duration) *SessionState {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -130,9 +123,6 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetSession operation.
 //
 // Parameters:
@@ -144,8 +134,6 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -161,9 +149,6 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 }
 
 // APIHandler constructs an HTTP handler function for managing Recursive Context Protocol endpoints.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
 //   - http.HandlerFunc: A handler function that processes POST (create session) and GET (retrieve session) requests.
@@ -186,8 +171,6 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
@@ -282,8 +265,6 @@ const (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (m *RecursiveContextManager) HandleContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		contextID := r.Header.Get("X-MCP-Parent-Context-ID")

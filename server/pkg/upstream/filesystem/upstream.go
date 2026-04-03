@@ -46,9 +46,6 @@ type Upstream struct {
 // Returns:
 //   - upstream.Upstream: A new instance of the filesystem upstream.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
@@ -60,8 +57,6 @@ type Upstream struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{
 		closers: make([]io.Closer, 0),
@@ -91,8 +86,6 @@ func NewUpstream() upstream.Upstream {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -138,8 +131,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

@@ -54,7 +54,7 @@ var NewRegistrationServerHook func(bus interface{}, authManager interface{}) (*R
 //   - *RegistrationServer: A new instance of the RegistrationServer.
 //   - error: An error if the bus is nil.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the bus is nil.
 func NewRegistrationServer(bus *bus.Provider, authManager *auth.Manager) (*RegistrationServer, error) {
 	if NewRegistrationServerHook != nil {
@@ -243,7 +243,7 @@ func (s *RegistrationServer) UnregisterService(_ context.Context, _ *v1.Unregist
 //   - *v1.InitiateOAuth2FlowResponse: The response containing the authorization URL and state.
 //   - error: An error if validation fails or flow initiation errors.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - codes.InvalidArgument: If required parameters are missing.
 //   - codes.Unauthenticated: If the user is not authenticated.
 //   - codes.Internal: If an internal error occurs.
@@ -318,7 +318,7 @@ func (s *RegistrationServer) GetServiceStatus(_ context.Context, _ *v1.GetServic
 //   - *v1.GetServiceResponse: The response containing the service configuration.
 //   - error: An error if the service is not found or other error.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - codes.InvalidArgument: If the service name is missing.
 //   - codes.NotFound: If the service is not found.
 //   - codes.DeadlineExceeded: If the request times out.
@@ -375,7 +375,7 @@ func (s *RegistrationServer) mustEmbedUnimplementedRegistrationServiceServer() {
 //   - *v1.ListServicesResponse: The response containing a list of registered services.
 //   - error: An error if the operation fails or times out.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - codes.DeadlineExceeded: If the request times out.
 //   - codes.Internal: If an internal error occurs.
 func (s *RegistrationServer) ListServices(ctx context.Context, _ *v1.ListServicesRequest) (*v1.ListServicesResponse, error) {

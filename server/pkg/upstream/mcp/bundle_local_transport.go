@@ -46,8 +46,6 @@ type BundleLocalTransport struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *BundleLocalTransport) Connect(ctx context.Context) (mcp.Connection, error) {
 	cmd := exec.CommandContext(ctx, t.Command, t.Args...) //nolint:gosec // Trusted configuration
 	cmd.Env = t.Env

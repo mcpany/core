@@ -20,7 +20,7 @@ def nice_name(name):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     # Split camelCase -> "camel case"
@@ -40,7 +40,7 @@ def parse_params(param_str):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     if not param_str:
@@ -80,7 +80,7 @@ def parse_returns(return_str):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     if not return_str:
@@ -120,7 +120,7 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     nice = nice_name(name)
@@ -205,7 +205,7 @@ def process_file(filepath):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     with open(filepath, 'r') as f:
@@ -289,7 +289,7 @@ def scan_dir(root_dir):
     Returns:
       - None.
 
-    Throws/Errors:
+    Errors/Throws:
       - None.
     """
     for root, dirs, files in os.walk(root_dir):

@@ -36,9 +36,6 @@ type LocalProvider struct {
 // Returns:
 //   - *LocalProvider: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewLocalProvider operation.
 //
 // Parameters:
@@ -50,8 +47,6 @@ type LocalProvider struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPaths, deniedPaths []string, symlinkMode configv1.FilesystemUpstreamService_SymlinkMode) *LocalProvider {
 	return &LocalProvider{
 		fs:           afero.NewOsFs(),
@@ -67,9 +62,6 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 // Returns:
 //   - afero.Fs: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetFs operation.
 //
 // Parameters:
@@ -81,8 +73,6 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -99,9 +89,6 @@ func (p *LocalProvider) GetFs() afero.Fs {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
@@ -113,8 +100,6 @@ func (p *LocalProvider) GetFs() afero.Fs {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *LocalProvider) ResolvePath(virtualPath string) (string, error) {
 	if len(p.rootPaths) == 0 {
 		return "", fmt.Errorf("no root paths defined")
@@ -372,9 +357,6 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Close operation.
 //
 // Parameters:
@@ -386,8 +368,6 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *LocalProvider) Close() error {
 	return nil
 }

@@ -30,8 +30,6 @@ type GRPCProvider struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *GRPCProvider) Name() string {
 	return "grpc"
 }
@@ -49,8 +47,6 @@ func (p *GRPCProvider) Name() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *GRPCProvider) Discover(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	if p.Endpoint == "" {
 		return nil, nil

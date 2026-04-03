@@ -20,17 +20,12 @@ import (
 //
 // Summary: Handles skills.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleSkills() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -71,17 +66,12 @@ func (a *Application) handleSkills() http.HandlerFunc {
 //
 // Summary: Handles skill detail.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleSkillDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Extract skill name from URL path
@@ -145,17 +135,12 @@ func (a *Application) handleSkillDetail() http.HandlerFunc {
 //
 // Summary: Uploads a skill asset.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleUploadSkillAsset() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

@@ -57,8 +57,6 @@ type ProjectConfigGuardMiddleware struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewProjectConfigGuardMiddleware(config ProjectConfigGuardConfig) *ProjectConfigGuardMiddleware {
 	return &ProjectConfigGuardMiddleware{
 		config: config,

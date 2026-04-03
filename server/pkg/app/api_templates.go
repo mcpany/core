@@ -20,17 +20,12 @@ import (
 //
 // Summary: Handles templates.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleTemplates() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -98,17 +93,12 @@ func (a *Application) handleTemplates() http.HandlerFunc {
 //
 // Summary: Handles template detail.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleTemplateDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

@@ -50,8 +50,6 @@ type CFIAMiddleware struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewCFIAMiddleware(config CFIAConfig) *CFIAMiddleware {
 	return &CFIAMiddleware{
 		config: config,

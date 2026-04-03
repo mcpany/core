@@ -32,8 +32,6 @@ import (
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
 	// Use JSON array for unambiguous serialization
 	fields := []any{timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash}
@@ -64,8 +62,6 @@ func computeHash(timestamp, toolName, userID, profileID, args, result, errorMsg 
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func computeHashV0(timestamp, toolName, userID, profileID, args, result, errorMsg string, durationMs int64, prevHash string) string {
 	data := fmt.Sprintf("%s|%s|%s|%s|%s|%s|%s|%d|%s",
 		timestamp, toolName, userID, profileID, args, result, errorMsg, durationMs, prevHash)

@@ -19,9 +19,6 @@ import { BlackboardDashboard } from "@/components/blackboard/blackboard-dashboar
  *
  * Summary: Renders the root page view for the Blackboard.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - JSX.Element: The rendered page layout containing the Blackboard dashboard.
  *

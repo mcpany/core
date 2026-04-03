@@ -170,8 +170,6 @@ func (s *WebhookAuditStore) sendBatch(batch []Entry) {
 //   - []Entry: Always nil.
 //   - error: Always returns an error indicating not implemented.
 //
-// Side Effects:
-//   - None.
 func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for webhook audit store")
 }
@@ -179,9 +177,6 @@ func (s *WebhookAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Close stops the workers and drains the queue.
 //
 // Summary: Gracefully shuts down the webhook store.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
 //   - error: Always nil.

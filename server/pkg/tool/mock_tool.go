@@ -51,17 +51,12 @@ func (m *MockTool) MCPTool() *mcp.Tool {
 //
 // Summary: Checks if the mock tool supports streaming.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - bool: Always returns false.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (m *MockTool) IsStreaming() bool {
 	return false
 }

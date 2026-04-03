@@ -31,9 +31,6 @@ type RootsTool struct {
 // Returns:
 //   - *RootsTool: A new instance of RootsTool.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewRootsTool operation.
 //
 // Parameters:
@@ -45,8 +42,6 @@ type RootsTool struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -73,9 +68,6 @@ func NewRootsTool() *RootsTool {
 // Returns:
 //   - *v1.Tool: The protobuf tool definition.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Tool operation.
 //
 // Parameters:
@@ -87,8 +79,6 @@ func NewRootsTool() *RootsTool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -97,9 +87,6 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes MCPTool operation.
 //
@@ -112,8 +99,6 @@ func (t *RootsTool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -145,15 +130,9 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
-
 // IsStreaming indicates whether this tool supports streaming execution.
 //
 // Summary: Checks if the RootsTool supports streaming.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
 //   - bool: Always false for this tool.
@@ -161,8 +140,6 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (t *RootsTool) IsStreaming() bool {
 	return false
 }
@@ -182,8 +159,6 @@ func (t *RootsTool) IsStreaming() bool {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (t *RootsTool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	return nil, nil
 }
@@ -225,9 +200,6 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 // Returns:
 //   - *configv1.CacheConfig: Always nil (caching disabled).
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetCacheConfig operation.
 //
 // Parameters:
@@ -239,8 +211,6 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

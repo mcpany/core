@@ -18,8 +18,6 @@ import "strings"
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func normalizeHTTPMethod(input string) string {
 	upper := strings.ToUpper(strings.TrimSpace(input))
 	switch upper {

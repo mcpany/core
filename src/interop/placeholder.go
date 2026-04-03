@@ -13,15 +13,6 @@ import (
 // Parameters:
 //   - name (string): The name of the framework.
 //   - capabilities (map[string]bool): The capabilities the framework is supposed to support.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 type PlaceholderAdapter struct {
 	name         string
 	capabilities map[string]bool
@@ -37,9 +28,6 @@ type PlaceholderAdapter struct {
 //
 // Returns:
 //   - *PlaceholderAdapter: A pointer to the newly instantiated PlaceholderAdapter.
-//
-// Throws/Errors:
-//   - None.
 //
 // Side Effects:
 //   - Allocates memory for the PlaceholderAdapter.
@@ -57,17 +45,8 @@ func NewPlaceholderAdapter(name string, capabilities map[string]bool) *Placehold
 //
 // Summary: Returns the parameterized name of the placeholder framework.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - string: The name of the framework.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *PlaceholderAdapter) Name() string {
 	return a.name
 }
@@ -85,11 +64,8 @@ func (a *PlaceholderAdapter) Name() string {
 //   - *TaskResult: nil
 //   - error: An error indicating the feature is not implemented.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Always returns a "Not Implemented" error containing the framework name.
-//
-// Side Effects:
-//   - None.
 func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	return nil, fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
@@ -103,12 +79,6 @@ func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskR
 //
 // Returns:
 //   - bool: True if the capability is in the map, false otherwise.
-//
-// Throws/Errors:
-//   - None.
-//
-// Side Effects:
-//   - None.
 func (a *PlaceholderAdapter) SupportsCapability(capability string) bool {
 	return a.capabilities[capability]
 }
@@ -125,11 +95,8 @@ func (a *PlaceholderAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error indicating the feature is not implemented.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Always returns a "Not Implemented" error containing the framework name.
-//
-// Side Effects:
-//   - None.
 func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	return fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
 }
@@ -147,11 +114,8 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 //   - <-chan *TaskResult: Always returns nil.
 //   - error: Always returns an error indicating the method is an unimplemented placeholder.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns "placeholder method: not implemented" unconditionally.
-//
-// Side Effects:
-//   - None.
 func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
 	return nil, fmt.Errorf("placeholder method: not implemented")
 }
@@ -162,12 +126,6 @@ func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan
 //
 // Parameters:
 //   - hub (*AdapterHub): The central adapter hub where placeholders will be registered.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 //
 // Side Effects:
 //   - Modifies the provided AdapterHub by adding numerous PlaceholderAdapter instances.

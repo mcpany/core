@@ -21,14 +21,9 @@ import (
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on invalid request or unauthorized access.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -90,14 +85,9 @@ func (a *Application) handleInitiateOAuth(w http.ResponseWriter, r *http.Request
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on invalid request or unauthorized access.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleOAuthCallback(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

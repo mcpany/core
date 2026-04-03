@@ -23,14 +23,9 @@ import (
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) listSecretsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -60,14 +55,9 @@ func (a *Application) listSecretsHandler(w http.ResponseWriter, r *http.Request)
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) getSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -104,14 +94,9 @@ func (a *Application) getSecretHandler(w http.ResponseWriter, r *http.Request) {
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -163,14 +148,9 @@ func (a *Application) createSecretHandler(w http.ResponseWriter, r *http.Request
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		writeError(w, fmt.Errorf("method not allowed"))
@@ -199,9 +179,6 @@ func (a *Application) deleteSecretHandler(w http.ResponseWriter, r *http.Request
 // Parameters:
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
 //
 // Errors:
 //   - Writes HTTP errors on failure.
@@ -248,9 +225,6 @@ func (a *Application) revealSecretHandler(w http.ResponseWriter, r *http.Request
 //
 // Parameters:
 //   - s (*configv1.Secret): The secret to sanitize.
-//
-// Returns:
-//   - None.
 //
 // Errors:
 //   - None.

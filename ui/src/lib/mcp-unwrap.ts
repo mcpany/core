@@ -22,9 +22,7 @@
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function unwrapMcpResult(result: any): any {
     let content = result;
 
@@ -98,9 +96,7 @@ export function unwrapMcpResult(result: any): any {
  * Errors:
  *   - None.
  *
- * Side Effects:
- *   - None.
- */
+  */
 export function deepParseJson(obj: any): any {
     if (typeof obj === 'string') {
         try {

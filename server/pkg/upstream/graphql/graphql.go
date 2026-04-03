@@ -98,9 +98,6 @@ type Upstream struct{}
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewGraphQLUpstream operation.
 //
 // Parameters:
@@ -112,8 +109,6 @@ type Upstream struct{}
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewGraphQLUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -129,9 +124,6 @@ func NewGraphQLUpstream() upstream.Upstream {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
@@ -143,8 +135,6 @@ func NewGraphQLUpstream() upstream.Upstream {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (g *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
@@ -249,9 +239,6 @@ type Callable struct {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Call operation.
 //
 // Parameters:
@@ -263,8 +250,6 @@ type Callable struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
@@ -320,8 +305,6 @@ func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, e
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (g *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

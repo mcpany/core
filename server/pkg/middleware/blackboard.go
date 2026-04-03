@@ -129,9 +129,6 @@ func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) e
 //
 // Summary: Closes the underlying database connection.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - error: An error if closing the connection fails.
 //

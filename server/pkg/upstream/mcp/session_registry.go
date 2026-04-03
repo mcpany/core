@@ -24,9 +24,6 @@ type SessionRegistry struct {
 // Returns:
 //   - *SessionRegistry: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewSessionRegistry operation.
 //
 // Parameters:
@@ -38,8 +35,6 @@ type SessionRegistry struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewSessionRegistry() *SessionRegistry {
 	return &SessionRegistry{
 		sessions: make(map[mcp.Session]tool.Session),
@@ -52,12 +47,6 @@ func NewSessionRegistry() *SessionRegistry {
 //   - upstreamSession (mcp.Session): The parameter.
 //   - downstreamSession (tool.Session): The parameter.
 //
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Register operation.
 //
 // Parameters:
@@ -69,8 +58,6 @@ func NewSessionRegistry() *SessionRegistry {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSession tool.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -81,12 +68,6 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 //
 // Parameters:
 //   - upstreamSession (mcp.Session): The parameter.
-//
-// Returns:
-//   - None.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes Unregister operation.
 //
@@ -99,8 +80,6 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -116,9 +95,6 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 //   - tool.Session: The result.
 //   - bool: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves Get operation.
 //
 // Parameters:
@@ -130,8 +106,6 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *SessionRegistry) Get(upstreamSession mcp.Session) (tool.Session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

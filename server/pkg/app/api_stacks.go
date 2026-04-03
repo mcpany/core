@@ -33,8 +33,6 @@ import (
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleStackConfig(store storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Only supporting GET and POST for now (POST updates/saves)

@@ -17,14 +17,6 @@ import (
 //
 // Summary: Defines the JSON structure of incoming webhook payloads.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -35,14 +27,6 @@ type WebhookRequest struct {
 //
 // Summary: Defines the JSON structure of outgoing webhook responses.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
@@ -141,12 +125,4 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 //
 // Summary: Constant representing a successful state.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 const StatusOK = 200

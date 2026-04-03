@@ -106,8 +106,6 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -174,8 +172,6 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

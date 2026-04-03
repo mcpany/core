@@ -39,8 +39,6 @@ type ScopesMiddleware struct {
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func NewScopesMiddleware(config ScopesConfig) *ScopesMiddleware {
 	return &ScopesMiddleware{
 		config: config,

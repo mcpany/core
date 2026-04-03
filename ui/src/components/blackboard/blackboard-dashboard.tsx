@@ -20,9 +20,6 @@ import { Button } from "@/components/ui/button";
  *
  * Summary: Displays a list of shared agent blackboard variables.
  *
- * Parameters:
- *   - None.
- *
  * Returns:
  *   - JSX.Element: The rendered dashboard component.
  *

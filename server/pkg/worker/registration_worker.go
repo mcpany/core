@@ -52,8 +52,6 @@ type ServiceRegistrationWorker struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregistry.ServiceRegistryInterface) *ServiceRegistrationWorker {
 	return &ServiceRegistrationWorker{
 		bus:             bus,
@@ -78,8 +76,6 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -102,8 +98,6 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	log := logging.GetLogger().With("component", "ServiceRegistrationWorker")
@@ -350,8 +344,6 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *ServiceRegistrationWorker) Stop() {
 	w.wg.Wait()
 }

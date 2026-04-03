@@ -89,8 +89,6 @@ type Server struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) Server() *mcp.Server {
 	if AddReceivingMiddlewareHook != nil {
 		// This is a test hook to allow inspection of the middleware chain.
@@ -137,8 +135,6 @@ func (s *Server) Server() *mcp.Server {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewServer(
 	_ context.Context,
 	toolManager tool.ManagerInterface,
@@ -444,9 +440,6 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 //   - *mcp.ListPromptsResult: A list of available prompts.
 //   - error: An error if the retrieval fails.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes ListPrompts operation.
 //
 // Parameters:
@@ -458,8 +451,6 @@ func (s *Server) toolListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodH
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,
@@ -502,8 +493,6 @@ func (s *Server) ListPrompts(
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	// Attempt to retrieve session from context, which is populated during request handling
 	if session, ok := tool.GetSession(ctx); ok {
@@ -528,9 +517,6 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 // Errors:
 //   - prompt.ErrPromptNotFound: If the requested prompt does not exist.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetPrompt operation.
 //
 // Parameters:
@@ -542,8 +528,6 @@ func (s *Server) CreateMessage(ctx context.Context, params *mcp.CreateMessagePar
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) GetPrompt(
 	ctx context.Context,
 	req *mcp.GetPromptRequest,
@@ -584,9 +568,6 @@ func (s *Server) GetPrompt(
 //   - *mcp.ListResourcesResult: A list of available resources.
 //   - error: An error if the retrieval fails.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes ListResources operation.
 //
 // Parameters:
@@ -598,8 +579,6 @@ func (s *Server) GetPrompt(
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ListResources(
 	_ context.Context,
 	_ *mcp.ListResourcesRequest,
@@ -645,8 +624,6 @@ func (s *Server) ListResources(
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ReadResource(
 	ctx context.Context,
 	req *mcp.ReadResourceRequest,
@@ -676,9 +653,6 @@ func (s *Server) ReadResource(
 // Returns:
 //   - *auth.Manager: The authentication manager instance.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes AuthManager operation.
 //
 // Parameters:
@@ -690,8 +664,6 @@ func (s *Server) ReadResource(
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) AuthManager() *auth.Manager {
 	return s.authManager
 }
@@ -704,9 +676,6 @@ func (s *Server) AuthManager() *auth.Manager {
 // Returns:
 //   - tool.ManagerInterface: The tool manager interface.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes ToolManager operation.
 //
 // Parameters:
@@ -718,8 +687,6 @@ func (s *Server) AuthManager() *auth.Manager {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ToolManager() tool.ManagerInterface {
 	return s.toolManager
 }
@@ -732,9 +699,6 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 // Returns:
 //   - prompt.ManagerInterface: The prompt manager interface.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes PromptManager operation.
 //
 // Parameters:
@@ -746,8 +710,6 @@ func (s *Server) ToolManager() tool.ManagerInterface {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) PromptManager() prompt.ManagerInterface {
 	return s.promptManager
 }
@@ -760,9 +722,6 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 // Returns:
 //   - resource.ManagerInterface: The resource manager interface.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes ResourceManager operation.
 //
 // Parameters:
@@ -774,8 +733,6 @@ func (s *Server) PromptManager() prompt.ManagerInterface {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ResourceManager() resource.ManagerInterface {
 	return s.resourceManager
 }
@@ -786,9 +743,6 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 //
 // Returns:
 //   - *serviceregistry.ServiceRegistry: The service registry instance.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes ServiceRegistry operation.
 //
@@ -801,8 +755,6 @@ func (s *Server) ResourceManager() resource.ManagerInterface {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 	return s.serviceRegistry
 }
@@ -827,8 +779,6 @@ func (s *Server) ServiceRegistry() *serviceregistry.ServiceRegistry {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	s.toolManager.AddServiceInfo(serviceID, info)
 }
@@ -842,9 +792,6 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 //   - tool.Tool: The tool instance if found.
 //   - bool: A boolean indicating whether the tool was found.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetTool operation.
 //
 // Parameters:
@@ -856,8 +803,6 @@ func (s *Server) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 	return s.toolManager.GetTool(toolName)
 }
@@ -882,8 +827,6 @@ func (s *Server) GetTool(toolName string) (tool.Tool, bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ListTools() []tool.Tool {
 	logging.GetLogger().Info("Listing tools...")
 	metrics.IncrCounter(metricToolsListTotal, 1)
@@ -919,8 +862,6 @@ func (s *Server) ListTools() []tool.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	logger := logging.GetLogger()
 	// ⚡ Bolt Optimization: Check if logging is enabled to avoid unnecessary allocations.
@@ -1077,8 +1018,6 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 	s.toolManager.SetMCPServer(mcpServer)
 }
@@ -1105,8 +1044,6 @@ func (s *Server) SetMCPServer(mcpServer tool.MCPServerProvider) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) AddTool(t tool.Tool) error {
 	return s.toolManager.AddTool(t)
 }
@@ -1120,9 +1057,6 @@ func (s *Server) AddTool(t tool.Tool) error {
 //   - *tool.ServiceInfo: A pointer to the ServiceInfo if found.
 //   - bool: A boolean indicating whether the service was found.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetServiceInfo operation.
 //
 // Parameters:
@@ -1134,8 +1068,6 @@ func (s *Server) AddTool(t tool.Tool) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	return s.toolManager.GetServiceInfo(serviceID)
 }
@@ -1163,8 +1095,6 @@ func (s *Server) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) ClearToolsForService(serviceKey string) {
 	s.toolManager.ClearToolsForService(serviceKey)
 }
@@ -1188,8 +1118,6 @@ func (s *Server) ClearToolsForService(serviceKey string) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) SetReloadFunc(f func(context.Context) error) {
 	s.reloadFunc = f
 }
@@ -1216,8 +1144,6 @@ func (s *Server) SetReloadFunc(f func(context.Context) error) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s *Server) Reload(ctx context.Context) error {
 	if s.reloadFunc != nil {
 		return s.reloadFunc(ctx)
@@ -1356,8 +1282,6 @@ type LazyRedact []byte
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (l LazyRedact) LogValue() slog.Value {
 	return slog.StringValue(util.BytesToString(util.RedactJSON(l)))
 }
@@ -1396,8 +1320,6 @@ type LazyLogResult struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r LazyLogResult) LogValue() slog.Value {
 	if r.Value == nil {
 		return slog.StringValue("<nil>")

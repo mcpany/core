@@ -11,14 +11,6 @@ import (
 //
 // Summary: Defines the possible states an active or historical lease can be in.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type LeaseStatus string
 
 const (
@@ -34,14 +26,6 @@ const (
 //
 // Summary: Defines the core lease structure for tracking resource limits and intent boundaries.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type Lease struct {
 	IntentID           string
 	SubagentSessionIDs []string
@@ -54,14 +38,6 @@ type Lease struct {
 //
 // Summary: Reclaims resources tied to inactive subagents to prevent zombie processes.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type SubagentReaper struct {
 	registry map[string]*Lease
 	mu       sync.RWMutex
@@ -74,14 +50,9 @@ type SubagentReaper struct {
 //
 // Summary: Creates a new SubagentReaper ready to process active leases.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - *SubagentReaper: The initialized reaper instance.
 //
-// Throws/Errors:
-//   - None.
 func NewSubagentReaper() *SubagentReaper {
 	return &SubagentReaper{
 		registry: make(map[string]*Lease),
@@ -100,8 +71,6 @@ func NewSubagentReaper() *SubagentReaper {
 // Returns:
 //   - *Lease: The lease.
 //
-// Throws/Errors:
-//   - None.
 func (r *SubagentReaper) RegisterBranch(intentID string, ttl time.Duration) *Lease {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -127,7 +96,7 @@ func (r *SubagentReaper) RegisterBranch(intentID string, ttl time.Duration) *Lea
 // Returns:
 //   - error: An error if it fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - error: If the lease is not found.
 func (r *SubagentReaper) RegisterSubagent(intentID string, sessionID string) error {
 	r.mu.RLock()
@@ -161,7 +130,7 @@ func (r *SubagentReaper) RegisterSubagent(intentID string, sessionID string) err
 // Returns:
 //   - error: An error if it fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - error: If the intent is not found.
 func (r *SubagentReaper) RecordHeartbeat(intentID string, signature string, extendBy time.Duration) error {
 	r.mu.RLock()
@@ -196,7 +165,7 @@ func (r *SubagentReaper) RecordHeartbeat(intentID string, signature string, exte
 // Returns:
 //   - error: An error if it fails.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - error: If the intent is not found.
 func (r *SubagentReaper) PruneIntent(intentID string) error {
 	r.mu.RLock()
@@ -222,11 +191,6 @@ func (r *SubagentReaper) PruneIntent(intentID string) error {
 // Parameters:
 //   - ctx (context.Context): Context to control the goroutine lifecycle.
 //
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 func (r *SubagentReaper) Start(ctx context.Context, interval time.Duration) {
 	r.ticker = time.NewTicker(interval)
 	go func() {
@@ -250,14 +214,6 @@ func (r *SubagentReaper) Start(ctx context.Context, interval time.Duration) {
 //
 // Summary: Halts the automatic garbage collection of subagent leases.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 func (r *SubagentReaper) Stop() {
 	close(r.quit)
 }
@@ -289,7 +245,7 @@ func (r *SubagentReaper) sweep() {
 //   - LeaseStatus: The active status.
 //   - error: An error if the lease is unknown.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - error: If the lease is not found.
 func (r *SubagentReaper) GetLeaseStatus(intentID string) (LeaseStatus, error) {
 	r.mu.RLock()

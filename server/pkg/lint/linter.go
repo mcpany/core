@@ -51,8 +51,6 @@ const (
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -100,8 +98,6 @@ type Result struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -142,8 +138,6 @@ type Linter struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -171,8 +165,6 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

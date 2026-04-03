@@ -5,15 +5,7 @@
 //
 // Summary: Resilience mechanisms.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 package resilience

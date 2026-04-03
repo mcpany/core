@@ -24,14 +24,6 @@ var upgrader = websocket.Upgrader{
 //
 // Summary: Defines the structure for signaling messages in WebRTC setup.
 //
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
-//
-// Throws/Errors:
-//   - None.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

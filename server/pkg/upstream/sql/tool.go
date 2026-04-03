@@ -48,9 +48,6 @@ type Tool struct {
 // Returns:
 //   - *Tool: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewTool operation.
 //
 // Parameters:
@@ -62,8 +59,6 @@ type Tool struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, policies []*configv1.CallPolicy, callID string) *Tool {
 	compiled, err := tool.CompileCallPolicies(policies)
 	to := &Tool{
@@ -84,9 +79,6 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Returns:
 //   - *v1.Tool: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Tool operation.
 //
 // Parameters:
@@ -98,8 +90,6 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -108,9 +98,6 @@ func (t *Tool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The result.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes MCPTool operation.
 //
@@ -123,8 +110,6 @@ func (t *Tool) Tool() *v1.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *Tool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -141,9 +126,6 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // Returns:
 //   - *configv1.CacheConfig: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves GetCacheConfig operation.
 //
 // Parameters:
@@ -155,8 +137,6 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -177,9 +157,6 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Execute operation.
 //
 // Parameters:
@@ -190,9 +167,6 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Errors:
 //   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 //
 // IsStreaming returns true if the tool supports streaming.
 //

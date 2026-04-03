@@ -72,8 +72,6 @@ type GitHub struct {
 // Errors:
 //   - Returns an error if the URL cannot be parsed or does not match the GitHub URL format.
 //
-// Side Effects:
-//   - None.
 func NewGitHub(_ context.Context, rawURL string) (*GitHub, error) {
 	parsedURL, err := url.Parse(rawURL)
 	if err != nil {
@@ -142,8 +140,6 @@ func isGitHubURL(rawURL string) bool {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (g *GitHub) ToRawContentURL() string {
 	return fmt.Sprintf("%s/%s/%s/%s/%s", g.rawContentURL, g.Owner, g.Repo, g.Ref, g.Path)
 }

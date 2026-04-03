@@ -35,9 +35,6 @@ type Upstream struct {
 // Returns:
 //   - *Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
@@ -49,8 +46,6 @@ type Upstream struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewUpstream() *Upstream {
 	return &Upstream{}
 }
@@ -66,9 +61,6 @@ func NewUpstream() *Upstream {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
@@ -80,8 +72,6 @@ func NewUpstream() *Upstream {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	defer u.mu.Unlock()
@@ -128,8 +118,6 @@ func ptr(s string) *string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,

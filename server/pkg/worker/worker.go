@@ -88,8 +88,6 @@ func (w *Worker) Start(ctx context.Context) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (w *Worker) Stop() {
 	w.wg.Wait() // Wait for the subscription to be set up
 	w.mu.Lock()

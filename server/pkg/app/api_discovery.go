@@ -19,14 +19,9 @@ import (
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //
-// Returns:
-//   - None.
-//
 // Errors:
 //   - Writes HTTP errors on failure.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleDiscoveryStatus(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -52,9 +47,6 @@ func (a *Application) handleDiscoveryStatus(w http.ResponseWriter, r *http.Reque
 // Parameters:
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
-//
-// Returns:
-//   - None.
 //
 // Errors:
 //   - Writes HTTP errors on failure.

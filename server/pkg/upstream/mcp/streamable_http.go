@@ -112,9 +112,6 @@ type ClientSession interface {
 // Returns:
 //   - client.MCPClient): The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Updates SetNewClientImplForTesting operation.
 //
 // Parameters:
@@ -126,8 +123,6 @@ type ClientSession interface {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1.McpStdioConnection, httpAddress string, httpClient *http.Client) client.MCPClient) {
 	newClientImplForTesting = f
 }
@@ -141,9 +136,6 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 // Returns:
 //   - *mcp.Client): The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Updates SetNewClientForTesting operation.
 //
 // Parameters:
@@ -155,8 +147,6 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 	newClientForTesting = f
 }
@@ -174,9 +164,6 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 //   - ClientSession: The result.
 //   - error): The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Updates SetConnectForTesting operation.
 //
 // Parameters:
@@ -188,8 +175,6 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func SetConnectForTesting(f func(client *mcp.Client, ctx context.Context, transport mcp.Transport, roots []mcp.Root) (ClientSession, error)) {
 	connectForTesting = f
 }
@@ -222,9 +207,6 @@ type Upstream struct {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes CheckHealth operation.
 //
 // Parameters:
@@ -236,8 +218,6 @@ type Upstream struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) CheckHealth(ctx context.Context) error {
 	u.mu.RLock()
 	checker := u.checker
@@ -265,9 +245,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
@@ -279,8 +256,6 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.RLock()
 	serviceID := u.serviceID
@@ -314,9 +289,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
@@ -328,8 +300,6 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func NewUpstream(globalSettings *configv1.GlobalSettings) upstream.Upstream {
 	return &Upstream{
 		sessionRegistry: NewSessionRegistry(),
@@ -351,9 +321,6 @@ type mcpPrompt struct {
 // Returns:
 //   - *mcp.Prompt: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Prompt operation.
 //
 // Parameters:
@@ -365,8 +332,6 @@ type mcpPrompt struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Prompt() *mcp.Prompt {
 	return p.mcpPrompt
 }
@@ -375,9 +340,6 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 //
 // Returns:
 //   - string: The result.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes Service operation.
 //
@@ -390,8 +352,6 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Service() string {
 	return p.service
 }
@@ -421,8 +381,6 @@ func (p *mcpPrompt) Service() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 	// Construct a partial definition from p.mcpPrompt
 	properties := make(map[string]*structpb.Value)
@@ -473,9 +431,6 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves Get operation.
 //
 // Parameters:
@@ -487,8 +442,6 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (p *mcpPrompt) Get(ctx context.Context, args json.RawMessage) (*mcp.GetPromptResult, error) {
 	var arguments map[string]string
 	if args != nil {
@@ -532,9 +485,6 @@ type mcpResource struct {
 // Returns:
 //   - *mcp.Resource: The result.
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Resource operation.
 //
 // Parameters:
@@ -546,8 +496,6 @@ type mcpResource struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *mcpResource) Resource() *mcp.Resource {
 	return r.mcpResource
 }
@@ -556,9 +504,6 @@ func (r *mcpResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The result.
-//
-// Side Effects:
-//   - None.
 //
 // Summary: Executes Service operation.
 //
@@ -571,8 +516,6 @@ func (r *mcpResource) Resource() *mcp.Resource {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *mcpResource) Service() string {
 	return r.service
 }
@@ -590,9 +533,6 @@ func (r *mcpResource) Service() string {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Retrieves Read operation.
 //
 // Parameters:
@@ -604,8 +544,6 @@ func (r *mcpResource) Service() string {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	var result *mcp.ReadResourceResult
 	err := r.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -630,9 +568,6 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
@@ -644,8 +579,6 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (r *mcpResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to resources on mcp upstreams is not yet implemented")
 }
@@ -683,8 +616,6 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (u *Upstream) Register(
 	ctx context.Context,
 	serviceConfig *configv1.UpstreamServiceConfig,
@@ -858,9 +789,6 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes CallTool operation.
 //
 // Parameters:
@@ -872,8 +800,6 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (c *mcpConnection) CallTool(ctx context.Context, params *mcp.CallToolParams) (*mcp.CallToolResult, error) {
 	var result *mcp.CallToolResult
 	err := c.withMCPClientSession(ctx, func(cs ClientSession) error {
@@ -1534,9 +1460,6 @@ type authenticatedRoundTripper struct {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes RoundTrip operation.
 //
 // Parameters:
@@ -1548,8 +1471,6 @@ type authenticatedRoundTripper struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (rt *authenticatedRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if rt.authenticator != nil {
 		if err := rt.authenticator.Authenticate(req); err != nil {
@@ -1585,9 +1506,6 @@ type StreamableHTTP struct {
 // Errors:
 //   - Returns an error if ...
 //
-// Side Effects:
-//   - None.
-//
 // Summary: Executes RoundTrip operation.
 //
 // Parameters:
@@ -1599,8 +1517,6 @@ type StreamableHTTP struct {
 // Errors:
 //   - TODO: Document errors.
 //
-// Side Effects:
-//   - None.
 func (t *StreamableHTTP) RoundTrip(req *http.Request) (*http.Response, error) {
 	if t.Client == nil {
 		t.Client = http.DefaultClient

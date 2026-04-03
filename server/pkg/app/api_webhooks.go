@@ -15,17 +15,12 @@ import (
 //
 // Summary: Handles webhooks.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleWebhooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -56,17 +51,12 @@ func (a *Application) handleWebhooks() http.HandlerFunc {
 //
 // Summary: Handles webhook detail.
 //
-// Parameters:
-//   - None.
-//
 // Returns:
 //   - http.HandlerFunc: The handler function.
 //
 // Errors:
 //   - None.
 //
-// Side Effects:
-//   - None.
 func (a *Application) handleWebhookDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/webhooks/")
@@ -108,9 +98,6 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 //   - w (http.ResponseWriter): The response writer.
 //   - r (*http.Request): The HTTP request.
 //   - id (string): The webhook ID.
-//
-// Returns:
-//   - None.
 //
 // Errors:
 //   - Writes HTTP errors on failure.
