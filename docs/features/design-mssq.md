@@ -51,3 +51,10 @@ The 2026 Armis Cyberwarfare Report highlights a critical collapse in Mean Time t
         * Implementing "Reasoning-Aware Timing Jitter" for all quarantine revocation signals.
         * Decoupling the "Kill Switch" bitset update from the network notification loop to prevent timing correlation.
     * **Security Impact:** Neutralizes subagent ability to probe quarantine thresholds via ARE header timing analysis.
+
+    ### Update: 2026-04-03 - Neutralizing Hivenet Swarm Attacks
+    **Context:** Today's market sync revealed the emergence of "Hivenet" coordinated attacks that bypass single-point triggers.
+    **Architecture Adjustment:**
+    * Integrating **Machine-Speed Swarm Quarantine (MSSQ)** as an autonomous interdiction layer.
+    * Implementing mission-wide revocation logic that can isolate an entire teammate sub-mesh in sub-milliseconds.
+    **Security Impact:** Prevents lateral movement of coordinated malicious agents before human analysts can intervene.

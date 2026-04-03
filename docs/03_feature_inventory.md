@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-03] (Market Ingestion) Updates
+
+### Proposed Additions
+- **Machine-Speed Swarm Quarantine (MSSQ)**: (P0) Advanced security service performing autonomous, sub-millisecond revocation of agent capabilities to neutralize coordinated "Hivenet" swarm attacks.
+- **CRDT-Native Mailbox Shards**: (P0) High-performance coordination architecture for horizontal Agent Teams to eliminate "Mailbox Lock" bottlenecks.
+- **Mesh-Resident Identity Hub**: (P0) Authoritative mesh service issuing hardware-attested tokens for secure cross-framework (Claude/OpenClaw/Gemini) identity verification.
+- **Context-File Integrity Attestation (CFIA)**: (P0) Security middleware requiring hardware-attested hash signatures for all project-local natural language context files (e.g., `CLAUDE.md`, `GEMINI.md`) to prevent "Deceptive Context" smuggling.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to **CRDT-Native Mailbox Shards**) Now designated as the primary mechanism for lock-free horizontal coordination.
+- **A2A Messaging Hub**: (Re-affirmed P0) Elevated with mandatory support for **Mesh-Resident Identity** tokens.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

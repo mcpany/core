@@ -86,3 +86,10 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-04-03 - Resolving Mailbox Lock Bottlenecks
+**Context:** Today's market sync indicate that horizontal Agent Teams (e.g., Claude Code) are hitting a performance ceiling due to synchronous mailbox locks.
+**Architecture Adjustment:**
+* Introducing **CRDT-Native Mailbox Sharding** to replace legacy optimistic locks.
+* Utilizing BSH (Binary State Handoff) for high-speed streaming of delta-CRDT updates across the mesh.
+**Security Impact:** Eliminates the "Coordinated DoS" vector where lagging teammates can stall the mesh coordination bus.

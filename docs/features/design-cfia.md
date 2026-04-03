@@ -66,3 +66,10 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 * Mandating **Manual Hashing & Signing** (HITL) for all natural-language context ingestion.
 * Introducing **Attention-Anchor Matching**: The CFIA provider now provides a cryptographically signed "Attention Anchor" for each verified file, which is consumed by the ALT middleware to verify reasoning drivers.
 **Security Impact:** Prevents repository files from silently hijacking agent reasoning, even if they pass basic sandbox checks.
+
+### Update: 2026-04-03 - Preventing Deceptive Context Smuggling
+**Context:** Analysis of Gemini CLI and Claude Code workflows reveals a "Context-File Integrity gap" where agents ingest natural-language instructions from repositories without verification.
+**Architecture Adjustment:**
+* Mandating **Context-File Integrity Attestation (CFIA)** for all project-local instruction files.
+* Integrating hardware-attested hash signatures as a prerequisite for context ingestion.
+**Security Impact:** Neutralizes "Invisible" instruction injection via repository-committed Markdown files.

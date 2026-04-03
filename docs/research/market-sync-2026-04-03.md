@@ -1,17 +1,25 @@
 # Market Sync: 2026-04-03
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
-### 1. OpenClaw: Ghost Reasoning & Lifecycle Zombies
-Following the fix for "Branch Contamination," a new phenomenon termed **"Ghost Reasoning"** has emerged in OpenClaw v2.8. Subagents involved in speculative branches sometimes fail to terminate after a branch is pruned, continuing to consume tokens and "whisper" into the shared Blackboard. This creates "Lifecycle Zombies" that degrade swarm performance and lead to non-deterministic state mutations.
+### OpenClaw
+- **Security Hardening**: Released version 2026.3.28 to address critical privilege escalation and sandbox file-read vulnerabilities. Official guidance now mandates running OpenClaw in isolated environments (e.g., Docker) with non-root users.
+- **ClawHub Growth**: The plugin marketplace is expanding, but recent findings suggest a need for behavioral "Burn-In" periods for new skills to prevent delayed payloads.
 
-### 2. Claude Code: Metadata-Layer Context Poisoning (CVE-2026-42001)
-A high-severity vulnerability was identified where malicious MCP servers utilize the `description` and `example` fields of JSON schemas to inject **"Hidden Context"**. Unlike standard prompt injection, these instructions are embedded in the tool's structural metadata, which many agents ingest with higher trust than raw tool output. This bypasses existing content filters that only scan for instructions in tool return values.
+### Gemini CLI
+- **A2A Authentication**: Version v0.33.0 introduces mandatory HTTP authentication for remote A2A agents and authenticated agent card discovery.
+- **Plan Mode Enhancements**: Expansion of research subagents and annotation support for feedback loops, signaling a move toward more complex, self-correcting agent chains.
 
-### 3. Gemini CLI: Distributed Capability Auction (DCA)
-Gemini has introduced a **"Distributed Capability Auction"** protocol for multi-agent swarms. Instead of static tool assignment, subagents now "bid" for tool execution rights based on their specialized reasoning profiles and real-time resource availability. While this optimizes for accuracy, it introduces a "Negotiation Latency" that requires a centralized high-speed broker to maintain swarm velocity.
+### Claude Code
+- **Agent Teams GA**: Official release of Agent Teams, enabling parallel execution of specialized Claude agents. Coordination is centered around a shared `CLAUDE.md` Task List and an inter-agent "Mailbox."
+- **Coordination Bottlenecks**: Early reports indicate that "Mailbox Locks" are becoming a performance bottleneck in high-density teams, shifting focus toward lock-free state synchronization.
 
 ## Autonomous Agent Pain Points
-- **Lifecycle Desync**: The inability to reliably kill sub-processes in deep reasoning chains.
-- **Metadata Trust**: The assumption that tool definitions are "Safe Metadata" rather than "Executable Instructions."
-- **Negotiation Overhead**: The performance tax of subagent bidding vs. direct execution.
+- **Hivenet Swarm Attacks**: Emergence of coordinated machine-speed attacks where multiple low-privilege agents coordinate to bypass single-point defenses.
+- **MTTC (Mean Time to Coordinate)**: As swarms grow, the latency of attestation and state synchronization (Mailbox locks) is outpacing reasoning speed.
+- **Context Smuggling**: Attackers are using natural language configuration files (like `GEMINI.md` or `.claude/settings.json`) to inject "invisible" instructions that hijack the agent reasoning loop.
+
+## Unique Findings for MCP Any
+- **Machine-Speed Defensive Sovereignty**: MCP Any must evolve from an audit gateway to an active, autonomous interdiction system that can quarantine swarms in milliseconds.
+- **Lock-Free Teammate Coordination**: The "Universal Agent Bus" should provide the infrastructure for CRDT-based mailbox shards to eliminate coordination stalls in parallel teams.
+- **Hardware-Attested Identity Minting**: To counter "Identity Spoofing" in heterogeneous meshes, MCP Any should act as the mesh-resident authority for hardware-bound identity tokens.

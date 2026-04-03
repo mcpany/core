@@ -68,3 +68,10 @@ FSI provides a local, hardware-attested "Identity Mint" that issues cross-framew
 *   **Revocation Propagation Middleware**: Adding a real-time "Broadcast Bus" for FSI token revocation.
 *   **Capability Masking Protocol**: Transitioning from cleartext "Capability Cards" to hardware-attested, ZK-ready skill proofs.
 **Security Impact:** Prevents a compromised agent from "shadowing" a high-trust capability after its FSI token has been revoked by a different framework's root authority.
+
+### Update: 2026-04-03 - Mesh-Resident Identity Sovereignty
+**Context:** Today's market sync highlights the need for secure identity verification in heterogeneous teammate meshes (Claude Code + OpenClaw).
+**Architecture Adjustment:**
+* Evolving FSI to act as the authoritative **Mesh-Resident Identity Hub**.
+* Implementing hardware-attested token issuance for cross-framework teammates.
+**Security Impact:** Neutralizes "Identity Spoofing" in horizontal swarms by providing a common, hardware-bound root of trust.
