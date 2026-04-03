@@ -4,25 +4,9 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { seedUser, cleanupUser } from './e2e/test-data';
 
 test.describe('Rich Result Viewer', () => {
   const serviceName = 'rich-result-test-service';
-
-  test.beforeEach(async ({ request, page }) => {
-    // Seed user and login before tests
-    await seedUser(request, "e2e-rich-result-admin");
-
-    await page.goto('/login');
-    await page.fill('input[name="username"]', 'e2e-rich-result-admin');
-    await page.fill('input[name="password"]', 'password');
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL('/', { timeout: 15000 });
-  });
-
-  test.afterEach(async ({ request }) => {
-    await cleanupUser(request, "e2e-rich-result-admin");
-  });
 
   test.beforeAll(async ({ request }) => {
     // Clean up
