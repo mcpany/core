@@ -55,8 +55,8 @@ test.describe('Universal Agent Bus', () => {
 
     // 3. Verify the timeline elements appear instead of the empty state
     // Note: use wait condition or timeout because ws takes a moment to connect
-    await expect(page.getByText('orchestrator-task')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('search-tool')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('orchestrator-task').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('search-tool').first()).toBeVisible({ timeout: 10000 });
 
     // 4. Expand one of the trace elements to verify details
     const firstTraceRow = page.locator('.relative.group').first();
