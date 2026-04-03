@@ -6,6 +6,21 @@ import (
 	"github.com/mcpany/core/src/interop"
 )
 
+// TestPlaceholderAdapter verifies that the PlaceholderAdapter behaves exactly as an unimplemented stub.
+//
+// Summary: Validates that a constructed PlaceholderAdapter correctly identifies its name and returns Not Implemented errors for task execution.
+//
+// Parameters:
+//   - t (*testing.T): The testing framework instance used for assertions and failure reporting.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func TestPlaceholderAdapter(t *testing.T) {
 	adapter := interop.NewPlaceholderAdapter("Dynamic Mesh Resilience (DMR) Hub", map[string]bool{"shard_migration": true})
 
@@ -46,6 +61,21 @@ func TestPlaceholderAdapter(t *testing.T) {
     }
 }
 
+// TestNewPlaceholderAdapterNilCapabilities verifies the initialization behavior when providing nil capabilities.
+//
+// Summary: Ensures that NewPlaceholderAdapter safely initializes an empty map instead of panicking when nil is passed.
+//
+// Parameters:
+//   - t (*testing.T): The testing framework instance used for assertions and failure reporting.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func TestNewPlaceholderAdapterNilCapabilities(t *testing.T) {
     adapter := interop.NewPlaceholderAdapter("Nil Caps Hub", nil)
 
@@ -58,6 +88,21 @@ func TestNewPlaceholderAdapterNilCapabilities(t *testing.T) {
     }
 }
 
+// TestRegisterPlaceholders verifies the mass registration of all known unimplemented roadmap features.
+//
+// Summary: Tests that RegisterPlaceholders successfully adds all placeholder services (e.g. CI/CD Cache Integrity Guard) to the AdapterHub.
+//
+// Parameters:
+//   - t (*testing.T): The testing framework instance used for assertions and failure reporting.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the provided test AdapterHub instance by adding multiple placeholder adapters.
 func TestRegisterPlaceholders(t *testing.T) {
     hub := interop.NewAdapterHub()
     interop.RegisterPlaceholders(hub)

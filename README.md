@@ -2,16 +2,16 @@
 
 ## Elevator Pitch
 **What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. Serving as an ultimate universal bridge, it completely eliminates the need to write custom boilerplate adapters or maintain multiple standalone MCP servers. It acts as the backbone of interoperable autonomous systems, allowing you to focus on configuring capabilities rather than writing connection logic.
 
 ## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
+MCP Any relies entirely on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
 
 **Key Design Patterns & Features:**
-- **Dynamic Tool Registration**: Add and modify capabilities purely via configuration files at runtime.
-- **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution and contain side effects safely.
-- **Upstream Authentication**: Out-of-the-box identity federation with various standard identity providers.
-- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain boundary domains between differing agent systems.
+- **Dynamic Tool Registration**: Add, discover, and modify capabilities purely via configuration files (YAML/JSON) at runtime.
+- **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution, prevent command injections, and contain side effects safely with strict egress policies.
+- **Upstream Authentication**: Out-of-the-box identity federation with various standard identity providers, safely propagating API keys and Bearer tokens without exposing them to the AI agent.
+- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain boundary domains between differing agent systems through multi-user and multi-profile setups.
 
 ### High-Level Flow
 ```mermaid
@@ -33,39 +33,41 @@ graph TD
 ```
 
 ## Getting Started
-Follow these step-by-step instructions to get a "Hello World" instance running locally:
+Follow these step-by-step instructions to get a "Hello World" instance up and running locally without writing any Go or Python code:
 
 1. **Clone the repository:**
+   Begin by cloning the core repository to your local machine.
    ```bash
    git clone https://github.com/mcpany/core.git
    cd core
    ```
 
 2. **Ensure dependencies:**
-   Make sure you have `bazelisk` and `make` installed and available in your `PATH`.
+   Make sure you have `bazelisk` and `make` installed and available in your system's `PATH`. These are essential for building and running the project reliably.
 
 3. **Run a Hello World example:**
+   Execute the pre-configured example. This command will compile the universal binary and launch it using the sample YAML configuration.
    ```bash
    bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
    ```
 
 ## Development
-We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
+We use `make` and `bazelisk` to orchestrate our development workflow. Maintaining a clean and extensively tested repository is critical to achieving the "Gold Standard" we demand.
 
 ```bash
-# Run the test suite to ensure no code logic breaks
+# Run the complete test suite to ensure no code logic breaks and regressions are prevented
 make test
 
-# Run the linter to verify formatting and documentation conventions
+# Run the linter to verify formatting, documentation conventions, and structural integrity
 make lint
 
-# Build the main binary
+# Build the main binary for local testing or deployment preparation
 bazelisk build //server/cmd/mcpany
 ```
 
 ## Configuration
-MCP Any uses environment variables and secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios, but here are the core variables:
+MCP Any uses environment variables and secrets to configure the runtime environment securely. Required configurations vary based on deployment scenarios, but here are the core variables you need to know:
 
-- `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
-- `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
+- `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources for local testing. (Default: `false`)
+- `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definition files that dictate the enabled capabilities. (e.g. `/etc/mcpany/config.yaml`)
 - `MCPANY_LOG_LEVEL`: Adjust the verbosity of application logging. Options: `debug`, `info`, `warn`, `error`. (Default: `info`)
