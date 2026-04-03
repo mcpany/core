@@ -8,7 +8,6 @@ test.describe('Upstream Auth Display', () => {
     const response = await request.post('/api/v1/credentials', {
       data: {
         name: credentialName,
-        description: 'Test credential for checking beautiful auth display',
         authentication: {
           oauth2: {
             client_id: { plainText: 'test-client-id-e2e' },
