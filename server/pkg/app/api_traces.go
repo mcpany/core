@@ -4,13 +4,13 @@
 package app
 
 import (
+	"fmt"
 	"math/rand"
 
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -54,6 +54,19 @@ const (
 	statusError   = "error"
 )
 
+// toTrace converts an audit entry into a Trace structure for the UI.
+//
+// Parameters:
+//   - entry (audit.Entry): The audit log entry to convert.
+//
+// Returns:
+//   - *Trace: The converted Trace structure.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func toTrace(entry audit.Entry) *Trace {
 	// Generate deterministic ID based on content to prevent duplicates during history replay
 	data := fmt.Sprintf("%d-%s-%s-%s", entry.Timestamp.UnixNano(), entry.ToolName, entry.UserID, entry.ProfileID)
@@ -120,6 +133,19 @@ func toTrace(entry audit.Entry) *Trace {
 	}
 }
 
+// handleTraces returns an HTTP handler for retrieving recent traces.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Reads trace history from the audit middleware.
 func (a *Application) handleTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -169,6 +195,19 @@ func (a *Application) handleTraces() http.HandlerFunc {
 	}
 }
 
+// handleClearTraces returns an HTTP handler for clearing the trace history.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Deletes all trace history from the audit middleware.
 func (a *Application) handleClearTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete {
@@ -186,6 +225,19 @@ func (a *Application) handleClearTraces() http.HandlerFunc {
 	}
 }
 
+// handleTracesWS returns an HTTP handler for streaming traces via WebSocket.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Upgrades HTTP connection to WebSocket and subscribes to audit logs.
 func (a *Application) handleTracesWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
@@ -270,6 +322,19 @@ func (a *Application) handleTracesWS() http.HandlerFunc {
 	}
 }
 
+// handleDebugSeedTraces returns an HTTP handler for seeding mock traces for testing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - http.HandlerFunc: The HTTP handler function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Generates and writes mock audit entries to the audit middleware.
 func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -306,6 +371,19 @@ func (a *Application) handleDebugSeedTraces() http.HandlerFunc {
 	}
 }
 
+// generateMockAuditEntries creates a set of mock audit entries for testing purposes.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - []audit.Entry: A slice of mock audit entries.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func generateMockAuditEntries() []audit.Entry {
 	now := time.Now()
 	traceID := fmt.Sprintf("trace-seed-%d", rand.Intn(10000)) //nolint:gosec // Testing only
@@ -404,6 +482,19 @@ func generateMockAuditEntries() []audit.Entry {
 	return entries
 }
 
+// seedTraces populates the audit log with mock traces if it is currently empty.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the operation.
+//
+// Returns:
+//   - error: An error if seeding fails.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Writes mock entries to the audit middleware if history is empty.
 func (a *Application) seedTraces(ctx context.Context) error {
 	auditMiddleware := a.GetAuditMiddleware()
 	if auditMiddleware == nil {
