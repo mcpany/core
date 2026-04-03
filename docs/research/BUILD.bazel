@@ -4,6 +4,7 @@ filegroup(
     srcs = [
         "evolution-2026-07-12-streaming.md",
         "interop_blueprint.md",
+        "market-sync-2026-04-03-v2.md",
     ],
     visibility = ["//visibility:public"],
 )

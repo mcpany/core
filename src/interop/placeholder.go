@@ -513,6 +513,9 @@ func RegisterPlaceholders(hub *AdapterHub) {
 		"Zero-Knowledge State Attestation (ZKSA) Provider",
 		"Unified Teammate Discovery (UTD) Gateway",
 		"Hierarchical Provenance Validator",
+		"Intent-Gated Delegation (IGD) Validator",
+		"Provider-Agnostic Context Normalizer (PACN)",
+		"Burst-Mode Trust Lease Broker",
 	}
 
 	for _, name := range missingFeatures {
