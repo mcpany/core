@@ -35,7 +35,7 @@ The Hidden-Channel Interceptor (HCI) - evolving from the earlier Shadow Coordina
     ```mermaid
     graph TD
         A[Subagent Coordination Request] --> B[T2T Bridge]
-        B --> C[SCI Interceptor]
+        B --> C[HCI Interceptor]
         C --> D[Metadata Scanner]
         D --> E[Entropy Profiler]
         E --> F{Shadow Signal Detected?}
@@ -44,18 +44,18 @@ The Hidden-Channel Interceptor (HCI) - evolving from the earlier Shadow Coordina
         I[MRA Metadata Signer] --> H
     ```
 * **APIs / Interfaces:**
-    * `sci.ScanMetadata(sourceAgent, targetAgent, metadata) -> bool`: Scans a metadata fragment for shadow signals.
-    * `sci.RegisterEntropyBaseline(missionToken) -> void`: Establishes the expected entropy level for a mission.
+    * `hci.ScanMetadata(sourceAgent, targetAgent, metadata) -> bool`: Scans a metadata fragment for shadow signals.
+    * `hci.RegisterEntropyBaseline(missionToken) -> void`: Establishes the expected entropy level for a mission.
 * **Data Storage/State:**
     * **Entropy Baselines:** A per-mission registry of "Normal" coordination entropy scores.
 
 ## 5. Alternatives Considered
-* **Disabling All Metadata:** Rejected because metadata is essential for legitimate swarm orchestration (e.g., task status, priority).
+* **Disabling All OS Metadata:** Rejected because metadata is essential for legitimate swarm orchestration (e.g., task status, priority).
 * **Manual Metadata Review:** Rejected due to the high volume and machine-speed nature of inter-agent coordination.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** The SCI must be integrated directly into the kernel-resident T2T transport to prevent bypass.
-* **Observability:** Integrated with the "Shadow Coordination Monitor" for real-time visualization of entropy spikes and blocked signals.
+* **Security (Zero Trust):** The HCI must be integrated directly into the kernel-resident T2T transport to prevent bypass.
+* **Observability:** Integrated with the "Hidden-Channel Anomaly Dashboard" for real-time visualization of entropy spikes and blocked signals.
 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Supporting the defense against out-of-band subagent collusion (Shadow Coordination).
