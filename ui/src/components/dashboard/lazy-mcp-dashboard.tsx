@@ -39,8 +39,8 @@ export function LazyMcpDashboard() {
 
             // Threshold and sort
             const filteredAndSorted = scoredTools
-                .filter(t => t.score >= 0.85)
-                .sort((a, b) => b.score - a.score);
+                .filter((t: { name: string, score: number }) => t.score >= 0.85)
+                .sort((a: { name: string, score: number }, b: { name: string, score: number }) => b.score - a.score);
 
             setResults(filteredAndSorted);
         } catch (e: any) {
