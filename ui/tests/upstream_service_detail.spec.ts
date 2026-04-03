@@ -15,8 +15,8 @@ test.describe('Upstream Service Detail Page', () => {
     const response = await request.post('/api/v1/services', {
       data: {
         name: serviceName,
-        http_service: {
-            address: "http://example.com"
+        command_line_service: {
+            command: "echo"
         },
         priority: 10
       }
@@ -67,5 +67,63 @@ test.describe('Upstream Service Detail Page', () => {
     expect(response.ok()).toBeTruthy();
     const service = await response.json();
     expect(service.priority).toBe(5);
+  });
+
+  test('should display empty Tools definitions', async ({ page }) => {
+    // Navigate to the DefinitionsTable page
+    await page.goto(`/service/${serviceName}`);
+
+    // Wait for the General tab to be active (default) and Tools table to appear
+    await expect(page.getByText('Tools', { exact: true }).first()).toBeVisible();
+
+    // The search input is only visible when data is present (if data length > 0 in component).
+    await expect(page.getByText('No tools configured')).toBeVisible();
+    await expect(page.getByText('This service has not exposed any tools.')).toBeVisible();
+  });
+
+  test('should display Tools definitions and filter them', async ({ page, request }) => {
+    // Seed a specific test service so we don't depend on the server running with a specific config file
+    // that might be missing or overridden in test environments.
+    const serviceNameSearchTest = 'search-test-service';
+    const response = await request.post('/api/v1/services', {
+      data: {
+        name: serviceNameSearchTest,
+        command_line_service: {
+            command: "echo",
+            tools: [
+                { name: "tool-alpha", description: "First tool" },
+                { name: "tool-beta", description: "Second tool" }
+            ]
+        },
+        priority: 10
+      }
+    });
+    expect(response.ok()).toBeTruthy();
+
+    // Navigate to the DefinitionsTable page
+    await page.goto(`/service/${serviceNameSearchTest}`);
+
+    // Wait for the General tab to be active (default) and Tools table to appear
+    await expect(page.getByText('Tools', { exact: true }).first()).toBeVisible();
+
+    // Verify both tools are initially visible
+    await expect(page.getByText('tool-alpha')).toBeVisible();
+    await expect(page.getByText('tool-beta')).toBeVisible();
+
+    // Search for "alpha"
+    const searchInput = page.getByPlaceholder('Search tools...');
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill('alpha');
+
+    // Verify "tool-alpha" is visible and "tool-beta" is hidden
+    await expect(page.getByText('tool-alpha')).toBeVisible();
+    await expect(page.getByText('tool-beta')).toBeHidden();
+
+    // Clear search and verify empty state for a non-existent tool
+    await searchInput.fill('nonexistent-tool');
+    await expect(page.getByText('No results found')).toBeVisible();
+
+    // Cleanup
+    await request.delete(`/api/v1/services/${serviceNameSearchTest}`);
   });
 });

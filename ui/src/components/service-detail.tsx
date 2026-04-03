@@ -20,6 +20,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "./ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { FileConfigCard } from "./file-config-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegisterServiceDialog } from "./register-service-dialog";
@@ -42,49 +44,79 @@ import { LogStream } from "@/components/logs/log-stream";
  * @returns The rendered component.
  */
 function DefinitionsTable<T extends { name: string; description?: string; type?: string; source?: string; }>({ title, data, icon, serviceId, linkPath }: { title: string; data?: T[], icon: React.ReactNode, serviceId: string, linkPath: string }) {
+  const [searchQuery, setSearchQuery] = useState("");
+
   if (!data || data.length === 0) {
     return (
-       <Card>
+       <Card className="shadow-sm border-border/50 bg-card/50 backdrop-blur-sm animate-in fade-in duration-300">
         <CardHeader>
           <CardTitle className="text-xl flex items-center gap-2">{icon}{title}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">No {title.toLowerCase()} configured for this service.</p>
+        <CardContent className="flex flex-col items-center justify-center py-8">
+          <div className="bg-muted/30 p-4 rounded-full mb-3">
+             <div className="opacity-50 h-8 w-8 [&>svg]:w-full [&>svg]:h-full">{icon}</div>
+          </div>
+          <p className="text-muted-foreground text-sm font-medium">No {title.toLowerCase()} configured</p>
+          <p className="text-xs text-muted-foreground/70 mt-1">This service has not exposed any {title.toLowerCase()}.</p>
         </CardContent>
       </Card>
     )
   }
 
+  const filteredData = data.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl flex items-center gap-2">{icon}{title}</CardTitle>
+    <Card className="shadow-sm border-border/50 bg-card/50 backdrop-blur-sm animate-in fade-in duration-300">
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <CardTitle className="text-xl flex items-center gap-2 m-0">{icon}{title}</CardTitle>
+        <div className="relative w-64">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={`Search ${title.toLowerCase()}...`}
+            className="pl-8 h-9 bg-background/50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              { 'source' in data[0] && <TableHead>Source</TableHead>}
-              { 'type' in data[0] && <TableHead>Type</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((item) => (
-              <TableRow key={item.name}>
-                <TableCell className="font-medium">
-                   <Link to={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90">
-                    {item.name}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-muted-foreground">{item.description}</TableCell>
-                 { 'source' in item && item.source && <TableCell><Badge variant={item.source === 'configured' ? "outline" : "secondary"}>{item.source}</Badge></TableCell>}
-                 { 'type' in item && item.type && <TableCell><Badge variant="outline">{item.type}</Badge></TableCell>}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        {filteredData.length === 0 ? (
+           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+             <Search className="h-8 w-8 mb-3 opacity-20" />
+             <p className="text-sm font-medium">No results found</p>
+             <p className="text-xs opacity-70 mt-1">Try adjusting your search query.</p>
+           </div>
+        ) : (
+          <div className="rounded-md border border-border/50 overflow-hidden">
+            <Table>
+              <TableHeader className="bg-muted/30">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="font-semibold">Name</TableHead>
+                  <TableHead className="font-semibold">Description</TableHead>
+                  { 'source' in data[0] && <TableHead className="font-semibold">Source</TableHead>}
+                  { 'type' in data[0] && <TableHead className="font-semibold">Type</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredData.map((item) => (
+                  <TableRow key={item.name} className="hover:bg-muted/50 transition-colors group">
+                    <TableCell className="font-medium">
+                       <Link to={`/service/${encodeURIComponent(serviceId)}/${linkPath}/${encodeURIComponent(item.name)}`} className="hover:underline text-primary/90 flex items-center gap-2">
+                        {item.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground group-hover:text-foreground transition-colors max-w-[400px] truncate" title={item.description}>{item.description || <span className="italic opacity-50">No description</span>}</TableCell>
+                     { 'source' in item && item.source && <TableCell><Badge variant={item.source === 'configured' ? "outline" : "secondary"} className="text-[10px]">{item.source}</Badge></TableCell>}
+                     { 'type' in item && item.type && <TableCell><Badge variant="outline" className="bg-background/50 text-[10px]">{item.type}</Badge></TableCell>}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
