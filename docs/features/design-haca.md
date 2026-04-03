@@ -49,3 +49,10 @@ MCP Any needs to provide a hardware-locked mechanism to track and attribute ever
 
 ## 7. Evolutionary Changelog
 * **2026-07-12:** Initial Document Creation.
+
+### Update: 2026-07-25 - Alignment with Gemini CLI HACA Patterns
+**Context**: Gemini CLI v0.59.0 has standardized hardware-attested cost attribution headers, confirming our strategic direction.
+**Architecture Adjustment**:
+* Adopting the `x-mcp-lineage-budget` header format for cross-framework compatibility.
+* Implementing hardware-locked monotonic counters for token decrements.
+**Security Impact**: Prevents "Budget Double-Spending" by malicious subagents across multi-cloud environments.

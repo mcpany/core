@@ -1,50 +1,71 @@
 # Design Doc: Attested Mesh Tunneling (AMT) Broker
 **Status:** Draft
-**Created:** 2026-07-25
+**Created:** 2026-07-24
 
 ## 1. Context and Scope
-As AI agent swarms evolve from single-node instances to distributed meshes (e.g., OpenClaw SNT), the "Implicit Local Trust" assumption has become a catastrophic vulnerability. Malicious subagents on the same local network can probe and hijack unencrypted inter-agent coordination channels. MCP Any needs to provide a secure, authenticated, and encrypted transport layer that works across physical device boundaries while maintaining absolute origin-locked sovereignty.
+As AI agents move from single-device environments to distributed multi-node meshes (e.g., OpenClaw's Sovereign Node Tunneling), the risk of "Mesh Shadowing" and unauthenticated inter-node execution has become critical. Standard network-layer VPNs or tunnels are insufficient because they lack the "Agentic Awareness" needed to verify that a remote tool call is bound to a specific mission root and authorized hardware identity.
+
+The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-attested, agent-aware encrypted P2P tunnels that maintain origin-locked sovereignty across physical device boundaries.
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * Facilitate hardware-attested, encrypted P2P tunnels for multi-node agent meshes.
-    * Mandate cryptographic handshakes for all inter-node tool calls and state handoffs.
-    * Maintain origin-locked sovereignty across physical boundaries.
-    * Support sub-millisecond tunnel resumption for high-frequency coordination.
+    * Facilitate hardware-attested, encrypted P2P connections between distributed MCP Any nodes.
+    * Enforce mission-bound authorization for all remote tool calls.
+    * Neutralize "Mesh Shadowing" by requiring cryptographic handshakes for every inter-node connection.
+    * Support "Lightweight Mesh Handshakes" for sub-millisecond tunnel resumption.
 * **Non-Goals:**
-    * Implementation of a generic VPN service (scope is restricted to agentic traffic).
-    * Providing public internet exposure for local tools (tunnels are mesh-internal).
+    * Providing a general-purpose VPN for non-agent traffic.
+    * Managing low-level network routing outside the agent bus.
+    * Replacing existing local Zero-Trust (LOWA) protocols; it extends them to the mesh.
 
 ## 3. Critical User Journey (CUJ)
-* **User Persona:** Multi-Node Swarm Orchestrator
-* **Primary Goal:** Securely delegate a high-privilege filesystem task from a mobile agent to a desktop worker node without exposing the coordination to the local network.
+* **User Persona:** Distributed Swarm Architect
+* **Primary Goal:** Securely allow a coding agent on a Laptop to invoke a GPU-accelerated testing tool on a remote Workstation.
 * **The Happy Path (Tasks):**
-    1. The mobile agent (Mission Root) initiates a task delegation to the desktop worker.
-    2. MCP Any (AMT Broker) on the mobile node intercepts the request and identifies the remote destination.
-    3. The AMT Broker initiates a hardware-attested handshake with the desktop node's AMT listener.
-    4. Both nodes verify each other's TPM/Secure Enclave signatures and mission-root lineage.
-    5. A session-bound, encrypted P2P tunnel is established.
-    6. The task delegation and subsequent tool results are exchanged securely over the tunnel.
-    7. The tunnel is automatically torn down or moved to a "Fast-Path" resume state upon task completion.
+    1. Laptop agent initiates a remote tool call to the Workstation node.
+    2. AMT Broker on the Laptop intercepts the request and generates a hardware-attested "Mesh Handshake" token.
+    3. The Broker establishes an encrypted P2P tunnel to the Workstation's AMT Broker.
+    4. The Workstation Broker verifies the handshake token against the Laptop's TPM signature and mission-root intent.
+    5. Once verified, the Workstation Broker proxies the tool call to the local MCP server.
+    6. Tool results are returned through the attested tunnel to the Laptop agent.
+    7. For subsequent calls, the agents use a session-bound "Mesh Ticket" for fast-path resumption.
 
 ## 4. Design & Architecture
 * **System Flow:**
-    `[Agent A] <-> [AMT Broker A] <-Encrypted P2P Tunnel (TPM-Signed)-> [AMT Broker B] <-> [Agent B]`
+    ```mermaid
+    graph LR
+        subgraph Node A (Laptop)
+            A[Agent] --> B[AMT Broker]
+            B --> C[TPM Attestation]
+        end
+        subgraph Node B (Workstation)
+            D[AMT Broker] --> E[Local MCP Server]
+            D --> F[TPM Verification]
+        end
+        B <==>|Attested P2P Tunnel| D
+    ```
 * **APIs / Interfaces:**
-    * `POST /mesh/tunnel/init`: Initiates a hardware-attested handshake with a remote node.
-    * `WS /mesh/tunnel/stream`: The encrypted transport channel for A2A and tool traffic.
-    * `GET /mesh/nodes/attest`: Retrieves the hardware-attestation status of known mesh peers.
+    * `amt.EstablishTunnel(remoteNodeID, missionToken) -> TunnelID`: Initiates a hardware-attested tunnel.
+    * `amt.InvokeRemote(tunnelID, toolCall) -> Result`: Securely executes a tool over the tunnel.
+    * `amt.ResumeTunnel(meshTicket) -> TunnelID`: Fast-path resumption using session-bound trust.
 * **Data Storage/State:**
-    * Node identities and mission-root lineages are stored in the hardware-bound `Mesh Identity Store`.
-    * Tunnel session keys are rotated periodically and never persist to disk.
+    * **Mesh Identity Registry:** Distributed ledger or local cache of verified node hardware fingerprints.
+    * **Tunnel Session Store:** In-memory tracking of active tunnels and their mission-bound authorization.
 
 ## 5. Alternatives Considered
-* **Standard WireGuard/mTLS:** Rejected because they lack native "Mission-Root" and "Reasoning-Path" awareness. A standard VPN can't verify if a subagent is diverging from its parent's intent.
-* **Legacy HTTP Proxies:** Rejected due to lack of encryption and vulnerability to MitM attacks on the local network.
+* **Standard WireGuard/Tailscale Tunnels:** Rejected because they provide network-layer access without agentic mission-binding. A compromised subagent could use the tunnel for unauthorized lateral movement.
+* **HTTPS Proxying with API Keys:** Rejected because API keys are susceptible to exfiltration. AMT requires hardware-locked (TPM) attestation.
 
 ## 6. Cross-Cutting Concerns
-* **Security (Zero Trust):** Tunnels are only established after successful hardware-attestation of both nodes. All traffic is origin-locked.
-* **Observability:** Tunnel establishment, latency, and attestation failures are logged to the `Mesh Audit Sink`.
+* **Security (Zero Trust):** Mandatory origin validation (SOP) is enforced at both ends of the tunnel. Hardware-locked keys prevent tunnel hijacking.
+* **Observability:** Integrated with the "Service Mesh Topology Monitor" in the UI for real-time visualization of inter-node tunnels.
 
 ## 7. Evolutionary Changelog
-* **2026-07-25:** Initial Document Creation.
+* **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Atomic Teammate Handshakes (ATH)
+**Context**: Today's research confirms that P2P tunnels must be coupled with atomic, task-bound handshakes to prevent teammate impersonation in horizontal meshes.
+**Architecture Adjustment**:
+* Mandating ATH-token verification as a prerequisite for tunnel establishment.
+* Integrating the ATH Gateway into the AMT pre-flight sequence.
+**Security Impact**: Ensures that even within an encrypted tunnel, every coordination action is linked to a hardware-verified teammate identity.

@@ -63,3 +63,10 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 * Integrating the Lock-Free Mesh Arbiter (LFMA) with the DMR migration path.
 * Transitioning from "Push-based Migration" to "Speculative Shard Pulling" during high-latency coordination windows.
 **Security Impact**: Reduces the window for "Stale Identity" reuse by mandating hardware-attested identity rotation (HAIR) as a prerequisite for shard resumption post-migration.
+
+### Update: 2026-07-25 - Support for Dynamic Mesh Sovereignty (DMS)
+**Context**: OpenClaw v3.6.2 (Beta) has introduced DMS, mandating that state migration be fail-operational and consensus-driven.
+**Architecture Adjustment**:
+* Implementing "Consensus-Based Shard Migration" where 2/3 nodes must attest to a node failure before migration.
+* Integrating the MRA Provider for hardware-locked shard attestation during transfer.
+**Security Impact**: Neutralizes "Shadow Migration" attacks where a compromised node attempts to steal sibling shards by spoofing heartbeats.
