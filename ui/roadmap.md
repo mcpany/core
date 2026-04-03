@@ -675,6 +675,12 @@
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Semantic Intent Resolver Console**: Visual dashboard for monitoring SKR-mediated kernel syscall validation. (Added: 2026-07-25)
+- [ ] **[P0] Recursive Intent Shard Viewer**: Real-time visualization of RIS-labeled reasoning branches and "Inception" alerts. (Added: 2026-07-25)
+- [ ] **[P0] Dependency Integrity Monitor**: Security UI for reviewing hardware-attested skill manifests and DIP-blocked on-demand fetching. (Added: 2026-07-25)
+- [ ] **[P1] Lock-Free Mesh Heatmap v2**: Enhanced visualizer for LFMA v2 distributed task claiming and collision metrics. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-27 Evolution)
 - [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)

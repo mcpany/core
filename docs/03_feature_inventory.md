@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Semantic Kernel Resolver (SKR)**: (P0) Authoritative service providing semantic intent context to OS-level kernel guards. Ensures that syscall-level validation is anchored to mission-root reasoning.
+- **Recursive Intent Sanitizer (RIS)**: (P0) Advanced security layer tracking intent across reasoning depths and interleaved branches to block "Context-Inception" exfiltration loops.
+- **Dependency Integrity Proxy (DIP)**: (P0) Security middleware mandating hardware-attested manifests for all on-demand skill fetching to neutralize "Dependency Confusion" attacks.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated to support distributed, non-locking task claiming for high-latency teammate meshes.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
