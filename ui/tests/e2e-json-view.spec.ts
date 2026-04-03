@@ -68,7 +68,7 @@ test.describe('Raw JSON dump to formatted table replacement E2E', () => {
         // Switch to auth tab where the <JsonView data={form.watch("upstreamAuth")}> was added
         // Payment gateway doesn't have upstream auth seeded, but we can verify the tab structure
         await page.getByRole('tab', { name: 'Authentication' }).click();
-        await expect(page.getByRole('heading', { name: 'Current Configuration' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Current Configuration', exact: true })).toBeVisible();
 
         // We can also verify that we can type in "Advanced (JSON)" and save, verifying backend
         await page.getByRole('tab', { name: 'Advanced (JSON)' }).click();
