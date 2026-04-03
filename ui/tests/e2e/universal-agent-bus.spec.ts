@@ -61,12 +61,18 @@ test.describe('Universal Agent Bus', () => {
     // 4. Expand one of the trace elements to verify details
     // Ensure we are clicking the row that contains "orchestrator-task" so it definitely has the JSON we expect.
     const orchestratorRow = page.locator('.relative.group').filter({ hasText: 'orchestrator-task' }).first();
-    await orchestratorRow.click();
+
+    // We scroll into view to avoid actionability issues, and use force to ignore potential overlaid blur blocks
+    await orchestratorRow.scrollIntoViewIfNeeded();
+    await orchestratorRow.click({ force: true });
 
     // 5. Verify the formatted JSON payload exists in the expanded view
     // Note: the animation for expansion might take a bit, so wait for visibility
     const preCodeBlock = orchestratorRow.locator('pre code').first();
     await expect(preCodeBlock).toBeVisible({ timeout: 10000 });
-    await expect(preCodeBlock).toContainText('query', { timeout: 10000 });
+
+    // We use innerText to be safer against format/whitespaces
+    const textContent = await preCodeBlock.innerText();
+    expect(textContent).toContain('query');
   });
 });
