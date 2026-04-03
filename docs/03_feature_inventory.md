@@ -1931,6 +1931,14 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Swarm-Mesh Attestation (SMA) Bridge**: (P0) Authoritative identity service providing hardware-attested, mesh-resident tokens that persist across local and multi-cloud environments.
+- **Reasoning-Chain Probability (RCP) Firewall**: (P0) Advanced security middleware performing real-time semantic probability analysis (ARE v1.9 compliant) to block "Context-Splicing v2" and hallucination-driven exfiltration.
+- **Anti-Mailbox-Squatting Provider**: (P0) Lifecycle security service mandating hardware-locked mailbox cleanup upon teammate session termination.
+- **Mission-Root Token Isolation Vault**: (P1) Hardware-bound storage service for kernel-resident, encrypted mission-root tokens to neutralize "Mission Hijacking."
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
