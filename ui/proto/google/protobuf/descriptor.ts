@@ -7,21 +7,6 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-/**
- * Summary: Executes or defines protobufPackage.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const protobufPackage = "google.protobuf";
 
 /** The full set of known editions. */
@@ -68,21 +53,6 @@ export enum Edition {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines editionFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function editionFromJSON(object: any): Edition {
   switch (object) {
     case 0:
@@ -131,21 +101,6 @@ export function editionFromJSON(object: any): Edition {
   }
 }
 
-/**
- * Summary: Executes or defines editionToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function editionToJSON(object: Edition): string {
   switch (object) {
     case Edition.EDITION_UNKNOWN:
@@ -194,21 +149,6 @@ export enum SymbolVisibility {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines symbolVisibilityFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function symbolVisibilityFromJSON(object: any): SymbolVisibility {
   switch (object) {
     case 0:
@@ -227,21 +167,6 @@ export function symbolVisibilityFromJSON(object: any): SymbolVisibility {
   }
 }
 
-/**
- * Summary: Executes or defines symbolVisibilityToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function symbolVisibilityToJSON(object: SymbolVisibility): string {
   switch (object) {
     case SymbolVisibility.VISIBILITY_UNSET:
@@ -346,21 +271,6 @@ export interface DescriptorProto {
   visibility?: SymbolVisibility | undefined;
 }
 
-/**
- * Summary: Executes or defines DescriptorProto_ExtensionRange.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface DescriptorProto_ExtensionRange {
   /** Inclusive. */
   start?:
@@ -385,21 +295,6 @@ export interface DescriptorProto_ReservedRange {
   end?: number | undefined;
 }
 
-/**
- * Summary: Executes or defines ExtensionRangeOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface ExtensionRangeOptions {
   /** The parser stores options it doesn't recognize here. See above. */
   uninterpretedOption: UninterpretedOption[];
@@ -429,21 +324,6 @@ export enum ExtensionRangeOptions_VerificationState {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines extensionRangeOptions_VerificationStateFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function extensionRangeOptions_VerificationStateFromJSON(object: any): ExtensionRangeOptions_VerificationState {
   switch (object) {
     case 0:
@@ -459,21 +339,6 @@ export function extensionRangeOptions_VerificationStateFromJSON(object: any): Ex
   }
 }
 
-/**
- * Summary: Executes or defines extensionRangeOptions_VerificationStateToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function extensionRangeOptions_VerificationStateToJSON(object: ExtensionRangeOptions_VerificationState): string {
   switch (object) {
     case ExtensionRangeOptions_VerificationState.DECLARATION:
@@ -486,21 +351,6 @@ export function extensionRangeOptions_VerificationStateToJSON(object: ExtensionR
   }
 }
 
-/**
- * Summary: Executes or defines ExtensionRangeOptions_Declaration.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface ExtensionRangeOptions_Declaration {
   /** The extension number declared within the extension range. */
   number?:
@@ -664,21 +514,6 @@ export enum FieldDescriptorProto_Type {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fieldDescriptorProto_TypeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldDescriptorProto_TypeFromJSON(object: any): FieldDescriptorProto_Type {
   switch (object) {
     case 1:
@@ -742,21 +577,6 @@ export function fieldDescriptorProto_TypeFromJSON(object: any): FieldDescriptorP
   }
 }
 
-/**
- * Summary: Executes or defines fieldDescriptorProto_TypeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldDescriptorProto_TypeToJSON(object: FieldDescriptorProto_Type): string {
   switch (object) {
     case FieldDescriptorProto_Type.TYPE_DOUBLE:
@@ -814,21 +634,6 @@ export enum FieldDescriptorProto_Label {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fieldDescriptorProto_LabelFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldDescriptorProto_LabelFromJSON(object: any): FieldDescriptorProto_Label {
   switch (object) {
     case 1:
@@ -847,21 +652,6 @@ export function fieldDescriptorProto_LabelFromJSON(object: any): FieldDescriptor
   }
 }
 
-/**
- * Summary: Executes or defines fieldDescriptorProto_LabelToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldDescriptorProto_LabelToJSON(object: FieldDescriptorProto_Label): string {
   switch (object) {
     case FieldDescriptorProto_Label.LABEL_OPTIONAL:
@@ -957,21 +747,6 @@ export interface MethodDescriptorProto {
   serverStreaming?: boolean | undefined;
 }
 
-/**
- * Summary: Executes or defines FileOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface FileOptions {
   /**
    * Sets the Java package where classes generated from this .proto will be
@@ -1148,21 +923,6 @@ export enum FileOptions_OptimizeMode {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fileOptions_OptimizeModeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fileOptions_OptimizeModeFromJSON(object: any): FileOptions_OptimizeMode {
   switch (object) {
     case 1:
@@ -1181,21 +941,6 @@ export function fileOptions_OptimizeModeFromJSON(object: any): FileOptions_Optim
   }
 }
 
-/**
- * Summary: Executes or defines fileOptions_OptimizeModeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fileOptions_OptimizeModeToJSON(object: FileOptions_OptimizeMode): string {
   switch (object) {
     case FileOptions_OptimizeMode.SPEED:
@@ -1210,21 +955,6 @@ export function fileOptions_OptimizeModeToJSON(object: FileOptions_OptimizeMode)
   }
 }
 
-/**
- * Summary: Executes or defines MessageOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface MessageOptions {
   /**
    * Set true to use the old proto1 MessageSet wire format for extensions.
@@ -1322,21 +1052,6 @@ export interface MessageOptions {
   uninterpretedOption: UninterpretedOption[];
 }
 
-/**
- * Summary: Executes or defines FieldOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface FieldOptions {
   /**
    * NOTE: ctype is deprecated. Use `features.(pb.cpp).string_type` instead.
@@ -1469,21 +1184,6 @@ export enum FieldOptions_CType {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fieldOptions_CTypeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_CTypeFromJSON(object: any): FieldOptions_CType {
   switch (object) {
     case 0:
@@ -1502,21 +1202,6 @@ export function fieldOptions_CTypeFromJSON(object: any): FieldOptions_CType {
   }
 }
 
-/**
- * Summary: Executes or defines fieldOptions_CTypeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_CTypeToJSON(object: FieldOptions_CType): string {
   switch (object) {
     case FieldOptions_CType.STRING:
@@ -1541,21 +1226,6 @@ export enum FieldOptions_JSType {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fieldOptions_JSTypeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_JSTypeFromJSON(object: any): FieldOptions_JSType {
   switch (object) {
     case 0:
@@ -1574,21 +1244,6 @@ export function fieldOptions_JSTypeFromJSON(object: any): FieldOptions_JSType {
   }
 }
 
-/**
- * Summary: Executes or defines fieldOptions_JSTypeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_JSTypeToJSON(object: FieldOptions_JSType): string {
   switch (object) {
     case FieldOptions_JSType.JS_NORMAL:
@@ -1611,21 +1266,6 @@ export enum FieldOptions_OptionRetention {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fieldOptions_OptionRetentionFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_OptionRetentionFromJSON(object: any): FieldOptions_OptionRetention {
   switch (object) {
     case 0:
@@ -1644,21 +1284,6 @@ export function fieldOptions_OptionRetentionFromJSON(object: any): FieldOptions_
   }
 }
 
-/**
- * Summary: Executes or defines fieldOptions_OptionRetentionToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_OptionRetentionToJSON(object: FieldOptions_OptionRetention): string {
   switch (object) {
     case FieldOptions_OptionRetention.RETENTION_UNKNOWN:
@@ -1692,21 +1317,6 @@ export enum FieldOptions_OptionTargetType {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines fieldOptions_OptionTargetTypeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_OptionTargetTypeFromJSON(object: any): FieldOptions_OptionTargetType {
   switch (object) {
     case 0:
@@ -1746,21 +1356,6 @@ export function fieldOptions_OptionTargetTypeFromJSON(object: any): FieldOptions
   }
 }
 
-/**
- * Summary: Executes or defines fieldOptions_OptionTargetTypeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function fieldOptions_OptionTargetTypeToJSON(object: FieldOptions_OptionTargetType): string {
   switch (object) {
     case FieldOptions_OptionTargetType.TARGET_TYPE_UNKNOWN:
@@ -1789,21 +1384,6 @@ export function fieldOptions_OptionTargetTypeToJSON(object: FieldOptions_OptionT
   }
 }
 
-/**
- * Summary: Executes or defines FieldOptions_EditionDefault.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface FieldOptions_EditionDefault {
   edition?:
     | Edition
@@ -1851,21 +1431,6 @@ export interface FieldOptions_FeatureSupport {
   removalError?: string | undefined;
 }
 
-/**
- * Summary: Executes or defines OneofOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface OneofOptions {
   /**
    * Any features defined in the specific edition.
@@ -1880,21 +1445,6 @@ export interface OneofOptions {
   uninterpretedOption: UninterpretedOption[];
 }
 
-/**
- * Summary: Executes or defines EnumOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface EnumOptions {
   /**
    * Set this option to true to allow mapping different tag names to the same
@@ -1938,21 +1488,6 @@ export interface EnumOptions {
   uninterpretedOption: UninterpretedOption[];
 }
 
-/**
- * Summary: Executes or defines EnumValueOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface EnumValueOptions {
   /**
    * Is this enum value deprecated?
@@ -1988,21 +1523,6 @@ export interface EnumValueOptions {
   uninterpretedOption: UninterpretedOption[];
 }
 
-/**
- * Summary: Executes or defines ServiceOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface ServiceOptions {
   /**
    * Any features defined in the specific edition.
@@ -2026,21 +1546,6 @@ export interface ServiceOptions {
   uninterpretedOption: UninterpretedOption[];
 }
 
-/**
- * Summary: Executes or defines MethodOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface MethodOptions {
   /**
    * Is this method deprecated?
@@ -2079,21 +1584,6 @@ export enum MethodOptions_IdempotencyLevel {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines methodOptions_IdempotencyLevelFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function methodOptions_IdempotencyLevelFromJSON(object: any): MethodOptions_IdempotencyLevel {
   switch (object) {
     case 0:
@@ -2112,21 +1602,6 @@ export function methodOptions_IdempotencyLevelFromJSON(object: any): MethodOptio
   }
 }
 
-/**
- * Summary: Executes or defines methodOptions_IdempotencyLevelToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function methodOptions_IdempotencyLevelToJSON(object: MethodOptions_IdempotencyLevel): string {
   switch (object) {
     case MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN:
@@ -2202,21 +1677,6 @@ export enum FeatureSet_FieldPresence {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_FieldPresenceFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_FieldPresenceFromJSON(object: any): FeatureSet_FieldPresence {
   switch (object) {
     case 0:
@@ -2238,21 +1698,6 @@ export function featureSet_FieldPresenceFromJSON(object: any): FeatureSet_FieldP
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_FieldPresenceToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_FieldPresenceToJSON(object: FeatureSet_FieldPresence): string {
   switch (object) {
     case FeatureSet_FieldPresence.FIELD_PRESENCE_UNKNOWN:
@@ -2276,21 +1721,6 @@ export enum FeatureSet_EnumType {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_EnumTypeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_EnumTypeFromJSON(object: any): FeatureSet_EnumType {
   switch (object) {
     case 0:
@@ -2309,21 +1739,6 @@ export function featureSet_EnumTypeFromJSON(object: any): FeatureSet_EnumType {
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_EnumTypeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_EnumTypeToJSON(object: FeatureSet_EnumType): string {
   switch (object) {
     case FeatureSet_EnumType.ENUM_TYPE_UNKNOWN:
@@ -2345,21 +1760,6 @@ export enum FeatureSet_RepeatedFieldEncoding {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_RepeatedFieldEncodingFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_RepeatedFieldEncodingFromJSON(object: any): FeatureSet_RepeatedFieldEncoding {
   switch (object) {
     case 0:
@@ -2378,21 +1778,6 @@ export function featureSet_RepeatedFieldEncodingFromJSON(object: any): FeatureSe
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_RepeatedFieldEncodingToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_RepeatedFieldEncodingToJSON(object: FeatureSet_RepeatedFieldEncoding): string {
   switch (object) {
     case FeatureSet_RepeatedFieldEncoding.REPEATED_FIELD_ENCODING_UNKNOWN:
@@ -2414,21 +1799,6 @@ export enum FeatureSet_Utf8Validation {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_Utf8ValidationFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_Utf8ValidationFromJSON(object: any): FeatureSet_Utf8Validation {
   switch (object) {
     case 0:
@@ -2447,21 +1817,6 @@ export function featureSet_Utf8ValidationFromJSON(object: any): FeatureSet_Utf8V
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_Utf8ValidationToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_Utf8ValidationToJSON(object: FeatureSet_Utf8Validation): string {
   switch (object) {
     case FeatureSet_Utf8Validation.UTF8_VALIDATION_UNKNOWN:
@@ -2483,21 +1838,6 @@ export enum FeatureSet_MessageEncoding {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_MessageEncodingFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_MessageEncodingFromJSON(object: any): FeatureSet_MessageEncoding {
   switch (object) {
     case 0:
@@ -2516,21 +1856,6 @@ export function featureSet_MessageEncodingFromJSON(object: any): FeatureSet_Mess
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_MessageEncodingToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_MessageEncodingToJSON(object: FeatureSet_MessageEncoding): string {
   switch (object) {
     case FeatureSet_MessageEncoding.MESSAGE_ENCODING_UNKNOWN:
@@ -2552,21 +1877,6 @@ export enum FeatureSet_JsonFormat {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_JsonFormatFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_JsonFormatFromJSON(object: any): FeatureSet_JsonFormat {
   switch (object) {
     case 0:
@@ -2585,21 +1895,6 @@ export function featureSet_JsonFormatFromJSON(object: any): FeatureSet_JsonForma
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_JsonFormatToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_JsonFormatToJSON(object: FeatureSet_JsonFormat): string {
   switch (object) {
     case FeatureSet_JsonFormat.JSON_FORMAT_UNKNOWN:
@@ -2621,21 +1916,6 @@ export enum FeatureSet_EnforceNamingStyle {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_EnforceNamingStyleFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_EnforceNamingStyleFromJSON(object: any): FeatureSet_EnforceNamingStyle {
   switch (object) {
     case 0:
@@ -2654,21 +1934,6 @@ export function featureSet_EnforceNamingStyleFromJSON(object: any): FeatureSet_E
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_EnforceNamingStyleToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_EnforceNamingStyleToJSON(object: FeatureSet_EnforceNamingStyle): string {
   switch (object) {
     case FeatureSet_EnforceNamingStyle.ENFORCE_NAMING_STYLE_UNKNOWN:
@@ -2683,21 +1948,6 @@ export function featureSet_EnforceNamingStyleToJSON(object: FeatureSet_EnforceNa
   }
 }
 
-/**
- * Summary: Executes or defines FeatureSet_VisibilityFeature.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface FeatureSet_VisibilityFeature {
 }
 
@@ -2718,21 +1968,6 @@ export enum FeatureSet_VisibilityFeature_DefaultSymbolVisibility {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines featureSet_VisibilityFeature_DefaultSymbolVisibilityFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_VisibilityFeature_DefaultSymbolVisibilityFromJSON(
   object: any,
 ): FeatureSet_VisibilityFeature_DefaultSymbolVisibility {
@@ -2759,21 +1994,6 @@ export function featureSet_VisibilityFeature_DefaultSymbolVisibilityFromJSON(
   }
 }
 
-/**
- * Summary: Executes or defines featureSet_VisibilityFeature_DefaultSymbolVisibilityToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function featureSet_VisibilityFeature_DefaultSymbolVisibilityToJSON(
   object: FeatureSet_VisibilityFeature_DefaultSymbolVisibility,
 ): string {
@@ -2887,21 +2107,6 @@ export interface SourceCodeInfo {
   location: SourceCodeInfo_Location[];
 }
 
-/**
- * Summary: Executes or defines SourceCodeInfo_Location.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface SourceCodeInfo_Location {
   /**
    * Identifies which part of the FileDescriptorProto was defined at this
@@ -3004,21 +2209,6 @@ export interface GeneratedCodeInfo {
   annotation: GeneratedCodeInfo_Annotation[];
 }
 
-/**
- * Summary: Executes or defines GeneratedCodeInfo_Annotation.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface GeneratedCodeInfo_Annotation {
   /**
    * Identifies the element in the original source .proto file. This field
@@ -3059,21 +2249,6 @@ export enum GeneratedCodeInfo_Annotation_Semantic {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines generatedCodeInfo_Annotation_SemanticFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function generatedCodeInfo_Annotation_SemanticFromJSON(object: any): GeneratedCodeInfo_Annotation_Semantic {
   switch (object) {
     case 0:
@@ -3092,21 +2267,6 @@ export function generatedCodeInfo_Annotation_SemanticFromJSON(object: any): Gene
   }
 }
 
-/**
- * Summary: Executes or defines generatedCodeInfo_Annotation_SemanticToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function generatedCodeInfo_Annotation_SemanticToJSON(object: GeneratedCodeInfo_Annotation_Semantic): string {
   switch (object) {
     case GeneratedCodeInfo_Annotation_Semantic.NONE:
@@ -3125,21 +2285,6 @@ function createBaseFileDescriptorSet(): FileDescriptorSet {
   return { file: [] };
 }
 
-/**
- * Summary: Executes or defines FileDescriptorSet.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FileDescriptorSet: MessageFns<FileDescriptorSet> = {
   encode(message: FileDescriptorSet, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.file) {
@@ -3215,21 +2360,6 @@ function createBaseFileDescriptorProto(): FileDescriptorProto {
   };
 }
 
-/**
- * Summary: Executes or defines FileDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FileDescriptorProto: MessageFns<FileDescriptorProto> = {
   encode(message: FileDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -3564,21 +2694,6 @@ function createBaseDescriptorProto(): DescriptorProto {
   };
 }
 
-/**
- * Summary: Executes or defines DescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const DescriptorProto: MessageFns<DescriptorProto> = {
   encode(message: DescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -3829,21 +2944,6 @@ function createBaseDescriptorProto_ExtensionRange(): DescriptorProto_ExtensionRa
   return { start: 0, end: 0, options: undefined };
 }
 
-/**
- * Summary: Executes or defines DescriptorProto_ExtensionRange.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const DescriptorProto_ExtensionRange: MessageFns<DescriptorProto_ExtensionRange> = {
   encode(message: DescriptorProto_ExtensionRange, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.start !== undefined && message.start !== 0) {
@@ -3940,21 +3040,6 @@ function createBaseDescriptorProto_ReservedRange(): DescriptorProto_ReservedRang
   return { start: 0, end: 0 };
 }
 
-/**
- * Summary: Executes or defines DescriptorProto_ReservedRange.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const DescriptorProto_ReservedRange: MessageFns<DescriptorProto_ReservedRange> = {
   encode(message: DescriptorProto_ReservedRange, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.start !== undefined && message.start !== 0) {
@@ -4033,21 +3118,6 @@ function createBaseExtensionRangeOptions(): ExtensionRangeOptions {
   return { uninterpretedOption: [], declaration: [], features: undefined, verification: 1 };
 }
 
-/**
- * Summary: Executes or defines ExtensionRangeOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const ExtensionRangeOptions: MessageFns<ExtensionRangeOptions> = {
   encode(message: ExtensionRangeOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.uninterpretedOption) {
@@ -4166,21 +3236,6 @@ function createBaseExtensionRangeOptions_Declaration(): ExtensionRangeOptions_De
   return { number: 0, fullName: "", type: "", reserved: false, repeated: false };
 }
 
-/**
- * Summary: Executes or defines ExtensionRangeOptions_Declaration.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const ExtensionRangeOptions_Declaration: MessageFns<ExtensionRangeOptions_Declaration> = {
   encode(message: ExtensionRangeOptions_Declaration, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.number !== undefined && message.number !== 0) {
@@ -4325,21 +3380,6 @@ function createBaseFieldDescriptorProto(): FieldDescriptorProto {
   };
 }
 
-/**
- * Summary: Executes or defines FieldDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FieldDescriptorProto: MessageFns<FieldDescriptorProto> = {
   encode(message: FieldDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -4582,21 +3622,6 @@ function createBaseOneofDescriptorProto(): OneofDescriptorProto {
   return { name: "", options: undefined };
 }
 
-/**
- * Summary: Executes or defines OneofDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const OneofDescriptorProto: MessageFns<OneofDescriptorProto> = {
   encode(message: OneofDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -4675,21 +3700,6 @@ function createBaseEnumDescriptorProto(): EnumDescriptorProto {
   return { name: "", value: [], options: undefined, reservedRange: [], reservedName: [], visibility: 0 };
 }
 
-/**
- * Summary: Executes or defines EnumDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const EnumDescriptorProto: MessageFns<EnumDescriptorProto> = {
   encode(message: EnumDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -4843,21 +3853,6 @@ function createBaseEnumDescriptorProto_EnumReservedRange(): EnumDescriptorProto_
   return { start: 0, end: 0 };
 }
 
-/**
- * Summary: Executes or defines EnumDescriptorProto_EnumReservedRange.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const EnumDescriptorProto_EnumReservedRange: MessageFns<EnumDescriptorProto_EnumReservedRange> = {
   encode(message: EnumDescriptorProto_EnumReservedRange, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.start !== undefined && message.start !== 0) {
@@ -4938,21 +3933,6 @@ function createBaseEnumValueDescriptorProto(): EnumValueDescriptorProto {
   return { name: "", number: 0, options: undefined };
 }
 
-/**
- * Summary: Executes or defines EnumValueDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const EnumValueDescriptorProto: MessageFns<EnumValueDescriptorProto> = {
   encode(message: EnumValueDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -5047,21 +4027,6 @@ function createBaseServiceDescriptorProto(): ServiceDescriptorProto {
   return { name: "", method: [], options: undefined };
 }
 
-/**
- * Summary: Executes or defines ServiceDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const ServiceDescriptorProto: MessageFns<ServiceDescriptorProto> = {
   encode(message: ServiceDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -5165,21 +4130,6 @@ function createBaseMethodDescriptorProto(): MethodDescriptorProto {
   };
 }
 
-/**
- * Summary: Executes or defines MethodDescriptorProto.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const MethodDescriptorProto: MessageFns<MethodDescriptorProto> = {
   encode(message: MethodDescriptorProto, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== undefined && message.name !== "") {
@@ -5360,21 +4310,6 @@ function createBaseFileOptions(): FileOptions {
   };
 }
 
-/**
- * Summary: Executes or defines FileOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FileOptions: MessageFns<FileOptions> = {
   encode(message: FileOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.javaPackage !== undefined && message.javaPackage !== "") {
@@ -5841,21 +4776,6 @@ function createBaseMessageOptions(): MessageOptions {
   };
 }
 
-/**
- * Summary: Executes or defines MessageOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const MessageOptions: MessageFns<MessageOptions> = {
   encode(message: MessageOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.messageSetWireFormat !== undefined && message.messageSetWireFormat !== false) {
@@ -6053,21 +4973,6 @@ function createBaseFieldOptions(): FieldOptions {
   };
 }
 
-/**
- * Summary: Executes or defines FieldOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FieldOptions: MessageFns<FieldOptions> = {
   encode(message: FieldOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.ctype !== undefined && message.ctype !== 0) {
@@ -6372,21 +5277,6 @@ function createBaseFieldOptions_EditionDefault(): FieldOptions_EditionDefault {
   return { edition: 0, value: "" };
 }
 
-/**
- * Summary: Executes or defines FieldOptions_EditionDefault.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FieldOptions_EditionDefault: MessageFns<FieldOptions_EditionDefault> = {
   encode(message: FieldOptions_EditionDefault, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.edition !== undefined && message.edition !== 0) {
@@ -6463,21 +5353,6 @@ function createBaseFieldOptions_FeatureSupport(): FieldOptions_FeatureSupport {
   return { editionIntroduced: 0, editionDeprecated: 0, deprecationWarning: "", editionRemoved: 0, removalError: "" };
 }
 
-/**
- * Summary: Executes or defines FieldOptions_FeatureSupport.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FieldOptions_FeatureSupport: MessageFns<FieldOptions_FeatureSupport> = {
   encode(message: FieldOptions_FeatureSupport, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.editionIntroduced !== undefined && message.editionIntroduced !== 0) {
@@ -6622,21 +5497,6 @@ function createBaseOneofOptions(): OneofOptions {
   return { features: undefined, uninterpretedOption: [] };
 }
 
-/**
- * Summary: Executes or defines OneofOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const OneofOptions: MessageFns<OneofOptions> = {
   encode(message: OneofOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.features !== undefined) {
@@ -6725,21 +5585,6 @@ function createBaseEnumOptions(): EnumOptions {
   };
 }
 
-/**
- * Summary: Executes or defines EnumOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const EnumOptions: MessageFns<EnumOptions> = {
   encode(message: EnumOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.allowAlias !== undefined && message.allowAlias !== false) {
@@ -6888,21 +5733,6 @@ function createBaseEnumValueOptions(): EnumValueOptions {
   };
 }
 
-/**
- * Summary: Executes or defines EnumValueOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const EnumValueOptions: MessageFns<EnumValueOptions> = {
   encode(message: EnumValueOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.deprecated !== undefined && message.deprecated !== false) {
@@ -7043,21 +5873,6 @@ function createBaseServiceOptions(): ServiceOptions {
   return { features: undefined, deprecated: false, uninterpretedOption: [] };
 }
 
-/**
- * Summary: Executes or defines ServiceOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const ServiceOptions: MessageFns<ServiceOptions> = {
   encode(message: ServiceOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.features !== undefined) {
@@ -7156,21 +5971,6 @@ function createBaseMethodOptions(): MethodOptions {
   return { deprecated: false, idempotencyLevel: 0, features: undefined, uninterpretedOption: [] };
 }
 
-/**
- * Summary: Executes or defines MethodOptions.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const MethodOptions: MessageFns<MethodOptions> = {
   encode(message: MethodOptions, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.deprecated !== undefined && message.deprecated !== false) {
@@ -7297,21 +6097,6 @@ function createBaseUninterpretedOption(): UninterpretedOption {
   };
 }
 
-/**
- * Summary: Executes or defines UninterpretedOption.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const UninterpretedOption: MessageFns<UninterpretedOption> = {
   encode(message: UninterpretedOption, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.name) {
@@ -7494,21 +6279,6 @@ function createBaseUninterpretedOption_NamePart(): UninterpretedOption_NamePart 
   return { namePart: "", isExtension: false };
 }
 
-/**
- * Summary: Executes or defines UninterpretedOption_NamePart.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const UninterpretedOption_NamePart: MessageFns<UninterpretedOption_NamePart> = {
   encode(message: UninterpretedOption_NamePart, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.namePart !== "") {
@@ -7602,21 +6372,6 @@ function createBaseFeatureSet(): FeatureSet {
   };
 }
 
-/**
- * Summary: Executes or defines FeatureSet.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FeatureSet: MessageFns<FeatureSet> = {
   encode(message: FeatureSet, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.fieldPresence !== undefined && message.fieldPresence !== 0) {
@@ -7823,21 +6578,6 @@ function createBaseFeatureSet_VisibilityFeature(): FeatureSet_VisibilityFeature 
   return {};
 }
 
-/**
- * Summary: Executes or defines FeatureSet_VisibilityFeature.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FeatureSet_VisibilityFeature: MessageFns<FeatureSet_VisibilityFeature> = {
   encode(_: FeatureSet_VisibilityFeature, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
@@ -7881,21 +6621,6 @@ function createBaseFeatureSetDefaults(): FeatureSetDefaults {
   return { defaults: [], minimumEdition: 0, maximumEdition: 0 };
 }
 
-/**
- * Summary: Executes or defines FeatureSetDefaults.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FeatureSetDefaults: MessageFns<FeatureSetDefaults> = {
   encode(message: FeatureSetDefaults, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.defaults) {
@@ -7998,21 +6723,6 @@ function createBaseFeatureSetDefaults_FeatureSetEditionDefault(): FeatureSetDefa
   return { edition: 0, overridableFeatures: undefined, fixedFeatures: undefined };
 }
 
-/**
- * Summary: Executes or defines FeatureSetDefaults_FeatureSetEditionDefault.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const FeatureSetDefaults_FeatureSetEditionDefault: MessageFns<FeatureSetDefaults_FeatureSetEditionDefault> = {
   encode(
     message: FeatureSetDefaults_FeatureSetEditionDefault,
@@ -8124,21 +6834,6 @@ function createBaseSourceCodeInfo(): SourceCodeInfo {
   return { location: [] };
 }
 
-/**
- * Summary: Executes or defines SourceCodeInfo.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const SourceCodeInfo: MessageFns<SourceCodeInfo> = {
   encode(message: SourceCodeInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.location) {
@@ -8201,21 +6896,6 @@ function createBaseSourceCodeInfo_Location(): SourceCodeInfo_Location {
   return { path: [], span: [], leadingComments: "", trailingComments: "", leadingDetachedComments: [] };
 }
 
-/**
- * Summary: Executes or defines SourceCodeInfo_Location.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const SourceCodeInfo_Location: MessageFns<SourceCodeInfo_Location> = {
   encode(message: SourceCodeInfo_Location, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     writer.uint32(10).fork();
@@ -8376,21 +7056,6 @@ function createBaseGeneratedCodeInfo(): GeneratedCodeInfo {
   return { annotation: [] };
 }
 
-/**
- * Summary: Executes or defines GeneratedCodeInfo.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const GeneratedCodeInfo: MessageFns<GeneratedCodeInfo> = {
   encode(message: GeneratedCodeInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.annotation) {
@@ -8453,21 +7118,6 @@ function createBaseGeneratedCodeInfo_Annotation(): GeneratedCodeInfo_Annotation 
   return { path: [], sourceFile: "", begin: 0, end: 0, semantic: 0 };
 }
 
-/**
- * Summary: Executes or defines GeneratedCodeInfo_Annotation.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const GeneratedCodeInfo_Annotation: MessageFns<GeneratedCodeInfo_Annotation> = {
   encode(message: GeneratedCodeInfo_Annotation, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     writer.uint32(10).fork();
@@ -8623,21 +7273,6 @@ function base64FromBytes(arr: Uint8Array): string {
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-/**
- * Summary: Executes or defines DeepPartial.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export type DeepPartial<T> = T extends Builtin ? T
   : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
@@ -8645,21 +7280,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-/**
- * Summary: Executes or defines Exact.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
@@ -8678,21 +7298,6 @@ function isSet(value: any): boolean {
   return value !== null && value !== undefined;
 }
 
-/**
- * Summary: Executes or defines MessageFns.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface MessageFns<T> {
   encode(message: T, writer?: BinaryWriter): BinaryWriter;
   decode(input: BinaryReader | Uint8Array, length?: number): T;

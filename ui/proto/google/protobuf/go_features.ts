@@ -7,38 +7,8 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-/**
- * Summary: Executes or defines protobufPackage.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const protobufPackage = "pb";
 
-/**
- * Summary: Executes or defines GoFeatures.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface GoFeatures {
   /**
    * Whether or not to generate the deprecated UnmarshalJSON method for enums.
@@ -66,21 +36,6 @@ export enum GoFeatures_APILevel {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines goFeatures_APILevelFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function goFeatures_APILevelFromJSON(object: any): GoFeatures_APILevel {
   switch (object) {
     case 0:
@@ -102,21 +57,6 @@ export function goFeatures_APILevelFromJSON(object: any): GoFeatures_APILevel {
   }
 }
 
-/**
- * Summary: Executes or defines goFeatures_APILevelToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function goFeatures_APILevelToJSON(object: GoFeatures_APILevel): string {
   switch (object) {
     case GoFeatures_APILevel.API_LEVEL_UNSPECIFIED:
@@ -141,21 +81,6 @@ export enum GoFeatures_StripEnumPrefix {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines goFeatures_StripEnumPrefixFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function goFeatures_StripEnumPrefixFromJSON(object: any): GoFeatures_StripEnumPrefix {
   switch (object) {
     case 0:
@@ -177,21 +102,6 @@ export function goFeatures_StripEnumPrefixFromJSON(object: any): GoFeatures_Stri
   }
 }
 
-/**
- * Summary: Executes or defines goFeatures_StripEnumPrefixToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function goFeatures_StripEnumPrefixToJSON(object: GoFeatures_StripEnumPrefix): string {
   switch (object) {
     case GoFeatures_StripEnumPrefix.STRIP_ENUM_PREFIX_UNSPECIFIED:
@@ -232,21 +142,6 @@ export enum GoFeatures_OptimizeModeFeature_OptimizeMode {
   UNRECOGNIZED = -1,
 }
 
-/**
- * Summary: Executes or defines goFeatures_OptimizeModeFeature_OptimizeModeFromJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function goFeatures_OptimizeModeFeature_OptimizeModeFromJSON(
   object: any,
 ): GoFeatures_OptimizeModeFeature_OptimizeMode {
@@ -267,21 +162,6 @@ export function goFeatures_OptimizeModeFeature_OptimizeModeFromJSON(
   }
 }
 
-/**
- * Summary: Executes or defines goFeatures_OptimizeModeFeature_OptimizeModeToJSON.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export function goFeatures_OptimizeModeFeature_OptimizeModeToJSON(
   object: GoFeatures_OptimizeModeFeature_OptimizeMode,
 ): string {
@@ -302,21 +182,6 @@ function createBaseGoFeatures(): GoFeatures {
   return { legacyUnmarshalJsonEnum: false, apiLevel: 0, stripEnumPrefix: 0, optimizeMode: 0 };
 }
 
-/**
- * Summary: Executes or defines GoFeatures.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const GoFeatures: MessageFns<GoFeatures> = {
   encode(message: GoFeatures, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.legacyUnmarshalJsonEnum !== undefined && message.legacyUnmarshalJsonEnum !== false) {
@@ -441,21 +306,6 @@ function createBaseGoFeatures_OptimizeModeFeature(): GoFeatures_OptimizeModeFeat
   return {};
 }
 
-/**
- * Summary: Executes or defines GoFeatures_OptimizeModeFeature.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const GoFeatures_OptimizeModeFeature: MessageFns<GoFeatures_OptimizeModeFeature> = {
   encode(_: GoFeatures_OptimizeModeFeature, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
@@ -497,21 +347,6 @@ export const GoFeatures_OptimizeModeFeature: MessageFns<GoFeatures_OptimizeModeF
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-/**
- * Summary: Executes or defines DeepPartial.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export type DeepPartial<T> = T extends Builtin ? T
   : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
@@ -519,21 +354,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-/**
- * Summary: Executes or defines Exact.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
@@ -541,21 +361,6 @@ function isSet(value: any): boolean {
   return value !== null && value !== undefined;
 }
 
-/**
- * Summary: Executes or defines MessageFns.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface MessageFns<T> {
   encode(message: T, writer?: BinaryWriter): BinaryWriter;
   decode(input: BinaryReader | Uint8Array, length?: number): T;

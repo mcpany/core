@@ -7,38 +7,8 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
-/**
- * Summary: Executes or defines protobufPackage.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const protobufPackage = "bus";
 
-/**
- * Summary: Executes or defines MessageBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface MessageBus {
   inMemory?: InMemoryBus | undefined;
   redis?: RedisBus | undefined;
@@ -46,79 +16,19 @@ export interface MessageBus {
   kafka?: KafkaBus | undefined;
 }
 
-/**
- * Summary: Executes or defines InMemoryBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface InMemoryBus {
 }
 
-/**
- * Summary: Executes or defines NatsBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface NatsBus {
   serverUrl: string;
 }
 
-/**
- * Summary: Executes or defines RedisBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface RedisBus {
   address: string;
   db: number;
   password: string;
 }
 
-/**
- * Summary: Executes or defines KafkaBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface KafkaBus {
   brokers: string[];
   topicPrefix: string;
@@ -129,21 +39,6 @@ function createBaseMessageBus(): MessageBus {
   return { inMemory: undefined, redis: undefined, nats: undefined, kafka: undefined };
 }
 
-/**
- * Summary: Executes or defines MessageBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const MessageBus: MessageFns<MessageBus> = {
   encode(message: MessageBus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.inMemory !== undefined) {
@@ -262,21 +157,6 @@ function createBaseInMemoryBus(): InMemoryBus {
   return {};
 }
 
-/**
- * Summary: Executes or defines InMemoryBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const InMemoryBus: MessageFns<InMemoryBus> = {
   encode(_: InMemoryBus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
@@ -320,21 +200,6 @@ function createBaseNatsBus(): NatsBus {
   return { serverUrl: "" };
 }
 
-/**
- * Summary: Executes or defines NatsBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const NatsBus: MessageFns<NatsBus> = {
   encode(message: NatsBus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.serverUrl !== "") {
@@ -399,21 +264,6 @@ function createBaseRedisBus(): RedisBus {
   return { address: "", db: 0, password: "" };
 }
 
-/**
- * Summary: Executes or defines RedisBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const RedisBus: MessageFns<RedisBus> = {
   encode(message: RedisBus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.address !== "") {
@@ -506,21 +356,6 @@ function createBaseKafkaBus(): KafkaBus {
   return { brokers: [], topicPrefix: "", consumerGroup: "" };
 }
 
-/**
- * Summary: Executes or defines KafkaBus.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export const KafkaBus: MessageFns<KafkaBus> = {
   encode(message: KafkaBus, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.brokers) {
@@ -619,21 +454,6 @@ export const KafkaBus: MessageFns<KafkaBus> = {
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-/**
- * Summary: Executes or defines DeepPartial.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export type DeepPartial<T> = T extends Builtin ? T
   : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
@@ -641,21 +461,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-/**
- * Summary: Executes or defines Exact.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
@@ -663,21 +468,6 @@ function isSet(value: any): boolean {
   return value !== null && value !== undefined;
 }
 
-/**
- * Summary: Executes or defines MessageFns.
- *
- * Parameters:
- *   - various: See signature.
- *
- * Returns:
- *   various: See signature.
- *
- * Errors:
- *   - None explicitly documented.
- *
- * Side Effects:
- *   - None explicitly documented.
- */
 export interface MessageFns<T> {
   encode(message: T, writer?: BinaryWriter): BinaryWriter;
   decode(input: BinaryReader | Uint8Array, length?: number): T;
