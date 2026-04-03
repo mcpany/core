@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Fast-Path Mesh Resumption (FPMR) Broker**: (P0) Authoritative resumption service utilizing hardware-attested "Trust Tickets" to reduce SNT tunnel latency in multi-node meshes.
+- **Hardware-Accelerated Zero-Knowledge Proofs (HAZKP) Provider**: (P0) Performance-optimizing identity service utilizing specialized hardware extensions for sub-millisecond generation of PPRP reasoning proofs.
+- **Predictive Task Auctioning (PTA) Hub**: (P0) Strategic coordination service for horizontal meshes that speculatively auctions mission-root tasks to neutralize mailbox lock contention.
+
+### Priority Shifts
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P0) Elevated with the requirement for mandatory **HAZKP** integration to satisfy the 200ms attestation tax threshold.
+- **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Evolving into the **PTA Hub** for speculative teammate coordination.
