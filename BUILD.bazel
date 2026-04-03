@@ -111,3 +111,5 @@ config_setting(
     values = {"host_cpu": "k8"},
     visibility = ["//visibility:public"],
 )
+
+# Force CI cache reset to resolve disk space issues - 2026-07-25
