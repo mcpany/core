@@ -1,0 +1,5 @@
+filegroup(
+    name = "features",
+    srcs = glob(["*.md"]),
+    visibility = ["//visibility:public"],
+)
