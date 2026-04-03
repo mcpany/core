@@ -13,7 +13,6 @@ test.describe('Upstream Auth Display', () => {
             client_id: { plainText: 'test-client-id-e2e' },
             scopes: 'read,write,admin',
             token_url: 'https://auth.example.com/oauth/token',
-            grant_type: 'authorization_code'
           }
         }
       }

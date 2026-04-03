@@ -89,8 +89,8 @@ function AuthConfigurationCard({ auth }: { auth: any }) {
             <div className="p-3 space-y-3">
                 {auth.oauth2 && (
                     <div className="grid grid-cols-2 gap-2">
-                        <div className="font-medium text-muted-foreground">Grant Type</div>
-                        <div className="font-mono text-xs">{auth.oauth2.grantType || 'authorization_code'}</div>
+
+
                         <div className="font-medium text-muted-foreground">Client ID</div>
                         <div className="font-mono text-xs truncate" title={auth.oauth2.clientId?.plainText || auth.oauth2.clientId?.envVar || "Secret"}>{(auth.oauth2.clientId?.plainText || auth.oauth2.clientId?.envVar || "***")}</div>
                         {auth.oauth2.scopes && (
