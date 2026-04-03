@@ -38,6 +38,9 @@ test.describe('Rich Result Viewer', () => {
         }
       }
     });
+    if (!response.ok()) {
+        console.error("Failed to seed service:", await response.text());
+    }
     expect(response.ok()).toBeTruthy();
   });
 
