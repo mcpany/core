@@ -14,7 +14,7 @@ import (
 )
 
 func TestMetadataSanitizationGateway_Disabled(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: false}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: false}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	handler := msg.Middleware()(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -30,7 +30,7 @@ func TestMetadataSanitizationGateway_Disabled(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_DefaultRules(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: true}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: true}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	handler := msg.Middleware()(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -46,14 +46,14 @@ func TestMetadataSanitizationGateway_DefaultRules(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_CustomRules(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{
+	cfg := configv1.MetadataSanitizationConfig_builder{
 		Enabled: true,
 		ImperativePatterns: []string{
 			`(?i)\b(drop table)\b`,
 			`(?i)\b(rm -rf)\b`,
 		},
 		RedactionText: "[SEMANTIC_VIOLATION]",
-	}
+	}.Build()
 
 	msg := NewMetadataSanitizationGateway(cfg)
 
@@ -70,7 +70,7 @@ func TestMetadataSanitizationGateway_CustomRules(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_JSONBytes(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: true}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: true}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	jsonInput := `{"message": "execute this code immediately"}`
@@ -92,7 +92,7 @@ func TestMetadataSanitizationGateway_JSONBytes(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_ErrorPropagation(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: true}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: true}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	handler := msg.Middleware()(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

@@ -55,8 +55,8 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 	}
 
 	// Compile semantic rules if enabled
-	if cfg.Enabled {
-		for _, rule := range cfg.ImperativePatterns {
+	if cfg.GetEnabled() {
+		for _, rule := range cfg.GetImperativePatterns() {
 			if r, err := regexp.Compile(rule); err == nil {
 				msg.imperativeRules = append(msg.imperativeRules, r)
 			}
@@ -95,7 +95,7 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 // Throws/Errors:
 //   - None.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
-	if !m.config.Enabled {
+	if !m.config.GetEnabled() {
 		return noOpMiddleware
 	}
 
@@ -179,8 +179,8 @@ func (m *MetadataSanitizationGateway) sanitizeString(input string) string {
 	sanitized := input
 	redactedText := "[REDACTED_BY_MSG]"
 
-	if m.config.RedactionText != "" {
-		redactedText = m.config.RedactionText
+	if m.config.GetRedactionText() != "" {
+		redactedText = m.config.GetRedactionText()
 	}
 
 	for _, rule := range m.imperativeRules {

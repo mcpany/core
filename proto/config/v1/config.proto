@@ -240,6 +240,16 @@ message DLPConfig {
   repeated string custom_patterns = 2 [json_name = "custom_patterns"];
 }
 
+// MetadataSanitizationConfig configures the Metadata Sanitization Gateway (MSG).
+message MetadataSanitizationConfig {
+  // Whether the gateway is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // Custom regex patterns to identify imperative instructions.
+  repeated string imperative_patterns = 2 [json_name = "imperative_patterns"];
+  // The text to replace malicious instructions with.
+  string redaction_text = 3 [json_name = "redaction_text"];
+}
+
 // AuditConfig configures audit logging.
 message AuditConfig {
   // StorageType defines where audit logs are stored.
