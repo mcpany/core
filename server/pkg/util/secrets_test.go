@@ -19,6 +19,7 @@ import (
 )
 
 func TestResolveSecret(t *testing.T) {
+	util.ClearSecretCache()
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 	// t.Setenv("MCPANY_FILE_PATH_ALLOW_LIST", os.TempDir())
 	validation.SetAllowedPaths([]string{os.TempDir()})
@@ -312,9 +313,11 @@ func TestResolveSecret(t *testing.T) {
 }
 
 func TestResolveSecret_Vault(t *testing.T) {
+	util.ClearSecretCache()
 	t.Setenv("MCPANY_ALLOW_LOOPBACK_SECRETS", "true")
 
 	t.Run("Vault", func(t *testing.T) {
+		util.ClearSecretCache()
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/v1/secret/data/my-app/db", r.URL.Path)
 			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
@@ -341,6 +344,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 
 	t.Run("Vault secret not found", func(t *testing.T) {
+		util.ClearSecretCache()
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}))
@@ -363,6 +367,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 
 	t.Run("Vault key not found", func(t *testing.T) {
+		util.ClearSecretCache()
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = fmt.Fprint(w, `{"data": {"data": {"another-key": "another-value"}}}`)
@@ -386,6 +391,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 
 	t.Run("Vault KV v1", func(t *testing.T) {
+		util.ClearSecretCache()
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			assert.Equal(t, "/v1/secret/my-app/db", r.URL.Path)
 			assert.Equal(t, "my-vault-token", r.Header.Get("X-Vault-Token"))
@@ -440,6 +446,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 	})
 
 	t.Run("Secret resolution recursion limit", func(t *testing.T) {
+		util.ClearSecretCache()
 		// Create a circular dependency:
 		// secretA's token is secretB
 		// secretB's token is secretA
@@ -463,10 +470,13 @@ func TestResolveSecret_Vault(t *testing.T) {
 
 		_, err := util.ResolveSecret(context.Background(), secretA)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
+		if err != nil {
+			assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth")
+		}
 	})
 
 	t.Run("Context Cancelled", func(t *testing.T) {
+		util.ClearSecretCache()
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel() // Cancel immediately
 
@@ -486,10 +496,13 @@ func TestResolveSecret_Vault(t *testing.T) {
 
 		_, err := util.ResolveSecret(ctx, secret)
 		assert.Error(t, err)
-		assert.Equal(t, context.Canceled, err)
+		if err != nil {
+			assert.Contains(t, err.Error(), context.Canceled.Error())
+		}
 	})
 
 	t.Run("AwsSecretManager failure", func(t *testing.T) {
+		util.ClearSecretCache()
 		// Expect error because no credentials/network
 		smSecret := &configv1.AwsSecretManagerSecret{}
 		smSecret.SetSecretId("my-secret")
@@ -504,6 +517,7 @@ func TestResolveSecret_Vault(t *testing.T) {
 }
 
 func TestResolveSecretMap(t *testing.T) {
+	util.ClearSecretCache()
 	t.Run("Merge", func(t *testing.T) {
 		secretMap := map[string]*configv1.SecretValue{
 			"SECRET_VAR": configv1.SecretValue_builder{

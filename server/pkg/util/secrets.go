@@ -5,6 +5,8 @@ package util //nolint:revive,nolintlint // Package name 'util' is common in this
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -28,6 +30,28 @@ import (
 
 const maxSecretRecursionDepth = 10
 
+type cacheEntry struct {
+	value     string
+	expiresAt time.Time
+}
+
+var (
+	secretRegexCache sync.Map
+	secretCache      sync.Map
+	defaultSecretTTL = 5 * time.Minute
+)
+
+func hashSecretConfig(secret *configv1.SecretValue) string {
+	b, _ := json.Marshal(secret)
+	hash := sha256.Sum256(b)
+	return hex.EncodeToString(hash[:])
+}
+
+// ClearSecretCache clears the secret cache. Useful for testing.
+func ClearSecretCache() {
+	secretCache = sync.Map{}
+}
+
 // ResolveSecret resolves a SecretValue configuration object into a concrete string value.
 // It handles various secret types including plain text, environment variables, file paths,
 // remote URLs, Vault, and AWS Secrets Manager.
@@ -45,9 +69,11 @@ func ResolveSecret(ctx context.Context, secret *configv1.SecretValue) (string, e
 	return resolveSecretRecursive(ctx, secret, 0)
 }
 
-var secretRegexCache sync.Map
-
 func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) {
+	if depth > maxSecretRecursionDepth {
+		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
+	}
+
 	val, err := resolveSecretImpl(ctx, secret, depth)
 	if err != nil {
 		return "", err
@@ -79,14 +105,41 @@ func resolveSecretRecursive(ctx context.Context, secret *configv1.SecretValue, d
 }
 
 func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) { //nolint:gocyclo
-	if depth > maxSecretRecursionDepth {
-		return "", fmt.Errorf("secret resolution exceeded max recursion depth of %d", maxSecretRecursionDepth)
-	}
-
 	if secret == nil {
 		return "", nil
 	}
 
+	var val string
+	var err error
+
+	// For SecretsManager and Vault, apply cache with TTL for dynamic rotation.
+	switch secret.WhichValue() {
+	case configv1.SecretValue_Vault_case, configv1.SecretValue_AwsSecretManager_case:
+		cacheKey := hashSecretConfig(secret)
+		if cached, ok := secretCache.Load(cacheKey); ok {
+			entry := cached.(cacheEntry)
+			if time.Now().Before(entry.expiresAt) {
+				return entry.value, nil
+			}
+			secretCache.Delete(cacheKey)
+		}
+
+		val, err = resolveSecretImplUncached(ctx, secret, depth)
+		if err != nil {
+			return "", err
+		}
+
+		secretCache.Store(cacheKey, cacheEntry{
+			value:     val,
+			expiresAt: time.Now().Add(defaultSecretTTL),
+		})
+		return val, nil
+	}
+
+	return resolveSecretImplUncached(ctx, secret, depth)
+}
+
+func resolveSecretImplUncached(ctx context.Context, secret *configv1.SecretValue, depth int) (string, error) {
 	switch secret.WhichValue() {
 	case configv1.SecretValue_PlainText_case:
 		return strings.TrimSpace(secret.GetPlainText()), nil
@@ -312,6 +365,7 @@ func resolveSecretImpl(ctx context.Context, secret *configv1.SecretValue, depth 
 		return "", nil
 	}
 }
+
 
 // ResolveSecretMap resolves a map of SecretValue objects and merges them with a map of plain strings.
 // If a key exists in both maps, the value from the secretMap (once resolved) takes precedence.

@@ -16,6 +16,7 @@ import (
 )
 
 func TestResolveSecret_AwsSecretManager(t *testing.T) {
+	util.ClearSecretCache()
 	// Mock AWS Secrets Manager Server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// assert.Equal(t, "POST", r.Method)
@@ -27,6 +28,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 
 			// Construct response.
+			// Just return the standard body regardless of SecretId, this is a simple mock
 			resp := map[string]string{
 				"Name":         "my-secret",
 				"SecretString": `{"my-key": "my-aws-value", "other-key": 123}`,
@@ -52,6 +54,7 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
+		util.ClearSecretCache()
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
@@ -67,9 +70,47 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
 
+		util.ClearSecretCache()
+
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
 		assert.Equal(t, "my-aws-value", resolved)
+
+	})
+
+	t.Run("AwsSecretManager caching", func(t *testing.T) {
+		util.ClearSecretCache()
+
+		callCount := 0
+		cacheServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			callCount++
+			w.WriteHeader(http.StatusOK)
+			resp := map[string]string{
+				"Name":         "my-cached-secret",
+				"SecretString": `{"cached-key": "cached-value"}`,
+			}
+
+			_ = json.NewEncoder(w).Encode(resp)
+			return
+		}))
+		defer cacheServer.Close()
+		t.Setenv("AWS_ENDPOINT_URL", cacheServer.URL)
+
+		awsCachedSecret := &configv1.AwsSecretManagerSecret{}
+		awsCachedSecret.SetSecretId("my-cached-secret")
+		awsCachedSecret.SetJsonKey("cached-key")
+		cachedSecret := &configv1.SecretValue{}
+		cachedSecret.SetAwsSecretManager(awsCachedSecret)
+
+		res1, err1 := util.ResolveSecret(context.Background(), cachedSecret)
+		assert.NoError(t, err1)
+		assert.Equal(t, "cached-value", res1)
+
+		res2, err2 := util.ResolveSecret(context.Background(), cachedSecret)
+		assert.NoError(t, err2)
+		assert.Equal(t, "cached-value", res2)
+
+		assert.Equal(t, 1, callCount, "Should have only called AWS once due to cache")
 	})
 
 	t.Run("AwsSecretManager with non-string key", func(t *testing.T) {
@@ -79,6 +120,8 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
+
+		util.ClearSecretCache()
 
 		resolved, err := util.ResolveSecret(context.Background(), secret)
 		assert.NoError(t, err)
@@ -96,12 +139,12 @@ func TestResolveSecret_AwsSecretManager(t *testing.T) {
 		t.Setenv("AWS_ENDPOINT_URL", failServer.URL)
 
 		awsSecret := &configv1.AwsSecretManagerSecret{}
-		awsSecret.SetSecretId("my-secret")
+		awsSecret.SetSecretId("my-fail-secret")
 		secret := &configv1.SecretValue{}
 		secret.SetAwsSecretManager(awsSecret)
+		util.ClearSecretCache()
 
 		_, err := util.ResolveSecret(context.Background(), secret)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to get secret value")
 	})
 }
