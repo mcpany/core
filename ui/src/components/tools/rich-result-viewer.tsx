@@ -221,7 +221,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : (isPropertiesEligible ? "properties" : "json"));
 
     return (
-        <Tabs defaultValue={defaultTab} className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full" key={defaultTab}>
             <div className="flex items-center justify-between mb-2">
                 <TabsList>
                     {mcpContent && (

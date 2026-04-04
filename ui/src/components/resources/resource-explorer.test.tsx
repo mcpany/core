@@ -96,7 +96,7 @@ describe('ResourceExplorer', () => {
 
     await waitFor(() => {
         expect(apiClient.readResource).toHaveBeenCalledWith('file:///app/config.json');
-        expect(screen.getByText(/"test"/)).toBeInTheDocument();
+        expect(screen.getByText('test')).toBeInTheDocument();
     });
   });
 });

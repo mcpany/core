@@ -42,7 +42,9 @@ describe('ResourceViewer', () => {
         text: '{"foo": "bar"}'
     };
     render(<ResourceViewer content={content} loading={false} />);
-    expect(screen.getByText(/"foo"/)).toBeInTheDocument();
+    // The RichResultViewer uses SmartTable to render single objects as a "Properties" tab.
+    expect(screen.getByText('foo')).toBeInTheDocument();
+    expect(screen.getByText('bar')).toBeInTheDocument();
   });
 
   it('renders Markdown content', () => {
