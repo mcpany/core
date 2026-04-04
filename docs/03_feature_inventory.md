@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Lightweight Attestation Lease (LAL) Provider**: (P0) Authoritative identity service issuing time-bound, cryptographically derived tokens for sub-10ms cross-node coordination, neutralizing Handshake Exhaustion.
+- **Automated Reasoning Anchor (ARA) Protocol**: (P0) Advanced cognitive governance layer that monitors coherence and automatically refresh-pins mission-root fragments as GC-Immune anchors.
+- **Hierarchical Cost Attribution (HCA) Gateway**: (P1) Advanced economic security extension for the RBF that cryptographically attributes reasoning-effort (REA) to specific mission branches.
+- **Active Alignment Heartbeat (AAH) Monitor**: (P0) Authoritative coordination service for ARA-compliant agents, issuing hardware-attested heartbeats to prevent subagent semantic drift.
+
+### Priority Shifts
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with mandatory support for the **ARA Protocol** nomination process.
+- **Fast-Path Tunnel Resumption**: (Re-affirmed P0) Designated as a critical dependency for the **LAL Provider** to reduce coordination tax.
