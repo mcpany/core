@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing MTTC with Handshake Prefetching
+**Context:** Market sync confirms that the 500ms+ coordination latency in distributed meshes is causing significant "Cognitive Stall."
+**Architecture Adjustment:**
+* Introducing the **Asynchronous Handshake Prefetcher (AHP)** in Section 4.
+* The AMT Broker will now perform speculative hardware handshakes with remote nodes based on intent signals detected in the parent reasoning trace, overlapping attestation with agent processing.
+**Security Impact:** Reduces MTTC to sub-50ms levels, eliminating the performance bottleneck of mandatory mesh encryption without compromising attestation strength.

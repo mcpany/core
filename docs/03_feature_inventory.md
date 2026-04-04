@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Asynchronous Handshake Prefetcher (AHP)**: (P0) Intent-aware attestation service that speculatively initiates hardware handshakes for remote tools to reduce mesh coordination latency.
+- **Non-Evictable Anchor Manager (NEAM)**: (P0) Cognitive security service utilizing hardware-bound attention masking to protect mission-root anchors from context-window garbage collection.
+- **Wait-Graph Lease Resolver**: (P1) Advanced arbitration service for MBHL that identifies and breaks circular task-lease dependencies in parallel teams.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **AHP** integration to neutralize MTTC bottlenecks.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving into the **NEAM** for hardware-locked non-evictable sovereignty.

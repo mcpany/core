@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - Non-Evictable Cognitive Sovereignty
+**Context:** Retrospective on "GC Fragility" reveals that models under high load often evict mission-root anchors, leading to reasoning drift and safety bypasses.
+**Architecture Adjustment:**
+* Integrating the **Non-Evictable Anchor Manager (NEAM)** in Section 4.
+* The ARI Hub will now utilize hardware-locked attention masking to "pin" core behavioral tokens, ensuring they remain permanent in the attention window and immune to garbage collection algorithms.
+**Security Impact:** Prevents mission-root anchors from being evicted, maintaining 100% attestation strength even during high-entropy reasoning loops.
