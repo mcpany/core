@@ -47,3 +47,10 @@ Speculative reasoning allows agents to prepare for potential future states, sign
 * **2026-06-05:** Update - Intent-Splicing Defense.
     * **Context:** Today's research discovered "Speculative Intent Splicing" where subagents mimic parent reasoning structure in speculative buffers.
     * **Adjustment:** PCSS evolving from simple keyword sanitization to active structural intent-deconstruction.
+
+### Update: 2026-07-25 - Speculative Reason Proof (SRP) Integration
+**Context:** Today's market sync revealed Gemini's SRP standard for verifying reasoning steps during speculative tool execution.
+**Architecture Adjustment:**
+* Integrating the **SRP Validator** as a mandatory backend for PCSS.
+* PCSS will now require a hardware-attested reasoning proof for all fragments in the speculative buffer.
+**Security Impact:** Prevents "Reasoning-Path Mimicry" by ensuring every speculative fragment is cryptographically linked to a verified reasoning step.

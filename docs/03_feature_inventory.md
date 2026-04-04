@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Adaptive Lease Orchestrator (ALO)**: (P0) Dynamic lease management service that extends hardware-bound capability leases based on real-time reasoning progress signals.
+- **Speculative Reason Proof (SRP) Validator**: (P0) Authoritative verification service providing hardware-attested proofs for speculative reasoning steps (Gemini CLI compliance).
+- **Atomic Handoff Monotonicity (AHM) Provider**: (P0) Security middleware for the FPIR provider that anchors mesh handshakes to monotonic hardware counters to prevent "Tunnel-Racing."
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as a critical dependency for **ALO-driven** lease extensions.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **Consensus Heartbeat** integration to counter interpreted mission-root drift.

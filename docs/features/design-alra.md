@@ -61,3 +61,10 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
     * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
     * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
     * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+
+### Update: 2026-07-25 - Consensus-Aware Intent Anchoring
+**Context:** Today's market sync identified "Consensus Drift" in long-running sessions where agents deviate from mission-root interpretation.
+**Architecture Adjustment:**
+* Introducing "Periodic Consensus Heartbeats".
+* ALRA will now trigger a mesh-wide re-attestation of anchored fragments at configurable reasoning-depth intervals.
+**Security Impact:** Ensures that all agents in the swarm maintain a cryptographically synchronized interpretation of mission-root guardrails.
