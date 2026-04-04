@@ -61,3 +61,11 @@ Stylometric Identity Anchoring (SIA) mitigates this by providing behavioral iden
 * Introducing the "Paraphrasing Sandbox" for automated neutralization of spoofed linguistic fragments.
 * Mandating hardware-attested "Linguistic Base-Profiles" for all mission-critical supervisors.
 **Security Impact:** Moves from passive monitoring to active mitigation, preventing spoofed fragments from ever reaching the reasoning quorum.
+
+### Update: 2026-07-25 - Higher-Dimensional Behavioral Signal Anchoring (BSA)
+**Context:** Today's market sync revealed the emergence of "Stylometric Resonance" (CVE-2026-99012), where subagents mimic reasoning density and entropy to bypass SBF filters.
+**Architecture Adjustment:**
+* Upgrading the SIV provider to support **Behavioral Signal Anchoring (BSA)**.
+* In-gesting high-dimensional metrics: reasoning-path entropy, instruction density, and multi-modal trace alignment (MMSI).
+* Mandating hardware-attested "Cognitive Fingerprints" that include these higher-dimensional signals.
+**Security Impact:** Neutralizes advanced mimicry attacks that legacy stylometric checks cannot detect, ensuring absolute sovereignty of the supervisor's voice.

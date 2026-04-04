@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Phase-Bound State Sealing (PBSS)**: (P0) Authoritative phase governance service that cryptographically seals state snapshots upon mission-phase completion to prevent legacy context probing.
+- **Intent-Gated Enclave (IGE) Broker**: (P0) Hardware-enclave bound coordination service that dynamically provisions execution regions for specific mission phases, neutralizing transition deadlocks.
+- **AI-Native Logic-Bomb Scanner (ALBS)**: (P0) High-speed behavioral simulation service for tool-mediated handoffs to detect dormant logic bombs.
+
+### Priority Shifts
+- **Speculative State Migration (SSM)**: (P0) Elevated to critical status for neutralizing "Tunneling Latency Tax" in OpenClaw SNT deployments.
+- **Behavioral Signal Anchoring (BSA)**: (Re-affirmed P0) Elevated with mandatory integration into the SIV provider to counter stylometric resonance.
