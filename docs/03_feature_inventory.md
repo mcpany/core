@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attention-Splicing Firewall (ASF)**: (P0) High-speed security middleware extension for the SBF performing sub-millisecond stylometric analysis to block instruction splicing (CVE-2026-91023).
+- **Predictive Context Prefetcher (PCP) Adapter**: (P0) High-performance coordination service utilizing intent analysis to speculatively pre-load and sandbox context shards.
+- **Reasoning-Path Watermark (RPW) Validator**: (P0) Advanced provenance service for verifying cryptographically embedded watermarks in reasoning fragments to ensure thought lineage.
+- **Fast-Path Mission Resumption (FPMR)**: (P0) Performance-optimizing identity service utilizing session-bound "Mission Tickets" to neutralize pre-flight discovery latency.
+
+### Priority Shifts
+- **Stylometric Behavioral Firewall (SBF)**: (Re-affirmed P0) Elevated with mandatory **ASF** integration to counter mimicry-based hijacking.
+- **AMR Gateway**: (Re-affirmed P0) Evolving into the **FPMR** architecture to support sub-millisecond mission resumption.
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RPW** verification.

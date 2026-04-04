@@ -55,3 +55,11 @@ The Stylometric Behavioral Firewall (SBF) provides a multi-modal linguistic secu
 
 ## 7. Evolutionary Changelog
 * **2026-07-05:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Attention-Splicing Mimicry
+**Context:** Today's market sync revealed the emergence of the "Attention-Splicing" exploit (CVE-2026-91023) in Claude Code subagent coordination.
+**Architecture Adjustment:**
+* Evolving the MMSI Analyzer to support Attention-Splicing Firewall (ASF) logic.
+* Implementing sub-millisecond entropy analysis to detect "Instruction Splicing" hidden within monotonic reasoning monologues.
+* Mandating "Linguistic Purity" checks for all fragments crossing the Mission-Root boundary.
+**Security Impact:** Mitigates the risk of specialist subagents hijacking parent attention via high-confidence stylometric mimicry.
