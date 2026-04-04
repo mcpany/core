@@ -5,7 +5,7 @@
 
 import { test, expect } from '@playwright/test';
 import path from 'path';
-import { seedGlobalState, seedTraffic, seedWebhooks } from './e2e/test-data';
+import { seedGlobalState, seedTraffic, seedWebhooks, seedTraces } from './e2e/test-data';
 
 const DATE = new Date().toISOString().split('T')[0];
 // Use test-results directory which is writable in CI
@@ -20,6 +20,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     // Seed auxiliary data
     await seedTraffic(request);
     await seedWebhooks(request);
+    await seedTraces(request);
 
     // Login before each test
     await page.goto('/login');
