@@ -56,10 +56,10 @@ type GeminiCLI struct {
 // Summary: Executes the NewGeminiCLI operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *GeminiCLI: The returned value.
 //
 // Errors:
 //   - None.
@@ -112,7 +112,8 @@ func (g *GeminiCLI) geminiCommand(args ...string) *exec.Cmd {
 // Summary: Executes the AddMCP operation.
 //
 // Parameters:
-//   - None.
+//   - name (type): The parameter.
+//   - endpoint (string): The endpoint parameter.
 //
 // Returns:
 //   - None.
@@ -137,7 +138,7 @@ func (g *GeminiCLI) AddMCP(name, endpoint string) {
 // Summary: Executes the RemoveMCP operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
 //   - None.
@@ -163,13 +164,15 @@ func (g *GeminiCLI) RemoveMCP(name string) {
 // Summary: Executes the Run operation.
 //
 // Parameters:
-//   - None.
+//   - apiKey (type): The parameter.
+//   - prompt (string): The prompt parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

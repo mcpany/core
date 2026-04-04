@@ -143,7 +143,7 @@ var (
 // Summary: Executes the SetAllowedPaths operation.
 //
 // Parameters:
-//   - None.
+//   - paths ([]string): The paths parameter.
 //
 // Returns:
 //   - None.

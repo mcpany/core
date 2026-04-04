@@ -24,7 +24,7 @@ type TmpfsProvider struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *TmpfsProvider: The returned value.
 //
 // Errors:
 //   - None.
@@ -65,7 +65,7 @@ func NewTmpfsProvider() *TmpfsProvider {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - afero.Fs: The returned value.
 //
 // Errors:
 //   - None.
@@ -101,13 +101,14 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 // Summary: Executes the ResolvePath operation.
 //
 // Parameters:
-//   - None.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -148,10 +149,10 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

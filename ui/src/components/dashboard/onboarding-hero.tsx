@@ -15,7 +15,7 @@ import { Plus, ShoppingBag, BookOpen, CheckCircle2, Circle } from "lucide-react"
  *
  * Summary: Executes the OnboardingHero logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

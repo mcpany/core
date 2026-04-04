@@ -19,7 +19,7 @@ type MockWatcher struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *MockWatcher: The returned value.
 //
 // Errors:
 //   - None.
@@ -55,13 +55,14 @@ func NewMockWatcher() *MockWatcher {
 // Summary: Executes the Watch operation.
 //
 // Parameters:
-//   - None.
+//   - paths ([]string): The paths parameter.
+//   - reloadFunc (func(): The reloadFunc parameter.
 //
 // Returns:
-//   - None.
+//   - ) error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -26,10 +26,10 @@ type PerRPCCredentials struct {
 // Summary: Executes the NewPerRPCCredentials operation.
 //
 // Parameters:
-//   - None.
+//   - authenticator (UpstreamAuthenticator): The authenticator parameter.
 //
 // Returns:
-//   - None.
+//   - credentials.PerRPCCredentials: The returned value.
 //
 // Errors:
 //   - None.
@@ -74,13 +74,15 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 // Summary: Executes the GetRequestMetadata operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - _ (...string): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - map[string]string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -143,7 +145,7 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 //   - None.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

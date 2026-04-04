@@ -26,16 +26,26 @@ type Bus[T any] struct {
 
 // New creates and initializes a new NATS bus.
 //
-// Summary: Executes the New operation.
+// If the server URL is not provided in the configuration, an embedded NATS server
+// is started on a random port.
 //
 // Parameters:
-//   - None.
+//   - config: *bus.NatsBus. The configuration settings for the NATS bus.
 //
 // Returns:
-//   - None.
+//   - *Bus[T]: A pointer to the initialized NATS bus.
+//   - error: An error if the connection or embedded server startup fails.
+//
+// Summary: Initializes New operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -83,40 +93,18 @@ func (b *Bus[T]) Close() {
 
 // Publish sends a message to a NATS topic.
 //
-// The message is marshaled to JSON before being published.
-//
-// Parameters:
-//   - _: context.Context. The context (unused in NATS publish).
-//   - topic: string. The topic to publish to.
-//   - msg: T. The message payload.
-//
-// Returns:
-//   - error: An error if marshaling or publishing fails.
-//
-// Summary: Executes Publish operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-// Publish sends a message to a NATS topic.
-//
 // Summary: Executes the Publish operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - msg (T): The msg parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -157,10 +145,12 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Summary: Executes the Subscribe operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - ) (unsubscribe func()): The returned value.
 //
 // Errors:
 //   - None.
@@ -208,10 +198,12 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 // Summary: Executes the SubscribeOnce operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - ) (unsubscribe func()): The returned value.
 //
 // Errors:
 //   - None.

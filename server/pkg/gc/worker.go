@@ -36,10 +36,10 @@ type Worker struct {
 // Summary: Executes the New operation.
 //
 // Parameters:
-//   - None.
+//   - config (Config): The config parameter.
 //
 // Returns:
-//   - None.
+//   - *Worker: The returned value.
 //
 // Errors:
 //   - None.
@@ -89,7 +89,7 @@ func New(config Config) *Worker {
 // Summary: Executes the Start operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
 //   - None.

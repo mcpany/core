@@ -30,10 +30,12 @@ type HTTPClientWrapper struct {
 // Summary: Executes the NewHTTPClientWrapper operation.
 //
 // Parameters:
-//   - None.
+//   - client (*http.Client): The client parameter.
+//   - config (*configv1.UpstreamServiceConfig): The config parameter.
+//   - checker (health.Checker): The checker parameter.
 //
 // Returns:
-//   - None.
+//   - *HTTPClientWrapper: The returned value.
 //
 // Errors:
 //   - None.
@@ -84,10 +86,10 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 // Summary: Executes the IsHealthy operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -136,10 +138,10 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

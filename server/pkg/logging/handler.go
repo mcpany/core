@@ -42,10 +42,11 @@ type BroadcastHandler struct {
 // Summary: Executes the NewBroadcastHandler operation.
 //
 // Parameters:
-//   - None.
+//   - broadcaster (*Broadcaster): The broadcaster parameter.
+//   - level (slog.Leveler): The level parameter.
 //
 // Returns:
-//   - None.
+//   - *BroadcastHandler: The returned value.
 //
 // Errors:
 //   - None.
@@ -91,10 +92,11 @@ func NewBroadcastHandler(broadcaster *Broadcaster, level slog.Leveler) *Broadcas
 // Summary: Executes the Enabled operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -137,13 +139,14 @@ func (h *BroadcastHandler) Enabled(_ context.Context, level slog.Level) bool {
 // Summary: Executes the Handle operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -252,10 +255,10 @@ func (h *BroadcastHandler) Handle(_ context.Context, r slog.Record) error {
 // Summary: Executes the WithAttrs operation.
 //
 // Parameters:
-//   - None.
+//   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -309,10 +312,10 @@ func (h *BroadcastHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes the WithGroup operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -373,10 +376,10 @@ type TeeHandler struct {
 // Summary: Executes the NewTeeHandler operation.
 //
 // Parameters:
-//   - None.
+//   - handlers (...slog.Handler): The handlers parameter.
 //
 // Returns:
-//   - None.
+//   - *TeeHandler: The returned value.
 //
 // Errors:
 //   - None.
@@ -418,10 +421,11 @@ func NewTeeHandler(handlers ...slog.Handler) *TeeHandler {
 // Summary: Executes the Enabled operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -469,13 +473,14 @@ func (h *TeeHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Executes the Handle operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -523,10 +528,10 @@ func (h *TeeHandler) Handle(ctx context.Context, r slog.Record) error {
 // Summary: Executes the WithAttrs operation.
 //
 // Parameters:
-//   - None.
+//   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -572,10 +577,10 @@ func (h *TeeHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes the WithGroup operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Handler: The returned value.
 //
 // Errors:
 //   - None.

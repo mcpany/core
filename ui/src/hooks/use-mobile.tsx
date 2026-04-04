@@ -12,7 +12,7 @@ const MOBILE_BREAKPOINT = 768
  *
  * Summary: Executes the useIsMobile logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

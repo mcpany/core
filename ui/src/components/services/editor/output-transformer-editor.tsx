@@ -24,7 +24,8 @@ interface OutputTransformerEditorProps {
  *
  * Summary: Executes the OutputTransformerEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { transformer - The { transformer parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

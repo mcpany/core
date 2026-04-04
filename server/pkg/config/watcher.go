@@ -40,10 +40,11 @@ type Watcher struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Watcher: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

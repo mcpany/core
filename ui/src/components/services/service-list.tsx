@@ -59,7 +59,18 @@ interface ServiceListProps {
  *
  * Summary: Executes the ServiceList logic.
  *
- * @param params - The parameters for the operation.
+ * @param { services - The { services parameter.
+ * @param isLoading - The isLoading parameter.
+ * @param onToggle - The onToggle parameter.
+ * @param onEdit - The onEdit parameter.
+ * @param onDelete - The onDelete parameter.
+ * @param onDuplicate - The onDuplicate parameter.
+ * @param onExport - The onExport parameter.
+ * @param onBulkToggle - The onBulkToggle parameter.
+ * @param onBulkDelete - The onBulkDelete parameter.
+ * @param onLogin - The onLogin parameter.
+ * @param onRestart - The onRestart parameter.
+ * @param onBulkEdit } - The onBulkEdit } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

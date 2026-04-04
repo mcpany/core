@@ -18,7 +18,7 @@ import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse
  *
  * Summary: Executes the WidgetSize logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -46,7 +46,7 @@ export type WidgetSize = "full" | "half" | "third" | "two-thirds";
  *
  * Summary: Executes the WidgetDefinition logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -88,7 +88,7 @@ export interface WidgetDefinition {
  *
  * Summary: Executes the WIDGET_DEFINITIONS logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -214,7 +214,7 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
  *
  * Summary: Executes the getWidgetDefinition logic.
  *
- * @param params - The parameters for the operation.
+ * @param type - The type parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

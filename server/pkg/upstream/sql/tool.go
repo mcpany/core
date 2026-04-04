@@ -41,10 +41,14 @@ type Tool struct {
 // Summary: Executes the NewTool operation.
 //
 // Parameters:
-//   - None.
+//   - t (*v1.Tool): The t parameter.
+//   - db (*sql.DB): The db parameter.
+//   - callDef (*configv1.SqlCallDefinition): The callDef parameter.
+//   - policies ([]*configv1.CallPolicy): The policies parameter.
+//   - callID (string): The callID parameter.
 //
 // Returns:
-//   - None.
+//   - *Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -95,7 +99,7 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -135,7 +139,7 @@ func (t *Tool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -182,7 +186,7 @@ func (t *Tool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -228,7 +232,7 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

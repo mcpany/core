@@ -43,7 +43,7 @@ type BaseMessage struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -85,7 +85,7 @@ func (m *BaseMessage) CorrelationID() string {
 // Summary: Executes the SetCorrelationID operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
 //
 // Returns:
 //   - None.

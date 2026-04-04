@@ -52,7 +52,10 @@ interface ServiceEditorProps {
  *
  * Summary: Executes the ServiceEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { service - The { service parameter.
+ * @param onChange - The onChange parameter.
+ * @param onSave - The onSave parameter.
+ * @param onCancel } - The onCancel } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

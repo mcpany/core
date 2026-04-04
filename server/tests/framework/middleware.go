@@ -26,7 +26,7 @@ import (
 // Summary: Executes the TestE2ECaching operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
 //   - None.
@@ -58,10 +58,10 @@ func TestE2ECaching(t *testing.T) {
 // Summary: Executes the BuildCachingServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -84,7 +84,9 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterCachingService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -144,10 +146,11 @@ func protoString(value string) *string {
 // Summary: Executes the NoOpMiddleware operation.
 //
 // Parameters:
-//   - None.
+//   - _ (*testing.T): The _ parameter.
+//   - next (http.Handler): The next parameter.
 //
 // Returns:
-//   - None.
+//   - http.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -195,7 +198,9 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 // Summary: Executes the ValidateCaching operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - mcpanyEndpoint (type): The parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.

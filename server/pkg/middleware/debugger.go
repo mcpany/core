@@ -160,7 +160,7 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // Summary: Executes the WriteHeader operation.
 //
 // Parameters:
-//   - None.
+//   - statusCode (int): The statusCode parameter.
 //
 // Returns:
 //   - None.

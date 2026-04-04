@@ -27,7 +27,7 @@ type SortDirection = 'asc' | 'desc' | null;
  *
  * Summary: Executes the SmartTable logic.
  *
- * @param params - The parameters for the operation.
+ * @param { data } - The { data } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

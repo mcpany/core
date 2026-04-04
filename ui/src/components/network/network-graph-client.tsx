@@ -114,7 +114,7 @@ const defaultEdgeOptions = {
  *
  * Summary: Executes the NetworkGraphFlowProps logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -146,7 +146,7 @@ export interface NetworkGraphFlowProps {
  *
  * Summary: Executes the NetworkGraphFlow logic.
  *
- * @param params - The parameters for the operation.
+ * @param { widgetMode = false } - The { widgetMode = false } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -473,7 +473,7 @@ MetricCard.displayName = 'MetricCard';
  *
  * Summary: Executes the NetworkGraphClient logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

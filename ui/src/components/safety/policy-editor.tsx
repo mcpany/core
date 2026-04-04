@@ -62,7 +62,8 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
  *
  * Summary: Executes the PolicyEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { policies = [] - The { policies = [] parameter.
+ * @param onUpdate } - The onUpdate } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

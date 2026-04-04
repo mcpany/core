@@ -46,10 +46,12 @@ type GrpcClientWrapper struct {
 // Summary: Executes the NewGrpcClientWrapper operation.
 //
 // Parameters:
-//   - None.
+//   - conn (Conn): The conn parameter.
+//   - config (*configv1.UpstreamServiceConfig): The config parameter.
+//   - checker (health.Checker): The checker parameter.
 //
 // Returns:
-//   - None.
+//   - *GrpcClientWrapper: The returned value.
 //
 // Errors:
 //   - None.
@@ -100,10 +102,10 @@ func NewGrpcClientWrapper(conn Conn, config *configv1.UpstreamServiceConfig, che
 // Summary: Executes the IsHealthy operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -158,10 +160,10 @@ func (w *GrpcClientWrapper) IsHealthy(ctx context.Context) bool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -52,7 +52,12 @@ const getMethodColor = (method: HttpCallDefinition_HttpMethod) => {
  *
  * Summary: Executes the RequestPreview logic.
  *
- * @param params - The parameters for the operation.
+ * @param { call - The { call parameter.
+ * @param tool - The tool parameter.
+ * @param serviceName - The serviceName parameter.
+ * @param onExecute - The onExecute parameter.
+ * @param executionResult - The executionResult parameter.
+ * @param isExecuting } - The isExecuting } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

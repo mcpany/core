@@ -21,13 +21,14 @@ type RedactingWriter struct {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - None.
+//   - n int: The returned value.
+//   - err error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

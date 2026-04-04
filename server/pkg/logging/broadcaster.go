@@ -33,7 +33,7 @@ var (
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Broadcaster: The returned value.
 //
 // Errors:
 //   - None.
@@ -132,7 +132,7 @@ func (b *Broadcaster) Reset() {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - chan any: The returned value.
 //
 // Errors:
 //   - None.
@@ -174,10 +174,10 @@ func (b *Broadcaster) Subscribe() chan any {
 // Summary: Executes the SubscribeBuffered operation.
 //
 // Parameters:
-//   - None.
+//   - size (int): The size parameter.
 //
 // Returns:
-//   - None.
+//   - chan any: The returned value.
 //
 // Errors:
 //   - None.
@@ -226,7 +226,8 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - chan any: The returned value.
+//   - []any: The returned value.
 //
 // Errors:
 //   - None.
@@ -269,10 +270,11 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 // Summary: Executes the SubscribeWithHistoryBuffered operation.
 //
 // Parameters:
-//   - None.
+//   - size (int): The size parameter.
 //
 // Returns:
-//   - None.
+//   - chan any: The returned value.
+//   - []any: The returned value.
 //
 // Errors:
 //   - None.
@@ -344,7 +346,7 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 // Summary: Executes the Unsubscribe operation.
 //
 // Parameters:
-//   - None.
+//   - ch (chan any): The ch parameter.
 //
 // Returns:
 //   - None.
@@ -394,7 +396,7 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 // Summary: Executes the Broadcast operation.
 //
 // Parameters:
-//   - None.
+//   - msg (any): The msg parameter.
 //
 // Returns:
 //   - None.
@@ -502,7 +504,7 @@ func (b *Broadcaster) ClearHistory() {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []any: The returned value.
 //
 // Errors:
 //   - None.
@@ -567,7 +569,7 @@ func (b *Broadcaster) GetHistory() []any {
 // Summary: Executes the Hydrate operation.
 //
 // Parameters:
-//   - None.
+//   - messages ([]any): The messages parameter.
 //
 // Returns:
 //   - None.

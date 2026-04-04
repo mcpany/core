@@ -60,7 +60,7 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899'
  *
  * Summary: Executes the AnalyticsDashboard logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

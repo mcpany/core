@@ -25,7 +25,10 @@ interface PolicyEditorProps {
  *
  * Summary: Executes the PolicyEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { title - The { title parameter.
+ * @param description - The description parameter.
+ * @param policy - The policy parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

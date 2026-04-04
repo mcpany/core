@@ -22,13 +22,19 @@ import (
 // Summary: Executes the InitiateOAuth operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - userID (type): The parameter.
+//   - serviceID (type): The parameter.
+//   - credentialID (type): The parameter.
+//   - redirectURL (string): The redirectURL parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -167,13 +173,18 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 // Summary: Executes the HandleOAuthCallback operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - userID (type): The parameter.
+//   - serviceID (type): The parameter.
+//   - credentialID (type): The parameter.
+//   - code (type): The parameter.
+//   - redirectURL (string): The redirectURL parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

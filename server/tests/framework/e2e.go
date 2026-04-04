@@ -89,7 +89,9 @@ type E2ETestCase struct {
 // Summary: Executes the ValidateRegisteredTool operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - mcpanyEndpoint (string): The mcpanyEndpoint parameter.
+//   - expectedTool (*mcp.Tool): The expectedTool parameter.
 //
 // Returns:
 //   - None.
@@ -138,7 +140,8 @@ func ValidateRegisteredTool(t *testing.T, mcpanyEndpoint string, expectedTool *m
 // Summary: Executes the RunE2ETest operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - testCase (*E2ETestCase): The testCase parameter.
 //
 // Returns:
 //   - None.
@@ -248,10 +251,10 @@ func RunE2ETest(t *testing.T, testCase *E2ETestCase) {
 // Summary: Executes the BuildGRPCWeatherServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -274,7 +277,9 @@ func BuildGRPCWeatherServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterGRPCWeatherService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -298,10 +303,10 @@ func RegisterGRPCWeatherService(t *testing.T, registrationClient apiv1.Registrat
 // Summary: Executes the BuildGRPCAuthedWeatherServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -322,10 +327,11 @@ func BuildGRPCAuthedWeatherServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the WaitForPort operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - proc (*integration.ManagedProcess): The proc parameter.
 //
 // Returns:
-//   - None.
+//   - int: The returned value.
 //
 // Errors:
 //   - None.
@@ -393,7 +399,9 @@ func WaitForPort(t *testing.T, proc *integration.ManagedProcess) int {
 // Summary: Executes the RegisterGRPCAuthedWeatherService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -425,10 +433,10 @@ func RegisterGRPCAuthedWeatherService(t *testing.T, registrationClient apiv1.Reg
 // Summary: Executes the BuildWebsocketWeatherServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -463,7 +471,9 @@ func BuildWebsocketWeatherServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterWebsocketWeatherService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -487,10 +497,10 @@ func RegisterWebsocketWeatherService(t *testing.T, registrationClient apiv1.Regi
 // Summary: Executes the BuildWebrtcWeatherServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -513,7 +523,9 @@ func BuildWebrtcWeatherServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterWebrtcWeatherService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -537,10 +549,10 @@ func RegisterWebrtcWeatherService(t *testing.T, registrationClient apiv1.Registr
 // Summary: Executes the BuildStdioServer operation.
 //
 // Parameters:
-//   - None.
+//   - _ (*testing.T): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -560,7 +572,9 @@ func BuildStdioServer(_ *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterStdioService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - _ (string): The _ parameter.
 //
 // Returns:
 //   - None.
@@ -585,10 +599,10 @@ func RegisterStdioService(t *testing.T, registrationClient apiv1.RegistrationSer
 // Summary: Executes the BuildStdioDockerServer operation.
 //
 // Parameters:
-//   - None.
+//   - _ (*testing.T): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -608,7 +622,9 @@ func BuildStdioDockerServer(_ *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterStdioDockerService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - _ (string): The _ parameter.
 //
 // Returns:
 //   - None.
@@ -646,10 +662,10 @@ func RegisterStdioDockerService(t *testing.T, registrationClient apiv1.Registrat
 // Summary: Executes the BuildOpenAPIWeatherServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -672,7 +688,9 @@ func BuildOpenAPIWeatherServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterOpenAPIWeatherService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -711,10 +729,10 @@ func RegisterOpenAPIWeatherService(t *testing.T, registrationClient apiv1.Regist
 // Summary: Executes the BuildOpenAPIAuthedServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -737,7 +755,9 @@ func BuildOpenAPIAuthedServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterOpenAPIAuthedService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -800,10 +820,10 @@ paths:
 // Summary: Executes the BuildStreamableHTTPServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -829,7 +849,9 @@ func BuildStreamableHTTPServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterStreamableHTTPService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -853,7 +875,8 @@ func RegisterStreamableHTTPService(t *testing.T, registrationClient apiv1.Regist
 // Summary: Executes the VerifyMCPClient operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - mcpanyEndpoint (string): The mcpanyEndpoint parameter.
 //
 // Returns:
 //   - None.

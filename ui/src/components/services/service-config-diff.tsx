@@ -22,7 +22,8 @@ interface ServiceConfigDiffProps {
  *
  * Summary: Executes the ServiceConfigDiff logic.
  *
- * @param params - The parameters for the operation.
+ * @param { original - The { original parameter.
+ * @param modified } - The modified } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

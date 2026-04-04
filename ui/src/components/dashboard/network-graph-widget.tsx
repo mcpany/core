@@ -14,7 +14,7 @@ import { NetworkGraphFlow } from "@/components/network/network-graph-client";
  *
  * Summary: Executes the NetworkGraphWidget logic.
  *
- * @param params - The parameters for the operation.
+ * @param function NetworkGraphWidget( - The function NetworkGraphWidget( parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

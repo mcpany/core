@@ -39,7 +39,7 @@ import { fetchWithAuth } from "@/lib/client";
  *
  * Summary: Executes the WidgetInstance logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -204,7 +204,7 @@ MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
  *
  * Summary: Executes the DashboardGrid logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

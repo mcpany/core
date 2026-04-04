@@ -20,10 +20,10 @@ import (
 // Summary: Executes the AuthMiddleware operation.
 //
 // Parameters:
-//   - None.
+//   - authManager (*auth.Manager): The authManager parameter.
 //
 // Returns:
-//   - None.
+//   - mcp.Middleware: The returned value.
 //
 // Errors:
 //   - None.

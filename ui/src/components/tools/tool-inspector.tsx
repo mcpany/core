@@ -20,7 +20,9 @@ interface ToolInspectorProps {
  *
  * Summary: Executes the ToolInspector logic.
  *
- * @param params - The parameters for the operation.
+ * @param { tool - The { tool parameter.
+ * @param open - The open parameter.
+ * @param onOpenChange } - The onOpenChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

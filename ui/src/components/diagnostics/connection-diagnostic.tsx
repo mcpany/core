@@ -40,7 +40,8 @@ interface ConnectionDiagnosticDialogProps {
  *
  * Summary: Executes the ConnectionDiagnosticDialog logic.
  *
- * @param params - The parameters for the operation.
+ * @param { service - The { service parameter.
+ * @param trigger } - The trigger } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

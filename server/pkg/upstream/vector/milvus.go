@@ -27,13 +27,14 @@ type MilvusClient struct {
 // Summary: Executes the NewMilvusClient operation.
 //
 // Parameters:
-//   - None.
+//   - config (*configv1.MilvusVectorDB): The config parameter.
 //
 // Returns:
-//   - None.
+//   - *MilvusClient: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -109,13 +110,18 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 // Summary: Executes the Query operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - vector ([]float32): The vector parameter.
+//   - topK (int64): The topK parameter.
+//   - filter (map[string]interface{}): The filter parameter.
+//   - namespace (string): The namespace parameter.
 //
 // Returns:
-//   - None.
+//   - map[string]interface{}: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -261,13 +267,16 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 // Summary: Executes the Upsert operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - vectors ([]map[string]interface{}): The vectors parameter.
+//   - namespace (string): The namespace parameter.
 //
 // Returns:
-//   - None.
+//   - map[string]interface{}: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -505,13 +514,17 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 // Summary: Executes the Delete operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - ids ([]string): The ids parameter.
+//   - namespace (string): The namespace parameter.
+//   - filter (map[string]interface{}): The filter parameter.
 //
 // Returns:
-//   - None.
+//   - map[string]interface{}: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -603,13 +616,15 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 // Summary: Executes the DescribeIndexStats operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - _ (map[string]interface{}): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - map[string]interface{}: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

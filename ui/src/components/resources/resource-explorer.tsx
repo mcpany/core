@@ -185,7 +185,7 @@ MemoizedResourceGridItem.displayName = "MemoizedResourceGridItem";
  *
  * Summary: Executes the ResourceExplorer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { initialResources = [] } - The { initialResources = [] } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

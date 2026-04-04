@@ -44,7 +44,7 @@ var (
 // Summary: Executes the SetGlobalAlertConfig operation.
 //
 // Parameters:
-//   - None.
+//   - cfg (*configv1.AlertConfig): The cfg parameter.
 //
 // Returns:
 //   - None.
@@ -107,10 +107,10 @@ type HTTPServiceWithHealthCheck interface {
 // Summary: Executes the NewChecker operation.
 //
 // Parameters:
-//   - None.
+//   - uc (*configv1.UpstreamServiceConfig): The uc parameter.
 //
 // Returns:
-//   - None.
+//   - health.Checker: The returned value.
 //
 // Errors:
 //   - None.

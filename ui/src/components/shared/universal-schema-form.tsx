@@ -33,7 +33,7 @@ import { FileInput } from "@/components/ui/file-input";
  *
  * Summary: Executes the Schema logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -94,7 +94,10 @@ interface SchemaFieldProps {
  *
  * Summary: Executes the UniversalSchemaForm logic.
  *
- * @param params - The parameters for the operation.
+ * @param { schema - The { schema parameter.
+ * @param value - The value parameter.
+ * @param onChange - The onChange parameter.
+ * @param errors } - The errors } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -47,13 +47,13 @@ type Upstream struct {
 // Summary: Executes the CheckHealth operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -103,13 +103,13 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -153,10 +153,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Executes the NewUpstream operation.
 //
 // Parameters:
-//   - None.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - None.
+//   - upstream.Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -196,18 +196,12 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Parameters:
 //   - TODO: Document parameters.
-// Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
-//
-// Summary: Executes the Register operation.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

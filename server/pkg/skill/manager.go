@@ -42,13 +42,14 @@ type Manager struct {
 // Summary: Executes the NewManager operation.
 //
 // Parameters:
-//   - None.
+//   - rootDir (string): The rootDir parameter.
 //
 // Returns:
-//   - None.
+//   - *Manager: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -96,10 +97,11 @@ func NewManager(rootDir string) (*Manager, error) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []*Skill: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -175,13 +177,14 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 // Summary: Executes the GetSkill operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - *Skill: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -223,13 +226,13 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 // Summary: Executes the CreateSkill operation.
 //
 // Parameters:
-//   - None.
+//   - skill (*Skill): The skill parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -292,13 +295,14 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 // Summary: Executes the UpdateSkill operation.
 //
 // Parameters:
-//   - None.
+//   - originalName (string): The originalName parameter.
+//   - skill (*Skill): The skill parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -365,13 +369,13 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 // Summary: Executes the DeleteSkill operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -422,13 +426,15 @@ func (m *Manager) DeleteSkill(name string) error {
 // Summary: Executes the SaveAsset operation.
 //
 // Parameters:
-//   - None.
+//   - skillName (string): The skillName parameter.
+//   - relPath (string): The relPath parameter.
+//   - content ([]byte): The content parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

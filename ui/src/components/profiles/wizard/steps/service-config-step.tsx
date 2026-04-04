@@ -25,7 +25,9 @@ interface ServiceConfigStepProps {
  *
  * Summary: Executes the ServiceConfigStep logic.
  *
- * @param params - The parameters for the operation.
+ * @param { services - The { services parameter.
+ * @param onNext - The onNext parameter.
+ * @param onBack } - The onBack } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

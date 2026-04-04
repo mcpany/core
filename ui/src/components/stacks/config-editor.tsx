@@ -23,7 +23,10 @@ interface ConfigEditorProps {
  *
  * Summary: Executes the ConfigEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { value - The { value parameter.
+ * @param onChange - The onChange parameter.
+ * @param language = "yaml" - The language = "yaml" parameter.
+ * @param readOnly = false } - The readOnly = false } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

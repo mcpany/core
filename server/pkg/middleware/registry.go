@@ -47,7 +47,8 @@ var (
 // Summary: Executes the Register operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
+//   - factory (Factory): The factory parameter.
 //
 // Returns:
 //   - None.
@@ -86,7 +87,8 @@ func Register(name string, factory Factory) {
 // Summary: Executes the RegisterMCP operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
+//   - factory (MCPFactory): The factory parameter.
 //
 // Returns:
 //   - None.
@@ -125,10 +127,10 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Summary: Executes the GetHTTPMiddlewares operation.
 //
 // Parameters:
-//   - None.
+//   - configs ([]*configv1.Middleware): The configs parameter.
 //
 // Returns:
-//   - None.
+//   - []func(http.Handler) http.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -183,10 +185,10 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Summary: Executes the GetMCPMiddlewares operation.
 //
 // Parameters:
-//   - None.
+//   - configs ([]*configv1.Middleware): The configs parameter.
 //
 // Returns:
-//   - None.
+//   - []func(mcp.MethodHandler) mcp.MethodHandler: The returned value.
 //
 // Errors:
 //   - None.
@@ -253,18 +255,13 @@ type StandardMiddlewares struct {
 // Summary: Executes InitStandardMiddlewares operation.
 //
 // Parameters:
-// InitStandardMiddlewares registers standard middlewares.
-//
-// Summary: Executes the InitStandardMiddlewares operation.
-//
-// Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

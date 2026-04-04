@@ -34,7 +34,8 @@ interface ResourceViewerProps {
  *
  * Summary: Executes the ResourceViewer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { content - The { content parameter.
+ * @param loading } - The loading } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

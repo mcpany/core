@@ -9,7 +9,7 @@ import * as React from "react"
  *
  * Summary: Executes the ShortcutDefinition logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -75,7 +75,7 @@ const STORAGE_KEY = "mcp_any_shortcut_overrides"
  *
  * Summary: Executes the KeyboardShortcutsProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children } - The { children } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -180,7 +180,7 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
  *
  * Summary: Executes the useKeyboardShortcuts logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -238,7 +238,7 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
  *
  * Summary: Executes the useShortcut logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

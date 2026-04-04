@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
  *
  * Summary: Executes the TrafficEdge logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

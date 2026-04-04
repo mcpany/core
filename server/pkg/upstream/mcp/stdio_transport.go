@@ -30,13 +30,14 @@ type StdioTransport struct {
 // Summary: Executes the Connect operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - mcp.Connection: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -134,13 +135,14 @@ type stdioConn struct {
 // Summary: Executes the Read operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - jsonrpc.Message: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -262,13 +264,14 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -343,10 +346,10 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -394,7 +397,7 @@ func (c *stdioConn) Close() error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.

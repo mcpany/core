@@ -15,10 +15,11 @@ import (
 // Summary: Executes the StartMockServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - handler (http.Handler): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - *httptest.Server: The returned value.
 //
 // Errors:
 //   - None.
@@ -38,10 +39,11 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 // Summary: Executes the DefaultMockHandler operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - responses (map[string]string): The responses parameter.
 //
 // Returns:
-//   - None.
+//   - http.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -80,10 +82,11 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 // Summary: Executes the CreateMockServerWithResponses operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - responses (map[string]string): The responses parameter.
 //
 // Returns:
-//   - None.
+//   - *httptest.Server: The returned value.
 //
 // Errors:
 //   - None.

@@ -19,7 +19,7 @@ import (
 // Summary: Executes the BindRootFlags operation.
 //
 // Parameters:
-//   - None.
+//   - cmd (*cobra.Command): The cmd parameter.
 //
 // Returns:
 //   - None.
@@ -115,7 +115,7 @@ func BindRootFlags(cmd *cobra.Command) {
 // Summary: Executes the BindServerFlags operation.
 //
 // Parameters:
-//   - None.
+//   - cmd (*cobra.Command): The cmd parameter.
 //
 // Returns:
 //   - None.
@@ -193,7 +193,7 @@ func BindServerFlags(cmd *cobra.Command) {
 // Summary: Executes the BindFlags operation.
 //
 // Parameters:
-//   - None.
+//   - cmd (*cobra.Command): The cmd parameter.
 //
 // Returns:
 //   - None.

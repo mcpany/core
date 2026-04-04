@@ -349,7 +349,7 @@ func NewManager() *Manager {
 // Summary: Executes the SetUsers operation.
 //
 // Parameters:
-//   - None.
+//   - users ([]*configv1.User): The users parameter.
 //
 // Returns:
 //   - None.
@@ -412,7 +412,7 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 // Summary: Executes the SetAPIKey operation.
 //
 // Parameters:
-//   - None.
+//   - apiKey (string): The apiKey parameter.
 //
 // Returns:
 //   - None.

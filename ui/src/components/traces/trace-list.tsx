@@ -74,7 +74,13 @@ TraceListItem.displayName = "TraceListItem";
  *
  * Summary: Executes the TraceList logic.
  *
- * @param params - The parameters for the operation.
+ * @param { traces - The { traces parameter.
+ * @param selectedId - The selectedId parameter.
+ * @param onSelect - The onSelect parameter.
+ * @param searchQuery - The searchQuery parameter.
+ * @param onSearchChange - The onSearchChange parameter.
+ * @param isLive - The isLive parameter.
+ * @param onToggleLive } - The onToggleLive } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

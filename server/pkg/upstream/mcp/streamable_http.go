@@ -105,10 +105,13 @@ type ClientSession interface {
 // Summary: Executes the SetNewClientImplForTesting operation.
 //
 // Parameters:
-//   - None.
+//   - f (func(client *mcp.Client): The f parameter.
+//   - stdioConfig (*configv1.McpStdioConnection): The stdioConfig parameter.
+//   - httpAddress (string): The httpAddress parameter.
+//   - httpClient (*http.Client): The httpClient parameter.
 //
 // Returns:
-//   - None.
+//   - client.MCPClient): The returned value.
 //
 // Errors:
 //   - None.
@@ -149,10 +152,10 @@ func SetNewClientImplForTesting(f func(client *mcp.Client, stdioConfig *configv1
 // Summary: Executes the SetNewClientForTesting operation.
 //
 // Parameters:
-//   - None.
+//   - f (func(impl *mcp.Implementation): The f parameter.
 //
 // Returns:
-//   - None.
+//   - *mcp.Client): The returned value.
 //
 // Errors:
 //   - None.
@@ -194,13 +197,17 @@ func SetNewClientForTesting(f func(impl *mcp.Implementation) *mcp.Client) {
 // Summary: Executes the SetConnectForTesting operation.
 //
 // Parameters:
-//   - None.
+//   - f (func(client *mcp.Client): The f parameter.
+//   - ctx (context.Context): The ctx parameter.
+//   - transport (mcp.Transport): The transport parameter.
+//   - roots ([]mcp.Root): The roots parameter.
 //
 // Returns:
-//   - None.
+//   - ClientSession: The returned value.
+//   - error): The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -257,13 +264,13 @@ type Upstream struct {
 // Summary: Executes the CheckHealth operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -314,13 +321,13 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -378,10 +385,10 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Executes the NewUpstream operation.
 //
 // Parameters:
-//   - None.
+//   - globalSettings (*configv1.GlobalSettings): The globalSettings parameter.
 //
 // Returns:
-//   - None.
+//   - upstream.Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -433,7 +440,7 @@ type mcpPrompt struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Prompt: The returned value.
 //
 // Errors:
 //   - None.
@@ -473,7 +480,7 @@ func (p *mcpPrompt) Prompt() *mcp.Prompt {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -516,7 +523,7 @@ func (p *mcpPrompt) Service() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.PromptDefinition: The returned value.
 //
 // Errors:
 //   - None.
@@ -590,13 +597,15 @@ func (p *mcpPrompt) Definition() *configv1.PromptDefinition {
 // Summary: Executes the Get operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - args (json.RawMessage): The args parameter.
 //
 // Returns:
-//   - None.
+//   - *mcp.GetPromptResult: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -667,7 +676,7 @@ type mcpResource struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Resource: The returned value.
 //
 // Errors:
 //   - None.
@@ -707,7 +716,7 @@ func (r *mcpResource) Resource() *mcp.Resource {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -750,13 +759,14 @@ func (r *mcpResource) Service() string {
 // Summary: Executes the Read operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - *mcp.ReadResourceResult: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -805,13 +815,13 @@ func (r *mcpResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error)
 // Summary: Executes the Subscribe operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -846,18 +856,11 @@ func (r *mcpResource) Subscribe(_ context.Context) error {
 // Parameters:
 //   - TODO: Document parameters.
 //
-// Register handles the registration of another MCP service as an upstream. It determines the connection type (stdio or HTTP), connects to the downstream service, lists its available tools, prompts, and resources, and registers them with the appropriate managers.
-//
-// Summary: Executes the Register operation.
-//
-// Parameters:
-//   - None.
-//
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -1047,21 +1050,20 @@ func (c *mcpConnection) withMCPClientSession(ctx context.Context, f func(cs Clie
 //
 // Errors:
 //   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // CallTool executes a tool on the downstream MCP service by establishing a
 //
 // Summary: Executes the CallTool operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - params (*mcp.CallToolParams): The params parameter.
 //
 // Returns:
-//   - None.
+//   - *mcp.CallToolResult: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -1746,13 +1748,14 @@ type authenticatedRoundTripper struct {
 // Summary: Executes the RoundTrip operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - *http.Response: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -1812,13 +1815,14 @@ type StreamableHTTP struct {
 // Summary: Executes the RoundTrip operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - *http.Response: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -21,13 +21,14 @@ import (
 // Summary: Executes the ConvertMCPToolToProto operation.
 //
 // Parameters:
-//   - None.
+//   - tool (*mcp.Tool): The tool parameter.
 //
 // Returns:
-//   - None.
+//   - *pb.Tool: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -138,13 +139,14 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // Summary: Executes the ConvertMcpFieldsToInputSchemaProperties operation.
 //
 // Parameters:
-//   - None.
+//   - fields ([]*protobufparser.McpField): The fields parameter.
 //
 // Returns:
-//   - None.
+//   - *structpb.Struct: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -199,13 +201,16 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 // Summary: Executes the ConvertToolDefinitionToProto operation.
 //
 // Parameters:
-//   - None.
+//   - toolDef (*configv1.ToolDefinition): The toolDef parameter.
+//   - inputSchema (type): The parameter.
+//   - outputSchema (*structpb.Struct): The outputSchema parameter.
 //
 // Returns:
-//   - None.
+//   - *pb.Tool: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -277,13 +282,15 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // Summary: Executes the GetJSONSchemaForScalarType operation.
 //
 // Parameters:
-//   - None.
+//   - scalarType (type): The parameter.
+//   - description (string): The description parameter.
 //
 // Returns:
-//   - None.
+//   - *jsonschema.Schema: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -340,13 +347,14 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // Summary: Executes the ConvertProtoToMCPTool operation.
 //
 // Parameters:
-//   - None.
+//   - pbTool (*pb.Tool): The pbTool parameter.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

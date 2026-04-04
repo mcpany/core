@@ -20,7 +20,7 @@ import (
 //   - None.
 //
 // Returns:
-//   - None.
+//   - mcp.Middleware: The returned value.
 //
 // Errors:
 //   - None.

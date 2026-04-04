@@ -35,13 +35,15 @@ var weatherData = map[string]string{
 // Summary: Executes the GetWeather operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - in (*weatherPb.GetWeatherRequest): The in parameter.
 //
 // Returns:
-//   - None.
+//   - *weatherPb.GetWeatherResponse: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

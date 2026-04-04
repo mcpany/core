@@ -15,13 +15,14 @@ import (
 // Summary: Executes the Password operation.
 //
 // Parameters:
-//   - None.
+//   - password (string): The password parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -61,10 +62,11 @@ func Password(password string) (string, error) {
 // Summary: Executes the CheckPassword operation.
 //
 // Parameters:
-//   - None.
+//   - password (type): The parameter.
+//   - hash (string): The hash parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

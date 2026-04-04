@@ -22,7 +22,7 @@ const formatUptime = (seconds: number) => {
  *
  * Summary: Executes the SystemHealthCard logic.
  *
- * @param params - The parameters for the operation.
+ * @param function SystemHealthCard( - The function SystemHealthCard( parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

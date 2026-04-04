@@ -49,7 +49,7 @@ type Upstream struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - upstream.Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -87,13 +87,13 @@ func NewUpstream() upstream.Upstream {
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -134,18 +134,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Executes Register operation.
 //
 // Parameters:
-// Register processes the configuration for a filesystem service.
-//
-// Summary: Executes the Register operation.
-//
-// Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

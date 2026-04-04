@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast"
  *
  * Summary: Executes the CredentialList logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

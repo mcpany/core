@@ -33,7 +33,7 @@ type Generator struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Generator: The returned value.
 //
 // Errors:
 //   - None.
@@ -80,10 +80,11 @@ func NewGenerator() *Generator {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []byte: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -36,7 +36,9 @@ interface OptimizationTabProps {
  *
  * Summary: Executes the OptimizationTab logic.
  *
- * @param params - The parameters for the operation.
+ * @param { tools - The { tools parameter.
+ * @param toolUsage - The toolUsage parameter.
+ * @param onToggleTool } - The onToggleTool } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

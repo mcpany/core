@@ -25,7 +25,9 @@ interface ProfileStepProps {
  *
  * Summary: Executes the ProfileStep logic.
  *
- * @param params - The parameters for the operation.
+ * @param { services - The { services parameter.
+ * @param onBack - The onBack parameter.
+ * @param onComplete } - The onComplete } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

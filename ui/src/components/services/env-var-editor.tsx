@@ -32,7 +32,8 @@ interface EnvVarEditorProps {
  *
  * Summary: Executes the EnvVarEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { initialEnv - The { initialEnv parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

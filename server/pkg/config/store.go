@@ -123,7 +123,7 @@ type yamlEngine struct {
 // Summary: Executes the SetSkipValidation operation.
 //
 // Parameters:
-//   - None.
+//   - skip (bool): The skip parameter.
 //
 // Returns:
 //   - None.
@@ -165,7 +165,7 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // Summary: Executes the SetIgnoreEnv operation.
 //
 // Parameters:
-//   - None.
+//   - ignore (bool): The ignore parameter.
 //
 // Returns:
 //   - None.
@@ -207,13 +207,14 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Summary: Executes the Unmarshal operation.
 //
 // Parameters:
-//   - None.
+//   - b ([]byte): The b parameter.
+//   - v (proto.Message): The v parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -267,13 +268,15 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // Summary: Executes the UnmarshalFromMap operation.
 //
 // Parameters:
-//   - None.
+//   - yamlMap (map[string]interface{}): The yamlMap parameter.
+//   - v (proto.Message): The v parameter.
+//   - originalBytes ([]byte): The originalBytes parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -414,13 +417,14 @@ type textprotoEngine struct{}
 // Summary: Executes the Unmarshal operation.
 //
 // Parameters:
-//   - None.
+//   - b ([]byte): The b parameter.
+//   - v (proto.Message): The v parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -463,13 +467,14 @@ type jsonEngine struct{}
 // Summary: Executes the Unmarshal operation.
 //
 // Parameters:
-//   - None.
+//   - b ([]byte): The b parameter.
+//   - v (proto.Message): The v parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -823,7 +828,7 @@ type FileStore struct {
 // Summary: Executes the SetSkipValidation operation.
 //
 // Parameters:
-//   - None.
+//   - skip (bool): The skip parameter.
 //
 // Returns:
 //   - None.
@@ -863,7 +868,7 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Summary: Executes the SetIgnoreMissingEnv operation.
 //
 // Parameters:
-//   - None.
+//   - ignore (bool): The ignore parameter.
 //
 // Returns:
 //   - None.
@@ -938,7 +943,7 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -1603,7 +1608,7 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //   - None.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

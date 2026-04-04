@@ -76,10 +76,11 @@ type OpenAIClient struct {
 // Summary: Executes the NewOpenAIClient operation.
 //
 // Parameters:
-//   - None.
+//   - apiKey (string): The apiKey parameter.
+//   - baseURL (string): The baseURL parameter.
 //
 // Returns:
-//   - None.
+//   - *OpenAIClient: The returned value.
 //
 // Errors:
 //   - None.
@@ -145,13 +146,15 @@ type openAIChatResponse struct {
 // Summary: Executes the ChatCompletion operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (ChatRequest): The req parameter.
 //
 // Returns:
-//   - None.
+//   - *ChatResponse: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

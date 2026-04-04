@@ -45,7 +45,7 @@ import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
  *
  * Summary: Executes the reloadPage logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -72,7 +72,7 @@ export const reloadPage = () => window.location.reload();
  *
  * Summary: Executes the GlobalSearch logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

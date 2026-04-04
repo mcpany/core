@@ -53,7 +53,7 @@ const DiffEditor = (props: any) => (
  *
  * Summary: Executes the MessageType logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -80,7 +80,7 @@ export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "
  *
  * Summary: Executes the Message logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -145,7 +145,9 @@ function analyzeError(error: string): string | null {
  *
  * Summary: Executes the ChatMessage logic.
  *
- * @param params - The parameters for the operation.
+ * @param { message - The { message parameter.
+ * @param onReplay - The onReplay parameter.
+ * @param onRetry } - The onRetry } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -20,7 +20,9 @@ import { ServicePropertyCard } from "./service-property-card";
  *
  * Summary: Executes the PromptDetail logic.
  *
- * @param params - The parameters for the operation.
+ * @param { serviceId - The { serviceId parameter.
+ * @param promptName } - The promptName } parameter.
+ * @param promptName - The promptName parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

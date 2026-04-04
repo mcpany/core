@@ -22,7 +22,7 @@ import { Filter } from "lucide-react";
  *
  * Summary: Executes the ServiceFilter logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

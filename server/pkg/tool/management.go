@@ -590,7 +590,7 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 // Summary: Executes the SetMCPServer operation.
 //
 // Parameters:
-//   - None.
+//   - mcpServer (MCPServerProvider): The mcpServer parameter.
 //
 // Returns:
 //   - None.

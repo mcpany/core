@@ -95,7 +95,7 @@ type ValidationError struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.

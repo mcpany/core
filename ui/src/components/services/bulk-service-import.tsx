@@ -52,7 +52,8 @@ interface ServiceImportItem {
  *
  * Summary: Executes the BulkServiceImport logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onImportSuccess - The { onImportSuccess parameter.
+ * @param onCancel } - The onCancel } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

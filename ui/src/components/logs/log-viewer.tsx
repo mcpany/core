@@ -33,7 +33,7 @@ const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ def
  *
  * Summary: Executes the LogLevel logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -60,7 +60,7 @@ export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
  *
  * Summary: Executes the LogEntry logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -102,7 +102,7 @@ interface LogViewerProps {
  *
  * Summary: Executes the timeFormatter logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -297,7 +297,9 @@ LogRow.displayName = 'LogRow'
  *
  * Summary: Executes the LogViewer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { logs - The { logs parameter.
+ * @param highlightRegex - The highlightRegex parameter.
+ * @param isPaused } - The isPaused } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

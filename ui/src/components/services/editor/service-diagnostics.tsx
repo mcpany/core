@@ -30,7 +30,7 @@ interface DiagnosticResult {
  *
  * Summary: Executes the ServiceDiagnostics logic.
  *
- * @param params - The parameters for the operation.
+ * @param { service } - The { service } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

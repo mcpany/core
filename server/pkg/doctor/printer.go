@@ -15,7 +15,8 @@ import (
 // Summary: Executes the PrintResults operation.
 //
 // Parameters:
-//   - None.
+//   - w (io.Writer): The w parameter.
+//   - results ([]CheckResult): The results parameter.
 //
 // Returns:
 //   - None.

@@ -85,7 +85,8 @@ interface VisibleRow {
  *
  * Summary: Executes the InspectorTable logic.
  *
- * @param params - The parameters for the operation.
+ * @param { traces - The { traces parameter.
+ * @param loading } - The loading } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

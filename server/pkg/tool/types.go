@@ -446,7 +446,7 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -482,7 +482,7 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -526,7 +526,7 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -869,7 +869,7 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -905,7 +905,7 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -949,7 +949,7 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -1719,7 +1719,7 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -1755,7 +1755,7 @@ func (t *MCPTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -1799,7 +1799,7 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -2102,7 +2102,7 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -2138,7 +2138,7 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -2182,7 +2182,7 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -2608,7 +2608,7 @@ func NewLocalCommandTool(
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -2644,7 +2644,7 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -2688,7 +2688,7 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -3130,7 +3130,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -3166,7 +3166,7 @@ func (t *CommandTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -3210,7 +3210,7 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -3662,13 +3662,14 @@ type threadSafeBuffer struct {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - None.
+//   - n int: The returned value.
+//   - err error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -3704,7 +3705,7 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.

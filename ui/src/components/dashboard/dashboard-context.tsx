@@ -21,7 +21,7 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
  *
  * Summary: Executes the DashboardProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children } - The { children } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -62,7 +62,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
  *
  * Summary: Executes the useDashboard logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -29,7 +29,7 @@ interface AddWidgetSheetProps {
  *
  * Summary: Executes the AddWidgetSheet logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onAdd } - The { onAdd } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

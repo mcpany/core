@@ -56,13 +56,13 @@ type Upstream struct {
 // Summary: Executes the CheckHealth operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -109,10 +109,10 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Summary: Executes the NewUpstream operation.
 //
 // Parameters:
-//   - None.
+//   - poolManager (*pool.Manager): The poolManager parameter.
 //
 // Returns:
-//   - None.
+//   - upstream.Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -159,13 +159,13 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -210,18 +210,14 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Summary: Executes Register operation.
 //
-// Register handles the registration of a gRPC upstream service. It establishes a
-//
-// Summary: Executes the Register operation.
-//
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

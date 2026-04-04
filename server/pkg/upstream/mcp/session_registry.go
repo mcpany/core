@@ -27,7 +27,7 @@ type SessionRegistry struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *SessionRegistry: The returned value.
 //
 // Errors:
 //   - None.
@@ -65,7 +65,8 @@ func NewSessionRegistry() *SessionRegistry {
 // Summary: Executes the Register operation.
 //
 // Parameters:
-//   - None.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
+//   - downstreamSession (tool.Session): The downstreamSession parameter.
 //
 // Returns:
 //   - None.
@@ -110,7 +111,7 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 // Summary: Executes the Unregister operation.
 //
 // Parameters:
-//   - None.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
 //
 // Returns:
 //   - None.
@@ -154,10 +155,11 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 // Summary: Executes the Get operation.
 //
 // Parameters:
-//   - None.
+//   - upstreamSession (mcp.Session): The upstreamSession parameter.
 //
 // Returns:
-//   - None.
+//   - tool.Session: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

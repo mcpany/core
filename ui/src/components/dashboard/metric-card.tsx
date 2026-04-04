@@ -20,7 +20,11 @@ interface MetricCardProps {
  *
  * Summary: Executes the MetricCard logic.
  *
- * @param params - The parameters for the operation.
+ * @param { title - The { title parameter.
+ * @param value - The value parameter.
+ * @param icon - The icon parameter.
+ * @param description - The description parameter.
+ * @param trend } - The trend } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

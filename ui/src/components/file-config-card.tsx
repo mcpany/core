@@ -81,7 +81,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
  *
  * Summary: Executes the FileConfigCard logic.
  *
- * @param params - The parameters for the operation.
+ * @param function FileConfigCard({ service } - The function FileConfigCard({ service } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -45,7 +45,7 @@ type SettingsValues = z.infer<typeof settingsSchema>;
  *
  * Summary: Executes the GlobalSettingsForm logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

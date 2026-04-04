@@ -45,7 +45,7 @@ type OllamaProvider struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -87,13 +87,14 @@ func (p *OllamaProvider) Name() string {
 // Summary: Executes the Discover operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

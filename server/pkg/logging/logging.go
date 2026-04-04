@@ -28,7 +28,7 @@ var (
 // Summary: Executes the SetLevel operation.
 //
 // Parameters:
-//   - None.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
 //   - None.
@@ -116,7 +116,10 @@ func ForTestsOnlyResetLogger() {
 // Summary: Executes the Init operation.
 //
 // Parameters:
-//   - None.
+//   - level (slog.Level): The level parameter.
+//   - output (io.Writer): The output parameter.
+//   - logFilePath (string): The logFilePath parameter.
+//   - format (...string): The format parameter.
 //
 // Returns:
 //   - None.
@@ -224,7 +227,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *slog.Logger: The returned value.
 //
 // Errors:
 //   - None.
@@ -279,10 +282,10 @@ func GetLogger() *slog.Logger {
 // Summary: Executes the ToSlogLevel operation.
 //
 // Parameters:
-//   - None.
+//   - level (configv1.GlobalSettings_LogLevel): The level parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Level: The returned value.
 //
 // Errors:
 //   - None.

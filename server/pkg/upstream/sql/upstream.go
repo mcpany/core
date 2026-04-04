@@ -38,7 +38,7 @@ type Upstream struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -74,13 +74,13 @@ func NewUpstream() *Upstream {
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -123,18 +123,12 @@ func ptr(s string) *string {
 //
 // Parameters:
 //   - TODO: Document parameters.
-// Register discovers and registers tools from the SQL configuration. ctx is the context for the request. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
-// Summary: Executes the Register operation.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

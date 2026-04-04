@@ -22,7 +22,12 @@ interface FileInputProps {
  *
  * Summary: Executes the FileInput logic.
  *
- * @param params - The parameters for the operation.
+ * @param { value - The { value parameter.
+ * @param onChange - The onChange parameter.
+ * @param accept - The accept parameter.
+ * @param className - The className parameter.
+ * @param disabled - The disabled parameter.
+ * @param id } - The id } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

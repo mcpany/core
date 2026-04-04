@@ -23,10 +23,10 @@ type WebsocketClientWrapper struct {
 // Summary: Executes the IsHealthy operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -74,10 +74,10 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

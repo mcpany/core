@@ -28,7 +28,8 @@ interface ResourceSafetyTableProps {
  *
  * Summary: Executes the ResourceSafetyTable logic.
  *
- * @param params - The parameters for the operation.
+ * @param { resources - The { resources parameter.
+ * @param onUpdate } - The onUpdate } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

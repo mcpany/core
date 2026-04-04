@@ -59,7 +59,9 @@ const detectSensitiveData = (text: string) => {
  *
  * Summary: Executes the RegisterServiceDialog logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onSuccess - The { onSuccess parameter.
+ * @param trigger - The trigger parameter.
+ * @param serviceToEdit } - The serviceToEdit } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

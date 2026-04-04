@@ -17,13 +17,13 @@ type MockUpstreamAuthenticator struct {
 // Summary: Executes the Authenticate operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

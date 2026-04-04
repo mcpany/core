@@ -21,7 +21,8 @@ interface ServiceHealthSparklineProps {
  *
  * Summary: Executes the ServiceHealthSparkline logic.
  *
- * @param params - The parameters for the operation.
+ * @param function ServiceHealthSparkline({ serviceName - The function ServiceHealthSparkline({ serviceName parameter.
+ * @param disabled } - The disabled } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

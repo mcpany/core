@@ -23,7 +23,12 @@ interface SparklineProps {
  *
  * Summary: Executes the Sparkline logic.
  *
- * @param params - The parameters for the operation.
+ * @param function Sparkline({ data - The function Sparkline({ data parameter.
+ * @param width = 60 - The width = 60 parameter.
+ * @param height = 24 - The height = 24 parameter.
+ * @param className - The className parameter.
+ * @param color = "#22c55e" - The color = "#22c55e" parameter.
+ * @param max } - The max } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -34,7 +34,7 @@ const ContextContext = createContext<ContextState | undefined>(undefined);
  *
  * Summary: Executes the ContextProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children } - The { children } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -160,7 +160,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
  *
  * Summary: Executes the useRecursiveContext logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

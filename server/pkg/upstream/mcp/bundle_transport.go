@@ -38,7 +38,7 @@ type transportError struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -91,13 +91,14 @@ type BundleDockerTransport struct {
 // Summary: Executes the Connect operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - mcp.Connection: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -243,13 +244,14 @@ type bundleDockerConn struct {
 // Summary: Executes the Read operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - jsonrpc.Message: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -413,13 +415,14 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -574,10 +577,10 @@ func fixIDExtracted(val interface{}) interface{} {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -614,7 +617,7 @@ func (c *bundleDockerConn) Close() error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -661,13 +664,14 @@ type bundleSlogWriter struct {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - None.
+//   - n int: The returned value.
+//   - err error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

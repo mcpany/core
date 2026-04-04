@@ -41,7 +41,7 @@ type VectorEntry struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *SimpleVectorStore: The returned value.
 //
 // Errors:
 //   - None.
@@ -78,13 +78,17 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Summary: Executes the Add operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
+//   - vector ([]float32): The vector parameter.
+//   - result (any): The result parameter.
+//   - ttl (time.Duration): The ttl parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -143,10 +147,14 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 // Summary: Executes the Search operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
+//   - query ([]float32): The query parameter.
 //
 // Returns:
-//   - None.
+//   - any: The returned value.
+//   - float32: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -211,7 +219,8 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 // Summary: Executes the Prune operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - key (string): The key parameter.
 //
 // Returns:
 //   - None.

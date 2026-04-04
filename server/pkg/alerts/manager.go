@@ -74,7 +74,7 @@ type Manager struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Manager: The returned value.
 //
 // Errors:
 //   - None.
@@ -138,7 +138,7 @@ func (m *Manager) seedData() {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []*Alert: The returned value.
 //
 // Errors:
 //   - None.
@@ -190,10 +190,10 @@ func (m *Manager) ListAlerts() []*Alert {
 // Summary: Executes the GetAlert operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - None.
+//   - *Alert: The returned value.
 //
 // Errors:
 //   - None.
@@ -237,10 +237,10 @@ func (m *Manager) GetAlert(id string) *Alert {
 // Summary: Executes the CreateAlert operation.
 //
 // Parameters:
-//   - None.
+//   - alert (*Alert): The alert parameter.
 //
 // Returns:
-//   - None.
+//   - *Alert: The returned value.
 //
 // Errors:
 //   - None.
@@ -322,7 +322,7 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *AlertStats: The returned value.
 //
 // Errors:
 //   - None.
@@ -393,13 +393,13 @@ func (m *Manager) GetAlertStats() *AlertStats {
 // Summary: Executes the DeleteAlert operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -444,10 +444,11 @@ func (m *Manager) DeleteAlert(id string) error {
 // Summary: Executes the UpdateAlert operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
+//   - alert (*Alert): The alert parameter.
 //
 // Returns:
-//   - None.
+//   - *Alert: The returned value.
 //
 // Errors:
 //   - None.
@@ -534,7 +535,7 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -578,7 +579,7 @@ func (m *Manager) GetWebhookURL() string {
 // Summary: Executes the SetWebhookURL operation.
 //
 // Parameters:
-//   - None.
+//   - url (string): The url parameter.
 //
 // Returns:
 //   - None.
@@ -628,7 +629,7 @@ func (m *Manager) SetWebhookURL(url string) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []*AlertRule: The returned value.
 //
 // Errors:
 //   - None.
@@ -679,10 +680,10 @@ func (m *Manager) ListRules() []*AlertRule {
 // Summary: Executes the GetRule operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - None.
+//   - *AlertRule: The returned value.
 //
 // Errors:
 //   - None.
@@ -726,10 +727,10 @@ func (m *Manager) GetRule(id string) *AlertRule {
 // Summary: Executes the CreateRule operation.
 //
 // Parameters:
-//   - None.
+//   - rule (*AlertRule): The rule parameter.
 //
 // Returns:
-//   - None.
+//   - *AlertRule: The returned value.
 //
 // Errors:
 //   - None.
@@ -778,10 +779,11 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 // Summary: Executes the UpdateRule operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
+//   - rule (*AlertRule): The rule parameter.
 //
 // Returns:
-//   - None.
+//   - *AlertRule: The returned value.
 //
 // Errors:
 //   - None.
@@ -838,13 +840,13 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 // Summary: Executes the DeleteRule operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

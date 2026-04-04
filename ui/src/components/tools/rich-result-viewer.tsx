@@ -76,7 +76,7 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
  *
  * Summary: Executes the RichResultViewer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { result } - The { result } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

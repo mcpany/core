@@ -40,7 +40,7 @@ type Upstream struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - upstream.Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -88,13 +88,13 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -128,18 +128,12 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Parameters:
 //   - TODO: Document parameters.
-// Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
-//
-// Summary: Executes the Register operation.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -266,23 +260,20 @@ type vectorCallable struct {
 // Returns:
 //   - TODO: Document returns.
 //
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Call executes the vector tool with the given arguments.
 //
 // Summary: Executes the Call operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - req (*tool.ExecutionRequest): The req parameter.
 //
 // Returns:
-//   - None.
+//   - any: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

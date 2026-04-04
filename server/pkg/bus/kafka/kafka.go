@@ -41,16 +41,23 @@ type Bus[T any] struct {
 
 // New creates and initializes a new KafkaBus.
 //
-// Summary: Executes the New operation.
-//
 // Parameters:
-//   - None.
+//   - config: *bus.KafkaBus. The configuration settings for the Kafka bus.
 //
 // Returns:
-//   - None.
+//   - *Bus[T]: A pointer to the initialized Kafka bus.
+//   - error: An error if no brokers are provided or initialization fails.
+//
+// Summary: Initializes New operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -78,37 +85,18 @@ func New[T any](config *bus.KafkaBus) (*Bus[T], error) {
 
 // Publish sends a message to a Kafka topic.
 //
-// The message is marshaled to JSON and sent to the configured topic prefix + topic.
-//
-// Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - topic: string. The topic to publish to.
-//   - msg: T. The message payload.
-//
-// Returns:
-//   - error: An error if marshaling or publishing fails.
-//
-// Summary: Executes Publish operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-// Publish sends a message to a Kafka topic.
-//
 // Summary: Executes the Publish operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - topic (string): The topic parameter.
+//   - msg (T): The msg parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -157,10 +145,12 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 // Summary: Executes the Subscribe operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - ) (unsubscribe func()): The returned value.
 //
 // Errors:
 //   - None.
@@ -271,10 +261,12 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 // Summary: Executes the SubscribeOnce operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - ) (unsubscribe func()): The returned value.
 //
 // Errors:
 //   - None.

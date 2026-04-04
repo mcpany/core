@@ -24,13 +24,16 @@ type Pool = pool.Pool[*client.WebsocketClientWrapper]
 // Summary: Executes the NewPool operation.
 //
 // Parameters:
-//   - None.
+//   - maxSize (int): The maxSize parameter.
+//   - idleTimeout (time.Duration): The idleTimeout parameter.
+//   - address (string): The address parameter.
 //
 // Returns:
-//   - None.
+//   - Pool: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

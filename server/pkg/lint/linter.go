@@ -41,7 +41,7 @@ const (
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -104,7 +104,7 @@ type Result struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -156,10 +156,10 @@ type Linter struct {
 // Summary: Executes the NewLinter operation.
 //
 // Parameters:
-//   - None.
+//   - cfg (*configv1.McpAnyServerConfig): The cfg parameter.
 //
 // Returns:
-//   - None.
+//   - *Linter: The returned value.
 //
 // Errors:
 //   - None.
@@ -195,13 +195,14 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Summary: Executes the Run operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - []Result: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

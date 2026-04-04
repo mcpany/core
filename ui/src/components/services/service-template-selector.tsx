@@ -26,7 +26,7 @@ const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Clou
  *
  * Summary: Executes the ServiceTemplateSelector logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onSelect } - The { onSelect } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

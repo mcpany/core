@@ -22,7 +22,7 @@ type ResourceMCPServer struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - map[string]interface{}: The returned value.
 //
 // Errors:
 //   - None.
@@ -82,13 +82,13 @@ func Schema() map[string]interface{} {
 // Summary: Executes the Create operation.
 //
 // Parameters:
-//   - None.
+//   - _ (*ResourceMCPServer): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -128,13 +128,14 @@ func Create(_ *ResourceMCPServer) error {
 // Summary: Executes the Read operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - *ResourceMCPServer: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

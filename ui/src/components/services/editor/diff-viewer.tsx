@@ -20,7 +20,9 @@ interface DiffViewerProps {
  *
  * Summary: Executes the DiffViewer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { original - The { original parameter.
+ * @param modified - The modified parameter.
+ * @param language = "yaml" } - The language = "yaml" } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

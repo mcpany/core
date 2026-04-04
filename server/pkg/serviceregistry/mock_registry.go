@@ -23,13 +23,17 @@ type MockServiceRegistry struct {
 // Summary: Executes the RegisterService operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The serviceConfig parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - []*configv1.ToolDefinition: The returned value.
+//   - []*configv1.ResourceDefinition: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -68,13 +72,14 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 // Summary: Executes the UnregisterService operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceName (string): The serviceName parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -113,10 +118,11 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -158,10 +164,11 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 // Summary: Executes the GetServiceInfo operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - *tool.ServiceInfo: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -205,10 +212,11 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 // Summary: Executes the GetServiceConfig operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - *configv1.UpstreamServiceConfig: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -252,10 +260,11 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 // Summary: Executes the GetServiceError operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

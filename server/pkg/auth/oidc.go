@@ -39,13 +39,15 @@ type OIDCProvider struct {
 // Summary: Executes the NewOIDCProvider operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - config (OIDCConfig): The config parameter.
 //
 // Returns:
-//   - None.
+//   - *OIDCProvider: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -106,7 +108,8 @@ func NewOIDCProvider(ctx context.Context, config OIDCConfig) (*OIDCProvider, err
 // Summary: Executes the HandleLogin operation.
 //
 // Parameters:
-//   - None.
+//   - w (http.ResponseWriter): The w parameter.
+//   - r (*http.Request): The r parameter.
 //
 // Returns:
 //   - None.
@@ -170,7 +173,8 @@ func (p *OIDCProvider) HandleLogin(w http.ResponseWriter, r *http.Request) {
 // Summary: Executes the HandleCallback operation.
 //
 // Parameters:
-//   - None.
+//   - w (http.ResponseWriter): The w parameter.
+//   - r (*http.Request): The r parameter.
 //
 // Returns:
 //   - None.

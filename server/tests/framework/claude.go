@@ -56,10 +56,10 @@ type ClaudeCLI struct {
 // Summary: Executes the NewClaudeCLI operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *ClaudeCLI: The returned value.
 //
 // Errors:
 //   - None.
@@ -113,7 +113,8 @@ func (c *ClaudeCLI) claudeCommand(args ...string) *exec.Cmd {
 // Summary: Executes the AddMCP operation.
 //
 // Parameters:
-//   - None.
+//   - name (type): The parameter.
+//   - endpoint (string): The endpoint parameter.
 //
 // Returns:
 //   - None.
@@ -149,7 +150,7 @@ func (c *ClaudeCLI) AddMCP(name, endpoint string) {
 // Summary: Executes the RemoveMCP operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
 //   - None.
@@ -175,13 +176,15 @@ func (c *ClaudeCLI) RemoveMCP(name string) {
 // Summary: Executes the Run operation.
 //
 // Parameters:
-//   - None.
+//   - apiKey (type): The parameter.
+//   - prompt (string): The prompt parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -14,7 +14,7 @@ import { usePolling } from '@/hooks/use-polling';
  *
  * Summary: Executes the MetricPoint logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -73,7 +73,7 @@ const POLLING_INTERVAL = 5000;
  *
  * Summary: Executes the ServiceHealthProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children } - The { children } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -244,7 +244,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
  *
  * Summary: Executes the useServiceHealth logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -279,7 +279,7 @@ export function useServiceHealth() {
  *
  * Summary: Executes the useTopology logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

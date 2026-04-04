@@ -32,10 +32,11 @@ type UpstreamWorker struct {
 // Summary: Executes the NewUpstreamWorker operation.
 //
 // Parameters:
-//   - None.
+//   - bus (*bus.Provider): The bus parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
 //
 // Returns:
-//   - None.
+//   - *UpstreamWorker: The returned value.
 //
 // Errors:
 //   - None.
@@ -74,7 +75,7 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 // Summary: Executes the Start operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
 //   - None.

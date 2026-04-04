@@ -14,7 +14,7 @@ import { CheckCircle2 } from 'lucide-react';
  *
  * Summary: Executes the StepReview logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onComplete } - The { onComplete } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

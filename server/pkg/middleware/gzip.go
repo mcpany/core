@@ -185,7 +185,7 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 // Summary: Executes the WriteHeader operation.
 //
 // Parameters:
-//   - None.
+//   - code (int): The code parameter.
 //
 // Returns:
 //   - None.

@@ -22,10 +22,10 @@ import (
 // Summary: Executes the UnaryClientInterceptor operation.
 //
 // Parameters:
-//   - None.
+//   - retryConfig (*configv1.RetryConfig): The retryConfig parameter.
 //
 // Returns:
-//   - None.
+//   - grpc.UnaryClientInterceptor: The returned value.
 //
 // Errors:
 //   - None.

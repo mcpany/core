@@ -61,7 +61,8 @@ interface CredentialFormProps {
  *
  * Summary: Executes the CredentialForm logic.
  *
- * @param params - The parameters for the operation.
+ * @param { initialData - The { initialData parameter.
+ * @param onSuccess } - The onSuccess } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

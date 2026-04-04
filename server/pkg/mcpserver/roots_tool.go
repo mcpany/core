@@ -34,7 +34,7 @@ type RootsTool struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *RootsTool: The returned value.
 //
 // Errors:
 //   - None.
@@ -90,7 +90,7 @@ func NewRootsTool() *RootsTool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *v1.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -129,7 +129,7 @@ func (t *RootsTool) Tool() *v1.Tool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -270,7 +270,7 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *configv1.CacheConfig: The returned value.
 //
 // Errors:
 //   - None.

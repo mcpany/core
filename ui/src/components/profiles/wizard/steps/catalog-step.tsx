@@ -23,7 +23,7 @@ interface CatalogStepProps {
  *
  * Summary: Executes the CatalogStep logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onNext } - The { onNext } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

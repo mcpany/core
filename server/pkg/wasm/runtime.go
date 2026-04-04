@@ -67,7 +67,7 @@ type MockRuntime struct{}
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *MockRuntime: The returned value.
 //
 // Errors:
 //   - None.
@@ -100,13 +100,15 @@ func NewMockRuntime() *MockRuntime {
 // Summary: Executes the LoadPlugin operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - bytecode ([]byte): The bytecode parameter.
 //
 // Returns:
-//   - None.
+//   - Plugin: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -143,10 +145,10 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -185,13 +187,16 @@ type MockPlugin struct{}
 // Summary: Executes the Execute operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - function (string): The function parameter.
+//   - _ (...[]byte): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - []byte: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -228,10 +233,10 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

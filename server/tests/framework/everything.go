@@ -16,10 +16,10 @@ import (
 // Summary: Executes the BuildEverythingServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -45,7 +45,9 @@ func BuildEverythingServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterEverythingService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.

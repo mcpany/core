@@ -33,7 +33,7 @@ interface McpContent {
  *
  * Summary: Executes the SmartResultRenderer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { result } - The { result } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

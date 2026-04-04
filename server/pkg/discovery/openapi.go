@@ -25,7 +25,7 @@ type OpenAPIProvider struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -55,13 +55,14 @@ func (p *OpenAPIProvider) Name() string {
 // Summary: Executes the Discover operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

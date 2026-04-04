@@ -58,13 +58,14 @@ type DockerTransport struct {
 // Summary: Executes the Connect operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - mcp.Connection: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -239,13 +240,14 @@ type dockerConn struct {
 // Summary: Executes the Read operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - jsonrpc.Message: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -360,13 +362,14 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - msg (jsonrpc.Message): The msg parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -441,10 +444,10 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -481,7 +484,7 @@ func (c *dockerConn) Close() error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -532,10 +535,10 @@ type dockerReadWriteCloser struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -596,13 +599,14 @@ type slogWriter struct {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - None.
+//   - n int: The returned value.
+//   - err error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -654,13 +658,14 @@ type tailBuffer struct {
 // Summary: Executes the Write operation.
 //
 // Parameters:
-//   - None.
+//   - p ([]byte): The p parameter.
 //
 // Returns:
-//   - None.
+//   - n int: The returned value.
+//   - err error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -705,7 +710,7 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.

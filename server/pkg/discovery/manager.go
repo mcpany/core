@@ -40,7 +40,7 @@ type Manager struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Manager: The returned value.
 //
 // Errors:
 //   - None.
@@ -84,7 +84,7 @@ func NewManager() *Manager {
 // Summary: Executes the RegisterProvider operation.
 //
 // Parameters:
-//   - None.
+//   - p (Provider): The p parameter.
 //
 // Returns:
 //   - None.
@@ -135,10 +135,10 @@ func (m *Manager) RegisterProvider(p Provider) {
 // Summary: Executes the Run operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - []*configv1.UpstreamServiceConfig: The returned value.
 //
 // Errors:
 //   - None.
@@ -226,7 +226,7 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []*ProviderStatus: The returned value.
 //
 // Errors:
 //   - None.
@@ -279,10 +279,11 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 // Summary: Executes the GetProviderStatus operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - *ProviderStatus: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

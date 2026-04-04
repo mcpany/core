@@ -21,7 +21,10 @@ interface DebuggerControlsProps {
  *
  * Summary: Executes the DebuggerControls logic.
  *
- * @param params - The parameters for the operation.
+ * @param { isPlaying - The { isPlaying parameter.
+ * @param onPlayPause - The onPlayPause parameter.
+ * @param onStep - The onStep parameter.
+ * @param onStop } - The onStop } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

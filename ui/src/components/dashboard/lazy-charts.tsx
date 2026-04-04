@@ -41,7 +41,7 @@ const _LazyAuditLogWidget = lazy(() =>
  *
  * Summary: Executes the LazyRequestVolumeChart logic.
  *
- * @param params - The parameters for the operation.
+ * @param props - The props parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -70,7 +70,7 @@ export const LazyRequestVolumeChart = (props: object) => (
  *
  * Summary: Executes the LazyRecentActivityWidget logic.
  *
- * @param params - The parameters for the operation.
+ * @param props - The props parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -99,7 +99,7 @@ export const LazyRecentActivityWidget = (props: object) => (
  *
  * Summary: Executes the LazyTopToolsWidget logic.
  *
- * @param params - The parameters for the operation.
+ * @param props - The props parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -128,7 +128,7 @@ export const LazyTopToolsWidget = (props: object) => (
  *
  * Summary: Executes the LazyHealthHistoryChart logic.
  *
- * @param params - The parameters for the operation.
+ * @param props - The props parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -157,7 +157,7 @@ export const LazyHealthHistoryChart = (props: object) => (
  *
  * Summary: Executes the LazyAuditLogWidget logic.
  *
- * @param params - The parameters for the operation.
+ * @param props - The props parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -22,7 +22,10 @@ interface JsonTreeProps {
  *
  * Summary: Executes the JsonTree logic.
  *
- * @param params - The parameters for the operation.
+ * @param { data - The { data parameter.
+ * @param level = 0 - The level = 0 parameter.
+ * @param defaultExpandedLevel = 1 - The defaultExpandedLevel = 1 parameter.
+ * @param className } - The className } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

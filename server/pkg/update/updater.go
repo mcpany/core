@@ -33,10 +33,11 @@ type Updater struct {
 // Summary: Executes the NewUpdater operation.
 //
 // Parameters:
-//   - None.
+//   - httpClient (*http.Client): The httpClient parameter.
+//   - githubAPIURL (string): The githubAPIURL parameter.
 //
 // Returns:
-//   - None.
+//   - *Updater: The returned value.
 //
 // Errors:
 //   - None.
@@ -86,13 +87,18 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Summary: Executes the CheckForUpdate operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - owner (type): The parameter.
+//   - repo (type): The parameter.
+//   - currentVersion (string): The currentVersion parameter.
 //
 // Returns:
-//   - None.
+//   - *github.RepositoryRelease: The returned value.
+//   - bool: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -141,13 +147,18 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Summary: Executes the UpdateTo operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - fs (afero.Fs): The fs parameter.
+//   - executablePath (string): The executablePath parameter.
+//   - release (*github.RepositoryRelease): The release parameter.
+//   - assetName (type): The parameter.
+//   - checksumsAssetName (string): The checksumsAssetName parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

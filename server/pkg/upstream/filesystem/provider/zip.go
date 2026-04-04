@@ -28,13 +28,14 @@ type ZipProvider struct {
 // Summary: Executes the NewZipProvider operation.
 //
 // Parameters:
-//   - None.
+//   - config (*configv1.ZipFs): The config parameter.
 //
 // Returns:
-//   - None.
+//   - *ZipProvider: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -97,7 +98,7 @@ func NewZipProvider(config *configv1.ZipFs) (*ZipProvider, error) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - afero.Fs: The returned value.
 //
 // Errors:
 //   - None.
@@ -139,13 +140,14 @@ func (p *ZipProvider) GetFs() afero.Fs {
 // Summary: Executes the ResolvePath operation.
 //
 // Parameters:
-//   - None.
+//   - virtualPath (string): The virtualPath parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -186,10 +188,10 @@ func (p *ZipProvider) ResolvePath(virtualPath string) (string, error) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

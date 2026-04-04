@@ -19,10 +19,10 @@ import (
 // Summary: Executes the BuildHTTPEchoServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -45,7 +45,9 @@ func BuildHTTPEchoServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterHTTPEchoService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.
@@ -69,10 +71,10 @@ func RegisterHTTPEchoService(t *testing.T, registrationClient apiv1.Registration
 // Summary: Executes the BuildHTTPAuthedEchoServer operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *integration.ManagedProcess: The returned value.
 //
 // Errors:
 //   - None.
@@ -95,7 +97,9 @@ func BuildHTTPAuthedEchoServer(t *testing.T) *integration.ManagedProcess {
 // Summary: Executes the RegisterHTTPAuthedEchoService operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): The registrationClient parameter.
+//   - upstreamEndpoint (string): The upstreamEndpoint parameter.
 //
 // Returns:
 //   - None.

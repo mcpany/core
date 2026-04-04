@@ -37,10 +37,11 @@ type ServiceRegistrationWorker struct {
 // Summary: Executes the NewServiceRegistrationWorker operation.
 //
 // Parameters:
-//   - None.
+//   - bus (*bus.Provider): The bus parameter.
+//   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The serviceRegistry parameter.
 //
 // Returns:
-//   - None.
+//   - *ServiceRegistrationWorker: The returned value.
 //
 // Errors:
 //   - None.
@@ -78,7 +79,7 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // Summary: Executes the SetRetryDelay operation.
 //
 // Parameters:
-//   - None.
+//   - d (time.Duration): The d parameter.
 //
 // Returns:
 //   - None.
@@ -117,7 +118,7 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // Summary: Executes the Start operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
 //   - None.

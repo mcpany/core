@@ -179,7 +179,7 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
  *
  * Summary: Executes the ServiceHealthWidget logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

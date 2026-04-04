@@ -116,7 +116,7 @@ const CustomTooltip = ({ active, payload }: any) => {
  *
  * Summary: Executes the ContextTreemap logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

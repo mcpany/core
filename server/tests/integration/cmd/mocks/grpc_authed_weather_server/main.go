@@ -44,13 +44,15 @@ var weatherData = map[string]string{
 // Summary: Executes the GetWeather operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - req (*weatherV1.GetWeatherRequest): The req parameter.
 //
 // Returns:
-//   - None.
+//   - *weatherV1.GetWeatherResponse: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

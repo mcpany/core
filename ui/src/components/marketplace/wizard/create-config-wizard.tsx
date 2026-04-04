@@ -113,7 +113,9 @@ function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => 
  *
  * Summary: Executes the CreateConfigWizard logic.
  *
- * @param params - The parameters for the operation.
+ * @param { open - The { open parameter.
+ * @param onOpenChange - The onOpenChange parameter.
+ * @param onComplete } - The onComplete } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -43,10 +43,10 @@ var _ resource.Resource = &SkillResource{}
 // Summary: Executes the NewSkillResource operation.
 //
 // Parameters:
-//   - None.
+//   - s (*skill.Skill): The s parameter.
 //
 // Returns:
-//   - None.
+//   - *SkillResource: The returned value.
 //
 // Errors:
 //   - None.
@@ -90,10 +90,11 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 // Summary: Executes the NewSkillAssetResource operation.
 //
 // Parameters:
-//   - None.
+//   - s (*skill.Skill): The s parameter.
+//   - assetPath (string): The assetPath parameter.
 //
 // Returns:
-//   - None.
+//   - *SkillResource: The returned value.
 //
 // Errors:
 //   - None.
@@ -136,7 +137,7 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -179,7 +180,7 @@ func (r *SkillResource) URI() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -222,7 +223,7 @@ func (r *SkillResource) Name() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -262,7 +263,7 @@ func (r *SkillResource) Service() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *mcp.Resource: The returned value.
 //
 // Errors:
 //   - None.
@@ -362,13 +363,14 @@ func (r *SkillResource) resolvePath() (string, error) {
 // Summary: Executes the Read operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - *mcp.ReadResourceResult: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -486,13 +488,13 @@ func isTextMime(mimeType string) bool {
 // Summary: Executes the Subscribe operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -533,13 +535,14 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 // Summary: Executes the RegisterSkillResources operation.
 //
 // Parameters:
-//   - None.
+//   - rm (resource.ManagerInterface): The rm parameter.
+//   - sm (*skill.Manager): The sm parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

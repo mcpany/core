@@ -19,13 +19,14 @@ import (
 // Summary: Executes the NewHTTPClientWithTLS operation.
 //
 // Parameters:
-//   - None.
+//   - tlsConfig (*configv1.TLSConfig): The tlsConfig parameter.
 //
 // Returns:
-//   - None.
+//   - *http.Client: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

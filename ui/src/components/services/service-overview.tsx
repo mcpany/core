@@ -23,7 +23,9 @@ interface ServiceOverviewProps {
  *
  * Summary: Executes the ServiceOverview logic.
  *
- * @param params - The parameters for the operation.
+ * @param { service - The { service parameter.
+ * @param status - The status parameter.
+ * @param trafficData = [] } - The trafficData = [] } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

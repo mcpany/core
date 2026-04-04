@@ -25,7 +25,7 @@ interface DiscoveredToolsViewerProps {
  *
  * Summary: Executes the DiscoveredToolsViewer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { tools } - The { tools } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

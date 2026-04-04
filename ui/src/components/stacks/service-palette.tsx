@@ -53,7 +53,7 @@ interface ServicePaletteProps {
  *
  * Summary: Executes the ServicePalette logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onTemplateSelect } - The { onTemplateSelect } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

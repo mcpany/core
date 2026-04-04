@@ -99,7 +99,7 @@ import { apiClient, Metric } from "@/lib/client";
  *
  * Summary: Executes the MetricsOverview logic.
  *
- * @param params - The parameters for the operation.
+ * @param function MetricsOverview( - The function MetricsOverview( parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

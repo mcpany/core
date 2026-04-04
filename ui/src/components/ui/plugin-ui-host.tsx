@@ -22,7 +22,10 @@ interface PluginUIHostProps {
  *
  * Summary: Executes the PluginUIHost logic.
  *
- * @param params - The parameters for the operation.
+ * @param { src - The { src parameter.
+ * @param title = "Plugin UI" - The title = "Plugin UI" parameter.
+ * @param className - The className parameter.
+ * @param serviceId } - The serviceId } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

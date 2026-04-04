@@ -21,7 +21,9 @@ import { SchemaViewer } from "./tools/schema-viewer";
  *
  * Summary: Executes the ToolDetail logic.
  *
- * @param params - The parameters for the operation.
+ * @param { serviceId - The { serviceId parameter.
+ * @param toolName } - The toolName } parameter.
+ * @param toolName - The toolName parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

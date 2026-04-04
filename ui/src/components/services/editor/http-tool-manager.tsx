@@ -33,7 +33,8 @@ interface HttpToolManagerProps {
  *
  * Summary: Executes the HttpToolManager logic.
  *
- * @param params - The parameters for the operation.
+ * @param { service - The { service parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

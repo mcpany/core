@@ -22,7 +22,9 @@ interface OAuthConnectProps {
  *
  * Summary: Executes the OAuthConnect logic.
  *
- * @param params - The parameters for the operation.
+ * @param { serviceId - The { serviceId parameter.
+ * @param serviceName - The serviceName parameter.
+ * @param isSaved } - The isSaved } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

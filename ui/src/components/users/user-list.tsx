@@ -48,7 +48,10 @@ interface UserListProps {
  *
  * Summary: Executes the UserList logic.
  *
- * @param params - The parameters for the operation.
+ * @param { users - The { users parameter.
+ * @param isLoading - The isLoading parameter.
+ * @param onEdit - The onEdit parameter.
+ * @param onDelete } - The onDelete } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

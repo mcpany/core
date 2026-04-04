@@ -23,7 +23,9 @@ interface InputTransformerEditorProps {
  *
  * Summary: Executes the InputTransformerEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { transformer - The { transformer parameter.
+ * @param onChange - The onChange parameter.
+ * @param parameters = [] } - The parameters = [] } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

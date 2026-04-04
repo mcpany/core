@@ -45,7 +45,10 @@ interface ServicesTableProps {
  *
  * Summary: Executes the ServicesTable logic.
  *
- * @param params - The parameters for the operation.
+ * @param { services - The { services parameter.
+ * @param loading - The loading parameter.
+ * @param onToggle - The onToggle parameter.
+ * @param onDelete } - The onDelete } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

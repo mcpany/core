@@ -33,7 +33,8 @@ const durationToString = (d: any): string => {
  *
  * Summary: Executes the ResilienceEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { resilience - The { resilience parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -32,7 +32,8 @@ const NodeWrapper = ({ children, className, selected }: { children: React.ReactN
  *
  * Summary: Executes the UserNode logic.
  *
- * @param params - The parameters for the operation.
+ * @param ({ data - The ({ data parameter.
+ * @param selected } - The selected } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -75,7 +76,8 @@ UserNode.displayName = 'UserNode';
  *
  * Summary: Executes the AgentNode logic.
  *
- * @param params - The parameters for the operation.
+ * @param ({ data - The ({ data parameter.
+ * @param selected } - The selected } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -124,7 +126,8 @@ AgentNode.displayName = 'AgentNode';
  *
  * Summary: Executes the ToolNode logic.
  *
- * @param params - The parameters for the operation.
+ * @param ({ data - The ({ data parameter.
+ * @param selected } - The selected } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -167,7 +170,8 @@ ToolNode.displayName = 'ToolNode';
  *
  * Summary: Executes the ResourceNode logic.
  *
- * @param params - The parameters for the operation.
+ * @param ({ data - The ({ data parameter.
+ * @param selected } - The selected } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -211,7 +215,8 @@ ResourceNode.displayName = 'ResourceNode';
  *
  * Summary: Executes the ServiceNode logic.
  *
- * @param params - The parameters for the operation.
+ * @param ({ data - The ({ data parameter.
+ * @param selected } - The selected } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

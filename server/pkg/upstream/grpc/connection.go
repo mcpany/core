@@ -31,7 +31,7 @@ type ConnectionFactory struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *ConnectionFactory: The returned value.
 //
 // Errors:
 //   - None.
@@ -68,13 +68,15 @@ func NewConnectionFactory() *ConnectionFactory {
 // Summary: Executes the WithDialer operation.
 //
 // Parameters:
-//   - None.
+//   - dialer (func(context.Context): The dialer parameter.
+//   - string (type): The parameter.
 //
 // Returns:
-//   - None.
+//   - net.Conn: The returned value.
+//   - error): The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -113,13 +115,15 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // Summary: Executes the NewConnection operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - targetAddress (string): The targetAddress parameter.
 //
 // Returns:
-//   - None.
+//   - *grpc.ClientConn: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

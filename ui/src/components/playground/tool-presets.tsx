@@ -29,7 +29,9 @@ interface ToolPresetsProps {
  *
  * Summary: Executes the ToolPresets logic.
  *
- * @param params - The parameters for the operation.
+ * @param { toolName - The { toolName parameter.
+ * @param currentData - The currentData parameter.
+ * @param onSelect } - The onSelect } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

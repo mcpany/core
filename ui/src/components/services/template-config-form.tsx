@@ -21,7 +21,9 @@ interface TemplateConfigFormProps {
  *
  * Summary: Executes the TemplateConfigForm logic.
  *
- * @param params - The parameters for the operation.
+ * @param { template - The { template parameter.
+ * @param onCancel - The onCancel parameter.
+ * @param onSubmit } - The onSubmit } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -79,7 +79,7 @@ type Manager struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *Manager: The returned value.
 //
 // Errors:
 //   - None.
@@ -114,7 +114,7 @@ func NewManager() *Manager {
 // Summary: Executes the SetMCPServer operation.
 //
 // Parameters:
-//   - None.
+//   - mcpServer (MCPServerProvider): The mcpServer parameter.
 //
 // Returns:
 //   - None.
@@ -152,7 +152,7 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // Summary: Executes the AddPrompt operation.
 //
 // Parameters:
-//   - None.
+//   - prompt (Prompt): The prompt parameter.
 //
 // Returns:
 //   - None.
@@ -205,7 +205,7 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 // Summary: Executes the UpdatePrompt operation.
 //
 // Parameters:
-//   - None.
+//   - prompt (Prompt): The prompt parameter.
 //
 // Returns:
 //   - None.
@@ -249,10 +249,11 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 // Summary: Executes the GetPrompt operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - Prompt: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -292,7 +293,7 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []Prompt: The returned value.
 //
 // Errors:
 //   - None.
@@ -363,7 +364,7 @@ func (pm *Manager) ListPrompts() []Prompt {
 // Summary: Executes the ClearPromptsForService operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
 //   - None.

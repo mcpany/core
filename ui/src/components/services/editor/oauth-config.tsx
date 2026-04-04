@@ -19,7 +19,8 @@ interface OAuthConfigProps {
  *
  * Summary: Executes the OAuthConfig logic.
  *
- * @param params - The parameters for the operation.
+ * @param { auth - The { auth parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

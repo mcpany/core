@@ -22,7 +22,7 @@ export enum WizardStep {
  *
  * Summary: Executes the WizardWebhook logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -56,7 +56,7 @@ export interface WizardWebhook {
  *
  * Summary: Executes the WizardState logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -123,7 +123,7 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
  *
  * Summary: Executes the WizardProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children } - The { children } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -261,7 +261,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
  *
  * Summary: Executes the useWizard logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

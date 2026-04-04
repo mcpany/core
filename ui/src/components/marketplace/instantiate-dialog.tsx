@@ -29,7 +29,10 @@ interface InstantiateDialogProps {
  *
  * Summary: Executes the InstantiateDialog logic.
  *
- * @param params - The parameters for the operation.
+ * @param { open - The { open parameter.
+ * @param onOpenChange - The onOpenChange parameter.
+ * @param templateConfig - The templateConfig parameter.
+ * @param onComplete } - The onComplete } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

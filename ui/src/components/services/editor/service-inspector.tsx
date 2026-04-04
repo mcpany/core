@@ -22,7 +22,7 @@ interface ServiceInspectorProps {
  *
  * Summary: Executes the ServiceInspector logic.
  *
- * @param params - The parameters for the operation.
+ * @param { service } - The { service } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -88,13 +88,14 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 // Summary: Executes the NewProvider operation.
 //
 // Parameters:
-//   - None.
+//   - messageBus (*bus.MessageBus): The messageBus parameter.
 //
 // Returns:
-//   - None.
+//   - *Provider: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -160,18 +161,9 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 //
 // Returns:
 //   - TODO: Document returns.
-// GetBus retrieves a bus for the given topic. If a bus for the given topic
-//
-// Summary: Executes the GetBus operation.
-//
-// Parameters:
-//   - None.
-//
-// Returns:
-//   - None.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

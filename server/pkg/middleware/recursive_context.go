@@ -40,7 +40,7 @@ type RecursiveContextManager struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *RecursiveContextManager: The returned value.
 //
 // Errors:
 //   - None.
@@ -84,10 +84,11 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 // Summary: Executes the CreateSession operation.
 //
 // Parameters:
-//   - None.
+//   - data (map[string]interface{}): The data parameter.
+//   - ttl (time.Duration): The ttl parameter.
 //
 // Returns:
-//   - None.
+//   - *SessionState: The returned value.
 //
 // Errors:
 //   - None.
@@ -151,10 +152,11 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Summary: Executes the GetSession operation.
 //
 // Parameters:
-//   - None.
+//   - id (string): The id parameter.
 //
 // Returns:
-//   - None.
+//   - *SessionState: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -210,7 +212,7 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - http.HandlerFunc: The returned value.
 //
 // Errors:
 //   - None.
@@ -316,10 +318,10 @@ const (
 // Summary: Executes the HandleContext operation.
 //
 // Parameters:
-//   - None.
+//   - next (http.Handler): The next parameter.
 //
 // Returns:
-//   - None.
+//   - http.Handler: The returned value.
 //
 // Errors:
 //   - None.

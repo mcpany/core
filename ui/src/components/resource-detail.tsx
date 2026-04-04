@@ -20,7 +20,9 @@ import { ServicePropertyCard } from "./service-property-card";
  *
  * Summary: Executes the ResourceDetail logic.
  *
- * @param params - The parameters for the operation.
+ * @param { serviceId - The { serviceId parameter.
+ * @param resourceName } - The resourceName } parameter.
+ * @param resourceName - The resourceName parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

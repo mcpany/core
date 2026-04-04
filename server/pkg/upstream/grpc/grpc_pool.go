@@ -39,10 +39,10 @@ type poolWithChecker[T pool.ClosableClient] struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -73,18 +73,22 @@ func (p *poolWithChecker[T]) Close() error {
 //
 // Errors:
 //   - Returns error if config is nil or invalid.
-// NewGrpcPool creates a new connection pool for gRPC clients.
+//   - Returns error if TLS configuration is invalid.
 //
-// Summary: Executes the NewGrpcPool operation.
+// Side Effects:
+//   - Reads certificate files if mTLS is configured.
+//   - Initializes gRPC clients.
+//
+// Summary: Initializes NewGrpcPool operation.
 //
 // Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

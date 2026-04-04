@@ -28,7 +28,10 @@ interface KeyValuePair {
  *
  * Summary: Executes the KeyValueEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { initialValues - The { initialValues parameter.
+ * @param onChange - The onChange parameter.
+ * @param keyPlaceholder = "Key" - The keyPlaceholder = "Key" parameter.
+ * @param valuePlaceholder = "Value" } - The valuePlaceholder = "Value" } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

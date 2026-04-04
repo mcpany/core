@@ -18,7 +18,7 @@ interface StackVisualizerProps {
  *
  * Summary: Executes the StackVisualizer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { yamlContent } - The { yamlContent } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

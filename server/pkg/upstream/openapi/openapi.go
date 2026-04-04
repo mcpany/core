@@ -48,13 +48,13 @@ type OpenAPIUpstream struct { //nolint:revive
 // Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -99,7 +99,7 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - upstream.Upstream: The returned value.
 //
 // Errors:
 //   - None.
@@ -144,18 +144,12 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //
 // Parameters:
 //   - TODO: Document parameters.
-// Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
-//
-// Summary: Executes the Register operation.
-//
-// Parameters:
-//   - None.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -364,21 +358,19 @@ type httpClientImpl struct {
 //
 // Errors:
 //   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
 // Do sends an HTTP request and returns an HTTP response, fulfilling the
 //
 // Summary: Executes the Do operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - *http.Response: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

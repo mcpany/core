@@ -21,7 +21,8 @@ interface VariableInspectorProps {
  *
  * Summary: Executes the VariableInspector logic.
  *
- * @param params - The parameters for the operation.
+ * @param { selectedNode - The { selectedNode parameter.
+ * @param onClose } - The onClose } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

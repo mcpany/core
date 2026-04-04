@@ -92,7 +92,7 @@ const PADDING_X = 40;
  *
  * Summary: Executes the SequenceDiagram logic.
  *
- * @param params - The parameters for the operation.
+ * @param { trace } - The { trace } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

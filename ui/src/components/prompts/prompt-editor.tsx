@@ -68,7 +68,11 @@ type PromptValues = z.infer<typeof promptSchema>;
  *
  * Summary: Executes the PromptEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { open - The { open parameter.
+ * @param onOpenChange - The onOpenChange parameter.
+ * @param prompt - The prompt parameter.
+ * @param services - The services parameter.
+ * @param onSave } - The onSave } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

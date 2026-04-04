@@ -32,7 +32,7 @@ type TemporaryToolManager struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *TemporaryToolManager: The returned value.
 //
 // Errors:
 //   - None.
@@ -71,7 +71,8 @@ func NewTemporaryToolManager() *TemporaryToolManager {
 // Summary: Executes the AddServiceInfo operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
+//   - info (*tool.ServiceInfo): The info parameter.
 //
 // Returns:
 //   - None.
@@ -116,10 +117,11 @@ func (m *TemporaryToolManager) AddServiceInfo(serviceID string, info *tool.Servi
 // Summary: Executes the GetServiceInfo operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - *tool.ServiceInfo: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -165,13 +167,13 @@ func (m *TemporaryToolManager) GetServiceInfo(serviceID string) (*tool.ServiceIn
 // Summary: Executes the AddTool operation.
 //
 // Parameters:
-//   - None.
+//   - t (tool.Tool): The t parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -225,10 +227,11 @@ func (m *TemporaryToolManager) AddTool(t tool.Tool) error {
 // Summary: Executes the GetTool operation.
 //
 // Parameters:
-//   - None.
+//   - toolName (string): The toolName parameter.
 //
 // Returns:
-//   - None.
+//   - tool.Tool: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -274,7 +277,7 @@ func (m *TemporaryToolManager) GetTool(toolName string) (tool.Tool, bool) {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []tool.Tool: The returned value.
 //
 // Errors:
 //   - None.
@@ -322,10 +325,10 @@ func (m *TemporaryToolManager) ListTools() []tool.Tool {
 // Summary: Executes the GetToolCountForService operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - int: The returned value.
 //
 // Errors:
 //   - None.

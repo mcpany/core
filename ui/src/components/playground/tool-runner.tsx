@@ -52,7 +52,8 @@ interface AuditLogEntry {
  *
  * Summary: Executes the ToolRunner logic.
  *
- * @param params - The parameters for the operation.
+ * @param { tool - The { tool parameter.
+ * @param onClose } - The onClose } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

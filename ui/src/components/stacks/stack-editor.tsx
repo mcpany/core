@@ -32,7 +32,10 @@ interface StackEditorProps {
  *
  * Summary: Executes the StackEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { stackId - The { stackId parameter.
+ * @param initialValue = "" - The initialValue = "" parameter.
+ * @param onSave - The onSave parameter.
+ * @param onCancel } - The onCancel } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -13,7 +13,7 @@ import { apiClient } from '@/lib/client';
  *
  * Summary: Executes the UserRole logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -40,7 +40,7 @@ export type UserRole = 'admin' | 'editor' | 'viewer';
  *
  * Summary: Executes the User logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -96,7 +96,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
  *
  * Summary: Executes the UserProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children } - The { children } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -177,7 +177,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
  *
  * Summary: Executes the useUser logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

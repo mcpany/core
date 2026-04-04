@@ -118,7 +118,11 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  *
  * Summary: Executes the JsonView logic.
  *
- * @param params - The parameters for the operation.
+ * @param { data - The { data parameter.
+ * @param className - The className parameter.
+ * @param smartTable = true - The smartTable = true parameter.
+ * @param maxHeight = 400 - The maxHeight = 400 parameter.
+ * @param defaultExpandedLevel = 1 } - The defaultExpandedLevel = 1 } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

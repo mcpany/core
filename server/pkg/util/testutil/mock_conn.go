@@ -25,10 +25,10 @@ type MockClientConn struct {
 // Summary: Executes the NewMockClientConn operation.
 //
 // Parameters:
-//   - None.
+//   - t (*testing.T): The t parameter.
 //
 // Returns:
-//   - None.
+//   - *MockClientConn: The returned value.
 //
 // Errors:
 //   - None.
@@ -66,7 +66,8 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 // Summary: Executes the SetClient operation.
 //
 // Parameters:
-//   - None.
+//   - method (string): The method parameter.
+//   - client (interface{}): The client parameter.
 //
 // Returns:
 //   - None.
@@ -104,13 +105,17 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 // Summary: Executes the Invoke operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - _ (string): The _ parameter.
+//   - _ (interface{}): The _ parameter.
+//   - _ (interface{}): The _ parameter.
+//   - _ (...grpc.CallOption): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -148,13 +153,17 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 // Summary: Executes the NewStream operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - _ (*grpc.StreamDesc): The _ parameter.
+//   - method (string): The method parameter.
+//   - _ (...grpc.CallOption): The _ parameter.
 //
 // Returns:
-//   - None.
+//   - grpc.ClientStream: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

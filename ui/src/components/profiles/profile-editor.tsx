@@ -138,7 +138,7 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
  *
  * Summary: Executes the Profile logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -196,7 +196,10 @@ interface ProfileEditorProps {
  *
  * Summary: Executes the ProfileEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { profile - The { profile parameter.
+ * @param open - The open parameter.
+ * @param onOpenChange - The onOpenChange parameter.
+ * @param onSave } - The onSave } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

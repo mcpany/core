@@ -30,10 +30,11 @@ type GrpcStatsHandler struct {
 // Summary: Executes the TagRPC operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - info (*stats.RPCTagInfo): The info parameter.
 //
 // Returns:
-//   - None.
+//   - context.Context: The returned value.
 //
 // Errors:
 //   - None.
@@ -71,7 +72,8 @@ func (h *GrpcStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) c
 // Summary: Executes the HandleRPC operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - s (stats.RPCStats): The s parameter.
 //
 // Returns:
 //   - None.
@@ -118,10 +120,11 @@ func (h *GrpcStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 // Summary: Executes the TagConn operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - info (*stats.ConnTagInfo): The info parameter.
 //
 // Returns:
-//   - None.
+//   - context.Context: The returned value.
 //
 // Errors:
 //   - None.
@@ -159,7 +162,8 @@ func (h *GrpcStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo)
 // Summary: Executes the HandleConn operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - s (stats.ConnStats): The s parameter.
 //
 // Returns:
 //   - None.

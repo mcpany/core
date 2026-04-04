@@ -381,7 +381,7 @@ func (s *Settings) APIKey() string {
 // Summary: Executes the SetAPIKey operation.
 //
 // Parameters:
-//   - None.
+//   - key (string): The key parameter.
 //
 // Returns:
 //   - None.
@@ -412,7 +412,7 @@ func (s *Settings) SetAPIKey(key string) {
 // Summary: Executes the SetMiddlewares operation.
 //
 // Parameters:
-//   - None.
+//   - middlewares ([]*configv1.Middleware): The middlewares parameter.
 //
 // Returns:
 //   - None.
@@ -600,7 +600,7 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 // Summary: Executes the SetDlp operation.
 //
 // Parameters:
-//   - None.
+//   - dlp (*configv1.DLPConfig): The dlp parameter.
 //
 // Returns:
 //   - None.
@@ -647,7 +647,7 @@ func (s *Settings) GetSso() *configv1.SSOConfig {
 // Summary: Executes the SetSso operation.
 //
 // Parameters:
-//   - None.
+//   - sso (*configv1.SSOConfig): The sso parameter.
 //
 // Returns:
 //   - None.

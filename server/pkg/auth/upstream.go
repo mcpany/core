@@ -35,13 +35,14 @@ type UpstreamAuthenticator interface {
 // Summary: Executes the NewUpstreamAuthenticator operation.
 //
 // Parameters:
-//   - None.
+//   - authConfig (*configv1.Authentication): The authConfig parameter.
 //
 // Returns:
-//   - None.
+//   - UpstreamAuthenticator: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -144,13 +145,13 @@ type APIKeyAuth struct {
 // Summary: Executes the Authenticate operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -215,13 +216,13 @@ type BearerTokenAuth struct {
 // Summary: Executes the Authenticate operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -272,13 +273,13 @@ type BasicAuth struct {
 // Summary: Executes the Authenticate operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -355,13 +356,13 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 // Summary: Executes the Authenticate operation.
 //
 // Parameters:
-//   - None.
+//   - req (*http.Request): The req parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

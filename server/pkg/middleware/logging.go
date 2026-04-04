@@ -18,10 +18,10 @@ import (
 // Summary: Executes the LoggingMiddleware operation.
 //
 // Parameters:
-//   - None.
+//   - log (*slog.Logger): The log parameter.
 //
 // Returns:
-//   - None.
+//   - mcp.Middleware: The returned value.
 //
 // Errors:
 //   - None.

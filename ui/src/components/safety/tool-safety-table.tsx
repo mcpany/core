@@ -28,7 +28,8 @@ interface ToolSafetyTableProps {
  *
  * Summary: Executes the ToolSafetyTable logic.
  *
- * @param params - The parameters for the operation.
+ * @param { tools - The { tools parameter.
+ * @param onUpdate } - The onUpdate } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

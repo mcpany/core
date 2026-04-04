@@ -10,7 +10,8 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
  *
  * Summary: Executes the ThemeProvider logic.
  *
- * @param params - The parameters for the operation.
+ * @param { children - The { children parameter.
+ * @param ...props } - The ...props } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

@@ -34,7 +34,10 @@ interface HttpToolEditorProps {
  *
  * Summary: Executes the HttpToolEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { tool - The { tool parameter.
+ * @param call - The call parameter.
+ * @param serviceName - The serviceName parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

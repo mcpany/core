@@ -40,7 +40,7 @@ type SimpleTokenizer struct{}
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *SimpleTokenizer: The returned value.
 //
 // Errors:
 //   - None.
@@ -82,13 +82,14 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 // Summary: Executes the CountTokens operation.
 //
 // Parameters:
-//   - None.
+//   - text (string): The text parameter.
 //
 // Returns:
-//   - None.
+//   - int: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -146,7 +147,7 @@ type WordTokenizer struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - *WordTokenizer: The returned value.
 //
 // Errors:
 //   - None.
@@ -188,13 +189,14 @@ func NewWordTokenizer() *WordTokenizer {
 // Summary: Executes the CountTokens operation.
 //
 // Parameters:
-//   - None.
+//   - text (string): The text parameter.
 //
 // Returns:
-//   - None.
+//   - int: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -308,13 +310,15 @@ func countWords(text string) int {
 // Summary: Executes the CountTokensInValue operation.
 //
 // Parameters:
-//   - None.
+//   - t (Tokenizer): The t parameter.
+//   - v (interface{}): The v parameter.
 //
 // Returns:
-//   - None.
+//   - int: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -379,13 +383,14 @@ type rawWordCounter struct{}
 // Summary: Executes the CountTokens operation.
 //
 // Parameters:
-//   - None.
+//   - text (string): The text parameter.
 //
 // Returns:
-//   - None.
+//   - int: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

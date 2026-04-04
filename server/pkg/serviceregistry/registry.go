@@ -126,10 +126,14 @@ type ServiceRegistry struct {
 // Summary: Executes the New operation.
 //
 // Parameters:
-//   - None.
+//   - factory (factory.Factory): The factory parameter.
+//   - toolManager (tool.ManagerInterface): The toolManager parameter.
+//   - promptManager (prompt.ManagerInterface): The promptManager parameter.
+//   - resourceManager (resource.ManagerInterface): The resourceManager parameter.
+//   - authManager (*auth.Manager): The authManager parameter.
 //
 // Returns:
-//   - None.
+//   - *ServiceRegistry: The returned value.
 //
 // Errors:
 //   - None.
@@ -183,13 +187,17 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Summary: Executes the RegisterService operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceConfig (*config.UpstreamServiceConfig): The serviceConfig parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - []*config.ToolDefinition: The returned value.
+//   - []*config.ResourceDefinition: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -347,7 +355,8 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Summary: Executes the AddServiceInfo operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
+//   - info (*tool.ServiceInfo): The info parameter.
 //
 // Returns:
 //   - None.
@@ -393,10 +402,11 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // Summary: Executes the GetServiceInfo operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - *tool.ServiceInfo: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -452,10 +462,11 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Summary: Executes the GetServiceConfig operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - *config.UpstreamServiceConfig: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -511,13 +522,14 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 // Summary: Executes the UnregisterService operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - serviceName (string): The serviceName parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -584,10 +596,11 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 // Summary: Executes the GetServiceError operation.
 //
 // Parameters:
-//   - None.
+//   - serviceID (string): The serviceID parameter.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -631,7 +644,8 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Summary: Executes the StartHealthChecks operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - interval (time.Duration): The interval parameter.
 //
 // Returns:
 //   - None.
@@ -746,13 +760,13 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 // Summary: Executes the Close operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -803,10 +817,11 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - []*config.UpstreamServiceConfig: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

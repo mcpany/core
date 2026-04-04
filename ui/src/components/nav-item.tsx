@@ -27,7 +27,10 @@ interface NavItemProps {
  *
  * Summary: Executes the NavItem logic.
  *
- * @param params - The parameters for the operation.
+ * @param { href - The { href parameter.
+ * @param icon - The icon parameter.
+ * @param title - The title parameter.
+ * @param isActive } - The isActive } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

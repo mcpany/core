@@ -19,7 +19,8 @@ interface SourceEditorProps {
  *
  * Summary: Executes the SourceEditor logic.
  *
- * @param params - The parameters for the operation.
+ * @param { value - The { value parameter.
+ * @param onChange } - The onChange } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

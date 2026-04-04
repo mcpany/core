@@ -21,7 +21,7 @@ import { apiClient } from "@/lib/client";
  *
  * Summary: Executes the WizardService logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -54,7 +54,7 @@ export interface WizardService {
  *
  * Summary: Executes the WizardDialog logic.
  *
- * @param params - The parameters for the operation.
+ * @param { onProfileCreated } - The { onProfileCreated } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

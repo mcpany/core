@@ -26,7 +26,9 @@ interface ReplayDiffDialogProps {
  *
  * Summary: Executes the ReplayDiffDialog logic.
  *
- * @param params - The parameters for the operation.
+ * @param { open - The { open parameter.
+ * @param onOpenChange - The onOpenChange parameter.
+ * @param trace } - The trace } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

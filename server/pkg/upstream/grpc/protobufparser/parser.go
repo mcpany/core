@@ -75,7 +75,7 @@ type McpField struct {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -114,7 +114,7 @@ func (f *McpField) GetName() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -153,7 +153,7 @@ func (f *McpField) GetDescription() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
@@ -192,7 +192,7 @@ func (f *McpField) GetType() string {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -223,18 +223,13 @@ func (f *McpField) GetIsRepeated() bool {
 // Summary: Executes ParseProtoFromDefs operation.
 //
 // Parameters:
-// ParseProtoFromDefs parses a set of protobuf definitions from a slice of ProtoDefinition and a ProtoCollection. It writes the proto files to a temporary directory, invokes protoc to generate a FileDescriptorSet, and then returns the parsed FileDescriptorSet.
-//
-// Summary: Executes the ParseProtoFromDefs operation.
-//
-// Parameters:
-//   - None.
+//   - TODO: Document parameters.
 //
 // Returns:
-//   - None.
+//   - TODO: Document returns.
 //
 // Errors:
-//   - None.
+//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -493,27 +488,20 @@ type McpResource struct {
 //
 // Summary: Executes ParseProtoByReflection operation.
 //
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
 // ParseProtoByReflection connects to a gRPC service that has server reflection
 //
 // Summary: Executes the ParseProtoByReflection operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - target (string): The target parameter.
 //
 // Returns:
-//   - None.
+//   - *descriptorpb.FileDescriptorSet: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -734,13 +722,14 @@ func getFileDescriptorByFilename(stream reflectpb.ServerReflection_ServerReflect
 // Summary: Executes the ExtractMcpDefinitions operation.
 //
 // Parameters:
-//   - None.
+//   - fds (*descriptorpb.FileDescriptorSet): The fds parameter.
 //
 // Returns:
-//   - None.
+//   - *ParsedMcpAnnotations: The returned value.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

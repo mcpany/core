@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator";
  *
  * Summary: Executes the ContextSimulator logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

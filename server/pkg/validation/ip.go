@@ -28,10 +28,10 @@ func init() {
 // Summary: Executes the IsPrivateNetworkIP operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -94,10 +94,10 @@ func IsPrivateNetworkIP(ip net.IP) bool {
 // Summary: Executes the IsNAT64 operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -138,10 +138,10 @@ func IsNAT64(ip net.IP) bool {
 // Summary: Executes the IsIPv4Compatible operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -181,10 +181,10 @@ func IsIPv4Compatible(ip net.IP) bool {
 // Summary: Executes the IsNAT64LinkLocal operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -226,10 +226,10 @@ func IsNAT64LinkLocal(ip net.IP) bool {
 // Summary: Executes the IsNAT64Loopback operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -271,10 +271,10 @@ func IsNAT64Loopback(ip net.IP) bool {
 // Summary: Executes the IsPrivateIP operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -344,10 +344,10 @@ func IsPrivateIP(ip net.IP) bool {
 // Summary: Executes the IsPrivateNetworkIPv4 operation.
 //
 // Parameters:
-//   - None.
+//   - ip (net.IP): The ip parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.

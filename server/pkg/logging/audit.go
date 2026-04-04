@@ -28,10 +28,11 @@ type AuditHandler struct {
 // Summary: Executes the NewAuditHandler operation.
 //
 // Parameters:
-//   - None.
+//   - next (slog.Handler): The next parameter.
+//   - config (*configv1.AuditConfig): The config parameter.
 //
 // Returns:
-//   - None.
+//   - *AuditHandler: The returned value.
 //
 // Errors:
 //   - None.
@@ -114,10 +115,11 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 // Summary: Executes the Enabled operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - level (slog.Level): The level parameter.
 //
 // Returns:
-//   - None.
+//   - bool: The returned value.
 //
 // Errors:
 //   - None.
@@ -160,13 +162,14 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 // Summary: Executes the Handle operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -212,10 +215,10 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 // Summary: Executes the WithAttrs operation.
 //
 // Parameters:
-//   - None.
+//   - attrs ([]slog.Attr): The attrs parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -261,10 +264,10 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 // Summary: Executes the WithGroup operation.
 //
 // Parameters:
-//   - None.
+//   - name (string): The name parameter.
 //
 // Returns:
-//   - None.
+//   - slog.Handler: The returned value.
 //
 // Errors:
 //   - None.
@@ -310,13 +313,14 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 // Summary: Executes the Export operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - r (slog.Record): The r parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

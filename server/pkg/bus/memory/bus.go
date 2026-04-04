@@ -32,40 +32,19 @@ type DefaultBus[T any] struct {
 
 // New creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface. It is initialized with the default publish timeout. The type parameter T specifies the type of message that the bus will handle.
 //
-// Summary: Executes the New operation.
-//
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - None.
+//   - *DefaultBus[T]: The resulting *DefaultBus[T].
 //
 // Errors:
-//   - None.
+//   - None
 //
 // Side Effects:
-//   - None.
-func New[T any]() *DefaultBus[T] {
-	return &DefaultBus[T]{
-		subscribers:    make(map[string]map[uintptr]chan T),
-		publishTimeout: defaultPublishTimeout,
-	}
-}
-
-// Publish sends a message to all handlers subscribed to the specified topic.
-// It sends the message to a channel for each subscriber, where it will be
-// processed by the subscriber's dedicated goroutine.
+//   - None
 //
-// To prevent a slow subscriber from blocking the publisher indefinitely, this
-// call will time out after a configurable duration if a subscriber's channel is
-// full. If a timeout occurs, the message is dropped for that subscriber, and a
-// warning is logged.
-//
-// Parameters:
-//   - topic: The topic to publish the message to.
-//   - msg: The message to be sent.
-//
-// Summary: Executes Publish operation.
+// Summary: Initializes New operation.
 //
 // Parameters:
 //   - TODO: Document parameters.
@@ -78,18 +57,27 @@ func New[T any]() *DefaultBus[T] {
 //
 // Side Effects:
 //   - None.
+func New[T any]() *DefaultBus[T] {
+	return &DefaultBus[T]{
+		subscribers:    make(map[string]map[uintptr]chan T),
+		publishTimeout: defaultPublishTimeout,
+	}
+}
+
 // Publish sends a message to all handlers subscribed to the specified topic.
 //
 // Summary: Executes the Publish operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - msg (T): The msg parameter.
 //
 // Returns:
-//   - None.
+//   - error: The returned value.
 //
 // Errors:
-//   - None.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -154,10 +142,12 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Summary: Executes the Subscribe operation.
 //
 // Parameters:
-//   - None.
+//   - _ (context.Context): The _ parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - ) (unsubscribe func()): The returned value.
 //
 // Errors:
 //   - None.
@@ -238,10 +228,12 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 // Summary: Executes the SubscribeOnce operation.
 //
 // Parameters:
-//   - None.
+//   - ctx (context.Context): The ctx parameter.
+//   - topic (string): The topic parameter.
+//   - handler (func(T): The handler parameter.
 //
 // Returns:
-//   - None.
+//   - ) (unsubscribe func()): The returned value.
 //
 // Errors:
 //   - None.

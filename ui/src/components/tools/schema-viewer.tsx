@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
  *
  * Summary: Executes the Schema logic.
  *
- * @param params - The parameters for the operation.
+ * @param None.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */
@@ -97,7 +97,10 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
  *
  * Summary: Executes the SchemaViewer logic.
  *
- * @param params - The parameters for the operation.
+ * @param { schema - The { schema parameter.
+ * @param name - The name parameter.
+ * @param required = false - The required = false parameter.
+ * @param depth = 0 } - The depth = 0 } parameter.
  * @returns The result of the operation.
  * @throws An error if the operation fails.
  */

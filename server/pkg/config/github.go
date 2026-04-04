@@ -125,7 +125,7 @@ func isGitHubURL(rawURL string) bool {
 //   - None.
 //
 // Returns:
-//   - None.
+//   - string: The returned value.
 //
 // Errors:
 //   - None.
