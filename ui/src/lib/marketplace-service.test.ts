@@ -5,9 +5,9 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { marketplaceService, ServiceCollection } from './marketplace-service';
-import { apiClient } from './client';
+import { apiClient } from '@/lib/client';
 
-vi.mock('./client', () => ({
+vi.mock('@/lib/client', () => ({
   apiClient: {
     listCollections: vi.fn(),
     listTemplates: vi.fn(),
