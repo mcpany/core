@@ -195,6 +195,8 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
               startTime: Date.now() - 150,
               endTime: Date.now(),
               children: [],
+              input: { a: 5, b: 10 },
+              output: { result: 15, status: "ok", message: "success" } // This is a flat object
             },
             timestamp: new Date().toISOString(),
             totalDuration: 150,
@@ -349,7 +351,9 @@ export const seedTraces = async (requestContext?: APIRequestContext) => {
             status: 'success',
             startTime: Date.now() - 150,
             endTime: Date.now(),
-            children: []
+            children: [],
+            input: { a: 5, b: 10 },
+            output: { result: 15, status: "ok", message: "success" } // This is a flat object
         },
         timestamp: new Date().toISOString(),
         totalDuration: 150,

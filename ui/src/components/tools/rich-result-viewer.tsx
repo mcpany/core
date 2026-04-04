@@ -154,8 +154,27 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             return { isTableEligible: true, tableData: content };
         }
 
-        // 2. Object containing an array of objects. We aggressively scan the top 2 levels.
+        // 2. Flat Key-Value Object (transforms into table of Key/Value)
         if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
+            // Check if it's a "flat" object where values are mostly primitive
+            const keys = Object.keys(content);
+            if (keys.length > 0) {
+                let primitiveCount = 0;
+                for (const key of keys) {
+                    const val = content[key];
+                    if (val === null || typeof val !== 'object') {
+                        primitiveCount++;
+                    }
+                }
+
+                // If more than 50% of fields are primitives (or it's a small object), treat as flat key-value table
+                if (primitiveCount >= keys.length / 2) {
+                    const kvTable = keys.map(k => ({ Key: k, Value: content[k] }));
+                    return { isTableEligible: true, tableData: kvTable };
+                }
+            }
+
+            // 3. Object containing an array of objects. We aggressively scan the top 2 levels.
             let largestArray: any[] = [];
 
             // Level 1 scan
