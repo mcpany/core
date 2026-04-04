@@ -6,10 +6,8 @@
 
 
 import React, { useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronRight, ChevronDown, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
  * Intent: Document Schema
@@ -84,6 +82,82 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
   );
 };
 
+function SchemaRow({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
+    const [isOpen, setIsOpen] = useState(true);
+
+    if (!schema) return null;
+
+    const isObject = schema.type === "object" || !!schema.properties;
+    const isArray = schema.type === "array" || !!schema.items;
+    const hasChildren = isObject || isArray;
+
+    const properties = schema.properties ? Object.entries(schema.properties) : [];
+    const items = schema.items;
+
+    return (
+        <>
+            <tr className={cn("border-b border-border/40 hover:bg-muted/50 transition-colors", depth === 0 ? "bg-background" : "bg-muted/10")}>
+                <td className="py-2.5 px-4 align-top">
+                    <div className="flex items-center gap-2" style={{ paddingLeft: `${depth * 1.5}rem` }}>
+                        {hasChildren ? (
+                            <button
+                                onClick={() => setIsOpen(!isOpen)}
+                                className="p-0.5 hover:bg-muted rounded text-muted-foreground transition-colors"
+                            >
+                                {isOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                            </button>
+                        ) : (
+                            <span className="w-5" /> // spacer
+                        )}
+                        <span className="font-mono text-sm font-semibold text-foreground">
+                            {name || (depth === 0 ? "root" : "items")}
+                        </span>
+                        {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
+                    </div>
+                </td>
+                <td className="py-2.5 px-4 align-top w-[150px]">
+                    <TypeBadge type={schema.type} format={schema.format} />
+                </td>
+                <td className="py-2.5 px-4 align-top text-sm text-muted-foreground max-w-[300px]">
+                    <div className="flex flex-col gap-1">
+                        {schema.description && <span>{schema.description}</span>}
+                        {schema.enum && (
+                            <span className="text-xs opacity-80 mt-1">
+                                <strong className="font-medium">Enum:</strong> [{schema.enum.join(", ")}]
+                            </span>
+                        )}
+                         {schema.default !== undefined && (
+                            <span className="text-xs opacity-80 mt-1">
+                                <strong className="font-medium">Default:</strong> {JSON.stringify(schema.default)}
+                            </span>
+                        )}
+                    </div>
+                </td>
+            </tr>
+            {isOpen && hasChildren && (
+                <>
+                    {isObject && properties.map(([key, propSchema], idx) => (
+                        <SchemaRow
+                            key={key}
+                            schema={propSchema}
+                            name={key}
+                            required={schema.required?.includes(key)}
+                            depth={depth + 1}
+                            isLast={idx === properties.length - 1}
+                        />
+                    ))}
+                    {isArray && items && (
+                        <SchemaRow
+                            schema={items}
+                            depth={depth + 1}
+                        />
+                    )}
+                </>
+            )}
+        </>
+    );
+}
+
 /**
  * Intent: Document SchemaViewer
  *
@@ -108,93 +182,22 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
  * @returns The rendered component.
  */
 export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
-  const [isOpen, setIsOpen] = useState(true);
-
-  if (!schema) return <div className="text-muted-foreground italic text-xs">No schema defined</div>;
-
-  const isObject = schema.type === "object" || !!schema.properties;
-  const isArray = schema.type === "array" || !!schema.items;
-  const hasChildren = isObject || isArray;
-
-  // Handle recursion for objects
-  const properties = schema.properties ? Object.entries(schema.properties) : [];
-
-  // Handle recursion for arrays
-  const items = schema.items;
+  if (!schema) return <div className="text-muted-foreground italic text-xs p-4">No schema defined</div>;
 
   return (
-    <div className={cn("font-mono text-sm", depth > 0 && "ml-3 border-l pl-3 border-border/50")}>
-      <div className="flex items-start py-1 group">
-        {hasChildren ? (
-           <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
-             <div className="flex items-center gap-2 select-none">
-               <CollapsibleTrigger className="p-0.5 hover:bg-muted rounded transition-colors focus:outline-none focus:ring-1 focus:ring-ring">
-                 {isOpen ? <ChevronDown className="h-3 w-3 text-muted-foreground" /> : <ChevronRight className="h-3 w-3 text-muted-foreground" />}
-               </CollapsibleTrigger>
-               {name && <span className="font-semibold text-foreground">{name}</span>}
-               {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
-               <TypeBadge type={schema.type} format={schema.format} />
-               {schema.description && (
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
-               )}
-             </div>
-
-             <CollapsibleContent>
-               <div className="pt-1">
-                 {isObject && properties.map(([key, propSchema], idx) => (
-                   <SchemaViewer
-                     key={key}
-                     schema={propSchema}
-                     name={key}
-                     required={schema.required?.includes(key)}
-                     depth={depth + 1}
-                     isLast={idx === properties.length - 1}
-                   />
-                 ))}
-
-                 {isArray && items && (
-                   <div className="mt-1">
-                     <span className="text-xs text-muted-foreground mb-1 block pl-4">Items:</span>
-                     <SchemaViewer
-                       schema={items}
-                       depth={depth + 1}
-                     />
-                   </div>
-                 )}
-               </div>
-             </CollapsibleContent>
-           </Collapsible>
-        ) : (
-          <div className="flex items-center gap-2">
-             <span className="w-4"></span> {/* Spacer for alignment */}
-             {name && <span className="font-semibold text-foreground">{name}</span>}
-             {required && <span className="text-red-500 text-xs font-bold" title="Required">*</span>}
-             <TypeBadge type={schema.type} format={schema.format} />
-             {schema.enum && (
-                <span className="text-xs text-muted-foreground ml-1">
-                  Enum: [{schema.enum.join(", ")}]
-                </span>
-             )}
-              {schema.description && (
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground/70 hover:text-foreground transition-colors cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-[300px] text-xs">
-                        <p>{schema.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
-               )}
-          </div>
-        )}
-      </div>
+    <div className="w-full overflow-x-auto rounded-md border border-border bg-card shadow-sm">
+        <table className="w-full text-left border-collapse">
+            <thead>
+                <tr className="bg-muted/50 border-b border-border/60 text-xs uppercase tracking-wider text-muted-foreground">
+                    <th className="py-2 px-4 font-semibold w-1/3 min-w-[200px]">Property</th>
+                    <th className="py-2 px-4 font-semibold w-[150px]">Type</th>
+                    <th className="py-2 px-4 font-semibold">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <SchemaRow schema={schema} name={name} required={required} depth={depth} />
+            </tbody>
+        </table>
     </div>
   );
 }
