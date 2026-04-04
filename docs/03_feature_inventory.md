@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Shard-Migration Sovereignty (SMS) Provider**: (P0) Authoritative coordination service securing the transition of context shards between physical nodes via hardware-attested handshakes.
+- **HAMR-Compliant Recovery Hub**: (P0) Lifecycle security service facilitating hardware-locked environment rollbacks in response to reasoning-divergence signals.
+- **RRPA Provenance Validator**: (P0) Advanced security middleware for the SRM Provider that natively validates and compresses recursive reasoning proofs (Gemini RRPA compliance).
+- **Orphaned Lease Interdictor**: (P0) Active security service for HLML that automatically revokes capability leases upon hardware-attested rollback initiation.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Elevated with mandatory **SMS-compliant** shard migration security.
+- **Deterministic Sandbox Recovery (DSR)**: (Re-affirmed P0) Evolving into the **HAMR-Compliant Recovery Hub** for hardware-locked stability.
+- **Fast-Path Mesh Resumption**: (Promoted from P1 to P0) Critical for neutralizing "Shard-Migration Jitter" and supporting sub-millisecond mesh coordination.
