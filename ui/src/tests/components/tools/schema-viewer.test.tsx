@@ -81,7 +81,7 @@ describe("SchemaViewer", () => {
       );
       expect(screen.getByText("tags")).toBeInTheDocument();
       expect(screen.getByText("array")).toBeInTheDocument();
-      // "Items:" label
-      expect(screen.getByText("Items:")).toBeInTheDocument();
+    // In our refactored table, array items are displayed with the "items" row name
+    expect(screen.getByText("items")).toBeInTheDocument();
   });
 });
