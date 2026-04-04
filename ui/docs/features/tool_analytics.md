@@ -4,7 +4,7 @@ MCP Any provides real-time and historical analytics for every tool. This helps d
 
 ## Live Metrics
 
-The "Analytics" tab in the Tool Runner provides a comprehensive view of tool execution:
+The "Metrics & History" tab in the Tool Runner provides a comprehensive view of tool execution:
 
 ![Tool Analytics](../screenshots/tool_analytics.png)
 

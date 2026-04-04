@@ -1,31 +1,26 @@
-## Executive Summary
-A "Truth Reconciliation Audit" was performed against 10 distinct, algorithmically sampled feature documentation files across the UI and backend logic to verify exact alignment with the product roadmap. The overall health of the sampled features is strong (9/10), with correct, modern implementations securely matching documentation logic.
+# Truth Reconciliation Audit Report
 
-However, one significant discrepancy representing **Roadmap Debt** was discovered: The **Agent Chain Tracer (A2A)** documented under the Universal Agent Bus features (`ui/docs/features/universal_agent_bus.md`) lacked proper testing for its implemented trace fetching and seeding. The divergence was aggressively remediated by engineering the proper test suites to ensure the trace visualization correctly integrated with `useTraces` hooks and backend seed configurations.
+## 1. Executive Summary
+An audit was conducted across 10 randomly sampled documentation files covering UI flows, configuration guides, and backend APIs. The overall health of the features is strong; 9 out of 10 sampled features match the implementation and roadmap perfectly. A single instance of minor documentation drift was identified regarding the labeling of the "Metrics & History" tab in the UI, which was corrected.
 
-## Verification Matrix
+## 2. Verification Matrix
+
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/universal_agent_bus.md` | **Roadmap Debt** | **Code Fix** | Authored robust unit tests `AgentChainTracer` and integration logic testing `useTraces` hook and the backend DB seeding logic (`api_traces_seed_test.go`). |
-| `ui/docs/features/playground.md` | **Verified** | None | `ui/src/components/playground/` accurately reflects live logic. |
-| `ui/docs/features/services.md` | **Verified** | None | `ui/src/app/upstream-services/` properly handles service connections and states. |
-| `ui/docs/features/stack-composer.md` | **Verified** | None | `ui/src/app/stacks/` handles config-as-code visualizations. |
-| `server/docs/features/shared_kv_store.md` | **Doc Drift** | **Doc Update** | Fixed `server/docs/features/shared_kv_store.md` to remove `enabled` / `isolation_level` and accurately match `BlackboardStore`. |
-| `server/docs/features/hitl.md` | **Verified** | None | Real-time active alerts table and API interactions map to `server/pkg/middleware/hitl.go`. |
-| `server/docs/features/recursive_context.md` | **Verified** | None | Recursive context implementation properly inherits logic inside `server/pkg/middleware/recursive_context.go`. |
-| `server/docs/features/granular_scopes.md` | **Doc Drift** | **Doc Update** | Updated the `roles` mapping inside `server/docs/features/granular_scopes.md` to match the exact string tokens specified in `server/pkg/middleware/scopes.go`. |
-| `ui/docs/features/dashboard.md` | **Verified** | None | Re-verified system overview drag-and-drop dashboard maps successfully to UI structure. |
-| `server/docs/features/context_optimizer.md` | **Verified** | None | `server/pkg/middleware/context_optimizer.go` fully truncates response size context. |
-| `server/docs/features/lazy-mcp.md` | **Code Debt** | **Code Fix** | Addressed prior codebase debt where `cache_ttl` was missing. Verified `CacheTTL` struct mapping and unit tests in `lazy_mcp.go`. |
+| `ui/docs/features/policy_management.md` | Match | None | `ui/src/components/services/editor/service-editor.tsx` implements Tool, Prompt, and Resource Export Policies. |
+| `server/docs/features/granular_scopes.md` | Match | None | `server/pkg/middleware/scopes.go` implements capability-based token system and scopes config. |
+| `ui/docs/features/hitl.md` | Match | None | `ui/src/app/hitl/page.tsx` exists and handles HITL. |
+| `server/docs/features/hitl.md` | Match | None | `server/pkg/middleware/hitl.go` implements `hitl.require_mfa` exactly. |
+| `ui/docs/features/recursive_context.md` | Match | None | `ui/src/app/context/page.tsx` provides recursive context graph. |
+| `server/docs/features/recursive_context.md` | Match | None | `server/pkg/middleware/recursive_context.go` implements `X-MCP-Parent-Context-ID`. |
+| `server/docs/features/admin_api.md` | Match | None | `server/pkg/admin/server.go` implements endpoints such as `GetDiscoveryStatus` and `ListUsers`. |
+| `server/docs/features/dlp.md` | Match | None | `server/pkg/middleware/dlp.go` redacts PII for configured requests/responses. |
+| `ui/docs/features/stack-composer.md` | Match | None | `ui/src/app/stacks/page.tsx` implements Stack Composer. |
+| `ui/docs/features/tool_analytics.md` | Doc Drift | Refactored | `ui/src/components/playground/tool-runner.tsx` uses "Metrics & History", not "Analytics" tab. |
 
-## Remediation Log
+## 3. Remediation Log
+- **Case A (Documentation Drift)**: Identified that `ui/docs/features/tool_analytics.md` incorrectly referred to the "Analytics" tab in the Tool Runner. The codebase correctly implements this as the "Metrics & History" tab (`value="metrics"`).
+  - *Fix*: Refactored `ui/docs/features/tool_analytics.md` to change "Analytics" to "Metrics & History" to align with reality.
 
-**Agent Chain Tracer (A2A) (Roadmap Debt)**
-The `ui/docs/features/universal_agent_bus.md` describes a visual timeline of multi-agent handoffs and message passing. The core frontend codebase and `seedTraces()` was present but entirely untested, representing a dangerous failure in codebase reliability.
-
-*   **Backend Testing Engineered:** Authored the `api_traces_seed_test.go` testing suite to effectively validate `seedTraces()`. Verified `mid.GetHistory()` successfully populates an audit log with realistic mock inputs.
-*   **Frontend Testing Engineered:** Designed and deployed `agent-chain-tracer.test.tsx` utilizing `vitest` and `testing-library` to properly validate visual components. The test correctly executes mock outputs mapping the component behavior against the `useTraces` data payload structures.
-*   **Code Quality:** Maintained strict typing and verified correct rendering mappings.
-
-## Security Scrub
-The remediation code and audit details have been aggressively scrubbed. No live endpoints, internal subnets, credentials, user IDs, or API tokens exist within the PR logic or documentation. All seeded identifiers are securely mocked and strictly local to the testing infrastructure.
+## 4. Security Scrub
+- **Security Check**: This report and associated pull request have been scrubbed. NO Personally Identifiable Information (PII), secrets, hardcoded credentials, or internal IPs are present in the report or the changes made.
