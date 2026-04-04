@@ -62,3 +62,10 @@ The **Attention-Density Firewall (ADF)** is a cognitive security middleware for 
 *   Integrating the **Attention-Splicing Firewall (ASF)** submodule into Section 4.
 *   Introducing "Stylistic Confidence Weighting" to detect mimicry-based instruction injection following noise bursts.
 **Security Impact:** Prevents sophisticated subagents from evicting parent instructions while simultaneously spoofing high-trust reasoning signatures.
+
+### Update: [2026-04-04] (Session 2) - Hardening Against Attention-Density Attacks
+**Context**: Red-team research identifies high-entropy "Noise Injections" as a method for evicting mission-critical instructions from LLM context windows.
+**Architecture Adjustment**:
+* Introducing the **Noise-to-Utility Scoring Engine** in the Analyzer module.
+* Implementing "Attention-Locked Anchors" (ALRA) as a mandatory prerequisite for subagent fragment ingestion.
+**Security Impact**: Blocks attempts to "push out" root behavioral guardrails via high-frequency reasoning floods.

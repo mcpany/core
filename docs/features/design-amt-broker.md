@@ -62,3 +62,17 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-04-04 - Integration with Sovereign Node Tunneling (SNT)
+**Context:** Today's market sync revealed OpenClaw's prototype for SNT, emphasizing the need for inter-node coordination without public port exposure.
+**Architecture Adjustment:**
+* Implementing hardware-attested P2P encrypted tunnels to support distributed meshes.
+* Introducing "Mesh Tickets" for session-bound fast-path resumption to minimize handshake latency.
+**Security Impact:** Prevents "Mesh Shadowing" where malicious nodes attempt to join the mesh and intercept coordination fragments.
+
+### Update: [2026-04-04] (Session 2) - Interdicting Mesh-Jacking
+**Context**: Today's research revealed "Mesh-Jacking" exploits in SNT, where attackers inject unauthorized nodes into distributed meshes via handshake race conditions.
+**Architecture Adjustment**:
+* Deprecating 2-way handshakes in favor of a mandatory **3-Way Hardware-Bound Handshake** (Challenge-Response-Attest).
+* Introducing a kernel-level "Node Identity Pinning" service to prevent mid-session node takeover.
+**Security Impact**: Ensures that every node in the mesh is physically attested and anchored to the primary mission root, neutralizing unauthorized node injection.

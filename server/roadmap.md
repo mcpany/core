@@ -440,11 +440,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] DCA Auction Broker**: High-speed negotiation bus for the "Distributed Capability Auction" protocol. (Added: 2026-04-03)
 *   **[P1] Subagent Heartbeat Provider**: Standardized liveness reporting for subagent session management. (Added: 2026-04-03)
 
-#### Upcoming (2026-04-04 Evolution)
-*   **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for subagent bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
-*   **[P0] Metadata Provenance Engine**: Verification service for structural metadata lineage using cryptographic signing. (Added: 2026-04-04)
-*   **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
-*   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
 
 #### Upcoming (2026-04-05 Evolution)
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
@@ -1030,3 +1025,16 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-04 Evolution)
+*   **[P0] Attested Mesh Tunneling (AMT) Broker**: Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections for multi-node meshes. (Added: 2026-04-04)
+*   **[P0] 3-Way Hardware-Bound Handshake**: Implementation of multi-node TPM attestation for the AMT Broker to neutralize Mesh-Jacking. (Added: 2026-04-04)
+*   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security service issuing TPM-signed, task-specific capability leases with automated revocation. (Added: 2026-04-04)
+*   **[P0] Noise-to-Utility Scoring Engine**: Real-time entropy analysis middleware for the ADF to block Attention-Density attacks. (Added: 2026-04-04)
+*   **[P0] CRDT-Native Mailbox Shards**: Transition LFTC to high-performance CRDT-native sharding for non-blocking coordination. (Added: 2026-04-04)
+*   **[P1] Privacy-Preserving Audit (PPA) Hub**: Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without raw context exposure. (Added: 2026-04-04)
+*   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" to reduce AMT handshake latency. (Added: 2026-04-04)
+*   **[P0] DCA Negotiation Guard**: Hardware-accelerated (HAN) broker for subagent bidding to mitigate "Negotiation Exhaustion." (Added: 2026-04-04)
+*   **[P0] Metadata Provenance Engine**: Verification service for structural metadata lineage using cryptographic signing. (Added: 2026-04-04)
+*   **[P0] Tool Metadata Sanitizer**: Security middleware for detecting "Context Poisoning" in tool schemas (CVE-2026-42001). (Added: 2026-04-04)
+*   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
