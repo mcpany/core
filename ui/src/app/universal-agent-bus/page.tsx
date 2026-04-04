@@ -13,13 +13,13 @@ import {
 } from "@/components/ui/card";
 import {
   GitMerge,
-  Clock,
   Search,
-  Network,
   Activity
 } from "lucide-react";
 import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
 import { LazyMcpDashboard } from "@/components/dashboard/lazy-mcp-dashboard";
+import { MultiAgentSessionTimeline } from "@/components/dashboard/multi-agent-session-timeline";
+import { UnifiedDiscoveryManager } from "@/components/dashboard/unified-discovery-manager";
 
 /**
  * Intent: Document UniversalAgentBusPage
@@ -71,33 +71,8 @@ export default function UniversalAgentBusPage() {
           </CardContent>
         </Card>
 
-        {/* Multi-Agent Session Timeline */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Multi-Agent Session Timeline</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 Sessions</div>
-            <p className="text-xs text-muted-foreground">
-              Visual tracking of agent handoffs and shared tool state.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Unified Discovery Manager */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Unified Discovery Manager</CardTitle>
-            <Network className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">0 Transports</div>
-            <p className="text-xs text-muted-foreground">
-              UI for managing and auto-discovering MCP servers across transports.
-            </p>
-          </CardContent>
-        </Card>
+        <MultiAgentSessionTimeline />
+        <UnifiedDiscoveryManager />
 
       </div>
 

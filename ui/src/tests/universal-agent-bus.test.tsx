@@ -36,4 +36,14 @@ describe("UniversalAgentBusPage", () => {
     expect(screen.getByText("Lazy-MCP Tool Search Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Agent Chain Tracer (A2A)")).toBeInTheDocument();
   });
+
+  it("renders content from new components", () => {
+    render(<UniversalAgentBusPage />);
+
+    // Assert specific content from the real components
+    expect(screen.getByText("Handoff to Agent A")).toBeInTheDocument();
+    expect(screen.getByText("Stdio Transport")).toBeInTheDocument();
+    expect(screen.getByText("SSE Transport")).toBeInTheDocument();
+    expect(screen.getByText("WebSocket Transport")).toBeInTheDocument();
+  });
 });
