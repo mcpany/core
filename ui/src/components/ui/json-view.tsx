@@ -82,6 +82,12 @@ const getTableData = (data: unknown, smartTable: boolean) => {
                         if (!largestArray || mapped.length > largestArray.length) {
                             largestArray = mapped;
                         }
+                    } else {
+                        // Mixed array, stringify values
+                        const mapped = val.map((item, index) => ({ index, value: typeof item === 'object' ? JSON.stringify(item) : item }));
+                        if (!largestArray || mapped.length > largestArray.length) {
+                            largestArray = mapped;
+                        }
                     }
                 }
             } else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
@@ -96,6 +102,12 @@ const getTableData = (data: unknown, smartTable: boolean) => {
                             const isListOfPrimitives = nestedVal.every(item => typeof item !== 'object' || item === null);
                             if (isListOfPrimitives) {
                                 const mapped = nestedVal.map((item, index) => ({ index, value: item }));
+                                if (!largestArray || mapped.length > largestArray.length) {
+                                    largestArray = mapped;
+                                }
+                            } else {
+                                // Mixed array, stringify values
+                                const mapped = nestedVal.map((item, index) => ({ index, value: typeof item === 'object' ? JSON.stringify(item) : item }));
                                 if (!largestArray || mapped.length > largestArray.length) {
                                     largestArray = mapped;
                                 }
