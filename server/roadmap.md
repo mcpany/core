@@ -1025,6 +1025,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Mission-Root Migration (MRM) Broker**: Authoritative orchestrator for hardware-locked mission migration between physical meshes. (Added: 2026-07-25)
+*   **[P0] Agnostic Context Shield (ACS)**: Security middleware monitoring shared shards for low-entropy context poisoning patterns. (Added: 2026-07-25)
+*   **[P0] Hardware-Attested Epistemic Validator (HAEV)**: Non-repudiable confidence broker utilizing hardware-bound reasoning uncertainty signals. (Added: 2026-07-25)
+*   **[P1] State-Pre-warming Middleware**: Performance-optimizing service for speculative context shard loading during mesh transitions. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)

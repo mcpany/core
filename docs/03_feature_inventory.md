@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mission-Root Migration (MRM) Broker**: (P0) Authoritative orchestrator facilitating hardware-locked state migration and state-pre-warming between disparate meshes.
+- **Agnostic Context Shield (ACS)**: (P0) Security middleware monitoring shared shards for low-entropy metadata patterns indicative of long-range reasoning influence (IACP defense).
+- **Hardware-Attested Epistemic Validator (HAEV)**: (P0) Identity extension for RCS mandating hardware-bound uncertainty signals to neutralize EUI spoofing.
+- **State-Pre-warming Middleware**: (P1) Performance-optimizing service allowing target meshes to speculatively load context shards during MRM.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Evolving into the **HAEV** for non-repudiable confidence proofs.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for **MRM-compliant** state handoff support.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

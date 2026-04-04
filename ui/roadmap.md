@@ -838,6 +838,11 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Cross-Mesh Migration Status Hub**: Real-time visualization of hardware-attested mission handoffs and pre-warming progress. (Added: 2026-07-25)
+- [ ] **[P0] Semantic Noise Floor Monitor**: Visual dashboard for monitoring low-entropy context bias scores and ACS-blocked fragments. (Added: 2026-07-25)
+- [ ] **[P0] Epistemic Proof Viewer**: Forensic UI for reviewing hardware-signed reasoning confidence proofs and HAEV attestation status. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-23 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.

@@ -46,3 +46,11 @@ The RCS Gateway provides a standardized infrastructure layer to ingest confidenc
 
 ## 7. Evolutionary Changelog
 * **2026-07-21:** Initial Document Creation.
+
+### Update: 2026-07-25 - Evolution to Hardware-Attested Epistemic Validator (HAEV)
+**Context:** Today's market sync revealed the "Epistemic Uncertainty Injection" (EUI) exploit in OpenClaw, where malicious specialists spoof "High Confidence" signals to bypass human review.
+**Architecture Adjustment:**
+* Deprecating optional `x-mcp-confidence` headers in Section 4.
+* Introducing mandatory hardware-bound uncertainty signals in Section 6.
+* Renaming the service to HAEV in Section 1 and 4 to reflect its new role as a cryptographic truth-broker.
+**Security Impact:** Neutralizes EUI by ensuring that "Confidence" signals are non-repudiable and tied to the target mesh's hardware enclave.
