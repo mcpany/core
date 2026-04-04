@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attention-Aware Shard Orchestrator (AASO)**: (P0) Authoritative migration service dynamically co-locating context shards with active subagent reasoning monologues to neutralize resumption latency.
+- **Recursive Lease Validator (RLV)**: (P0) Security middleware mandating hardware-attested lineage for sub-leases to prevent capability dropping in heterogeneous meshes.
+- **Active Discovery Interdiction (ADI) Hub**: (P0) Authoritative discovery guard performing real-time semantic analysis to block speculative reasoning hallucinations.
+- **Multi-Node Continuity Provider (MNCP)**: (P1) Persistence service facilitating hardware-locked state recovery across physical node boundaries and P2P tunnels.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Elevated with mandatory support for **AASO-compliant** shard migration.
+- **Hardware-Locked Mission Leases (HLML)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for the new **RLV** standard.
