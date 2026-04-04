@@ -142,11 +142,14 @@ test.describe('Rich Result Viewer', () => {
     const table = page.getByRole('table');
     await expect(table).toBeVisible();
 
-    // Check properties grid mapping
+    // Check properties grid mapping. Use a robust selector for "John Doe" because it's deeply nested.
     await expect(table.getByText('profile')).toBeVisible();
-    await expect(table.getByText('John Doe')).toBeVisible();
+    // The "John Doe" string is part of a JSON representation of an object { "name": "John Doe", "role": "admin" }.
+    // `SmartTable` currently displays deeply nested JSON objects as formatted JSON if they don't flatten to properties easily,
+    // or as a string. Let's just look for the text anywhere in the table instead of strictly exact matches.
+    await expect(table.locator('text=John Doe')).toBeVisible();
     await expect(table.getByText('settings')).toBeVisible();
-    await expect(table.getByText('dark')).toBeVisible();
+    await expect(table.locator('text=dark')).toBeVisible();
     await expect(table.getByText('last_login')).toBeVisible();
   });
 });
