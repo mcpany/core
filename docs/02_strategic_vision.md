@@ -1562,3 +1562,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Regulatory Inventory Provider (RIP)**: To automate EU AI Act compliance, MCP Any will maintain a real-time, TPM-signed inventory of all active models and plugins, providing a non-repudiable audit trail of the agentic supply chain.
 - **SSH-Bound Isolated Execution (SBIE)**: Supporting the OpenShell standard, we are mandating SSH-based isolation for all command tools. Tool execution will occur in ephemeral, resource-constrained enclaves managed natively by the gateway to neutralize RCE.
 - **Marketplace Policy Proxy**: We will implement secure, validating proxying for ClawHub-style interactions, performing behavioral profiling on skills before they are allowed to interact with the mission-root blackboard.
+
+---
+
+## Strategic Evolution: [2026-07-26]
+### Focus: Atomic Identity Sovereignty & Reason-Trace Attribution
+**Context**: The emergence of "Ghost-Token" exploits in OIDC-based agent meshes and the release of the NIST AI 200.5 draft confirm that the "Universal Agent Bus" must now move beyond session-bound trust. We must protect the **atomicity of identity rotation** and provide **cryptographically traceable reasoning paths** for all agentic actions. As "Swarm Persistence" becomes the norm in Claude Code, infrastructure must provide **Mission Continuity Anchors** that survive cross-cloud state synchronization.
+
+**Strategic Pivot**:
+- **Atomic Rotation Integrity (ARI) Provider**: MCP Any will evolve to act as the authoritative issuer for all NHI identity fragments. We will implement ARI, utilizing hardware-locked monotonic counters to ensure that identity rotation is atomic and non-reusable, neutralizing "Ghost-Token" exfiltration during specialist handoffs.
+- **NIST-Compliant Attribution Hub**: Supporting the AI 200.5 standard, we are introducing the Attribution Hub. This service will generate hardware-attested "Reasoning Provenance Certificates" for every high-stakes tool call, providing a non-repudiable audit trail back to the verified mission-root intent.
+- **Attention-Density Guard (ADG) v3**: To counter "Entropy Exhaustion" in persistent swarms, we are upgrading the ADG middleware. It will now perform real-time "Importance-Weighted Context Pruning," ensuring that core mission anchors are never evicted by high-entropy reasoning noise from parallel teammates.
+- **Cross-Cloud SBIE Synchronizer**: We will implement a centralized "Sovereignty Policy Mesh" that allows organizations to synchronize SSH-Bound Isolated Execution (SBIE) security guardrails across disparate cloud execution environments.

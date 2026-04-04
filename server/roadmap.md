@@ -1037,3 +1037,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] SSH-Bound Isolated Execution (SBIE)**: Ephemeral SSH sandboxing for shell tool calls to neutralize RCE and JVM injection. (Added: 2026-07-25)
 *   **[P0] Headless Handoff Continuity (HHC)**: State synchronization and mission-root transfer for RDH worker rotation. (Added: 2026-07-25)
 *   **[P1] Marketplace Policy Proxy (MPP)**: Validating bridge for ClawHub-sourced skills with integrated behavioral profiling. (Added: 2026-07-25)
+
+#### Upcoming (2026-07-26 Evolution)
+*   **[P0] NIST-Compliant Attribution Hub**: Authoritative certificate issuance service for non-repudiable reasoning provenance. (Added: 2026-07-26)
+*   **[P0] Atomic Token Rotation (ATR) Enforcer**: High-integrity identity middleware utilizing hardware monotonic counters to neutralize Ghost-Token exploits. (Added: 2026-07-26)
+*   **[P0] Attention-Density Guard (ADG) v3**: Upgraded context pruning middleware with importance-weighted scoring for persistent swarms. (Added: 2026-07-26)
+*   **[P1] Cross-Cloud SBIE Synchronizer**: Management service for distributed SSH-Bound Isolated Execution (SBIE) policy enforcement. (Added: 2026-07-26)

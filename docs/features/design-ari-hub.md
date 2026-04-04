@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-26 - Atomic Attribution and Identity Sovereignty
+**Context:** Today's market sync revealed the emergence of "Ghost-Token" exploits and the release of the NIST AI 200.5 draft for non-repudiable attribution.
+**Architecture Adjustment:**
+* Integrating the **NIST-Compliant Attribution Hub** in Section 4 to generate Reasoning Provenance Certificates (RPCs) for every interdicted fragment.
+* Mandating the use of the **Atomic Rotation Integrity (ARI) Provider** for all specialist handoffs, utilizing hardware-locked monotonic counters to ensure identity rotation is non-reusable.
+**Security Impact:** Neutralizes "Ghost-Token" exfiltration and provides a legally-defensible audit trail for every reasoning step back to the mission-root intent.

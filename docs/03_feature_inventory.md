@@ -1946,3 +1946,15 @@
 ### Priority Shifts
 - **Headless Handoff Continuity (HHC) Bridge**: (Re-affirmed P0) Elevated with requirements for **RDH-native** steering and real-time WebSocket streams for remote workers.
 - **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Promoted to a mandatory prerequisite for **SBIE-compliant** tool execution.
+
+## Evolution: [2026-07-26] Updates
+
+### Proposed Additions
+- **NIST-Compliant Attribution Hub**: (P0) Authoritative service generating hardware-attested "Reasoning Provenance Certificates" to trace every action back to mission-root intent.
+- **Attention-Density Guard (ADG) v3**: (P0) Upgrade utilizing "Importance-Weighted Context Pruning" to prevent mission-root eviction in long-running persistent swarms.
+- **Cross-Cloud SBIE Synchronizer**: (P1) Management service for synchronizing SSH-Bound Isolated Execution (SBIE) security guardrails across multi-cloud meshes.
+- **Atomic Token Rotation (ATR) Enforcer**: (P0) High-integrity identity rotation service utilizing hardware-bound monotonic counters to neutralize "Ghost-Token" shadowing.
+
+### Priority Shifts
+- **Atomic Rotation Integrity (ARI) Provider**: (Re-affirmed P0) Elevated with mandatory **ATR-compliant** monotonic locking to counter specialist handoff exploits.
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **NIST-compliant** certificate generation.

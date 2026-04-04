@@ -855,3 +855,9 @@
 - [ ] **[P0] SSH Enclave Monitor**: (2026-07-25) Real-time visualization of SBIE-managed ephemeral sandboxes and execution traces.
 - [ ] **[P0] Headless Handoff Monitor**: (2026-07-25) Visualizer for mission-root continuity snapshots and controller rotation events.
 - [ ] **[P1] Marketplace Security Dashboard**: (2026-07-25) UI for reviewing behavioral profiling results for marketplace-sourced skills (MPP).
+
+#### Upcoming (2026-07-26 Evolution)
+- [ ] **[P0] Reasoning Provenance Auditor**: (2026-07-26) UI for reviewing hardware-attested Reasoning Provenance Certificates (RPCs) back to mission-root intent.
+- [ ] **[P0] Atomic Token Rotation Monitor**: (2026-07-26) Visual tracker for monotonic identity rotation events and "Ghost-Token" prevention status.
+- [ ] **[P0] Context Importance Heatmap**: (2026-07-26) Real-time visualization of ADG v3 context pruning decisions based on importance-weighted scoring.
+- [ ] **[P1] Multi-Cloud Sovereignty Console**: (2026-07-26) Dashboard for synchronizing and monitoring SBIE policies across distributed cloud environments.
