@@ -2,8 +2,8 @@
 
 ## 1. Top Priorities: The Universal Agent Bus (New Strategic Focus)
 *   **[Security] Policy Firewall Engine:** Implement Rego/CEL based hooking for tool calls.
-*   **[Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).
-*   **[Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
+*   **[x] [Security] Granular Scopes:** implement capability-based token system (`fs:read:/tmp`).
+*   **[x] [Comms] Recursive Context Protocol:** Standardize headers for Subagent inheritance.
 *   **[x] [State] Shared Key-Value Store:** Embedded SQLite "Blackboard" tool for agents.
 *   **[x] [Security] HITL Middleware:** Suspension protocol for user approval flows.
 
@@ -12,7 +12,7 @@
 ### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)
-*   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
+*   **[x] [P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
 *   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.
 *   **[P1] Machine-Checkable Security Contracts**: Declarative tool safety models.
