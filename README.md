@@ -1,7 +1,7 @@
 # MCP Any
 
 ## Elevator Pitch
-**What is this?** MCP Any is the Universal Adapter for AI agents.
+**What is this project?** MCP Any is the Universal Adapter for AI agents.
 **Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
 
 ## Architecture
@@ -64,7 +64,7 @@ bazelisk build //server/cmd/mcpany
 ```
 
 ## Configuration
-MCP Any uses environment variables and secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios, but here are the core variables:
+MCP Any uses environment variables and required secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios, but here are the core variables:
 
 - `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
 - `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)

@@ -15,7 +15,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -35,7 +35,7 @@ type OpenClawAdapter struct {
 // Returns:
 //   - *OpenClawAdapter: A pointer to the newly instantiated OpenClawAdapter.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -60,7 +60,7 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 // Returns:
 //   - string: The name "OpenClaw".
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -81,7 +81,7 @@ func (a *OpenClawAdapter) Name() string {
 //   - *TaskResult: The generalized output from the executed task, along with telemetry data.
 //   - error: An error indicating if the task failed or is unsupported.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:
@@ -127,7 +127,7 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 // Returns:
 //   - bool: True if the capability is found in the capabilities map; false otherwise.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -147,7 +147,7 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
@@ -176,7 +176,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

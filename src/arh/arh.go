@@ -10,7 +10,7 @@ package arh
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
@@ -29,7 +29,7 @@ type AutomatedRemediationHub struct {
 // Returns:
 //   - *AutomatedRemediationHub: The initialized placeholder.
 //
-// Throws/Errors:
+// Errors/Throws:
 //   - None.
 //
 // Side Effects:
