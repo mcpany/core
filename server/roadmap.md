@@ -1030,3 +1030,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Remote Dispatch Hub (RDH)**: Authoritative control service for steering headless agents in CI/CD and remote environments. (Added: 2026-07-25)
+*   **[P0] Regulatory Inventory Provider (RIP)**: Compliance middleware for hardware-attested plugin and model inventory (EU AI Act alignment). (Added: 2026-07-25)
+*   **[P0] SSH-Bound Isolated Execution (SBIE)**: Ephemeral SSH sandboxing for shell tool calls to neutralize RCE and JVM injection. (Added: 2026-07-25)
+*   **[P0] Headless Handoff Continuity (HHC)**: State synchronization and mission-root transfer for RDH worker rotation. (Added: 2026-07-25)
+*   **[P1] Marketplace Policy Proxy (MPP)**: Validating bridge for ClawHub-sourced skills with integrated behavioral profiling. (Added: 2026-07-25)

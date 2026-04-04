@@ -42,3 +42,4 @@ Autonomous agents operate at speeds that exceed human intervention capabilities.
 
 ## 7. Evolutionary Changelog
 * **2026-07-08:** Initial Document Creation.
+* **2026-07-25:** Promoted ACSM to a mandatory prerequisite for SSH-Bound Isolated Execution (SBIE). Action chains must now be verified before spawning remote enclaves to prevent "Enclave-as-a-Service" abuse by rogue agents.

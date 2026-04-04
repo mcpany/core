@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Remote Dispatch Hub (RDH)**: (P0) Authoritative management service for steering headless agent workers in remote and CI/CD environments. (Alignment: Claude Code Dispatch)
+- **Regulatory Inventory Provider (RIP)**: (P0) Compliance middleware providing hardware-attested inventories of AI models and plugins. (Alignment: EU AI Act)
+- **SSH-Bound Isolated Execution (SBIE) Gateway**: (P0) Security service isolating command-based tool calls in ephemeral SSH sandboxes. (Alignment: OpenClaw OpenShell)
+- **ClawHub SDK Proxy**: (P1) Validating bridge for marketplace-sourced skills with integrated behavioral profiling. (Alignment: OpenClaw ClawHub)
+
+### Priority Shifts
+- **Headless Handoff Continuity (HHC) Bridge**: (Re-affirmed P0) Elevated with requirements for **RDH-native** steering and real-time WebSocket streams for remote workers.
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Promoted to a mandatory prerequisite for **SBIE-compliant** tool execution.

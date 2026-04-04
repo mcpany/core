@@ -1550,3 +1550,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Remote Headless Infrastructure & AI System Compliance
+**Context**: The emergence of **Remote Control & Dispatch** (Claude Code) and the enforcement of the **EU AI Act** mark a shift from local terminal tools to persistent, remote agent infrastructure requiring mandatory compliance mapping. Simultaneously, the move to **ClawHub Marketplace** and **SSH Sandboxing** (OpenClaw) confirms that supply-chain integrity and remote isolated execution are the primary defensive frontiers for the "Universal Agent Bus."
+
+**Strategic Pivot**:
+- **Remote Dispatch Hub (RDH)**: MCP Any will evolve into the authoritative "Remote Control" center for headless workers. We will provide REST/WebSocket APIs for steering background sessions in CI/CD environments while maintaining hardware-attested mission-root sovereignty.
+- **Regulatory Inventory Provider (RIP)**: To automate EU AI Act compliance, MCP Any will maintain a real-time, TPM-signed inventory of all active models and plugins, providing a non-repudiable audit trail of the agentic supply chain.
+- **SSH-Bound Isolated Execution (SBIE)**: Supporting the OpenShell standard, we are mandating SSH-based isolation for all command tools. Tool execution will occur in ephemeral, resource-constrained enclaves managed natively by the gateway to neutralize RCE.
+- **Marketplace Policy Proxy**: We will implement secure, validating proxying for ClawHub-style interactions, performing behavioral profiling on skills before they are allowed to interact with the mission-root blackboard.
