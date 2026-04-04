@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-04] (Iteration 2) Updates
+
+### Proposed Additions
+- **Lateral Infection Shield (LIS)**: (P0) Security middleware mandating "Lateral Zero-Trust" for internal swarm coordination, requiring continuous authentication for all inter-agent state sharing.
+- **Machine-Speed Swarm Interdiction (MSSI)**: (P0) Authoritative security service performing sub-millisecond, cross-agent behavioral analysis to detect and neutralize coordinated "Hivenet" attacks.
+- **Reasoning-Aware Attention Lock (RAAL)**: (P0) Advanced attention-governance middleware utilizing hardware-bound headers to cryptographically lock mission-critical intent fragments against high-entropy noise.
+
+### Priority Shifts
+- **DCA Negotiation Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MSSI** integration to support autonomous interdiction during negotiation storms.
+- **Layer-7 Semantic Inspection Hub (L7SIH)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **Lateral Infection Shield (LIS)**.

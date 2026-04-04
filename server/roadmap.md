@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-04 Iteration 2)
+*   **[P0] Lateral Infection Shield (LIS)**: Security middleware mandating continuous authentication for all inter-agent state sharing. (Added: 2026-04-04)
+*   **[P0] Machine-Speed Swarm Interdiction (MSSI)**: sub-millisecond coordination service for neutralizing Hivenet attacks. (Added: 2026-04-04)
+*   **[P0] Layer-7 Semantic Inspection Hub (L7SIH)**: Authoritative middleware for neutralizing Reasoning Entropy Exhaustion (REE). (Added: 2026-04-04)
