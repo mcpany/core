@@ -1,0 +1,22 @@
+--- server/pkg/middleware/dlp.go
++++ server/pkg/middleware/dlp.go
+@@ -21,6 +21,17 @@
+ )
+
+ // DLPMiddleware creates a new Data Loss Prevention middleware.
++//
++// Summary: Creates a DLP middleware for masking sensitive data.
++//
++// Parameters:
++//   - config (*configv1.DLPConfig): Configuration for the DLP middleware.
++//   - log (*slog.Logger): Logger instance for recording DLP actions.
++//
++// Returns:
++//   - mcp.Middleware: The created DLP middleware function.
++//
++// Errors:
++//   - None directly returned, but errors within the middleware execution are passed through.
++//
++// Side Effects:
++//   - Modifies the response by masking sensitive data based on configured rules.
+ func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {

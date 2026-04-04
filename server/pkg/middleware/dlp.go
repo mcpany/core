@@ -21,6 +21,12 @@ import (
 //
 // Returns:
 //   - mcp.Middleware: The configured middleware function.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - Modifies the response by masking sensitive data based on configured rules.
 func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware {
 	redactor := NewRedactor(config, log)
 	if redactor == nil {
