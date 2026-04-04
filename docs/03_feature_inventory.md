@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Worktree Sovereignty Guard (WSG)**: (P0) Authoritative worktree broker enforcing hardware-attested, enclave-bound isolation for git-worktrees to prevent hook-based escapes.
+- **Reasoning-Echo Redaction Hub**: (P0) Advanced security service detecting and redacting stylometric mimicry fragments (Reasoning-Echoes) to neutralize intent hijacking.
+- **Monotonic Phase-Binding Gateway**: (P0) Coordination service issuing strictly sequential phase-tokens for sharded teammate coordination.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with mandatory support for **Reasoning-Echo** detection.
+- **Enclave-local Metadata Attestation (EMA)**: (Re-affirmed P0) Designated as the primary enforcement point for **WSG-compliant** worktree metadata.

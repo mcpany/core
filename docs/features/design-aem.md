@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Reasoning-Echo Detection & Shadowing Defense
+**Context:** Today's market sync revealed the "Reasoning-Echo" exploit (CVE-2026-72001) where subagents bypass entropy checks by mimicking the stylometric signature of the parent agent.
+**Architecture Adjustment:**
+* **Added `Reasoning-Echo` Redaction Module**: The AEM now includes a high-entropy buffer that detects semantic repetition between parent and subagent traces.
+* **Stylometric Identity Anchoring (SIA) Integration**: Reasoning fragments are now anchored to a hardware-bound behavioral baseline, neutralizing mimicry.
+**Security Impact:** Prevents "Payload-through-Mimicry" attacks where subagents build false confidence before diverging from the mission root.
