@@ -25,7 +25,20 @@ type hitlApprovalResponse struct {
 
 // HITLState represents the global state for Human-in-the-Loop approvals.
 //
-// Summary: Manages the pending HITL approval requests.
+// Summary: Represents the global state for Human-in-the-Loop approvals.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type HITLState struct {
 	mu        sync.RWMutex
 	approvals map[string]hitlApprovalRequest

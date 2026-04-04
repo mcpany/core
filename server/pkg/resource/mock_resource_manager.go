@@ -17,7 +17,20 @@ import (
 
 // MockManagerInterface is a mock of ManagerInterface interface.
 //
-// Summary: Represents a MockManagerInterface.
+// Summary: Is a mock of ManagerInterface interface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockManagerInterface struct {
 	ctrl     *gomock.Controller
 	recorder *MockManagerInterfaceMockRecorder
@@ -26,7 +39,20 @@ type MockManagerInterface struct {
 
 // MockManagerInterfaceMockRecorder is the mock recorder for MockManagerInterface.
 //
-// Summary: Represents a MockManagerInterfaceMockRecorder.
+// Summary: Is the mock recorder for MockManagerInterface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockManagerInterfaceMockRecorder struct {
 	mock *MockManagerInterface
 }

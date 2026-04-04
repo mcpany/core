@@ -15,7 +15,20 @@ import (
 
 // SystemStatusResponse represents the response from the system status API.
 //
-// Summary: Represents a SystemStatusResponse.
+// Summary: Represents the response from the system status API.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type SystemStatusResponse struct {
 	UptimeSeconds     int64    `json:"uptime_seconds"`
 	ActiveConnections int32    `json:"active_connections"`

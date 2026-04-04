@@ -13,10 +13,21 @@ import (
 )
 
 // OAuth2Authenticator implements the Authenticator interface for OAuth2-based
-// authentication using OpenID Connect (OIDC). It validates JWTs (JSON Web
-// Tokens) presented in the HTTP Authorization header.
 //
-// Summary: Represents a OAuth2Authenticator.
+// Summary: Implements the Authenticator interface for OAuth2-based
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type OAuth2Authenticator struct {
 	verifier  *oidc.IDTokenVerifier
 	audiences []string

@@ -23,10 +23,55 @@ type LeaseStatus string
 
 const (
 	// StatusActive represents an active and valid lease.
+//
+// Summary: Represents an active and valid lease.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusActive LeaseStatus = "ACTIVE"
 	// StatusExpired represents a lease that has passed its expiration time.
+//
+// Summary: Represents a lease that has passed its expiration time.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusExpired LeaseStatus = "EXPIRED"
 	// StatusPruned represents a lease that has been manually invalidated or cleaned up.
+//
+// Summary: Represents a lease that has been manually invalidated or cleaned up.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusPruned LeaseStatus = "PRUNED"
 )
 

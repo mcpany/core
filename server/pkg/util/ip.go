@@ -19,29 +19,41 @@ const remoteIPContextKey = contextKey("remote_ip")
 
 // ContextWithRemoteIP creates a new context containing the remote IP address.
 //
-// Summary: Injects the remote IP into the context.
+// Summary: Creates a new context containing the remote IP address.
 //
 // Parameters:
-//   - ctx: context.Context. The parent context.
-//   - ip: string. The remote IP address to store in the context.
+//   - ctx (context.Context): Parameter.
+//   - ip (string): Parameter.
 //
 // Returns:
-//   - context.Context: A new context with the remote IP attached.
+//   - context.Context: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func ContextWithRemoteIP(ctx context.Context, ip string) context.Context {
 	return context.WithValue(ctx, remoteIPContextKey, ip)
 }
 
 // ExtractIP extracts and validates the IP address from a string.
 //
-// Summary: Parses and sanitizes an IP address string.
-//
-// It handles "host:port" formats, strips IPv6 brackets, and removes zone indices.
+// Summary: Extracts and validates the IP address from a string.
 //
 // Parameters:
-//   - addr: string. The address string to parse (e.g., "192.168.1.1:80", "[::1]", "fe80::1%eth0").
+//   - addr (string): Parameter.
 //
 // Returns:
-//   - string: The cleaned IP address string, or an empty string if the address is invalid.
+//   - string: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func ExtractIP(addr string) string {
 	ipStr, _, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -65,14 +77,21 @@ func ExtractIP(addr string) string {
 
 // GetClientIP extracts the client IP address from an HTTP request.
 //
-// Summary: Determines the client's IP address.
+// Summary: Extracts the client IP address from an HTTP request.
 //
 // Parameters:
-//   - r: *http.Request. The HTTP request to inspect.
-//   - trustProxy: bool. If true, trusts 'X-Real-IP' and 'X-Forwarded-For' headers. If false, only uses 'RemoteAddr'.
+//   - r (*http.Request): Parameter.
+//   - trustProxy (bool): Parameter.
 //
 // Returns:
-//   - string: The best-effort client IP address.
+//   - string: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func GetClientIP(r *http.Request, trustProxy bool) string {
 	if trustProxy {
 		// Prefer X-Real-IP as it is usually a single IP set by the trusted proxy.
@@ -101,14 +120,21 @@ func GetClientIP(r *http.Request, trustProxy bool) string {
 
 // RemoteIPFromContext retrieves the remote IP address stored in the context.
 //
-// Summary: Retrieves the remote IP from the context.
+// Summary: Retrieves the remote IP address stored in the context.
 //
 // Parameters:
-//   - ctx: context.Context. The context to retrieve the IP from.
+//   - ctx (context.Context): Parameter.
 //
 // Returns:
-//   - string: The remote IP address.
-//   - bool: True if the IP was found, false otherwise.
+//   - string: Return value.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func RemoteIPFromContext(ctx context.Context) (string, bool) {
 	ip, ok := ctx.Value(remoteIPContextKey).(string)
 	return ip, ok
@@ -116,31 +142,40 @@ func RemoteIPFromContext(ctx context.Context) (string, bool) {
 
 // IsPrivateNetworkIP checks if the IP address belongs to a private network.
 //
-// Summary: Checks if an IP is a private network address.
-//
-// This includes RFC1918 (Private IPv4), RFC4193 (Unique Local IPv6), and RFC6598 (CGNAT).
-// It does NOT include loopback or link-local addresses.
+// Summary: Checks if the IP address belongs to a private network.
 //
 // Parameters:
-//   - ip: net.IP. The IP address to check.
+//   - ip (net.IP): Parameter.
 //
 // Returns:
-//   - bool: True if the IP is a private network address.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func IsPrivateNetworkIP(ip net.IP) bool {
 	return validation.IsPrivateNetworkIP(ip)
 }
 
 // IsPrivateIP checks if the IP address is private, link-local, or loopback.
 //
-// Summary: Checks if an IP is internal/private.
-//
-// This is a comprehensive check for any "internal" IP address that shouldn't be publicly routable.
+// Summary: Checks if the IP address is private, link-local, or loopback.
 //
 // Parameters:
-//   - ip: net.IP. The IP address to check.
+//   - ip (net.IP): Parameter.
 //
 // Returns:
-//   - bool: True if the IP is private, link-local, or loopback.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func IsPrivateIP(ip net.IP) bool {
 	return validation.IsPrivateIP(ip)
 }

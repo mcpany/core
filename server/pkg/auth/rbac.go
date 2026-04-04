@@ -12,7 +12,20 @@ import (
 
 // RolesContextKey is the context key for the user roles.
 //
-// Summary: Represents a RolesContextKey.
+// Summary: Is the context key for the user roles.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 const RolesContextKey authContextKey = "user_roles"
 
 // ContextWithRoles returns a new context with the user roles. ctx is the context for the request. roles is the roles. Returns the result.
@@ -82,7 +95,20 @@ func RolesFromContext(ctx context.Context) ([]string, bool) {
 
 // RBACEnforcer handles Role-Based Access Control checks.
 //
-// Summary: Represents a RBACEnforcer.
+// Summary: Handles Role-Based Access Control checks.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type RBACEnforcer struct {
 }
 

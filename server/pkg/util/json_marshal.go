@@ -11,8 +11,21 @@ import (
 
 var (
 	// FastJSON is a configured instance of jsoniter that is optimized for performance.
-	//
-	// Summary: Provides a high-performance JSON marshaller.
+//
+// Summary: Is a configured instance of jsoniter that is optimized for performance.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	FastJSON = jsoniter.Config{
 		EscapeHTML:             true,
 		SortMapKeys:            false,
@@ -28,14 +41,21 @@ var (
 
 // FastMarshalToString performs a high-performance JSON marshal into a string.
 //
-// Summary: Marshals to a string efficiently.
+// Summary: Performs a high-performance JSON marshal into a string.
 //
 // Parameters:
-//   - v (interface{}): The value to marshal.
+//   - v (interface{}): Parameter.
 //
 // Returns:
-//   - string: The marshaled string.
-//   - error: An error if marshaling fails.
+//   - string: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func FastMarshalToString(v interface{}) (string, error) {
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
@@ -55,14 +75,21 @@ func FastMarshalToString(v interface{}) (string, error) {
 
 // FastMarshal performs a high-performance JSON marshal into a byte slice.
 //
-// Summary: Marshals to a byte slice efficiently.
+// Summary: Performs a high-performance JSON marshal into a byte slice.
 //
 // Parameters:
-//   - v (interface{}): The value to marshal.
+//   - v (interface{}): Parameter.
 //
 // Returns:
-//   - []byte: The marshaled byte slice.
-//   - error: An error if marshaling fails.
+//   - []byte: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func FastMarshal(v interface{}) ([]byte, error) {
 	return FastJSON.Marshal(v)
 }

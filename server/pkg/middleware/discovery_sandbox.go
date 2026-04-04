@@ -15,7 +15,20 @@ import (
 
 // DiscoverySandboxConfig defines the configuration for Discovery-Phase Sandbox Isolation.
 //
-// Summary: Represents the configuration for the Discovery-Phase Sandbox middleware.
+// Summary: Defines the configuration for Discovery-Phase Sandbox Isolation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type DiscoverySandboxConfig struct {
 	// Enabled determines if the DiscoverySandbox middleware is active.
 	Enabled bool `json:"enabled"`
@@ -28,9 +41,21 @@ type DiscoverySandboxConfig struct {
 }
 
 // DiscoverySandboxMiddleware wraps discovery commands in a secure, ephemeral execution environment
-// to prevent startup-time RCE and Ghost-Execution exploits during capability discovery.
 //
-// Summary: Represents the middleware for Discovery-Phase Sandbox Isolation.
+// Summary: Wraps discovery commands in a secure, ephemeral execution environment
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type DiscoverySandboxMiddleware struct {
 	config DiscoverySandboxConfig
 }

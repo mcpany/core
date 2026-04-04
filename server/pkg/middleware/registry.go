@@ -18,7 +18,20 @@ import (
 
 // Registry manages available middlewares.
 //
-// Summary: Represents a Registry.
+// Summary: Manages available middlewares.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Registry struct {
 	mu           sync.RWMutex
 	factories    map[string]Factory
@@ -27,12 +40,38 @@ type Registry struct {
 
 // Factory is a function that creates a HTTP middleware from configuration.
 //
-// Summary: Represents a Factory.
+// Summary: Is a function that creates a HTTP middleware from configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Factory func(config *configv1.Middleware) func(http.Handler) http.Handler
 
 // MCPFactory is a function that creates an MCP middleware from configuration.
 //
-// Summary: Represents a MCPFactory.
+// Summary: Is a function that creates an MCP middleware from configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MCPFactory func(config *configv1.Middleware) func(mcp.MethodHandler) mcp.MethodHandler
 
 var (
@@ -182,7 +221,20 @@ func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler)
 
 // StandardMiddlewares holds the standard middlewares that might need to be updated.
 //
-// Summary: Represents a StandardMiddlewares.
+// Summary: Holds the standard middlewares that might need to be updated.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type StandardMiddlewares struct {
 	Audit            *AuditMiddleware
 	GlobalRateLimit  *GlobalRateLimitMiddleware

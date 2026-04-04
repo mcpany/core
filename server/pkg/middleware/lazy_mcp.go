@@ -11,7 +11,20 @@ import (
 
 // LazyMCPConfig defines the configuration for On-Demand Discovery filtering.
 //
-// Summary: Represents the configuration for the LazyMCP middleware.
+// Summary: Defines the configuration for On-Demand Discovery filtering.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
@@ -20,7 +33,20 @@ type LazyMCPConfig struct {
 
 // LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
 //
-// Summary: Represents the middleware for filtering tools based on intent.
+// Summary: Filters tools based on a simplistic similarity logic to prevent context pollution.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type LazyMCPMiddleware struct {
 	config LazyMCPConfig
 }

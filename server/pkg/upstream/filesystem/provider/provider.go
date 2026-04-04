@@ -11,7 +11,20 @@ import (
 
 // Provider defines the interface for a filesystem provider.
 //
-// Summary: Represents a Provider.
+// Summary: Defines the interface for a filesystem provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Provider interface {
 	io.Closer
 

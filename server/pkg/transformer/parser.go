@@ -26,11 +26,21 @@ var (
 )
 
 // TextParser provides functionality to parse various text formats (JSON, XML,
-// plain text) and extract data into a structured map. It uses a configuration
-// map to define the extraction rules for each format, such as JSONPath for
-// JSON, XPath for XML, and regex for plain text.
 //
-// Summary: Generic parser for extracting data from JSON, XML, Text, or using JQ.
+// Summary: Provides functionality to parse various text formats (JSON, XML,
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type TextParser struct {
 	transformer *Transformer
 }
@@ -42,13 +52,20 @@ var (
 
 // NewTextParser returns a shared instance of TextParser.
 //
-// Summary: Returns a singleton instance of TextParser.
+// Summary: Returns a shared instance of TextParser.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *TextParser: The singleton instance.
+//   - *TextParser: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Initializes the singleton on first call.
+//   - None.
+
 func NewTextParser() *TextParser {
 	defaultTextParserOnce.Do(func() {
 		defaultTextParser = &TextParser{
@@ -59,17 +76,23 @@ func NewTextParser() *TextParser {
 }
 
 // Transform takes a map of data and a Go template string and returns a byte
-// slice containing the transformed output.
 //
-// Summary: Delegates to the internal Transformer to render templates.
+// Summary: Takes a map of data and a Go template string and returns a byte
 //
 // Parameters:
-//   - templateStr: string. The Go template.
-//   - data: any. The context data.
+//   - templateStr (string): Parameter.
+//   - data (any): Parameter.
 //
 // Returns:
-//   - []byte: The rendered output.
-//   - error: An error if transformation fails.
+//   - []byte: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (p *TextParser) Transform(templateStr string, data any) ([]byte, error) {
 	return p.transformer.Transform(templateStr, data)
 }

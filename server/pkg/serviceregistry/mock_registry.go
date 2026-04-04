@@ -13,7 +13,20 @@ import (
 
 // MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
 //
-// Summary: Represents a MockServiceRegistry.
+// Summary: Is a mock implementation of ServiceRegistryInterface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockServiceRegistry struct {
 	mock.Mock
 }

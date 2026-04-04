@@ -16,17 +16,21 @@ import (
 
 // ListServiceTemplates retrieves all service templates.
 //
-// Summary: Retrieves all service templates from the PostgreSQL database.
+// Summary: Retrieves all service templates.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
+//   - ctx (context.Context): Parameter.
 //
 // Returns:
-//   - []*configv1.ServiceTemplate: A list of service templates.
-//   - error: An error if the database operation fails.
+//   - []*configv1.ServiceTemplate: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Executes a SELECT query.
+//   - None.
+
 func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTemplate, error) {
 	rows, err := s.db.QueryContext(ctx, "SELECT config_json FROM service_templates")
 	if err != nil {
@@ -55,18 +59,22 @@ func (s *Store) ListServiceTemplates(ctx context.Context) ([]*configv1.ServiceTe
 
 // GetServiceTemplate retrieves a service template by ID.
 //
-// Summary: Retrieves a single service template by ID.
+// Summary: Retrieves a service template by ID.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - id: string. The template ID.
+//   - ctx (context.Context): Parameter.
+//   - id (string): Parameter.
 //
 // Returns:
-//   - *configv1.ServiceTemplate: The requested template, or nil if not found.
-//   - error: An error if the query fails.
+//   - *configv1.ServiceTemplate: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Executes a SELECT query.
+//   - None.
+
 func (s *Store) GetServiceTemplate(ctx context.Context, id string) (*configv1.ServiceTemplate, error) {
 	query := "SELECT config_json FROM service_templates WHERE id = $1"
 	row := s.db.QueryRowContext(ctx, query, id)

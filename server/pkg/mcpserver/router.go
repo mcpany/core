@@ -11,39 +11,58 @@ import (
 
 // MethodHandler defines the signature for a function that handles an MCP method call.
 //
-// Summary: Handler function signature for MCP methods.
+// Summary: Defines the signature for a function that handles an MCP method call.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (mcp.Request): The request object.
+//   - None.
 //
 // Returns:
-//   - mcp.Result: The result of the operation.
-//   - error: An error if the operation fails.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
 
 // Router is responsible for mapping MCP method names to their corresponding handler functions.
 //
-// Summary: Routes MCP requests to registered handlers.
+// Summary: Is responsible for mapping MCP method names to their corresponding handler functions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Stores handlers in an internal map.
+//   - None.
+
 type Router struct {
 	handlers map[string]MethodHandler
 }
 
 // NewRouter creates and returns a new, empty Router.
 //
-// Summary: Creates a new Router instance.
+// Summary: Creates and returns a new, empty Router.
 //
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - *Router: A new, initialized Router.
+//   - *Router: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Allocates memory for the Router and its handler map.
+//   - None.
+
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
@@ -52,34 +71,42 @@ func NewRouter() *Router {
 
 // Register associates a handler function with a specific MCP method name.
 //
-// Summary: Registers a handler for an MCP method.
+// Summary: Associates a handler function with a specific MCP method name.
 //
 // Parameters:
-//   - method (string): The method name.
-//   - handler (MethodHandler): The handler function.
+//   - method (string): Parameter.
+//   - handler (MethodHandler): Parameter.
 //
 // Returns:
 //   - None.
 //
+// Errors:
+//   - None.
+//
 // Side Effects:
-//   - Updates the internal handler map.
+//   - None.
+
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
 
 // GetHandler retrieves the handler function for a given MCP method name.
 //
-// Summary: Retrieves a handler for an MCP method.
+// Summary: Retrieves the handler function for a given MCP method name.
 //
 // Parameters:
-//   - method (string): The name of the MCP method.
+//   - method (string): Parameter.
 //
 // Returns:
-//   - MethodHandler: The handler function if found.
-//   - bool: A boolean indicating whether a handler was found (true) or not (false).
+//   - MethodHandler: Return value.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
+
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

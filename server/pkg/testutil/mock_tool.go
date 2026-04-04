@@ -15,17 +15,40 @@ import (
 
 // MockTool is a mock implementation of the tool.Tool interface for testing.
 //
-// Summary: Mock tool for unit testing.
+// Summary: Is a mock implementation of the tool.Tool interface for testing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockTool struct {
 	ExecuteFunc func(ctx context.Context, req *tool.ExecutionRequest) (any, error)
 }
 
 // Tool returns a basic tool definition for the mock tool.
 //
-// Summary: Returns the tool definition.
+// Summary: Returns a basic tool definition for the mock tool.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *v1.Tool: A minimal tool definition.
+//   - *v1.Tool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *MockTool) Tool() *v1.Tool {
 	return v1.Tool_builder{
 		Name: proto.String("mock-tool"),
@@ -34,18 +57,22 @@ func (m *MockTool) Tool() *v1.Tool {
 
 // Execute calls the mock ExecuteFunc if set, otherwise returns nil.
 //
-// Summary: Executes the mock tool logic.
+// Summary: Calls the mock ExecuteFunc if set, otherwise returns nil.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The tool execution request.
+//   - ctx (context.Context): Parameter.
+//   - req (*tool.ExecutionRequest): Parameter.
 //
 // Returns:
-//   - any: The result from ExecuteFunc.
-//   - error: The error from ExecuteFunc.
+//   - any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Invokes the injected ExecuteFunc.
+//   - None.
+
 func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	if m.ExecuteFunc != nil {
 		return m.ExecuteFunc(ctx, req)
@@ -55,10 +82,20 @@ func (m *MockTool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any
 
 // GetCacheConfig returns nil for the mock tool.
 //
-// Summary: Returns cache configuration (nil for mock).
+// Summary: Returns nil for the mock tool.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: Always nil.
+//   - *configv1.CacheConfig: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

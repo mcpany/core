@@ -11,7 +11,20 @@ import (
 
 // RedactingWriter is an io.Writer that redacts sensitive information from JSON logs.
 //
-// Summary: Represents a RedactingWriter.
+// Summary: Is an io.Writer that redacts sensitive information from JSON logs.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type RedactingWriter struct {
 	w io.Writer
 }

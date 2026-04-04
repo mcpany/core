@@ -16,20 +16,73 @@ import (
 
 // Severity indicates the importance of a linting result.
 //
-// It is used to categorize findings based on their impact and urgency.
+// Summary: Indicates the importance of a linting result.
 //
-// Summary: Represents a Severity.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Severity int
 
 const (
 	// Error indicates a critical issue that must be fixed for the system to function correctly or securely.
-	// Summary: Defines Erro.
+//
+// Summary: Indicates a critical issue that must be fixed for the system to function correctly or securely.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	Error Severity = iota
 	// Warning indicates a potential issue or best practice violation that should be addressed.
-	// Summary: Defines Warnin.
+//
+// Summary: Indicates a potential issue or best practice violation that should be addressed.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	Warning
 	// Info indicates a suggestion or informational message for optimization or clarity.
-	// Summary: Defines Inf.
+//
+// Summary: Indicates a suggestion or informational message for optimization or clarity.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	Info
 )
 
@@ -68,9 +121,20 @@ func (s Severity) String() string {
 
 // Result represents a single linting finding.
 //
-// It encapsulates all details about a detected issue, including its severity, location, and description.
+// Summary: Represents a single linting finding.
 //
-// Summary: Represents a Result.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -116,9 +180,20 @@ func (r Result) String() string {
 
 // Linter performs static analysis on the configuration.
 //
-// It holds the configuration to be analyzed and provides methods to execute various checks.
+// Summary: Performs static analysis on the configuration.
 //
-// Summary: Represents a Linter.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

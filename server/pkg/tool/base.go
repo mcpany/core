@@ -37,23 +37,40 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 
 // Tool returns the protobuf definition of the tool.
 //
-// Summary: Retrieves the protobuf definition.
+// Summary: Returns the protobuf definition of the tool.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *v1.Tool: The protobuf tool definition.
+//   - *v1.Tool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
 
 // MCPTool returns the MCP tool definition.
 //
-// Summary: Retrieves the MCP-compliant tool definition.
+// Summary: Returns the MCP tool definition.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+//   - *mcp.Tool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Lazily converts the proto definition to MCP format on first call.
+//   - None.
+
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -65,34 +82,44 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
 
-// GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
+// IsStreaming getCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
 //
-// Summary: Retrieves the cache configuration (always nil for baseTool).
+// Summary: GetCacheConfig returns the cache configuration for the tool, or nil if caching is disabled.
 //
-// Returns:
-//   - *configv1.CacheConfig: Always returns nil.
-//
-// IsStreaming returns true if the tool supports streaming execution.
-//
-// Summary: Checks if the tool supports streaming execution.
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - bool: True if streaming is supported.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (t *baseTool) IsStreaming() bool {
 	return false
 }
 
 // StreamExecute handles the streaming execution of the tool.
 //
-// Summary: Executes the tool in streaming mode.
+// Summary: Handles the streaming execution of the tool.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request payload.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	return nil, nil // Should be implemented by embedding struct if supported
 }

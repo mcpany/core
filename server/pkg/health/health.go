@@ -74,7 +74,20 @@ func SetGlobalAlertConfig(cfg *configv1.AlertConfig) {
 
 // HTTPServiceWithHealthCheck is an interface for services that have an address and an HTTP health check.
 //
-// Summary: Represents a HTTPServiceWithHealthCheck.
+// Summary: Is an interface for services that have an address and an HTTP health check.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type HTTPServiceWithHealthCheck interface {
 	// GetAddress returns the address of the service.
 	//

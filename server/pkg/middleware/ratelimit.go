@@ -29,9 +29,21 @@ import (
 var metricRateLimitRequestsTotal = []string{"rate_limit", "requests_total"}
 
 // RateLimitMiddleware is a tool execution middleware that provides rate limiting
-// functionality for upstream services.
 //
-// Summary: Middleware for rate limiting tool execution.
+// Summary: Is a tool execution middleware that provides rate limiting
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type RateLimitMiddleware struct {
 	toolManager tool.ManagerInterface
 	tokenizer   tokenizer.Tokenizer
@@ -43,18 +55,38 @@ type RateLimitMiddleware struct {
 
 // Option defines a functional option for RateLimitMiddleware.
 //
-// Summary: Functional option for RateLimitMiddleware.
+// Summary: Defines a functional option for RateLimitMiddleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Option func(*RateLimitMiddleware)
 
 // WithTokenizer sets a custom tokenizer for the middleware.
 //
-// Summary: Configures a custom tokenizer.
+// Summary: Sets a custom tokenizer for the middleware.
 //
 // Parameters:
-//   - t (tokenizer.Tokenizer): The tokenizer to use.
+//   - t (tokenizer.Tokenizer): Parameter.
 //
 // Returns:
-//   - (Option): The configured option.
+//   - Option: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func WithTokenizer(t tokenizer.Tokenizer) Option {
 	return func(m *RateLimitMiddleware) {
 		m.tokenizer = t
@@ -63,14 +95,21 @@ func WithTokenizer(t tokenizer.Tokenizer) Option {
 
 // NewRateLimitMiddleware creates a new RateLimitMiddleware.
 //
-// Summary: Initializes the rate limit middleware.
+// Summary: Creates a new RateLimitMiddleware.
 //
 // Parameters:
-//   - toolManager (tool.ManagerInterface): The tool manager.
-//   - opts (...Option): Optional configuration settings.
+//   - toolManager (tool.ManagerInterface): Parameter.
+//   - opts (...Option): Parameter.
 //
 // Returns:
-//   - (*RateLimitMiddleware): The initialized middleware.
+//   - *RateLimitMiddleware: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *RateLimitMiddleware {
 	m := &RateLimitMiddleware{
 		toolManager: toolManager,
@@ -95,20 +134,23 @@ func NewRateLimitMiddleware(toolManager tool.ManagerInterface, opts ...Option) *
 
 // Execute executes the rate limiting middleware.
 //
-// Summary: Executes rate limiting logic before passing to the next handler.
+// Summary: Executes the rate limiting middleware.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler.
+//   - ctx (context.Context): Parameter.
+//   - req (*tool.ExecutionRequest): Parameter.
+//   - next (tool.ExecutionFunc): Parameter.
 //
 // Returns:
-//   - (any): The result of the execution.
-//   - (error): An error if the limit is exceeded or the operation fails.
+//   - any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Checks against rate limits in memory or Redis.
-//   - Increments counters.
+//   - None.
+
 func (m *RateLimitMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	t, ok := m.toolManager.GetTool(req.ToolName)
 	if !ok {

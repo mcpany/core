@@ -19,7 +19,20 @@ import (
 
 // PineconeClient implements VectorClient for Pinecone.
 //
-// Summary: Represents a PineconeClient.
+// Summary: Implements VectorClient for Pinecone.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client

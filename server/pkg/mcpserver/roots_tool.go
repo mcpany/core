@@ -17,10 +17,20 @@ import (
 
 // RootsTool implements the Tool interface for listing roots.
 //
-// It provides a built-in tool ("mcp:list_roots") that allows the server to query the client
-// for available filesystem roots.
+// Summary: Implements the Tool interface for listing roots.
 //
-// Summary: Represents a RootsTool.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool

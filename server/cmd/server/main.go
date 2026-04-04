@@ -32,8 +32,21 @@ import (
 
 var (
 	// Version is set at build time.
-	//
-	// Summary: The version of the application, injected at build time.
+//
+// Summary: Is set at build time.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	Version              = "dev"
 	appRunner app.Runner = app.NewApplication()
 )

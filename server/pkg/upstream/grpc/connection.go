@@ -15,10 +15,21 @@ import (
 )
 
 // ConnectionFactory is responsible for creating new gRPC client connections.
-// It can be configured with a custom dialer for testing or special connection
-// scenarios.
 //
-// Summary: Represents a ConnectionFactory.
+// Summary: Is responsible for creating new gRPC client connections.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ConnectionFactory struct {
 	dialer func(context.Context, string) (net.Conn, error)
 }

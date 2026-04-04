@@ -22,10 +22,20 @@ import (
 
 // SkillResource adapts a Skill (or its asset) to the Resource interface.
 //
-// It provides a way to expose skill documentation and associated assets (like images or text files)
-// as MCP resources, making them accessible to clients.
+// Summary: Adapts a Skill (or its asset) to the Resource interface.
 //
-// Summary: Represents a SkillResource.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type SkillResource struct {
 	skill     *skill.Skill
 	assetPath string // Relative path to asset. If empty, represents the main SKILL.md

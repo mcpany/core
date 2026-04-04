@@ -13,11 +13,21 @@ import (
 )
 
 // HTTPClientWrapper wraps an `*http.Client` to adapt it to the
-// `pool.ClosableClient` interface. This allows HTTP clients to be managed by a
-// connection pool, which can help control the number of concurrent connections
-// and reuse them where appropriate.
 //
-// Summary: Represents a HTTPClientWrapper.
+// Summary: Wraps an `*http.Client` to adapt it to the
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type HTTPClientWrapper struct {
 	*http.Client
 	config *configv1.UpstreamServiceConfig

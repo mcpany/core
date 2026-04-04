@@ -27,9 +27,21 @@ import (
 )
 
 // ParsedMcpAnnotations holds the structured data extracted from MCP
-// (Model Context Protocol) annotations within a set of protobuf files.
 //
-// Summary: Represents ParsedMcpAnnotations.
+// Summary: Holds the structured data extracted from MCP
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ParsedMcpAnnotations struct {
 	Tools     []McpTool
 	Prompts   []McpPrompt
@@ -37,9 +49,21 @@ type ParsedMcpAnnotations struct {
 }
 
 // McpTool represents the information extracted from a gRPC method that has been
-// annotated as an MCP tool.
 //
-// Summary: Represents McpTool.
+// Summary: Represents the information extracted from a gRPC method that has been
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type McpTool struct {
 	Name            string
 	Description     string
@@ -57,9 +81,21 @@ type McpTool struct {
 }
 
 // McpField represents a field within a protobuf message, including its name,
-// description, type, and whether it is repeated.
 //
-// Summary: Represents McpField.
+// Summary: Represents a field within a protobuf message, including its name,
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type McpField struct {
 	Name        string
 	Description string
@@ -408,9 +444,21 @@ func writeProtoFile(protoFile *configv1.ProtoFile, tempDir string) (string, erro
 }
 
 // McpPrompt represents the information extracted from a gRPC method that has
-// been annotated as an MCP prompt.
 //
-// Summary: Represents McpPrompt.
+// Summary: Represents the information extracted from a gRPC method that has
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type McpPrompt struct {
 	Name           string
 	Description    string
@@ -423,9 +471,21 @@ type McpPrompt struct {
 }
 
 // McpResource represents a protobuf message that has been annotated as an MCP
-// resource.
 //
-// Summary: Represents McpResource.
+// Summary: Represents a protobuf message that has been annotated as an MCP
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type McpResource struct {
 	Name        string
 	Description string

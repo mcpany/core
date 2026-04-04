@@ -22,7 +22,20 @@ import (
 
 // GcsProvider provides access to files in a Google Cloud Storage bucket.
 //
-// Summary: Represents a GcsProvider.
+// Summary: Provides access to files in a Google Cloud Storage bucket.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type GcsProvider struct {
 	fs     afero.Fs
 	client *storage.Client

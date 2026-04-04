@@ -16,9 +16,22 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-// Store implements config.Store using PostgreSQL.
+// Store implements config.using PostgreSQL.
 //
-// Summary: PostgreSQL storage implementation.
+// Summary: Implements config.using PostgreSQL.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Store struct {
 	db *DB
 }
@@ -28,13 +41,17 @@ type Store struct {
 // Summary: Creates a new PostgreSQL store.
 //
 // Parameters:
-//   - db (*DB): The database connection wrapper.
+//   - db (*DB): Parameter.
 //
 // Returns:
-//   - *Store: A pointer to a new Store.
+//   - *Store: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
+
 func NewStore(db *DB) *Store {
 	return &Store{db: db}
 }
@@ -57,15 +74,20 @@ func (s *Store) Close() error {
 
 // HasConfigSources returns true if the store has configuration sources (e.g., file paths) configured.
 //
-// Summary: Checks if the store has configuration sources.
+// Summary: Returns true if the store has configuration sources (e.g., file paths) configured.
 //
-// For DB stores, we assume they always have a source (the DB itself).
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - bool: True always for DB store.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
+
 func (s *Store) HasConfigSources() bool {
 	return true
 }

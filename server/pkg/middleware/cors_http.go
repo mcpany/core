@@ -11,9 +11,21 @@ import (
 )
 
 // HTTPCORSMiddleware handles CORS for HTTP endpoints.
-// It is thread-safe and supports dynamic updates.
 //
-// Summary: Represents a HTTPCORSMiddleware.
+// Summary: Handles CORS for HTTP endpoints.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -22,16 +34,20 @@ type HTTPCORSMiddleware struct {
 
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 //
-// Summary: Initializes HTTP CORS middleware.
-//
-// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
-// To allow all, pass []string{"*"}.
+// Summary: Creates a new HTTPCORSMiddleware.
 //
 // Parameters:
-//   - allowedOrigins ([]string): The allowed origins.
+//   - allowedOrigins ([]string): Parameter.
 //
 // Returns:
-//   - (*HTTPCORSMiddleware): The initialized middleware.
+//   - *HTTPCORSMiddleware: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -40,10 +56,20 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 
 // Update updates the allowed origins.
 //
-// Summary: Updates the allowed origins dynamically.
+// Summary: Updates the allowed origins.
 //
 // Parameters:
-//   - allowedOrigins ([]string): The new list of allowed origins.
+//   - allowedOrigins ([]string): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -65,15 +91,22 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 	}
 }
 
-// Handler wraps an http.Handler with CORS logic.
+// Handler wraps an http.with CORS logic.
 //
-// Summary: Middleware to handle CORS headers.
+// Summary: Wraps an http.with CORS logic.
 //
 // Parameters:
-//   - next (http.Handler): The next handler in the chain.
+//   - next (http.Handler): Parameter.
 //
 // Returns:
-//   - (http.Handler): The wrapped handler.
+//   - http.Handler: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

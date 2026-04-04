@@ -23,7 +23,20 @@ import (
 
 // TestE2ECaching tests the end-to-end caching functionality.
 //
-// t is the t.
+// Summary: Tests the end-to-end caching functionality.
+//
+// Parameters:
+//   - t (*testing.T): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -41,9 +54,20 @@ func TestE2ECaching(t *testing.T) {
 
 // BuildCachingServer builds and starts a caching server for testing.
 //
-// t is the t.
+// Summary: Builds and starts a caching server for testing.
 //
-// Returns the result.
+// Parameters:
+//   - t (*testing.T): Parameter.
+//
+// Returns:
+//   - *integration.ManagedProcess: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -53,9 +77,22 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 
 // RegisterCachingService registers the caching service with the MCP server.
 //
-// t is the t.
-// registrationClient is the registrationClient.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: Registers the caching service with the MCP server.
+//
+// Parameters:
+//   - t (*testing.T): Parameter.
+//   - registrationClient (apiv1.RegistrationServiceClient): Parameter.
+//   - upstreamEndpoint (string): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -99,10 +136,21 @@ func protoString(value string) *string {
 
 // NoOpMiddleware is a middleware that does nothing and calls the next handler.
 //
-// _ is an unused parameter.
-// next is the next.
+// Summary: Is a middleware that does nothing and calls the next handler.
 //
-// Returns the result.
+// Parameters:
+//   - unnamed (*testing.T): Parameter.
+//   - next (http.Handler): Parameter.
+//
+// Returns:
+//   - http.Handler: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -136,9 +184,22 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 
 // ValidateCaching validates that caching is working correctly.
 //
-// t is the t.
-// mcpanyEndpoint is the mcpanyEndpoint.
-// upstreamEndpoint is the upstreamEndpoint.
+// Summary: Validates that caching is working correctly.
+//
+// Parameters:
+//   - t (*testing.T): Parameter.
+//   - mcpanyEndpoint (string): Parameter.
+//   - upstreamEndpoint (string): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 

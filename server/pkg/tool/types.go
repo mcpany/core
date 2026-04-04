@@ -84,10 +84,20 @@ var fastJSONNumber = jsoniter.Config{
 
 // Tool is the fundamental interface for any executable tool in the system.
 //
-// Summary: Interface for defining and executing tools.
+// Summary: Is the fundamental interface for any executable tool in the system.
 //
-// Each implementation represents a different type of underlying service
-// (e.g., gRPC, HTTP, command-line).
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Tool interface {
 	// Tool returns the protobuf definition of the tool.
 	//
@@ -225,41 +235,66 @@ type ServiceRegistry interface {
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
-// Summary: Defines the functional signature for middleware execution nodes, allowing request interception, augmentation, or short-circuiting before reaching the core tool logic.
+// ExecutionFunc summary: Defines the functional signature for middleware execution nodes, allowing request interception, augmentation, or short-circuiting before reaching the core tool logic.
+//
+// Summary: Summary: Defines the functional signature for middleware execution nodes, allowing request interception, augmentation, or short-circuiting before reaching the core tool logic.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The request payload.
+//   - None.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ExecutionFunc func(ctx context.Context, req *ExecutionRequest) (any, error)
 
 type contextKey string
 
 const toolContextKey = contextKey("tool")
 
-// Summary: Injects an active Tool instance into a context, enabling downstream consumers or middleware to dynamically access tool metadata during request propagation.
+// NewContextWithTool summary: Injects an active Tool instance into a context, enabling downstream consumers or middleware to dynamically access tool metadata during request propagation.
+//
+// Summary: Summary: Injects an active Tool instance into a context, enabling downstream consumers or middleware to dynamically access tool metadata during request propagation.
 //
 // Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - t: Tool. The tool instance to embed in the context.
+//   - ctx (context.Context): Parameter.
+//   - t (Tool): Parameter.
 //
 // Returns:
-//   - context.Context: A new context containing the tool.
+//   - context.Context: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
-// Summary: Extracts a previously injected Tool instance from the provided context, facilitating decoupled access to tool metadata within isolated execution boundaries.
+// GetFromContext summary: Extracts a previously injected Tool instance from the provided context, facilitating decoupled access to tool metadata within isolated execution boundaries.
+//
+// Summary: Summary: Extracts a previously injected Tool instance from the provided context, facilitating decoupled access to tool metadata within isolated execution boundaries.
 //
 // Parameters:
-//   - ctx: context.Context. The context to search.
+//   - ctx (context.Context): Parameter.
 //
 // Returns:
-//   - Tool: The tool instance from the context.
-//   - bool: True if a tool was found, false otherwise.
+//   - Tool: Return value.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func GetFromContext(ctx context.Context) (Tool, bool) {
 	t, ok := ctx.Value(toolContextKey).(Tool)
 	return t, ok
@@ -305,31 +340,109 @@ type StreamingCallable interface {
 
 // Action defines the decision made by a pre-call hook.
 //
-// Summary: Enumeration of possible hook actions.
+// Summary: Defines the decision made by a pre-call hook.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Action int
 
 const (
 	// ActionAllow indicates that the action is allowed to proceed.
-	//
-	// Summary: Allow action.
+//
+// Summary: Indicates that the action is allowed to proceed.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	ActionAllow Action = 0
 	// ActionDeny indicates that the action is denied and should be blocked.
-	//
-	// Summary: Deny action.
+//
+// Summary: Indicates that the action is denied and should be blocked.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	ActionDeny Action = 1
 	// ActionSaveCache indicates that the result should be saved to the cache.
-	//
-	// Summary: Save to cache action.
+//
+// Summary: Indicates that the result should be saved to the cache.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	ActionSaveCache Action = 2
 	// ActionDeleteCache indicates that the associated cache entry should be invalidated.
-	//
-	// Summary: Delete from cache action.
+//
+// Summary: Indicates that the associated cache entry should be invalidated.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	ActionDeleteCache Action = 3
 )
 
 // CacheControl is a mutable struct to pass cache control instructions via context.
 //
-// Summary: Context-based cache control instructions.
+// Summary: Is a mutable struct to pass cache control instructions via context.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type CacheControl struct {
 	Action Action
 }
@@ -338,26 +451,42 @@ const cacheControlContextKey = contextKey("cache_control")
 
 // NewContextWithCacheControl creates a new context with the given CacheControl.
 //
-// Summary: Embeds CacheControl into the context.
+// Summary: Creates a new context with the given CacheControl.
 //
 // Parameters:
-//   - ctx: context.Context. The context to extend.
-//   - cc: *CacheControl. The CacheControl instance to embed.
+//   - ctx (context.Context): Parameter.
+//   - cc (*CacheControl): Parameter.
 //
 // Returns:
-//   - context.Context: A new context containing the CacheControl.
+//   - context.Context: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.Context {
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
-// Summary: Extracts embedded caching policies from the current request scope, allowing middleware to conditionally mutate standard caching behaviors.
+// GetCacheControl summary: Extracts embedded caching policies from the current request scope, allowing middleware to conditionally mutate standard caching behaviors.
+//
+// Summary: Summary: Extracts embedded caching policies from the current request scope, allowing middleware to conditionally mutate standard caching behaviors.
 //
 // Parameters:
-//   - ctx: context.Context. The context to search.
+//   - ctx (context.Context): Parameter.
 //
 // Returns:
-//   - *CacheControl: The CacheControl instance if found.
-//   - bool: True if CacheControl exists, false otherwise.
+//   - *CacheControl: Return value.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 	cc, ok := ctx.Value(cacheControlContextKey).(*CacheControl)
 	return cc, ok
@@ -365,7 +494,20 @@ func GetCacheControl(ctx context.Context) (*CacheControl, bool) {
 
 // PreCallHook defines the interface for hooks executed before a tool call.
 //
-// Summary: Interface for pre-execution hooks.
+// Summary: Defines the interface for hooks executed before a tool call.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type PreCallHook interface {
 	// ExecutePre runs the hook. It returns an action (Allow/Deny),
 	// a potentially modified request (or nil if unchanged), and an error.
@@ -374,7 +516,20 @@ type PreCallHook interface {
 
 // PostCallHook defines the interface for hooks executed after a tool call.
 //
-// Summary: Interface for post-execution hooks.
+// Summary: Defines the interface for hooks executed after a tool call.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type PostCallHook interface {
 	// ExecutePost runs the hook. It returns the potentially modified result
 	// (or original if unchanged) and an error.
@@ -382,12 +537,21 @@ type PostCallHook interface {
 }
 
 // GRPCTool implements the Tool interface for a tool that is exposed via a gRPC
-// endpoint.
 //
-// Summary: Tool implementation for gRPC services.
+// Summary: Implements the Tool interface for a tool that is exposed via a gRPC
 //
-// It handles the marshalling of JSON inputs to protobuf messages and
-// invoking the gRPC method.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type GRPCTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -405,20 +569,27 @@ type GRPCTool struct {
 
 // NewGRPCTool creates a new GRPCTool instance.
 //
-// Summary: Initializes a new GRPCTool.
+// Summary: Creates a new GRPCTool instance.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - poolManager: *pool.Manager. The connection pool manager for gRPC connections.
-//   - serviceID: string. The identifier for the service.
-//   - method: protoreflect.MethodDescriptor. The gRPC method descriptor.
-//   - callDefinition: *configv1.GrpcCallDefinition. The configuration for the gRPC call.
-//   - resilienceConfig: *configv1.ResilienceConfig. The resilience configuration.
-//   - policies: []*configv1.CallPolicy. The security policies.
-//   - callID: string. The unique identifier for the call.
+//   - tool (*v1.Tool): Parameter.
+//   - poolManager (*pool.Manager): Parameter.
+//   - serviceID (string): Parameter.
+//   - method (protoreflect.MethodDescriptor): Parameter.
+//   - callDefinition (*configv1.GrpcCallDefinition): Parameter.
+//   - resilienceConfig (*configv1.ResilienceConfig): Parameter.
+//   - policies ([]*configv1.CallPolicy): Parameter.
+//   - callID (string): Parameter.
 //
 // Returns:
-//   - *GRPCTool: The initialized GRPCTool.
+//   - *GRPCTool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, method protoreflect.MethodDescriptor, callDefinition *configv1.GrpcCallDefinition, resilienceConfig *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *GRPCTool {
 	compiled, err := CompileCallPolicies(policies)
 	t := &GRPCTool{
@@ -513,32 +684,22 @@ func (t *GRPCTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the gRPC tool.
+// IsStreaming execute handles the execution of the gRPC tool.
 //
-// Summary: Executes the gRPC tool call.
-//
-// It retrieves a client from the pool, unmarshals the JSON input into a protobuf request message,
-// invokes the gRPC method, and marshals the protobuf response back to JSON.
+// Summary: Execute handles the execution of the gRPC tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - None.
 //
 // Returns:
-//   - any: The execution result (usually a map or JSON string).
-//   - error: An error if execution fails.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Makes a gRPC call to the upstream service.
-//   - Updates metrics (latency, success/error counts).
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
+//   - None.
+
 func (t *GRPCTool) IsStreaming() bool {
 	return false
 }
@@ -548,12 +709,19 @@ func (t *GRPCTool) IsStreaming() bool {
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -669,10 +837,20 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 // HTTPTool implements the Tool interface for a tool exposed via an HTTP endpoint.
 //
-// Summary: Tool implementation for HTTP services.
+// Summary: Implements the Tool interface for a tool exposed via an HTTP endpoint.
 //
-// It constructs and sends an HTTP request based on the tool definition and
-// input, handling parameter mapping, authentication, and transformations.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type HTTPTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -705,20 +883,27 @@ type HTTPTool struct {
 
 // NewHTTPTool creates a new HTTPTool instance.
 //
-// Summary: Initializes a new HTTPTool.
+// Summary: Creates a new HTTPTool instance.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - poolManager: *pool.Manager. The connection pool manager for HTTP connections.
-//   - serviceID: string. The identifier for the service.
-//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
-//   - callDefinition: *configv1.HttpCallDefinition. The configuration for the HTTP call.
-//   - cfg: *configv1.ResilienceConfig. The resilience configuration.
-//   - policies: []*configv1.CallPolicy. The security policies for the call.
-//   - callID: string. The unique identifier for the call.
+//   - tool (*v1.Tool): Parameter.
+//   - poolManager (*pool.Manager): Parameter.
+//   - serviceID (string): Parameter.
+//   - authenticator (auth.UpstreamAuthenticator): Parameter.
+//   - callDefinition (*configv1.HttpCallDefinition): Parameter.
+//   - cfg (*configv1.ResilienceConfig): Parameter.
+//   - policies ([]*configv1.CallPolicy): Parameter.
+//   - callID (string): Parameter.
 //
 // Returns:
-//   - *HTTPTool: The initialized HTTPTool.
+//   - *HTTPTool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.HttpCallDefinition, cfg *configv1.ResilienceConfig, policies []*configv1.CallPolicy, callID string) *HTTPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -894,32 +1079,22 @@ func (t *HTTPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the HTTP tool.
+// IsStreaming execute handles the execution of the HTTP tool.
 //
-// Summary: Executes the HTTP tool call.
-//
-// It builds an HTTP request by mapping input parameters to the path, query, and body,
-// applies any configured transformations, sends the request, and processes the response.
+// Summary: Execute handles the execution of the HTTP tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - None.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Makes an HTTP request to the upstream service.
-//   - Updates metrics.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
+//   - None.
+
 func (t *HTTPTool) IsStreaming() bool {
 	return false
 }
@@ -929,12 +1104,19 @@ func (t *HTTPTool) IsStreaming() bool {
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1562,12 +1744,21 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 }
 
 // MCPTool implements the Tool interface for a tool that is exposed via another
-// MCP-compliant service.
 //
-// Summary: Tool implementation for proxying to MCP services.
+// Summary: Implements the Tool interface for a tool that is exposed via another
 //
-// It acts as a proxy, forwarding the tool call to the
-// downstream MCP service.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MCPTool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1584,15 +1775,22 @@ type MCPTool struct {
 
 // NewMCPTool creates a new MCPTool instance.
 //
-// Summary: Initializes a new MCPTool.
+// Summary: Creates a new MCPTool instance.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - client: client.MCPClient. The MCP client for downstream communication.
-//   - callDefinition: *configv1.MCPCallDefinition. The configuration for the MCP call.
+//   - tool (*v1.Tool): Parameter.
+//   - client (client.MCPClient): Parameter.
+//   - callDefinition (*configv1.MCPCallDefinition): Parameter.
 //
 // Returns:
-//   - *MCPTool: The initialized MCPTool.
+//   - *MCPTool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -1702,31 +1900,22 @@ func (t *MCPTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the MCP tool.
+// IsStreaming execute handles the execution of the MCP tool.
 //
-// Summary: Executes the MCP tool call.
-//
-// It forwards the tool call, including its name and arguments, to the downstream MCP service using the
-// configured client and applies any necessary transformations to the request and response.
+// Summary: Execute handles the execution of the MCP tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - None.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Makes an MCP call to the upstream service.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
+//   - None.
+
 func (t *MCPTool) IsStreaming() bool {
 	return false
 }
@@ -1736,12 +1925,19 @@ func (t *MCPTool) IsStreaming() bool {
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -1891,12 +2087,21 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 }
 
 // OpenAPITool implements the Tool interface for a tool defined in an OpenAPI
-// specification.
 //
-// Summary: Tool implementation for OpenAPI services.
+// Summary: Implements the Tool interface for a tool defined in an OpenAPI
 //
-// It constructs and sends an HTTP request based on the OpenAPI
-// operation definition.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type OpenAPITool struct {
 	tool                 *v1.Tool
 	mcpTool              *mcp.Tool
@@ -1917,19 +2122,26 @@ type OpenAPITool struct {
 
 // NewOpenAPITool creates a new OpenAPITool instance.
 //
-// Summary: Initializes a new OpenAPITool.
+// Summary: Creates a new OpenAPITool instance.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - client: client.HTTPClient. The HTTP client for requests.
-//   - parameterDefs: map[string]string. Mapping of parameter names to their locations.
-//   - method: string. The HTTP method.
-//   - url: string. The URL template.
-//   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
-//   - callDefinition: *configv1.OpenAPICallDefinition. The configuration for the OpenAPI call.
+//   - tool (*v1.Tool): Parameter.
+//   - client (client.HTTPClient): Parameter.
+//   - parameterDefs (map[string]string): Parameter.
+//   - method (string): Parameter.
+//   - url (string): Parameter.
+//   - authenticator (auth.UpstreamAuthenticator): Parameter.
+//   - callDefinition (*configv1.OpenAPICallDefinition): Parameter.
 //
 // Returns:
-//   - *OpenAPITool: The initialized OpenAPITool.
+//   - *OpenAPITool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
@@ -2043,31 +2255,22 @@ func (t *OpenAPITool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
 
-// Execute handles the execution of the OpenAPI tool.
+// IsStreaming execute handles the execution of the OpenAPI tool.
 //
-// Summary: Executes the OpenAPI tool call.
-//
-// It constructs an HTTP request based on the operation's method, URL, and parameter definitions,
-// sends the request, and processes the response, applying transformations as needed.
+// Summary: Execute handles the execution of the OpenAPI tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - None.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Makes an HTTP request to the upstream service.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
+//   - None.
+
 func (t *OpenAPITool) IsStreaming() bool {
 	return false
 }
@@ -2077,12 +2280,19 @@ func (t *OpenAPITool) IsStreaming() bool {
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -2283,11 +2493,21 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 }
 
 // CommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process.
 //
-// Summary: Tool implementation for command-line services (via executor).
+// Summary: Implements the Tool interface for a tool that is executed as a
 //
-// It maps tool inputs to command-line arguments and environment variables.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type CommandTool struct {
 	tool            *v1.Tool
 	mcpTool         *mcp.Tool
@@ -2303,17 +2523,24 @@ type CommandTool struct {
 
 // NewCommandTool creates a new CommandTool instance.
 //
-// Summary: Initializes a new CommandTool.
+// Summary: Creates a new CommandTool instance.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - service: *configv1.CommandLineUpstreamService. The service configuration.
-//   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
-//   - policies: []*configv1.CallPolicy. The security policies.
-//   - callID: string. The unique identifier for the call.
+//   - tool (*v1.Tool): Parameter.
+//   - service (*configv1.CommandLineUpstreamService): Parameter.
+//   - callDefinition (*configv1.CommandLineCallDefinition): Parameter.
+//   - policies ([]*configv1.CallPolicy): Parameter.
+//   - callID (string): Parameter.
 //
 // Returns:
-//   - Tool: The created CommandTool.
+//   - Tool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2348,11 +2575,21 @@ func NewCommandTool(
 }
 
 // LocalCommandTool implements the Tool interface for a tool that is executed as a
-// local command-line process.
 //
-// Summary: Tool implementation for local command-line services.
+// Summary: Implements the Tool interface for a tool that is executed as a
 //
-// It maps tool inputs to command-line arguments and environment variables.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type LocalCommandTool struct {
 	tool           *v1.Tool
 	mcpTool        *mcp.Tool
@@ -2368,17 +2605,24 @@ type LocalCommandTool struct {
 
 // NewLocalCommandTool creates a new LocalCommandTool instance.
 //
-// Summary: Initializes a new LocalCommandTool.
+// Summary: Creates a new LocalCommandTool instance.
 //
 // Parameters:
-//   - tool: *v1.Tool. The protobuf definition of the tool.
-//   - service: *configv1.CommandLineUpstreamService. The service configuration.
-//   - callDefinition: *configv1.CommandLineCallDefinition. The call configuration.
-//   - policies: []*configv1.CallPolicy. The security policies.
-//   - callID: string. The unique identifier for the call.
+//   - tool (*v1.Tool): Parameter.
+//   - service (*configv1.CommandLineUpstreamService): Parameter.
+//   - callDefinition (*configv1.CommandLineCallDefinition): Parameter.
+//   - policies ([]*configv1.CallPolicy): Parameter.
+//   - callID (string): Parameter.
 //
 // Returns:
-//   - Tool: The created LocalCommandTool.
+//   - Tool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewLocalCommandTool(
 	tool *v1.Tool,
 	service *configv1.CommandLineUpstreamService,
@@ -2510,32 +2754,22 @@ func (t *LocalCommandTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDefinition.GetCache()
 }
 
-// Execute handles the execution of the command-line tool.
+// IsStreaming execute handles the execution of the command-line tool.
 //
-// Summary: Executes the local command-line tool.
-//
-// It constructs a command with arguments and environment variables derived from the tool inputs,
-// runs the command, and returns its output.
+// Summary: Execute handles the execution of the command-line tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - None.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Executes a subprocess on the local system.
-//   - Consumes system resources (CPU, memory).
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
+//   - None.
+
 func (t *LocalCommandTool) IsStreaming() bool {
 	return true
 }
@@ -2545,12 +2779,19 @@ func (t *LocalCommandTool) IsStreaming() bool {
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	// Not fully implemented for stream yet
 	ch := make(chan any, 1)
@@ -2990,32 +3231,22 @@ func (t *CommandTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.callDefinition.GetCache()
 }
 
-// Execute handles the execution of the command-line tool.
+// IsStreaming execute handles the execution of the command-line tool.
 //
-// Summary: Executes the command-line tool via executor.
-//
-// It constructs a command with arguments and environment variables derived from the tool inputs,
-// runs the command, and returns its output.
+// Summary: Execute handles the execution of the command-line tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *ExecutionRequest. The execution request.
+//   - None.
 //
 // Returns:
-//   - any: The execution result.
-//   - error: An error if execution fails.
+//   - bool: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Executes a subprocess (potentially inside a container).
-//   - Consumes system resources.
-//   - Logs execution details.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
+//   - None.
+
 func (t *CommandTool) IsStreaming() bool {
 	return true
 }
@@ -3025,12 +3256,19 @@ func (t *CommandTool) IsStreaming() bool {
 // Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *ExecutionRequest. The request object containing parameters.
+//   - ctx (context.Context): Parameter.
+//   - req (*ExecutionRequest): Parameter.
 //
 // Returns:
-//   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+//   - <-chan any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

@@ -15,7 +15,20 @@ import (
 
 // OllamaEmbeddingProvider implements EmbeddingProvider for Ollama.
 //
-// Summary: Provides an interface to generate text embeddings using the Ollama API.
+// Summary: Implements EmbeddingProvider for Ollama.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type OllamaEmbeddingProvider struct {
 	baseURL string
 	model   string
@@ -24,17 +37,21 @@ type OllamaEmbeddingProvider struct {
 
 // NewOllamaEmbeddingProvider creates a new OllamaEmbeddingProvider.
 //
-// Summary: Initializes a new provider for Ollama embeddings.
+// Summary: Creates a new OllamaEmbeddingProvider.
 //
 // Parameters:
-//   - baseURL: string. The base URL of the Ollama API (defaults to "http://localhost:11434" if empty).
-//   - model: string. The name of the embedding model to use (defaults to "nomic-embed-text" if empty).
+//   - baseURL (string): Parameter.
+//   - model (string): Parameter.
 //
 // Returns:
-//   - *OllamaEmbeddingProvider: The initialized embedding provider.
+//   - *OllamaEmbeddingProvider: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Sets default values for baseURL and model if not provided.
+//   - None.
+
 func NewOllamaEmbeddingProvider(baseURL, model string) *OllamaEmbeddingProvider {
 	if baseURL == "" {
 		baseURL = "http://localhost:11434"

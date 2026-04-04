@@ -7,5 +7,18 @@ import "errors"
 
 // ErrToolNotFound is returned when a requested tool cannot be found.
 //
-// Summary: Represents a ErrToolNotFound.
+// Summary: Is returned when a requested tool cannot be found.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 var ErrToolNotFound = errors.New("unknown tool")

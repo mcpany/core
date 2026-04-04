@@ -31,10 +31,22 @@ import (
 
 type sanitizer func(string) (string, error)
 
-// Upstream implements the upstream.Upstream interface for services that
-// communicate over WebRTC data channels.
+// Upstream implements the upstream.interface for services that
 //
-// Summary: Represents a Upstream.
+// Summary: Implements the upstream.interface for services that
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer

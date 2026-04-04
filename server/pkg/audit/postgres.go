@@ -16,7 +16,20 @@ import (
 
 // PostgresAuditStore writes audit logs to a PostgreSQL database.
 //
-// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
+// Summary: Writes audit logs to a PostgreSQL database.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -191,15 +204,22 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 
 // Read implements the Store interface.
 //
-// Summary: Reads audit entries (Not implemented).
+// Summary: Implements the Store interface.
 //
 // Parameters:
-//   - _: context.Context. Unused.
-//   - _: Filter. Unused.
+//   - unnamed (context.Context): Parameter.
+//   - unnamed (Filter): Parameter.
 //
 // Returns:
-//   - []Entry: Nil.
-//   - error: Always returns "not implemented".
+//   - []Entry: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -286,13 +306,20 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 
 // Close closes the database connection.
 //
-// Summary: Closes the PostgreSQL database connection.
+// Summary: Closes the database connection.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - None.
+
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -11,9 +11,21 @@ import (
 )
 
 // WebsocketClientWrapper wraps a *websocket.Conn to adapt it for use in a
-// connection pool, implementing the pool.ClosableClient interface.
 //
-// Summary: Represents a WebsocketClientWrapper.
+// Summary: Wraps a *websocket.Conn to adapt it for use in a
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type WebsocketClientWrapper struct {
 	Conn *websocket.Conn
 }

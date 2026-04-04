@@ -11,7 +11,22 @@ import (
 )
 
 // StartMockServer starts a new mock server with the provided handler.
-// The caller is responsible for calling Close() on the returned server.
+//
+// Summary: Starts a new mock server with the provided handler.
+//
+// Parameters:
+//   - t (*testing.T): Parameter.
+//   - handler (http.Handler): Parameter.
+//
+// Returns:
+//   - *httptest.Server: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(handler)
@@ -20,7 +35,22 @@ func StartMockServer(t *testing.T, handler http.Handler) *httptest.Server {
 }
 
 // DefaultMockHandler provides a simple way to define responses for specific paths.
-// It maps path -> response body (string or bytes).
+//
+// Summary: Provides a simple way to define responses for specific paths.
+//
+// Parameters:
+//   - t (*testing.T): Parameter.
+//   - responses (map[string]string): Parameter.
+//
+// Returns:
+//   - http.Handler: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		bodyBytes, _ := io.ReadAll(r.Body)
@@ -48,6 +78,22 @@ func DefaultMockHandler(t *testing.T, responses map[string]string) http.Handler 
 }
 
 // CreateMockServerWithResponses is a convenience function to start a server with static responses.
+//
+// Summary: Is a convenience function to start a server with static responses.
+//
+// Parameters:
+//   - t (*testing.T): Parameter.
+//   - responses (map[string]string): Parameter.
+//
+// Returns:
+//   - *httptest.Server: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func CreateMockServerWithResponses(t *testing.T, responses map[string]string) *httptest.Server {
 	return StartMockServer(t, DefaultMockHandler(t, responses))
 }

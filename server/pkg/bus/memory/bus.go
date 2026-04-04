@@ -19,10 +19,21 @@ const (
 )
 
 // DefaultBus is the default, thread-safe implementation of the Bus interface.
-// It uses channels to deliver messages to subscribers, with each subscriber
-// having its own dedicated goroutine for message processing.
 //
-// Summary: Represents a DefaultBus.
+// Summary: Is the default, thread-safe implementation of the Bus interface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
 	subscribers    map[string]map[uintptr]chan T

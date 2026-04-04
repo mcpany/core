@@ -16,7 +16,20 @@ import (
 
 // Config defines the configuration for the GC Worker.
 //
-// Summary: Represents a Config.
+// Summary: Defines the configuration for the GC Worker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
@@ -26,7 +39,20 @@ type Config struct {
 
 // Worker implements a background worker for garbage collection.
 //
-// Summary: Represents a Worker.
+// Summary: Implements a background worker for garbage collection.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Worker struct {
 	config Config
 }

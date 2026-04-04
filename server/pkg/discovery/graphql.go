@@ -12,7 +12,20 @@ import (
 
 // GraphQLProvider discovers services via GraphQL introspection.
 //
-// Summary: Represents a GraphQLProvider.
+// Summary: Discovers services via GraphQL introspection.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }

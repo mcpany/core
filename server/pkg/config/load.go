@@ -17,16 +17,23 @@ import (
 
 // LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
 //
-// Summary: Loads and validates the server configuration.
+// Summary: Loads, validates, and processes the MCP Any server configuration from a given store.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store from which to load the configuration.
-//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
+//   - ctx (context.Context): Parameter.
+//   - store (Store): Parameter.
+//   - binaryType (string): Parameter.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: A validated configuration object.
-//   - error: An error if loading or validation fails.
+//   - *configv1.McpAnyServerConfig: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -104,15 +111,22 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 
 // LoadResolvedConfig loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
-// Summary: Loads configuration with merging and defaults but without strict validation.
+// Summary: Loads key resolved configuration (merging services, setting defaults) without performing strict validation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the operation.
-//   - store: Store. The configuration store.
+//   - ctx (context.Context): Parameter.
+//   - store (Store): Parameter.
 //
 // Returns:
-//   - *configv1.McpAnyServerConfig: The resolved configuration.
-//   - error: An error if loading fails.
+//   - *configv1.McpAnyServerConfig: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

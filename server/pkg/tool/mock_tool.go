@@ -13,7 +13,20 @@ import (
 
 // MockTool is a mock implementation of the Tool interface for testing purposes.
 //
-// Summary: Mock tool for testing.
+// Summary: Is a mock implementation of the Tool interface for testing purposes.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -23,10 +36,20 @@ type MockTool struct {
 
 // Tool returns the protobuf definition of the mock tool.
 //
-// Summary: Retrieves the mock tool definition.
+// Summary: Returns the protobuf definition of the mock tool.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *v1.Tool: The tool definition.
+//   - *v1.Tool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -36,10 +59,20 @@ func (m *MockTool) Tool() *v1.Tool {
 
 // MCPTool returns the MCP tool definition.
 //
-// Summary: Retrieves the MCP tool definition.
+// Summary: Returns the MCP tool definition.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+//   - *mcp.Tool: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -123,10 +156,20 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 
 // GetCacheConfig calls the mock GetCacheConfigFunc if set, otherwise returns nil.
 //
-// Summary: Retrieves the cache configuration.
+// Summary: Calls the mock GetCacheConfigFunc if set, otherwise returns nil.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *configv1.CacheConfig: The cache configuration.
+//   - *configv1.CacheConfig: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

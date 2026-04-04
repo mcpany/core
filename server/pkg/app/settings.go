@@ -11,9 +11,21 @@ import (
 )
 
 // GlobalSettingsManager manages the global settings of the application in a thread-safe manner.
-// It allows for dynamic updates to configuration values that are used across the application.
 //
-// Summary: Represents a GlobalSettingsManager.
+// Summary: Manages the global settings of the application in a thread-safe manner.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type GlobalSettingsManager struct {
 	mu             sync.RWMutex
 	apiKey         atomic.Value // stores string
@@ -23,15 +35,22 @@ type GlobalSettingsManager struct {
 
 // NewGlobalSettingsManager creates a new GlobalSettingsManager with initial values.
 //
-// Summary: Initializes the global settings manager.
+// Summary: Creates a new GlobalSettingsManager with initial values.
 //
 // Parameters:
-//   - apiKey: string. The initial API key.
-//   - allowedIPs: []string. The initial list of allowed IP addresses.
-//   - allowedOrigins: []string. The initial list of allowed CORS origins.
+//   - apiKey (string): Parameter.
+//   - allowedIPs ([]string): Parameter.
+//   - allowedOrigins ([]string): Parameter.
 //
 // Returns:
-//   - *GlobalSettingsManager: The initialized manager.
+//   - *GlobalSettingsManager: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins []string) *GlobalSettingsManager {
 	m := &GlobalSettingsManager{}
 	m.apiKey.Store(apiKey)
@@ -47,15 +66,21 @@ func NewGlobalSettingsManager(apiKey string, allowedIPs []string, allowedOrigins
 
 // Update updates the settings from the provided GlobalSettings config.
 //
-// Summary: Refreshes global settings from the configuration object.
+// Summary: Updates the settings from the provided GlobalSettings config.
 //
 // Parameters:
-//   - settings: *config_v1.GlobalSettings. The new global settings configuration.
-//   - explicitAPIKey: string. An explicitly provided API key (e.g. from CLI flags) that overrides the config.
+//   - settings (*config_v1.GlobalSettings): Parameter.
+//   - explicitAPIKey (string): Parameter.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, explicitAPIKey string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -86,10 +111,20 @@ func (m *GlobalSettingsManager) Update(settings *config_v1.GlobalSettings, expli
 
 // GetAPIKey returns the current API key.
 //
-// Summary: Retrieves the active API key.
+// Summary: Returns the current API key.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - string: The API key.
+//   - string: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *GlobalSettingsManager) GetAPIKey() string {
 	val := m.apiKey.Load()
 	if val == nil {
@@ -100,10 +135,20 @@ func (m *GlobalSettingsManager) GetAPIKey() string {
 
 // GetAllowedIPs returns the current allowed IPs.
 //
-// Summary: Retrieves the list of allowed IP addresses.
+// Summary: Returns the current allowed IPs.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []string: A list of allowed IP CIDRs or addresses.
+//   - []string: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 	val := m.allowedIPs.Load()
 	if val == nil {
@@ -114,10 +159,20 @@ func (m *GlobalSettingsManager) GetAllowedIPs() []string {
 
 // GetAllowedOrigins returns the current allowed origins.
 //
-// Summary: Retrieves the list of allowed CORS origins.
+// Summary: Returns the current allowed origins.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - []string: A list of allowed origins.
+//   - []string: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (m *GlobalSettingsManager) GetAllowedOrigins() []string {
 	val := m.allowedOrigins.Load()
 	if val == nil {

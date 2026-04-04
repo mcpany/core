@@ -19,7 +19,20 @@ import (
 
 // SQLiteAuditStore writes audit logs to a SQLite database.
 //
-// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Summary: Writes audit logs to a SQLite database.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -160,17 +173,21 @@ func ensureColumn(db *sql.DB, colName string) error {
 
 // Write writes an audit entry to the database.
 //
-// Summary: Writes a single audit entry with cryptographic hash chaining.
+// Summary: Writes an audit entry to the database.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - entry: Entry. The audit entry to write.
+//   - ctx (context.Context): Parameter.
+//   - entry (Entry): Parameter.
 //
 // Returns:
-//   - error: An error if the write fails.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Inserts a row into the audit_logs table.
+//   - None.
+
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -230,18 +247,22 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 
 // Read reads audit entries from the database based on the filter.
 //
-// Summary: Retrieves audit entries matching the specified filter criteria.
+// Summary: Reads audit entries from the database based on the filter.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - filter: Filter. The filtering criteria (time range, tool name, user ID, etc.).
+//   - ctx (context.Context): Parameter.
+//   - filter (Filter): Parameter.
 //
 // Returns:
-//   - []Entry: A slice of matching audit entries.
-//   - error: An error if the query fails.
+//   - []Entry: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Executes a SELECT query on the database.
+//   - None.
+
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -376,13 +397,20 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 
 // Close closes the database connection.
 //
-// Summary: Closes the SQLite database connection.
+// Summary: Closes the database connection.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - None.
+
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

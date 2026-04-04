@@ -10,8 +10,74 @@ import (
 	"github.com/mcpany/core/server/tests/integration"
 )
 
-// Re-exporting these from the integration package so that framework users
-// don't need to import both.
+// FindFreePort re-exporting these from the integration package so that framework users
+//
+// Summary: Re-exporting these from the integration package so that framework users
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+ry: Re-exporting these from the integration package so that framework users
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+ Re-exporting these from the integration package so that framework users
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+ Re-exporting these from the integration package so that framework users
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+ummary: Re-exporting these from the integration package so that framework users
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 var (
 	FindFreePort          = integration.FindFreePort
 	NewManagedProcess     = integration.NewManagedProcess
@@ -21,6 +87,21 @@ var (
 )
 
 // AITool represents an AI tool used in testing.
+//
+// Summary: Represents an AI tool used in testing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

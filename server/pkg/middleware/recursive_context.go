@@ -16,7 +16,20 @@ import (
 
 // SessionState represents the shared state for a recursive context session.
 //
-// Summary: Represents a SessionState.
+// Summary: Represents the shared state for a recursive context session.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -26,7 +39,20 @@ type SessionState struct {
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
 //
-// Summary: Represents a RecursiveContextManager.
+// Summary: Manages the shared context sessions (Blackboard).
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState
@@ -246,12 +272,39 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 
 // RecursiveContextKeyType is a custom type for context keys to avoid collisions.
 //
-// Summary: Represents a RecursiveContextKeyType.
+// Summary: Is a custom type for context keys to avoid collisions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type RecursiveContextKeyType string
 
 const (
 	// RecursiveContextDataKey is the key used to store the recursive context data in the request context.
-	// Summary: Defines RecursiveContextDataKe.
+//
+// Summary: Is the key used to store the recursive context data in the request context.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	RecursiveContextDataKey RecursiveContextKeyType = "recursive_context_data"
 )
 

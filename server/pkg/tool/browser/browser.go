@@ -14,10 +14,21 @@ import (
 )
 
 // PageFetcher fetches the visible text content of a URL.
-// It is an interface so tests can inject a lightweight implementation without
-// requiring a real browser installation.
 //
-// Summary: Represents a PageFetcher.
+// Summary: Fetches the visible text content of a URL.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type PageFetcher interface {
 	// FetchText retrieves the text content of a URL.
 	//
@@ -41,17 +52,40 @@ type PageFetcher interface {
 
 // Provider implements a basic browser automation tool.
 //
-// Summary: Tool provider for browsing web pages.
+// Summary: Implements a basic browser automation tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Provider struct {
 	fetcher PageFetcher // nil → default playwrightFetcher
 }
 
 // NewProvider creates a new Provider.
 //
-// Summary: Initializes a new browser provider.
+// Summary: Creates a new Provider.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - *Provider: The initialized provider.
+//   - *Provider: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewProvider() *Provider {
 	return &Provider{}
 }
@@ -88,10 +122,20 @@ func (b *Provider) BrowsePage(ctx context.Context, url string) (string, error) {
 
 // ToolDefinition returns the MCP tool definition.
 //
-// Summary: Defines the metadata for the browse_page tool.
+// Summary: Returns the MCP tool definition.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - map[string]interface{}: The JSON schema definition of the tool.
+//   - map[string]interface{}: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (b *Provider) ToolDefinition() map[string]interface{} {
 	return map[string]interface{}{
 		"name":        "browse_page",
@@ -177,10 +221,20 @@ func (r *realPlaywright) Stop() error { return r.pw.Stop() }
 
 // Chromium returns the chromium browser type.
 //
-// Summary: Returns chromium browser type.
+// Summary: Returns the chromium browser type.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - playwrightBrowserType: The chromium browser type.
+//   - playwrightBrowserType: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *realPlaywright) Chromium() playwrightBrowserType {
 	return &realBrowserType{r.pw.Chromium}
 }
@@ -267,11 +321,18 @@ func (r *realPage) Goto(url string, options ...playwright.PageGotoOptions) (play
 // Summary: Creates a new locator.
 //
 // Parameters:
-//   - selector: string. The CSS selector for the locator.
-//   - options: ...playwright.PageLocatorOptions. Options for the locator.
+//   - selector (string): Parameter.
+//   - options (...playwright.PageLocatorOptions): Parameter.
 //
 // Returns:
-//   - playwrightLocator: The new locator.
+//   - playwrightLocator: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (r *realPage) Locator(selector string, options ...playwright.PageLocatorOptions) playwrightLocator {
 	return &realLocator{r.p.Locator(selector, options...)}
 }

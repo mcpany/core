@@ -7,39 +7,162 @@ import "time"
 
 // Severity represents the severity level of an alert.
 //
-// Summary: Represents a Severity.
+// Summary: Represents the severity level of an alert.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Severity string
 
 // Status represents the status of an alert.
 //
-// Summary: Represents a Status.
+// Summary: Represents the status of an alert.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Status string
 
 const (
 	// SeverityCritical indicates a critical issue.
-	// Summary: Defines SeverityCritica.
+//
+// Summary: Indicates a critical issue.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	SeverityCritical Severity = "critical"
 	// SeverityWarning indicates a warning.
-	// Summary: Defines SeverityWarnin.
+//
+// Summary: Indicates a warning.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	SeverityWarning Severity = "warning"
 	// SeverityInfo indicates an informational alert.
-	// Summary: Defines SeverityInf.
+//
+// Summary: Indicates an informational alert.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	SeverityInfo Severity = "info"
 
 	// StatusActive indicates the alert is currently active.
-	// Summary: Defines StatusActiv.
+//
+// Summary: Indicates the alert is currently active.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusActive Status = "active"
 	// StatusAcknowledged indicates the alert has been acknowledged.
-	// Summary: Defines StatusAcknowledge.
+//
+// Summary: Indicates the alert has been acknowledged.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusAcknowledged Status = "acknowledged"
 	// StatusResolved indicates the alert has been resolved.
-	// Summary: Defines StatusResolve.
+//
+// Summary: Indicates the alert has been resolved.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusResolved Status = "resolved"
 )
 
 // Alert represents a system alert.
 //
-// Summary: Represents a Alert.
+// Summary: Represents a system alert.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -53,7 +176,20 @@ type Alert struct {
 
 // AlertRule defines a condition for triggering an alert.
 //
-// Summary: Represents a AlertRule.
+// Summary: Defines a condition for triggering an alert.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -68,7 +204,20 @@ type AlertRule struct {
 
 // AlertStats represents aggregated statistics for alerts.
 //
-// Summary: Represents a AlertStats.
+// Summary: Represents aggregated statistics for alerts.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type AlertStats struct {
 	ActiveCritical      int    `json:"activeCritical"`
 	ActiveCriticalTrend string `json:"activeCriticalTrend"`

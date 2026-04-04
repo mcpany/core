@@ -22,12 +22,38 @@ import (
 
 // ClientFactory is a function that creates a VectorClient.
 //
-// Summary: Represents a ClientFactory.
+// Summary: Is a function that creates a VectorClient.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ClientFactory func(config *configv1.VectorUpstreamService) (Client, error)
 
-// Upstream implements the upstream.Upstream interface for vector database services.
+// Upstream implements the upstream.interface for vector database services.
 //
-// Summary: Represents a Upstream.
+// Summary: Implements the upstream.interface for vector database services.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Upstream struct {
 	clientFactory ClientFactory
 }
@@ -277,7 +303,20 @@ type vectorToolDef struct {
 
 // Client interface for different vector DB implementations.
 //
-// Summary: Represents a Client.
+// Summary: Interface for different vector DB implementations.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Client interface {
 	// Query searches for the nearest vectors in the database.
 	// It accepts a context, a query vector, the number of results to return (topK),

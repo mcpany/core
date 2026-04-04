@@ -28,9 +28,22 @@ type readerInterface interface {
 	Close() error
 }
 
-// Bus is a Kafka-backed implementation of the Bus interface.
+// Bus is a Kafka-backed implementation of the interface.
 //
-// Summary: Represents a Bus.
+// Summary: Is a Kafka-backed implementation of the interface.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Bus[T any] struct {
 	writer        writerInterface
 	brokers       []string
@@ -268,10 +281,20 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 
 // Close closes the Kafka writer.
 //
-// Summary: Closes the Kafka connection.
+// Summary: Closes the Kafka writer.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing fails.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (b *Bus[T]) Close() error {
 	return b.writer.Close()
 }

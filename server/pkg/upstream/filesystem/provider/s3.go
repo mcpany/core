@@ -18,7 +18,20 @@ import (
 
 // S3Provider provides access to files in an S3 bucket.
 //
-// Summary: Represents a S3Provider.
+// Summary: Provides access to files in an S3 bucket.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type S3Provider struct {
 	fs afero.Fs
 }

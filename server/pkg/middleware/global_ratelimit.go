@@ -26,7 +26,20 @@ import (
 
 // GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
 //
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+// Summary: Provides rate limiting functionality for all MCP requests.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -38,16 +51,20 @@ type GlobalRateLimitMiddleware struct {
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
-// Summary: Initializes the global rate limit middleware with the provided configuration.
+// Summary: Creates a new GlobalRateLimitMiddleware.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
+//   - config (*configv1.RateLimitConfig): Parameter.
 //
 // Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
+//   - *GlobalRateLimitMiddleware: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Initializes internal caches for limiters.
+//   - None.
+
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -57,14 +74,20 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 
 // UpdateConfig updates the rate limit configuration safely.
 //
-// Summary: Updates the rate limit configuration at runtime.
+// Summary: Updates the rate limit configuration safely.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The new configuration settings.
+//   - config (*configv1.RateLimitConfig): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Acquires a lock to safely update the configuration.
-//   - Effectively changes rate limiting behavior for subsequent requests.
+//   - None.
+
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

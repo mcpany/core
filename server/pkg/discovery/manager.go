@@ -14,7 +14,20 @@ import (
 
 // ProviderStatus represents the status of a discovery provider.
 //
-// Summary: Represents a ProviderStatus.
+// Summary: Represents the status of a discovery provider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -25,7 +38,20 @@ type ProviderStatus struct {
 
 // Manager manages auto-discovery providers.
 //
-// Summary: Represents a Manager.
+// Summary: Manages auto-discovery providers.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex

@@ -221,7 +221,20 @@ func filterBuildTags(lines []string) []string {
 
 // Block represents a block of comments.
 //
-// Summary: Represents Block.
+// Summary: Represents a block of comments.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Block struct {
 	lines       []string
 	isLicense   bool

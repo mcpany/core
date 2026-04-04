@@ -12,7 +12,20 @@ import (
 
 // JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
 //
-// Summary: JSONExecutor is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
+// Summary: Is a struct that sends JSON-encoded data to a writer and decodes JSON-encoded data from a reader.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type JSONExecutor struct {
 	// in is the writer where JSON commands are written to (e.g. stdin of a process).
 	in io.Writer
@@ -25,11 +38,18 @@ type JSONExecutor struct {
 // Summary: Creates a new JSONExecutor with the given writer and reader.  Parameters: - in: io.Writer. The destination for writing JSON requests. - out: io.Reader. The source for reading JSON responses.  Returns: - *JSONExecutor: A new JSONExecutor instance.
 //
 // Parameters:
-//   - in (io.Writer): Description for in.
-//   - out (io.Reader): Description for out.
+//   - in (io.Writer): Parameter.
+//   - out (io.Reader): Parameter.
 //
 // Returns:
-//   - (*JSONExecutor): Result.
+//   - *JSONExecutor: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 	return &JSONExecutor{
 		in:  in,
@@ -42,11 +62,18 @@ func NewJSONExecutor(in io.Writer, out io.Reader) *JSONExecutor {
 // Summary: Sends the given data as a JSON-encoded message to the writer and decodes the JSON-encoded response from the reader into the given result.
 //
 // Parameters:
-//   - data: Parameter.
-//   - result (any): Description for result.
+//   - data (any): Parameter.
+//   - result (any): Parameter.
 //
 // Returns:
-//   - (error): Result.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (e *JSONExecutor) Execute(data, result any) error {
 	if err := json.NewEncoder(e.in).Encode(data); err != nil {
 		return fmt.Errorf("failed to encode data: %w", err)

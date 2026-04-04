@@ -30,13 +30,24 @@ var weatherData = map[string]string{
 	"tokyo":    "Rainy, 20°C",
 }
 
-// GetWeather implements the GetWeather method of the WeatherService.
+// GetWeather implements the method of the WeatherService.
 //
-// _ is an unused parameter.
-// in is the request object.
+// Summary: Implements the method of the WeatherService.
 //
-// Returns the response.
-// Returns an error if the operation fails.
+// Parameters:
+//   - unnamed (context.Context): Parameter.
+//   - in (*weatherPb.GetWeatherRequest): Parameter.
+//
+// Returns:
+//   - *weatherPb.GetWeatherResponse: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (s *weatherServer) GetWeather(_ context.Context, in *weatherPb.GetWeatherRequest) (*weatherPb.GetWeatherResponse, error) {
 	slog.Info("grpc_weather_server: GetWeather called", "location", in.GetLocation())
 	weather, ok := weatherData[in.GetLocation()]

@@ -20,9 +20,20 @@ import (
 
 // Updater handles the self-update process.
 //
-// It manages checking for updates on GitHub and applying them to the local executable.
+// Summary: Handles the self-update process.
 //
-// Summary: Represents a Updater.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client

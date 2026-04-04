@@ -11,7 +11,20 @@ import (
 
 // Entry represents a single audit log entry.
 //
-// Summary: Represents a Entry.
+// Summary: Represents a single audit log entry.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Entry struct {
 	Timestamp  time.Time       `json:"timestamp"`
 	ToolName   string          `json:"tool_name"`
@@ -29,7 +42,20 @@ type Entry struct {
 
 // Filter defines the filters for reading audit logs.
 //
-// Summary: Represents a Filter.
+// Summary: Defines the filters for reading audit logs.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Filter struct {
 	StartTime *time.Time `json:"start_time,omitempty"`
 	EndTime   *time.Time `json:"end_time,omitempty"`
@@ -42,7 +68,20 @@ type Filter struct {
 
 // Store defines the interface for audit log storage.
 //
-// Summary: Represents a Store.
+// Summary: Defines the interface for audit log storage.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Store interface {
 	// Write writes an audit entry to the store.
 	//

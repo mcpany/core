@@ -10,7 +10,20 @@ import (
 
 // HistoryPoint represents a single point in time for a service's health.
 //
-// Summary: A data point representing service health status at a specific time.
+// Summary: Represents a single point in time for a service's health.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type HistoryPoint struct {
 	Timestamp int64  `json:"timestamp"` // Unix millis
 	Status    string `json:"status"`
@@ -18,7 +31,20 @@ type HistoryPoint struct {
 
 // ServiceHealthHistory stores the history for a service.
 //
-// Summary: Collection of historical health data points for a service.
+// Summary: Stores the history for a service.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ServiceHealthHistory struct {
 	Points []HistoryPoint
 }
@@ -30,15 +56,21 @@ var (
 
 // AddHealthStatus adds a status point to the history.
 //
-// Summary: Records a new health status point for a service.
+// Summary: Adds a status point to the history.
 //
 // Parameters:
-//   - serviceName: string. The name of the service.
-//   - status: string. The health status (e.g., "healthy", "unhealthy").
+//   - serviceName (string): Parameter.
+//   - status (string): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the global historyStore.
-//   - Prunes history if it exceeds 1000 points.
+//   - None.
+
 func AddHealthStatus(serviceName string, status string) {
 	historyMu.Lock()
 	defer historyMu.Unlock()
@@ -76,13 +108,20 @@ func AddHealthStatus(serviceName string, status string) {
 
 // GetHealthHistory returns the history for all services.
 //
-// Summary: Retrieves the complete health history map.
+// Summary: Returns the history for all services.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - map[string][]HistoryPoint: A map of service names to their health history points.
+//   - map[string][]HistoryPoint: Return value.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Acquires a read lock on the history store.
+//   - None.
+
 func GetHealthHistory() map[string][]HistoryPoint {
 	historyMu.RLock()
 	defer historyMu.RUnlock()

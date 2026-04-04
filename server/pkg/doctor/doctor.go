@@ -25,31 +25,109 @@ import (
 
 // Status represents the status of a check.
 //
-// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
+// Summary: Represents the status of a check.
 //
-// Summary: Represents a Status.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Status string
 
 const (
 	// StatusOk indicates the check passed successfully.
-	// Summary: Defines StatusO.
+//
+// Summary: Indicates the check passed successfully.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusOk Status = "OK"
 	// StatusWarning indicates a partial failure or non-critical issue that should be investigated.
-	// Summary: Defines StatusWarnin.
+//
+// Summary: Indicates a partial failure or non-critical issue that should be investigated.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusWarning Status = "WARNING"
 	// StatusError indicates a critical failure that prevents the service from functioning correctly.
-	// Summary: Defines StatusErro.
+//
+// Summary: Indicates a critical failure that prevents the service from functioning correctly.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusError Status = "ERROR"
 	// StatusSkipped indicates the check was skipped, usually due to configuration (e.g., disabled service).
-	// Summary: Defines StatusSkippe.
+//
+// Summary: Indicates the check was skipped, usually due to configuration (e.g., disabled service).
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	StatusSkipped Status = "SKIPPED"
 )
 
 // CheckResult represents the result of a single service check.
 //
-// It aggregates the status, any message, and potential error encountered during the check.
+// Summary: Represents the result of a single service check.
 //
-// Summary: Represents a CheckResult.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

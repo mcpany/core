@@ -15,7 +15,20 @@ import (
 
 // ProjectConfigGuardConfig defines the configuration for the Project Configuration Security Guard.
 //
-// Summary: Configuration for the Project Configuration Security Guard middleware.
+// Summary: Defines the configuration for the Project Configuration Security Guard.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ProjectConfigGuardConfig struct {
 	// Enabled determines if the guard is active.
 	Enabled bool `json:"enabled"`
@@ -39,7 +52,20 @@ type ProjectConfigGuardConfig struct {
 
 // ProjectConfigGuardMiddleware implements the Project Configuration Security Guard.
 //
-// Summary: Represents the Project Config Guard Middleware.
+// Summary: Implements the Project Configuration Security Guard.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ProjectConfigGuardMiddleware struct {
 	config ProjectConfigGuardConfig
 }

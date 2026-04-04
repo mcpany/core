@@ -11,7 +11,20 @@ import (
 
 // Manager orchestrates resilience features like circuit breakers, retries, and timeouts.
 //
-// Summary: Central manager for applying resilience patterns to operations.
+// Summary: Orchestrates resilience features like circuit breakers, retries, and timeouts.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Manager struct {
 	circuitBreaker *CircuitBreaker
 	retry          *Retry
@@ -20,13 +33,20 @@ type Manager struct {
 
 // NewManager creates a new Manager with the given resilience configuration.
 //
-// Summary: Initializes a new Resilience Manager.
+// Summary: Creates a new Manager with the given resilience configuration.
 //
 // Parameters:
-//   - config: *configv1.ResilienceConfig. The resilience configuration.
+//   - config (*configv1.ResilienceConfig): Parameter.
 //
 // Returns:
-//   - *Manager: The initialized manager, or nil if no resilience features are enabled.
+//   - *Manager: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewManager(config *configv1.ResilienceConfig) *Manager {
 	if config == nil {
 		return nil
@@ -60,19 +80,21 @@ func NewManager(config *configv1.ResilienceConfig) *Manager {
 
 // Execute wraps the given function with resilience features.
 //
-// Summary: Executes the work function with configured resilience policies (timeout, retry, circuit breaker).
+// Summary: Wraps the given function with resilience features.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - work: func(context.Context) error. The operation to execute.
+//   - ctx (context.Context): Parameter.
+//   - work (func(context.Context) error): Parameter.
 //
 // Returns:
-//   - error: An error if the operation fails after all resilience attempts.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Applies timeout context.
-//   - Retries operation on failure.
-//   - Checks and updates circuit breaker state.
+//   - None.
+
 func (m *Manager) Execute(ctx context.Context, work func(context.Context) error) error {
 	if m == nil {
 		return work(ctx)

@@ -5,7 +5,20 @@ package config
 
 // MockWatcher is a mock implementation of the Watcher for testing.
 //
-// Summary: Represents a MockWatcher.
+// Summary: Is a mock implementation of the Watcher for testing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockWatcher struct {
 	WatchFunc func(paths []string, reloadFunc func())
 	CloseFunc func()

@@ -12,9 +12,20 @@ import (
 
 // CatalogServer implements the CatalogService API.
 //
-// Summary: Server implementation for the Catalog Service.
+// Summary: Implements the CatalogService API.
 //
-// It handles requests to list available services from the dynamic catalog.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type CatalogServer struct {
 	manager *catalog.Manager
 }

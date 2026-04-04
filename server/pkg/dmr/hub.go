@@ -33,7 +33,20 @@ type NodeState struct {
 
 // Hub manages the active nodes in the mesh and triggers state migration on failure.
 //
-// Summary: The authoritative coordinator for mesh resilience and state migration.
+// Summary: Manages the active nodes in the mesh and triggers state migration on failure.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Hub interface {
 	// RegisterNode adds a new node to the mesh or updates its state.
 	//

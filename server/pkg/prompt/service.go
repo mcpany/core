@@ -12,10 +12,21 @@ import (
 )
 
 // Service handles the business logic for the prompts feature. It provides
-// methods for listing available prompts and retrieving a specific prompt by
-// name.
 //
-// Summary: Represents a Service.
+// Summary: Handles the business logic for the prompts feature. It provides
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Service struct {
 	promptManager ManagerInterface
 	mcpServer     *mcp.Server
@@ -23,13 +34,20 @@ type Service struct {
 
 // NewService creates and returns a new Service instance.
 //
-// Summary: Initializes a new Prompt Service.
+// Summary: Creates and returns a new Service instance.
 //
 // Parameters:
-//   - promptManager: ManagerInterface. The manager handling prompt lifecycle.
+//   - promptManager (ManagerInterface): Parameter.
 //
 // Returns:
-//   - *Service: The initialized service.
+//   - *Service: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewService(promptManager ManagerInterface) *Service {
 	s := &Service{
 		promptManager: promptManager,
@@ -40,14 +58,20 @@ func NewService(promptManager ManagerInterface) *Service {
 
 // SetMCPServer sets the MCP server instance for the service.
 //
-// Summary: Configures the underlying MCP server.
+// Summary: Sets the MCP server instance for the service.
 //
 // Parameters:
-//   - mcpServer: *mcp.Server. The MCP server instance.
+//   - mcpServer (*mcp.Server): Parameter.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 	s.mcpServer = mcpServer
 	s.promptManager.SetMCPServer(NewMCPServerProvider(mcpServer))
@@ -63,15 +87,22 @@ func (s *Service) SetMCPServer(mcpServer *mcp.Server) {
 
 // ListPrompts handles the "prompts/list" MCP request.
 //
-// Summary: Lists all available prompts.
+// Summary: Handles the "prompts/list" MCP request.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request.
-//   - req: *mcp.ListPromptsRequest. The request object.
+//   - unnamed (context.Context): Parameter.
+//   - unnamed (*mcp.ListPromptsRequest): Parameter.
 //
 // Returns:
-//   - *mcp.ListPromptsResult: The list of prompts.
-//   - error: An error if the operation fails.
+//   - *mcp.ListPromptsResult: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (s *Service) ListPrompts(
 	_ context.Context,
 	_ *mcp.ListPromptsRequest,

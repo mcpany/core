@@ -13,7 +13,20 @@ import (
 
 // MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
 //
-// Summary: Represents a MockClientConn.
+// Summary: Is a mock implementation of grpc.ClientConnInterface for testing.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T

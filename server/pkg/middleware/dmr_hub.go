@@ -15,7 +15,20 @@ import (
 
 // DMRHubConfig defines the configuration for the Dynamic Mesh Resilience Hub.
 //
-// Summary: Configuration for Dynamic Mesh Resilience Hub.
+// Summary: Defines the configuration for the Dynamic Mesh Resilience Hub.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type DMRHubConfig struct {
 	// Enabled determines if the DMR Hub is active.
 	Enabled bool `json:"enabled"`
@@ -25,23 +38,41 @@ type DMRHubConfig struct {
 }
 
 // DMRHub implements the Dynamic Mesh Resilience Hub middleware.
-// It verifies Zero-Knowledge State Attestation (ZKSA) migrations between
-// physical nodes upon subagent failure.
 //
-// Summary: Represents the DMR Hub middleware.
+// Summary: Implements the Dynamic Mesh Resilience Hub middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type DMRHub struct {
 	config DMRHubConfig
 }
 
 // NewDMRHub creates a new DMRHub middleware instance.
 //
-// Summary: Creates a new Dynamic Mesh Resilience Hub instance.
+// Summary: Creates a new DMRHub middleware instance.
 //
 // Parameters:
-//   - config (DMRHubConfig): The configuration settings.
+//   - config (DMRHubConfig): Parameter.
 //
 // Returns:
-//   - *DMRHub: The resulting DMR Hub instance.
+//   - *DMRHub: Return value.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 func NewDMRHub(config DMRHubConfig) *DMRHub {
 	return &DMRHub{
 		config: config,
@@ -50,16 +81,23 @@ func NewDMRHub(config DMRHubConfig) *DMRHub {
 
 // Execute enforces state migration proofs before proceeding to the next handler.
 //
-// Summary: Executes the node status and ZKSA proof checks.
+// Summary: Enforces state migration proofs before proceeding to the next handler.
 //
 // Parameters:
-//   - ctx (context.Context): The execution context.
-//   - req (*tool.ExecutionRequest): The tool execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - ctx (context.Context): Parameter.
+//   - req (*tool.ExecutionRequest): Parameter.
+//   - next (tool.ExecutionFunc): Parameter.
 //
 // Returns:
-//   - any: The execution result if allowed.
-//   - error: An error if the migration proof is invalid or missing during failure.
+//   - any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (h *DMRHub) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !h.config.Enabled {
 		return next(ctx, req)

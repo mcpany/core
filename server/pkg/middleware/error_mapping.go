@@ -15,7 +15,20 @@ import (
 
 // ErrorMappingMiddleware normalizes diverse upstream errors into standard MCP errors.
 //
-// Summary: Normalizes arbitrary tool execution errors.
+// Summary: Normalizes diverse upstream errors into standard MCP errors.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type ErrorMappingMiddleware struct{}
 
 // NewErrorMappingMiddleware creates a new error mapping middleware.
@@ -36,16 +49,23 @@ func NewErrorMappingMiddleware() *ErrorMappingMiddleware {
 
 // Execute performs the middleware logic, wrapping the next handler.
 //
-// Summary: Executes middleware logic.
+// Summary: Performs the middleware logic, wrapping the next handler.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the execution.
-//   - req (*tool.ExecutionRequest): The execution request.
-//   - next (tool.ExecutionFunc): The next handler in the chain.
+//   - ctx (context.Context): Parameter.
+//   - req (*tool.ExecutionRequest): Parameter.
+//   - next (tool.ExecutionFunc): Parameter.
 //
 // Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+//   - any: Return value.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
+//
+// Side Effects:
+//   - None.
+
 func (m *ErrorMappingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	res, err := next(ctx, req)
 	if err != nil {

@@ -18,7 +18,21 @@ import (
 
 const (
 	// SkillFileName is the name of the main skill file.
-	// Summary: Defines SkillFileName.
+//
+// Summary: Is the name of the main skill file.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 	SkillFileName = "SKILL.md"
 )
 
@@ -30,7 +44,20 @@ var (
 
 // Manager handles the storage and retrieval of skills.
 //
-// Summary: Represents a Manager.
+// Summary: Handles the storage and retrieval of skills.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Manager struct {
 	rootDir string
 	mu      sync.RWMutex

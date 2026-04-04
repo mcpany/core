@@ -38,21 +38,38 @@ var (
 
 // AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
 //
-// It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
+// Summary: Is a testing hook that allows inspection of the middleware chain.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - When set, this function is called synchronously during Server() access.
-//
-// Summary: Represents a AddReceivingMiddlewareHook.
+//   - None.
+
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application.
 //
-// It orchestrates the handling of MCP (Model Context Protocol) requests by managing various components such as
-// tools, prompts, resources, and services. It uses an internal router to delegate requests to the appropriate
-// handlers and communicates with backend workers via an event bus.
+// Summary: Is the core of the MCP Any application.
 //
-// Summary: Represents a Server.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -1330,9 +1347,21 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 }
 
 // LazyRedact is a byte slice that implements slog.LogValuer to lazily redact
-// its JSON content only when logged.
 //
-// Summary: Represents a LazyRedact.
+// Summary: Is a byte slice that implements slog.LogValuer to lazily redact
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
@@ -1364,10 +1393,20 @@ func (l LazyRedact) LogValue() slog.Value {
 
 // LazyLogResult wraps a tool execution result for efficient logging.
 //
-// It avoids expensive serialization of large payloads (e.g. images, huge text)
-// and lazily computes the string representation only when logging is enabled.
+// Summary: Wraps a tool execution result for efficient logging.
 //
-// Summary: Represents a LazyLogResult.
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type LazyLogResult struct {
 	Value        any
 	JSONBytes    []byte

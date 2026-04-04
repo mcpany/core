@@ -16,7 +16,20 @@ import (
 
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 //
-// Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
+// Summary: Implements VectorStore using PostgreSQL and pgvector.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type PostgresVectorStore struct {
 	db *sql.DB
 }
@@ -228,14 +241,21 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 
 // Prune removes expired entries.
 //
-// Summary: Deletes expired cache entries from the database.
+// Summary: Removes expired entries.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the database operation.
-//   - key: string. Optional key to restrict pruning to a specific cache key. If empty, prunes all expired entries.
+//   - ctx (context.Context): Parameter.
+//   - key (string): Parameter.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Deletes rows from the 'semantic_cache_entries' table.
+//   - None.
+
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -250,13 +270,20 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 
 // Close closes the database connection.
 //
-// Summary: Closes the underlying PostgreSQL database connection.
+// Summary: Closes the database connection.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - error: An error if closing the connection fails.
+//   - error: Return value.
+//
+// Errors:
+//   - error: If an error occurs.
 //
 // Side Effects:
-//   - Closes the DB connection.
+//   - None.
+
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

@@ -15,7 +15,20 @@ import (
 
 // LocalProvider provides access to the local filesystem.
 //
-// Summary: Represents a LocalProvider.
+// Summary: Provides access to the local filesystem.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string
