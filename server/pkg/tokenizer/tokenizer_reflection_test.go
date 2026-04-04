@@ -154,3 +154,43 @@ func TestGenericTokenizer_ReflectionCoverage(t *testing.T) {
 		assert.Contains(t, err.Error(), "cycle detected")
 	})
 }
+
+type RecursiveMap map[string]interface{}
+
+func TestCyclicMap_Reflection(t *testing.T) {
+	st := tokenizer.NewSimpleTokenizer()
+	wt := tokenizer.NewWordTokenizer()
+
+	m := make(RecursiveMap)
+	m["self"] = m
+
+	_, err := tokenizer.CountTokensInValue(st, m)
+	if err == nil {
+		t.Errorf("expected cycle detected error, got nil")
+	}
+
+	_, err = tokenizer.CountTokensInValue(wt, m)
+	if err == nil {
+		t.Errorf("expected cycle detected error, got nil")
+	}
+}
+
+type RecursiveSlice []interface{}
+
+func TestCyclicSlice_Reflection(t *testing.T) {
+	st := tokenizer.NewSimpleTokenizer()
+	wt := tokenizer.NewWordTokenizer()
+
+	s := make(RecursiveSlice, 1)
+	s[0] = s
+
+	_, err := tokenizer.CountTokensInValue(st, s)
+	if err == nil {
+		t.Errorf("expected cycle detected error, got nil")
+	}
+
+	_, err = tokenizer.CountTokensInValue(wt, s)
+	if err == nil {
+		t.Errorf("expected cycle detected error, got nil")
+	}
+}

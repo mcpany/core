@@ -160,3 +160,65 @@ func TestCountTokensInValue_FastPathConsistency(t *testing.T) {
 		})
 	}
 }
+
+func TestFastPathEdgeCases_LessThanOneToken(t *testing.T) {
+	st := NewSimpleTokenizer()
+	wt := NewWordTokenizer()
+
+	tests := []struct {
+		name string
+		val  interface{}
+	}{
+		{"small_string", "a"},
+		{"small_int", int(1)},
+		{"small_int64", int64(1)},
+		{"small_float64", float64(1.0)},
+		{"empty_slice", []string{}},
+		{"empty_map", map[string]string{}},
+	}
+
+	for _, tt := range tests {
+		t.Run("simple_"+tt.name, func(t *testing.T) {
+			count, handled, err := countTokensInValueSimpleFast(st, tt.val)
+			if err != nil {
+				t.Errorf("expected no error, got %v", err)
+			}
+			if !handled {
+				t.Errorf("expected to be handled")
+			}
+			if count < 1 && tt.name != "empty_slice" && tt.name != "empty_map" {
+				t.Errorf("expected count >= 1, got %d", count)
+			}
+		})
+
+		t.Run("word_"+tt.name, func(t *testing.T) {
+			count, handled := countTokensInValueWordFast(wt, tt.val)
+			if !handled {
+				t.Errorf("expected to be handled")
+			}
+			if count < 1 && tt.name != "empty_slice" && tt.name != "empty_map" {
+				t.Errorf("expected count >= 1, got %d", count)
+			}
+		})
+	}
+}
+
+func TestCountTokens_LessThanOneToken(t *testing.T) {
+	st := NewSimpleTokenizer()
+	c, err := st.CountTokens("a")
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+	if c != 1 {
+		t.Errorf("expected 1, got %d", c)
+	}
+
+	wt := NewWordTokenizer()
+	c, err = wt.CountTokens("a")
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+	if c != 1 {
+		t.Errorf("expected 1, got %d", c)
+	}
+}

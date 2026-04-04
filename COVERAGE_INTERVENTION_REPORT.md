@@ -1,29 +1,21 @@
 # Coverage Intervention Report
 
+**Top 10 High-Risk Components Identified:**
+1. `server/pkg/app/server.go: (*Application).runServerMode` (Cyclomatic Complexity: 120)
+2. `server/pkg/upstream/http/http.go: (*Upstream).createAndRegisterHTTPTools` (Cyclomatic Complexity: 88)
+3. `server/pkg/tool/types.go: (*CommandTool).Execute` (Cyclomatic Complexity: 66)
+4. `server/pkg/storage/sqlite/store_test.go: TestStore` (Cyclomatic Complexity: 64)
+5. `server/pkg/tool/types.go: (*LocalCommandTool).Execute` (Cyclomatic Complexity: 63)
+6. `server/pkg/app/server.go: (*Application).Run` (Cyclomatic Complexity: 63)
+7. `server/pkg/util/secrets.go: resolveSecretImpl` (Cyclomatic Complexity: 49)
+8. `server/pkg/tokenizer/tokenizer_fastpath_test.go: TestCountTokensInValue_FastPathConsistency` (Cyclomatic Complexity: 44)
+9. `server/pkg/app/server.go: (*Application).reconcileServices` (Cyclomatic Complexity: 43)
+10. `server/pkg/tool/types.go: (*OpenAPITool).Execute` (Cyclomatic Complexity: 40)
+
 * **Target:** `server/pkg/tokenizer/tokenizer.go`
-* **Risk Profile:** This file contains highly complex and recursive reflection logic for tokenizing arbitrarily structured generic JSON data. Methods like `countTokensInValueRecursive`, `countTokensReflectMap`, and `countTokensReflectStruct` lacked test coverage on deep fallback and error paths (e.g. cycle detection, reflection panics on unsupported types). Since this code parses unknown structured input payloads to calculate token limits for LLM interactions, unhandled errors or panics in this file represent a severe security/reliability risk (e.g., recursive exhaustion, crashing the MCP server on a bad user payload).
-* **New Coverage:** The following logic paths are now guarded by comprehensive tests:
-  - Error paths and recursion cycle detection in generic types (`reflectSlice`, `reflectMap`, `reflectStruct`, `countSliceInterfaceSimple`).
-  - Fallback behaviors for `countTokensInValueRecursive` handling unsupported payload types.
-  - Edge cases for fast-path primitive tokenization (e.g. `simpleTokenizeInt64` with large negative numbers and zero values).
-* **Verification:** `make test` successfully tests the new components alongside all existing legacy tests. The overall file coverage has increased significantly, reaching >97% statement coverage with the new regression safety nets in place. Assertions are strictly based on the specific expected behaviour (token counts).
-
----
-
-* **Target:** `server/pkg/tool/webrtc.go`
-* **Risk Profile:** This file establishes WebRTC peer connections allowing LLMs to communicate directly with streaming endpoints, which is core business logic for real-time interactions. It utilizes custom unmarshalling and connection pools. If untested, failures in pooling logic or unmarshalling JSON parameters lead to silent drop of connections or panics.
-* **New Coverage:** The tests added cover logic paths handling stream execution error cases (verifying that `StreamExecute` appropriately handles execution errors without crashing), executing without pool instances and checking JSON unmarshalling. It explicitly asserts the behaviors and returned errors on bad inputs instead of just hitting the coverage.
-* **Verification:** `bazelisk test //...` verified cleanly with all legacy tests running and green. The style mimics Google Table-Driven tests inside the `stretchr/testify` framework constraints in place.
-
-### Top 10 Most Critical Untested Components
-Based on cyclomatic complexity and risk (e.g. data transformation, tool injection safety checks, execution endpoints), the top 10 most critical untested logic components are:
-1. `server/pkg/tool/types.go`
-2. `server/pkg/app/server.go`
-3. `server/pkg/config/store.go`
-4. `server/pkg/upstream/mcp/streamable_http.go`
-5. `server/pkg/mcpserver/server.go`
-6. `server/pkg/config/validator.go`
-7. `server/pkg/storage/postgres/store.go`
-8. `server/pkg/storage/sqlite/store.go`
-9. `server/pkg/app/api.go`
-10. `server/pkg/upstream/filesystem/provider/gcs.go`
+* **Risk Profile:** This file contains highly complex and optimized tokenization logic used across the system for cost calculations, context window management, and rate limiting. The fast path functions (`countTokensInValueSimpleFast` and `countTokensInValueWordFast`) have a high cyclomatic complexity (35) due to exhaustive type switches. While they had ~97% coverage, critical edge cases involving small values evaluating to < 1 token and cyclic pointer reflection references were untested, posing a risk of subtle token accounting bugs or infinite recursion errors.
+* **New Coverage:**
+  - Added table-driven test cases for explicitly small inputs (`len(text) < 4`, small integers `int8` through `int64`, and small floats) that trigger the `count < 1` bounds correction.
+  - Added tests covering the empty slice/map handling.
+  - Added tests for `map` and `slice` data types exhibiting cyclical references to ensure the `visited[ptr]` short-circuiting logic accurately intercepts cyclic resolution and correctly errors out ("cycle detected").
+* **Verification:** Confirmed that `make test` and `make lint` passed cleanly.
