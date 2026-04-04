@@ -12,10 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { Wrench, Play, Star, Info, PlayCircle, PauseCircle, StarOff } from "lucide-react";
+import { Wrench, Play, Star, Info, PlayCircle, PauseCircle, StarOff, Copy, Check } from "lucide-react";
 import { ToolDefinition } from "@proto/config/v1/tool";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { ToolAnalytics } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ToolTableProps {
   tools: ToolDefinition[];
@@ -64,6 +65,20 @@ export const ToolTable = memo(function ToolTable({
   onBulkPin
 }: ToolTableProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleCopy = useCallback((text: string, id: string) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(e => console.error("Clipboard error", e));
+      setCopiedItem(id);
+      toast({
+        title: "Copied",
+        description: `Copied ${text} to clipboard`,
+      });
+      setTimeout(() => setCopiedItem(null), 2000);
+    }
+  }, [toast]);
 
   // Reset selection when tools list changes (e.g. filtering)
   useEffect(() => {
@@ -189,13 +204,35 @@ export const ToolTable = memo(function ToolTable({
                       <Star className={`h-4 w-4 ${isPinned(tool.name) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`} />
                   </Button>
               </TableCell>
-              <TableCell className={cn("font-medium flex items-center", isCompact ? "py-0 px-2 h-8" : "")}>
-                <Wrench className={cn("mr-2 text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-                {tool.name}
+              <TableCell className={cn("font-medium", isCompact ? "py-0 px-2 h-8" : "")}>
+                <div className="flex items-center space-x-2 group/name w-full">
+                  <Wrench className={cn("mr-2 text-muted-foreground flex-shrink-0", isCompact ? "h-3 w-3" : "h-4 w-4")} />
+                  <span className="truncate max-w-[200px]" title={tool.name}>{tool.name}</span>
+                  <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 opacity-0 group-hover/name:opacity-100 transition-opacity flex-shrink-0"
+                      onClick={(e) => { e.stopPropagation(); handleCopy(tool.name, `name-${tool.name}`); }}
+                      title="Copy name"
+                  >
+                      {copiedItem === `name-${tool.name}` ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                </div>
               </TableCell>
               <TableCell className={cn("max-w-[300px] truncate", isCompact ? "py-0 px-2" : "")} title={tool.description}>{tool.description}</TableCell>
               <TableCell className={isCompact ? "py-0 px-2" : ""}>
-                  <Badge variant="outline" className={isCompact ? "h-5 text-[10px] px-1" : ""}>{tool.serviceId}</Badge>
+                <div className="flex items-center space-x-2 group/service">
+                  <Badge variant="outline" className={cn("truncate max-w-[150px]", isCompact ? "h-5 text-[10px] px-1" : "")} title={tool.serviceId}>{tool.serviceId}</Badge>
+                  <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5 opacity-0 group-hover/service:opacity-100 transition-opacity flex-shrink-0"
+                      onClick={(e) => { e.stopPropagation(); handleCopy(tool.serviceId, `service-${tool.serviceId}`); }}
+                      title="Copy service ID"
+                  >
+                      {copiedItem === `service-${tool.serviceId}` ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                </div>
               </TableCell>
               <TableCell className={cn("text-right font-mono", isCompact ? "py-0 px-2" : "")}>
                   {usageStats?.[`${tool.name}@${tool.serviceId}`]?.totalCalls || "-"}
