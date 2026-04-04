@@ -1313,6 +1313,18 @@
 
 ---
 
+## Evolution: [2026-04-04] Updates
+
+### Proposed Additions
+- **Hardware-Accelerated Negotiation (HAN) Broker**: (P0) Authoritative coordination service utilizing TPM/SEP-backed arbitration to resolve task auctions and prevent "Negotiation Storms."
+- **Verified Metadata Lineage (VML) Provider**: (P0) Advanced security service mandating cryptographic provenance chains for all structural metadata (JSON-RPC schemas, descriptions).
+- **UAB Lifecycle Bridge**: (P1) Standardized commit/rollback middleware for cross-framework protocol synchronization (A2A, UACO, MCP).
+- **Coherence-Aware State Pruning**: (P1) Optimization middleware for the Blackboard that proactively prunes non-convergent bidding branches.
+
+### Priority Shifts
+- **DCA Negotiation Guard**: (Re-affirmed P0) Evolving into the **HAN Broker** to support hardware-backed arbitration.
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **VML-compliant** provenance.
+
 ## Evolution: [2026-04-11] Updates
 
 ### Proposed Additions

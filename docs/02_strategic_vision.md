@@ -347,6 +347,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **A2A Replay Guard**: We are mandating a "Monotonic Task Nonce" for all A2A task proposals. This neutralizes replay attacks by ensuring every inter-agent delegation is unique, time-bound, and cryptographically linked to a specific session state.
 - **Negative Trust Attestation**: Transitioning from allow-lists to "Deterministic Absence Proofs (DAP)." MCP Any will act as the authoritative provider of signed "Non-Existence Manifests," providing a cryptographic guarantee that no unauthorized project-local hooks exist before any agent execution.
 
+## Strategic Evolution: [2026-04-04]
+### Focus: Negotiation Integrity & Verified Metadata Lineage
+**Context**: The emergence of "Swarm Negotiation Exhaustion" and the disclosure of "Metadata Context Poisoning" (CVE-2026-42001) confirm that the "Universal Agent Bus" must now move beyond simple tool proxying. We must now protect the **integrity of the bidding process** and provide **cryptographic lineage** for tool schemas. Simultaneously, the discovery of "Cross-Framework State Leakage" in heterogeneous meshes demands a standardized, atomic lifecycle bridge for state reconciliation.
+**Strategic Pivot**:
+- **Hardware-Accelerated Negotiation (HAN)**: MCP Any will evolve to act as the authoritative "Auction Broker" for multi-agent coordination. We will implement HAN, utilizing TPM/SEP-backed arbitration to reduce negotiation latency and prevent "Negotiation Storms" in deep swarms.
+- **Verified Metadata Lineage (VML)**: To neutralize structural injection, we are mandating VML for all tool schemas. Every JSON-RPC definition and description must carry a cryptographic provenance chain, ensuring that "agent-facing" metadata cannot be modified by unverified sources.
+- **UAB Lifecycle Bridge**: Supporting the stability of heterogeneous meshes, we are introducing a unified lifecycle bridge. This layer will standardize atomic commit/rollback signals across A2A, UACO, and MCP protocols, neutralizing "Dirty State" leakage during inter-agent handoffs.
+- **Coherence-Aware State Pruning**: To counter "Negotiation Exhaustion," MCP Any will implement real-time coherence monitoring. The gateway will proactively prune non-convergent bidding branches, ensuring that swarm resources remain focused on high-utility execution paths.
+
 ## Strategic Evolution: [2026-04-12]
 ### Focus: Secure A2A Interoperability & Deterministic Environment Integrity
 **Context**: The official transition of the A2A protocol to the Linux Foundation and the disclosure of CVE-2026-25725 (Claude Code sandbox escape) mark a definitive shift in the AI agent landscape. Interoperability is becoming a utility, and environment integrity is now the primary security frontier.

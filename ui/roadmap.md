@@ -199,6 +199,7 @@
 - [ ] **[P0] Metadata Provenance Viewer**: (2026-04-04) UI for verifying the cryptographic lineage and signing status of tool metadata.
 - [ ] **[P0] Metadata Poisoning Alert Hub**: (2026-04-04) Security dashboard for reviewing and approving redacted metadata fragments.
 - [ ] **[P1] Lifecycle Synchronization Monitor**: (2026-04-04) Visual tracker for cross-framework state commit/rollback events.
+- [ ] **[P1] Bidding Coherence Visualizer**: (2026-04-04) Visualization of active auctions and pruned non-convergent branches.
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
