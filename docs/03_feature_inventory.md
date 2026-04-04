@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Real-time monitoring service that validates complete agent workflow sequences against mission-root intents.
+- **Metadata Sanitization Gateway (MSG)**: (P0) Real-time semantic sanitizer for agent-ingested external metadata to neutralize instruction injection.
+- **Post-Quantum Mesh Handshake (PQMH) Provider**: (P1) Security service implementing NIST-standard post-quantum resistant algorithms for long-term mesh integrity.
+
+### Priority Shifts
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Designated as the primary defense against coordinated swarm attacks.

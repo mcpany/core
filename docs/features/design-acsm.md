@@ -42,3 +42,10 @@ Autonomous agents operate at speeds that exceed human intervention capabilities.
 
 ## 7. Evolutionary Changelog
 * **2026-07-08:** Initial Document Creation.
+
+    ### Update: 2026-07-25 - Action-Chain Sovereignty Strengthening
+    **Context:** Today's research confirms the escalation of coordinated swarm attacks utilizing cascading system failures.
+    **Architecture Adjustment:**
+    *   Implementing real-time intent-alignment scoring for the complete action chain history.
+    *   Introducing "Drift-Threshold" interdiction where missions are automatically paused if semantic deviation exceeds safety bounds.
+    **Security Impact:** Prevents high-trust autonomous agents from being coerced into destructive sequences of actions.

@@ -1550,3 +1550,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Action-Chain Integrity & Post-Quantum Mesh Security
+**Context**: The emergence of coordinated machine-speed "Swarm Attacks" and the discovery of "Tool Poisoning" in natural-language descriptions confirm that securing the transport layer is insufficient. We must now protect the **integrity of action chains** and move toward **Post-Quantum Mesh Security**.
+**Strategic Pivot**:
+- **Action-Chain Sovereignty Monitor (ACSM)**: MCP Any will evolve to monitor the complete sequence of automated workflows, detecting and blocking cascading system failures by validating agent action-chains against the mission-root intent in real-time.
+- **Metadata Sanitization Gateway (MSG)**: To counter instruction injection via external metadata, MCP Any will implement MSG. This layer will perform real-time semantic sanitization of all ingested metadata before it reaches the agent's reasoning loop.
+- **Post-Quantum Mesh Handshake (PQMH)**: Supporting the NIST FIPS 203/204/205 standards, we are introducing PQMH. All inter-agent and node-to-node communications will transition to post-quantum resistant algorithms to ensure long-term mesh integrity.
