@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Federated Discovery Quorum (FDQ)**: (P0) Decentralized discovery service allowing distributed nodes to reach consensus on tool safety without a central registry.
+- **Risk-Aware Adaptive Attestation (RAAA)**: (P0) Dynamic security middleware that adjusts attestation strength based on real-time tool risk and agent behavior.
+- **Multimodal Reason-Proof (MMRP) Validator**: (P0) Zero-Knowledge proof validator for non-textual reasoning fragments (SVG, Audio).
+- **Mission-Bound Inode Pinning (MBIP) Enforcer**: (P0) Kernel-level security service binding workspace file descriptors to mission-root hardware IDs.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Elevated with mandatory **FDQ** integration for mesh-native discovery.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Designated as the primary solution for neutralizing latency in **RAAA**-enabled flows.
