@@ -49,6 +49,10 @@ upstream_services:
       address: "https://api.example.com"
 ```
 
+### Local-Loopback Rate Limiting
+
+The rate limiter incorporates "Local Zero Trust" principles. For traffic originating from local loopback interfaces (`127.0.0.1` or `::1`), rate limits are automatically partitioned based on the `Origin` header. This prevents malicious websites or scripts from brute-forcing local agent listeners by sharing a global loopback limit. Requests missing an `Origin` header are bucketed into a distinct `loopback:no-origin` partition.
+
 ### Distributed Rate Limiting (Redis)
 
 By default, rate limiting is handled in-memory. To support distributed deployments (multiple replicas), you can configure a Redis backend.
