@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Resident Lease Arbiter (MRLA)**: (P0) Authoritative governance service facilitating dynamic, hardware-attested lease expansion between parallel teammates to resolve "Lease Deadlocks."
+- **P2P Congestion Controller (PCC)**: (P1) High-speed monitoring service that prioritizes mission-critical coordination fragments during "Tunnel Exhaustion" events in distributed meshes.
+- **Reasoning-Aware Proof Aggregation (RAPA) Provider**: (P0) Advanced attestation service that bundles multiple subagent ZK-proofs into aggregated mission-root fragments to neutralize verification latency.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **PCC-compliant** bandwidth prioritization.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary state persistence layer for **RAPA-aggregated** proof fragments.

@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - P2P Congestion Control (PCC) Integration
+**Context:** Today's market sync revealed "Tunnel Exhaustion" in distributed meshes, where high-frequency inter-node calls consume disproportionate bandwidth and increase coordination latency.
+**Architecture Adjustment:**
+* Integrating a **P2P Congestion Controller (PCC)** into the AMT Broker pipeline.
+* Implementing "Coordination Fragment Prioritization," which ensures safety-critical intent and attestation fragments bypass the primary tunnel queue during congestion events.
+* Adding a "Bandwidth Quota Manager" to throttle low-priority trace data when tunnel bandwidth approaches saturation.
+**Security Impact:** Prevents "Mesh-Denial-of-Service" where high-entropy noise from subagents could stall mission-critical coordination.
