@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections between distributed agent nodes to neutralize "Mesh Shadowing."
+- **Hardware-Locked Mission Leases (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
+- **Zero-Knowledge Audit (ZKA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
+- **Autonomous State Migration (ASM) Controller**: (P0) Resilience service for re-sharding and migrating mission-critical state between physical nodes upon subagent failure.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Elevated to integrate with the new **ASM** controller for fail-operational mesh stability.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support the state-persistence requirements of **AMT-connected** nodes.

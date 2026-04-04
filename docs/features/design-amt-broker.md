@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Hardening Mesh Origin Trust
+**Context:** Today's research into the "ClawJacked" exploit pattern confirms that local-to-remote bridging is a primary vector for agent hijacking.
+**Architecture Adjustment:**
+* Mandating hardware-attested origin validation for all incoming AMT tunnel requests.
+* Integrating "State Migration" signals into the tunnel lifecycle to support ASM-driven handoffs.
+**Security Impact:** Prevents browser-based attackers from utilizing an established P2P tunnel to bridge into a remote node's high-privilege toolset.
