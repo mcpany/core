@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating Unauthenticated MCP Server Exposure
+**Context:** Today's market sync revealed that ~2,000 MCP servers are exposed to the internet with zero security. CVE-2025-6514 further confirms that unauthenticated connections to these servers enable Remote Code Execution (RCE).
+**Architecture Adjustment:**
+* **Mandatory Mesh Proxying**: AMT Broker now mandates that any remote MCP server discovery must be wrapped in an AMT-attested tunnel, even if the destination is a legacy non-mesh node.
+* **Integrations**: Integrating with the **Zero-Trust MCP Proxy (ZTMP)** to perform semantic output scrubbing on all data returned through the mesh tunnel.
+**Security Impact**: Neutralizes the risk of RCE from unauthenticated community MCP servers by ensuring all cross-node tool traffic is both authenticated and semantically sanitized.

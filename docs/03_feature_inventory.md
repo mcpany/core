@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Trust MCP Proxy (ZTMP)**: (P0) Authoritative security gateway enforcing authentication and semantic input/output sanitization for all external MCP servers to neutralize RCE vectors.
+- **Active Discovery Shield (ADS)**: (P0) Security middleware mandating cryptographic masking of tool capability cards until a hardware-bound mission handshake is verified.
+- **Mission-Root Reinforcement Injector**: (P1) Cognitive security service that dynamically injects anchor tokens to prevent "Attention Drift" in long-running parallel team sessions.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Elevated with mandatory support for **CRDT-based Parallel Team Coordination** to resolve Claude Agent Team-style mailbox stalls.
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Evolving into the **ZTMP** to provide a global security shield for unauthenticated MCP servers.
