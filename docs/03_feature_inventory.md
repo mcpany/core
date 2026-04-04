@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reasoning-Responsive Load Balancer (RRLB)**: (P0) Authoritative mesh traffic service that dynamically routes tasks based on real-time reasoning latency and P2P congestion.
+- **Differential Privacy Shard (DPS) Manager**: (P0) Advanced security service for real-time differential privacy scrubbing of metadata from local RAG shards.
+- **Teammate Reflection (TR) Arbiter**: (P0) Authoritative coordination service mandating hardware-attested validation of teammate reflection cycles.
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Elevated with mandatory integration with the **RRLB** for latency-aware reclamation.
+- **Manifest-Based Reflection (MBR) Arbiter**: (Evolved to TR Arbiter) Now designated as the primary mechanism for horizontal teammate alignment.
