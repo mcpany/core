@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-03] Updates
+
+### Proposed Additions
+- **Grammatical Command Validator (GCV)**: (P0) Advanced AST-based command parser and validator to replace regex-based lexical filters.
+- **Atomic Pipeline Enforcer**: (P0) Security middleware that recursively applies policy rules to all components of multi-stage subcommand pipelines.
+- **In-Loop Security Auditor (ILSA)**: (P0) Automated security scanning service for agent-generated code changes and commits.
+- **Universal Trace Registry (UTR)**: (P0) Identity service that cryptographically binds commands and state to unique reasoning traces.
+
+### Priority Shifts
+- **Policy Firewall**: (Re-affirmed P0) Elevated with mandatory support for **Atomic Pipeline Enforcement** and **GCV-native** parsing.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

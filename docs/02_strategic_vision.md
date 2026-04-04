@@ -37,6 +37,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-03]
+### Focus: Lexical Filter Sovereignty & Multi-Step Command Integrity
+**Context**: The emergence of "Lexical Parsing Failures" in OpenClaw and the "50-Subcommand Pipeline" bypass in Claude Code prove that regex-based command filtering is dead. Security must move from string-matching to **Grammatical Decomposition** and **Atomic Execution Monitoring**. Simultaneously, the 87% vulnerability rate in agent-generated PRs confirms that infrastructure must move from "Transport Gating" to active **In-Loop Security Auditing**.
+**Strategic Pivot**:
+- **Grammatical Command Validator (GCV)**: MCP Any will evolve to act as the authoritative "Command Parser." We will implement the GCV, which performs deep AST (Abstract Syntax Tree) decomposition of all shell-based tool calls to detect and block line-continuation and multiplexing bypasses that lexical filters miss.
+- **Atomic Pipeline Enforcement**: To neutralize "Pipeline Bloating" exfiltration, we are upgrading the Policy Firewall to include Atomic Pipeline Enforcement. MCP Any will strictly enforce subcommand depth limits and mandate that "Deny" rules are recursively applied to every element of a multi-stage command, eliminating "Ask-on-Failure" fallbacks.
+- **In-Loop Security Auditor (ILSA)**: Supporting the integrity of the build pipeline, we are introducing the ILSA. This middleware will automatically route all agent-generated code changes (e.g., file writes, git commits) through a specialized "Security Specialist" sub-agent for hardware-attested vulnerability scanning before host execution.
+- **Universal Trace Registry (UTR)**: To counter "Identity Shadowing" in deep swarms, MCP Any will implement the UTR. Every command and state fragment will be cryptographically bound to its unique reasoning trace ID, providing an immutable "Chain of Reason" that persists across framework-neutral handoffs.
+
+---
+
 ## Strategic Evolution: [2026-04-01] (Iteration 2)
 ### Focus: Agentic Entropy Governance & Garbage-Collection Sovereignty
 **Context**: The emergence of "Agentic Entropy Scoring" (AES) in OpenClaw and the introduction of "Context-Window Garbage Collection" (CWGC) in Gemini CLI reveal that mesh stability now depends on the **semantic coherence** of reasoning and the **integrity of silent anchors**. As models aggressively prune context to handle 1M+ token windows, the risk of "Instruction Eviction" demands that infrastructure provides **GC-Immune Reasoning Anchors**. Simultaneously, the rise of "Trace Replay" attacks in multi-modal environments confirms that provenance must be **Environment-Aware**.

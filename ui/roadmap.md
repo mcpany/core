@@ -203,6 +203,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-03 Evolution)
+- [ ] **[P0] Grammatical Command Inspector**: Visual AST debugger for shell tool calls, highlighting blocked nodes and obfuscation attempts. (Added: 2026-04-03)
+- [ ] **[P0] In-Loop Security Audit Center**: UI for reviewing automated security scans of agent-generated code and PRs. (Added: 2026-04-03)
+- [ ] **[P0] Pipeline Depth Monitor**: Real-time visualization of subcommand pipelines and recursive policy enforcement status. (Added: 2026-04-03)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

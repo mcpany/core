@@ -374,6 +374,11 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-03 Evolution)
+*   **[P0] Grammatical Command Validator (GCV)**: Implement AST-based shell command parsing to replace regex lexical filters. (Added: 2026-04-03)
+*   **[P0] In-Loop Security Auditor (ILSA)**: Automated "Security specialist" subagent for real-time PR and code change scanning. (Added: 2026-04-03)
+*   **[P0] Atomic Pipeline Enforcer**: Recursive policy application for multi-stage shell pipelines to prevent "Ask-on-Failure" bypasses. (Added: 2026-04-03)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)
