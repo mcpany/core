@@ -1,31 +1,32 @@
 ## Executive Summary
+
 A "Truth Reconciliation Audit" was performed against 10 distinct, algorithmically sampled feature documentation files across the UI and backend logic to verify exact alignment with the product roadmap. The overall health of the sampled features is strong (9/10), with correct, modern implementations securely matching documentation logic.
 
-However, one significant discrepancy representing **Roadmap Debt** was discovered: The **Agent Chain Tracer (A2A)** documented under the Universal Agent Bus features (`ui/docs/features/universal_agent_bus.md`) lacked proper testing for its implemented trace fetching and seeding. The divergence was aggressively remediated by engineering the proper test suites to ensure the trace visualization correctly integrated with `useTraces` hooks and backend seed configurations.
+However, one discrepancy representing **Roadmap Debt** was discovered: the **Alerts & Incidents Feature** documented under `ui/docs/features/alerts.md` defined API endpoints residing under the `/api/v1/` namespace (e.g., `POST /api/v1/alerts`). The actual implementation within the `server/pkg/app/api.go` routing layer lacked the required namespace (`/alerts`). This divergence was aggressively remediated by engineering the proper HTTP routing logic to match the documented enterprise-grade `/api/v1` namespace expectations.
 
 ## Verification Matrix
+
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/universal_agent_bus.md` | **Roadmap Debt** | **Code Fix** | Authored robust unit tests `AgentChainTracer` and integration logic testing `useTraces` hook and the backend DB seeding logic (`api_traces_seed_test.go`). |
-| `ui/docs/features/playground.md` | **Verified** | None | `ui/src/components/playground/` accurately reflects live logic. |
-| `ui/docs/features/services.md` | **Verified** | None | `ui/src/app/upstream-services/` properly handles service connections and states. |
-| `ui/docs/features/stack-composer.md` | **Verified** | None | `ui/src/app/stacks/` handles config-as-code visualizations. |
-| `server/docs/features/shared_kv_store.md` | **Doc Drift** | **Doc Update** | Fixed `server/docs/features/shared_kv_store.md` to remove `enabled` / `isolation_level` and accurately match `BlackboardStore`. |
-| `server/docs/features/hitl.md` | **Verified** | None | Real-time active alerts table and API interactions map to `server/pkg/middleware/hitl.go`. |
-| `server/docs/features/recursive_context.md` | **Verified** | None | Recursive context implementation properly inherits logic inside `server/pkg/middleware/recursive_context.go`. |
-| `server/docs/features/granular_scopes.md` | **Doc Drift** | **Doc Update** | Updated the `roles` mapping inside `server/docs/features/granular_scopes.md` to match the exact string tokens specified in `server/pkg/middleware/scopes.go`. |
-| `ui/docs/features/dashboard.md` | **Verified** | None | Re-verified system overview drag-and-drop dashboard maps successfully to UI structure. |
-| `server/docs/features/context_optimizer.md` | **Verified** | None | `server/pkg/middleware/context_optimizer.go` fully truncates response size context. |
-| `server/docs/features/lazy-mcp.md` | **Code Debt** | **Code Fix** | Addressed prior codebase debt where `cache_ttl` was missing. Verified `CacheTTL` struct mapping and unit tests in `lazy_mcp.go`. |
+| `ui/docs/features/traces.md` | **Verified** | None | Inspector (Live Traces) UI correctly exists in `ui/src/components/traces/`. |
+| `server/docs/features/admin_api.md` | **Verified** | None | The `AdminService` gRPC endpoints accurately exist within `proto/admin/v1/admin.proto`. |
+| `server/docs/feature/merge_strategy.md` | **Verified** | None | "Merge Strategy and Profile-Based Tool Selection" logic correctly functions in `server/pkg/config`. |
+| `ui/docs/features/alerts.md` | **Roadmap Debt** | **Code Fix** | API routes in `server/pkg/app/api.go` updated to the correct `/api/v1/` namespace (e.g., `/api/v1/alerts`). |
+| `server/docs/features/resilience/README.md` | **Verified** | None | `retry_policy` and `circuit_breaker` logic matches within `server/pkg/resilience`. |
+| `server/docs/features/kafka.md` | **Verified** | None | Kafka message bus integration exists as configured within global settings. |
+| `server/docs/features/vector_database_milvus.md` | **Verified** | None | Validated Milvus tools logic in `server/pkg/upstream/vector/milvus.go`. |
+| `server/docs/features/config_validator.md` | **Verified** | None | Configuration validation endpoint `/api/v1/config/validate` correctly exists. |
+| `server/docs/features/hot_reload.md` | **Verified** | None | Server debouncing logic (500ms) mapped perfectly in `server/pkg/config/watcher.go`. |
+| `ui/docs/features/connection-diagnostics.md` | **Verified** | None | Multi-stage analysis and heuristic checks confirmed in `ui/src/components/diagnostics/connection-diagnostic.tsx`. |
 
 ## Remediation Log
 
-**Agent Chain Tracer (A2A) (Roadmap Debt)**
-The `ui/docs/features/universal_agent_bus.md` describes a visual timeline of multi-agent handoffs and message passing. The core frontend codebase and `seedTraces()` was present but entirely untested, representing a dangerous failure in codebase reliability.
+**Alerts API Route Mismatch (Roadmap Debt)**
+The `ui/docs/features/alerts.md` clearly documented the "Alerts & Incidents Feature" communicating via specific `/api/v1/` REST endpoints. The underlying server logic was improperly mapping these routes directly to the root path (`/alerts`, `/alerts/rules`), breaking convention and the roadmap's structural intent.
 
-*   **Backend Testing Engineered:** Authored the `api_traces_seed_test.go` testing suite to effectively validate `seedTraces()`. Verified `mid.GetHistory()` successfully populates an audit log with realistic mock inputs.
-*   **Frontend Testing Engineered:** Designed and deployed `agent-chain-tracer.test.tsx` utilizing `vitest` and `testing-library` to properly validate visual components. The test correctly executes mock outputs mapping the component behavior against the `useTraces` data payload structures.
-*   **Code Quality:** Maintained strict typing and verified correct rendering mappings.
+*   **Codebase Updated:** Aggressively aligned `server/pkg/app/api.go` to explicitly route `a.handleAlerts()`, `a.handleAlertStats()`, `a.handleAlertWebhook()`, `a.handleAlertRules()`, and related details to prefix `/api/v1/alerts`.
+*   **Testing Integrity:** Adjusted internal test assertions in `server/pkg/app/api_alerts_test.go` to assert the newly formatted `/api/v1/` endpoint namespace.
 
 ## Security Scrub
+
 The remediation code and audit details have been aggressively scrubbed. No live endpoints, internal subnets, credentials, user IDs, or API tokens exist within the PR logic or documentation. All seeded identifiers are securely mocked and strictly local to the testing infrastructure.

@@ -21,7 +21,7 @@ func TestHandleAlerts(t *testing.T) {
 	app.AlertsManager = alerts.NewManager()
 
 	t.Run("ListAlerts", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts", nil)
 		w := httptest.NewRecorder()
 
 		app.handleAlerts()(w, req)
@@ -43,7 +43,7 @@ func TestHandleAlerts(t *testing.T) {
 			Source:   "test",
 		}
 		body, _ := json.Marshal(newAlert)
-		req := httptest.NewRequest(http.MethodPost, "/alerts", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/alerts", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
 		app.handleAlerts()(w, req)
@@ -57,7 +57,7 @@ func TestHandleAlerts(t *testing.T) {
 	})
 
 	t.Run("MethodNotAllowed", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/alerts", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/api/v1/alerts", nil)
 		w := httptest.NewRecorder()
 		app.handleAlerts()(w, req)
 		assert.Equal(t, http.StatusMethodNotAllowed, w.Code)
@@ -76,7 +76,7 @@ func TestHandleAlertDetail(t *testing.T) {
 	app.AlertsManager.CreateAlert(alert)
 
 	t.Run("GetAlert", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/test-id", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/test-id", nil)
 		w := httptest.NewRecorder()
 
 		app.handleAlertDetail()(w, req)
@@ -93,7 +93,7 @@ func TestHandleAlertDetail(t *testing.T) {
 			Status: alerts.StatusResolved,
 		}
 		body, _ := json.Marshal(updates)
-		req := httptest.NewRequest(http.MethodPatch, "/alerts/test-id", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPatch, "/api/v1/alerts/test-id", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
 		app.handleAlertDetail()(w, req)
@@ -106,14 +106,14 @@ func TestHandleAlertDetail(t *testing.T) {
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/non-existent", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/non-existent", nil)
 		w := httptest.NewRecorder()
 		app.handleAlertDetail()(w, req)
 		assert.Equal(t, http.StatusNotFound, w.Code)
 	})
 
 	t.Run("MissingID", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/", nil)
 		w := httptest.NewRecorder()
 		app.handleAlertDetail()(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
@@ -124,7 +124,7 @@ func TestHandleAlertRules(t *testing.T) {
 	app := NewApplication()
 
 	t.Run("ListRules", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/rules", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/rules", nil)
 		w := httptest.NewRecorder()
 
 		app.handleAlertRules()(w, req)
@@ -145,7 +145,7 @@ func TestHandleAlertRules(t *testing.T) {
 			Threshold: 80,
 		}
 		body, _ := json.Marshal(newRule)
-		req := httptest.NewRequest(http.MethodPost, "/alerts/rules", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/alerts/rules", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
 		app.handleAlertRules()(w, req)
@@ -168,7 +168,7 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 	app.AlertsManager.CreateRule(rule)
 
 	t.Run("GetRule", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/rules/rule-123", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/rules/rule-123", nil)
 		w := httptest.NewRecorder()
 
 		app.handleAlertRuleDetail()(w, req)
@@ -186,7 +186,7 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 			LastUpdated: time.Now(),
 		}
 		body, _ := json.Marshal(updates)
-		req := httptest.NewRequest(http.MethodPut, "/alerts/rules/rule-123", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPut, "/api/v1/alerts/rules/rule-123", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
 		app.handleAlertRuleDetail()(w, req)
@@ -199,7 +199,7 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 	})
 
 	t.Run("DeleteRule", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodDelete, "/alerts/rules/rule-123", nil)
+		req := httptest.NewRequest(http.MethodDelete, "/api/v1/alerts/rules/rule-123", nil)
 		w := httptest.NewRecorder()
 
 		app.handleAlertRuleDetail()(w, req)
@@ -209,7 +209,7 @@ func TestHandleAlertRuleDetail(t *testing.T) {
 	})
 
 	t.Run("NotFound", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/rules/non-existent", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/rules/non-existent", nil)
 		w := httptest.NewRecorder()
 		app.handleAlertRuleDetail()(w, req)
 		assert.Equal(t, http.StatusNotFound, w.Code)
@@ -220,7 +220,7 @@ func TestHandleAlertWebhook(t *testing.T) {
 	app := NewApplication()
 
 	t.Run("GetWebhookURL_Default", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/alerts/webhook", nil)
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/alerts/webhook", nil)
 		w := httptest.NewRecorder()
 
 		app.handleAlertWebhook()(w, req)
@@ -235,7 +235,7 @@ func TestHandleAlertWebhook(t *testing.T) {
 	t.Run("SetWebhookURL", func(t *testing.T) {
 		payload := map[string]string{"url": "http://example.com/webhook"}
 		body, _ := json.Marshal(payload)
-		req := httptest.NewRequest(http.MethodPost, "/alerts/webhook", bytes.NewReader(body))
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/alerts/webhook", bytes.NewReader(body))
 		w := httptest.NewRecorder()
 
 		app.handleAlertWebhook()(w, req)

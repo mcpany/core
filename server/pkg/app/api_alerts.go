@@ -132,7 +132,7 @@ func (a *Application) handleAlertWebhook() http.HandlerFunc {
 //   - None.
 func (a *Application) handleAlertDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/alerts/")
+		id := strings.TrimPrefix(r.URL.Path, "/api/v1/alerts/")
 		if id == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return
@@ -227,7 +227,7 @@ func (a *Application) handleAlertRules() http.HandlerFunc {
 //   - None.
 func (a *Application) handleAlertRuleDetail() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := strings.TrimPrefix(r.URL.Path, "/alerts/rules/")
+		id := strings.TrimPrefix(r.URL.Path, "/api/v1/alerts/rules/")
 		if id == "" {
 			http.Error(w, "id required", http.StatusBadRequest)
 			return

@@ -189,12 +189,12 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/webhooks", a.handleWebhooks())
 	mux.HandleFunc("/webhooks/", a.handleWebhookDetail())
 
-	mux.HandleFunc("/alerts", a.handleAlerts())
-	mux.HandleFunc("/alerts/stats", a.handleAlertStats())
-	mux.HandleFunc("/alerts/webhook", a.handleAlertWebhook())
-	mux.HandleFunc("/alerts/rules", a.handleAlertRules())
-	mux.HandleFunc("/alerts/rules/", a.handleAlertRuleDetail())
-	mux.HandleFunc("/alerts/", a.handleAlertDetail())
+	mux.HandleFunc("/api/v1/alerts", a.handleAlerts())
+	mux.HandleFunc("/api/v1/alerts/stats", a.handleAlertStats())
+	mux.HandleFunc("/api/v1/alerts/webhook", a.handleAlertWebhook())
+	mux.HandleFunc("/api/v1/alerts/rules", a.handleAlertRules())
+	mux.HandleFunc("/api/v1/alerts/rules/", a.handleAlertRuleDetail())
+	mux.HandleFunc("/api/v1/alerts/", a.handleAlertDetail())
 
 	// Mount HITL
 	a.mountHITL(mux)
