@@ -146,12 +146,12 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
-    const { isTableEligible, tableData } = useMemo(() => {
-        if (mcpContent) return { isTableEligible: false, tableData: [] };
+    const { isTableEligible, tableData, isPropertiesEligible, propertiesData } = useMemo(() => {
+        if (mcpContent) return { isTableEligible: false, tableData: [], isPropertiesEligible: false, propertiesData: [] };
 
         // 1. Array of objects
         if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
-            return { isTableEligible: true, tableData: content };
+            return { isTableEligible: true, tableData: content, isPropertiesEligible: false, propertiesData: [] };
         }
 
         // 2. Object containing an array of objects. We aggressively scan the top 2 levels.
@@ -178,11 +178,23 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             });
 
             if (largestArray.length > 0) {
-                 return { isTableEligible: true, tableData: largestArray };
+                 return { isTableEligible: true, tableData: largestArray, isPropertiesEligible: false, propertiesData: [] };
+            }
+
+            // 3. Single Object (Properties Grid)
+            // If it's not an array of objects, and doesn't contain a dominant array,
+            // we display it as a properties grid if it has keys.
+            const keys = Object.keys(content);
+            if (keys.length > 0) {
+                const propsData = keys.map(key => ({
+                    Property: key,
+                    Value: (content as any)[key]
+                }));
+                return { isTableEligible: false, tableData: [], isPropertiesEligible: true, propertiesData: propsData };
             }
         }
 
-        return { isTableEligible: false, tableData: [] };
+        return { isTableEligible: false, tableData: [], isPropertiesEligible: false, propertiesData: [] };
     }, [content, mcpContent]);
 
     // Get columns for table
@@ -206,7 +218,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
     }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : (isPropertiesEligible ? "properties" : "json"));
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
@@ -220,6 +232,11 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                     {isTableEligible && (
                         <TabsTrigger value="table" className="flex items-center gap-2">
                             <TableIcon className="h-4 w-4" /> Table
+                        </TabsTrigger>
+                    )}
+                    {isPropertiesEligible && (
+                        <TabsTrigger value="properties" className="flex items-center gap-2">
+                            <TableIcon className="h-4 w-4" /> Properties
                         </TabsTrigger>
                     )}
                     <TabsTrigger value="json" className="flex items-center gap-2">
@@ -245,6 +262,14 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
                 <TabsContent value="table" className="border rounded-md">
                     <div className="h-[400px]">
                         <SmartTable data={tableData} />
+                    </div>
+                </TabsContent>
+            )}
+
+            {isPropertiesEligible && (
+                <TabsContent value="properties" className="border rounded-md">
+                    <div className="h-[400px]">
+                        <SmartTable data={propertiesData} />
                     </div>
                 </TabsContent>
             )}

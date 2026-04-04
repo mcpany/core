@@ -97,6 +97,12 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                         description: "Returns a list of users in a table",
                         input_schema: { type: "object" },
                         call_id: "get_users_call"
+                    },
+                    {
+                        name: "get_user_profile",
+                        description: "Returns a detailed single object profile",
+                        input_schema: { type: "object" },
+                        call_id: "get_user_profile_call"
                     }
                 ],
                 calls: {
@@ -105,6 +111,9 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     },
                     get_users_call: {
                         args: ['{"users": [{"id": 1, "name": "Alice", "role": "Admin", "active": true, "long_text": "This is a very long text that should be truncated in the table cell to prevent layout blowouts."}, {"id": 2, "name": "Bob", "role": "User", "active": false, "long_text": "Short text"}, {"id": 3, "name": "Charlie", "role": "Manager", "active": true, "long_text": "Another long text string here that should be handled gracefully by the new SmartTable styling."}]}']
+                    },
+                    get_user_profile_call: {
+                        args: ['{"id": 1, "profile": {"name": "John Doe", "role": "admin"}, "settings": {"theme": "dark"}, "active": true, "last_login": "2025-01-01T12:00:00Z"}']
                     }
                 }
             }

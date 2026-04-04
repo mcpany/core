@@ -19,7 +19,8 @@ test.describe('Rich Result Viewer', () => {
         command_line_service: {
           command: 'echo',
           tools: [
-            { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' }
+            { name: 'get_complex_data', call_id: 'call1', description: 'Returns complex data' },
+            { name: 'get_user_profile', call_id: 'call2', description: 'Returns a detailed single object profile' }
           ],
           calls: {
             'call1': {
@@ -28,6 +29,17 @@ test.describe('Rich Result Viewer', () => {
                   { name: 'Alice', role: 'Admin', id: 1 },
                   { name: 'Bob', role: 'User', id: 2 }
                 ])
+              ]
+            },
+            'call2': {
+              args: [
+                JSON.stringify({
+                  id: 1,
+                  profile: { name: "John Doe", role: "admin" },
+                  settings: { theme: "dark" },
+                  active: true,
+                  last_login: "2025-01-01T12:00:00Z"
+                })
               ]
             }
           }
@@ -98,5 +110,43 @@ test.describe('Rich Result Viewer', () => {
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
     await expect(page.getByText('"stdout":')).toBeVisible();
+  });
+
+  test('Tool Inspector renders rich properties grid for single generic objects', async ({ page }) => {
+    await page.goto('/tools');
+
+    // Search for the test tool
+    await page.getByPlaceholder('Search tools...').fill('get_user_profile');
+    await expect(page.getByText('rich-result-test-service.get_user_profile').first()).toBeVisible({ timeout: 10000 });
+
+    // Open inspector
+    await page.getByRole('row', { name: 'rich-result-test-service.get_user_profile' }).getByRole('button', { name: 'Inspect' }).click();
+
+    // Wait for inspector to open
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    // Execute tool
+    await page.getByRole('button', { name: 'Execute' }).click();
+
+    // Wait for result
+    await expect(page.locator('label').filter({ hasText: 'Result' })).toBeVisible({ timeout: 10000 });
+
+    // Check if Properties tab is active
+    const viewerTabs = page.locator('[role="tablist"]', { hasText: 'Properties' });
+    const propsTab = viewerTabs.getByRole('tab', { name: 'Properties' });
+    await expect(propsTab).toBeVisible();
+    await expect(propsTab).toHaveAttribute('aria-selected', 'true');
+
+    // Verify content in properties table
+    const table = page.getByRole('table');
+    await expect(table).toBeVisible();
+
+    // Check properties grid mapping
+    await expect(table.getByText('profile')).toBeVisible();
+    await expect(table.getByText('John Doe')).toBeVisible();
+    await expect(table.getByText('settings')).toBeVisible();
+    await expect(table.getByText('dark')).toBeVisible();
+    await expect(table.getByText('last_login')).toBeVisible();
   });
 });
