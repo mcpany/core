@@ -5,6 +5,14 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { marketplaceService, ServiceCollection } from './marketplace-service';
+import { apiClient } from './client';
+
+vi.mock('./client', () => ({
+  apiClient: {
+    listCollections: vi.fn(),
+    listTemplates: vi.fn(),
+  }
+}));
 
 // Mock localStorage
 const localStorageMock = (function() {
@@ -105,11 +113,22 @@ describe('marketplaceService', () => {
   });
 
   describe('fetchExternalServers', () => {
-    it('should return linear server for mcpmarket', async () => {
+    it('should return external servers from api for mcpmarket', async () => {
+      const mockTemplates = [{
+          id: 'linear',
+          name: 'Linear',
+          description: 'Linear issue tracking integration',
+          tags: ['development'],
+          serviceConfig: {}
+      }];
+      (apiClient.listTemplates as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockTemplates);
+
       const servers = await marketplaceService.fetchExternalServers('mcpmarket');
+      expect(apiClient.listTemplates).toHaveBeenCalled();
       expect(servers).toHaveLength(1);
       expect(servers[0].id).toBe('linear');
       expect(servers[0].name).toBe('Linear');
+      expect(servers[0].author).toBe('Community');
     });
 
     it('should return empty array for unknown marketplace', async () => {

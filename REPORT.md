@@ -1,26 +1,29 @@
-# Coverage Intervention Report
+# Truth Reconciliation Audit Report
 
-## Target:
-* `src/interop/placeholder.go`
-* `src/interop/autogen.go`
-* `src/interop/crewai.go`
-* `src/interop/openclaw.go`
-* `src/interop/bridge.go`
+## 1. Executive Summary
+A "Truth Reconciliation Audit" was performed against 10 algorithmically selected documentation files across `ui/docs` and `server/docs`. The goal was to verify alignment between Documentation, Codebase, and the Project Roadmap, aggressively fixing any identified drift or roadmap debt.
 
-## Risk Profile:
-The `src/interop` package connects the entire application to the universal bus for agent capabilities (like AutoGen, CrewAI, and OpenClaw) via an Adapter Hub. A failure here could mean the system is completely disconnected from intelligent capabilities, unable to sync intents correctly, or failing on streaming operations without proper logging.
+During the audit, an architectural violation was detected where the UI was mocking a network request for the external marketplace (`fetchExternalServers`) instead of retrieving the data from the backend. This was resolved by fetching the pre-seeded templates from the API (`apiClient.listTemplates()`). The 10 randomly sampled features were found to be fully compliant with no missing code or documentation drift.
 
-The complexity was significant especially given streaming operations context handling, while initial test coverage stood only at 61.8%. The lack of verification for stream closures and handling could cause regressions or silent deadlocks. There was also zero coverage for registering missing tools, which is high-risk if missing/placeholder features are accidentally triggered in production without graceful failure.
+## 2. Verification Matrix
 
-## New Coverage:
-* Guarded `StreamTask` for AutoGen, OpenClaw, and CrewAI frameworks by tracking chunking mechanisms, ensuring accurate start, intermediate and end streaming responses.
-* Verified proper context cancellations and graceful failures for `StreamTask` functions to ensure they don't produce unhandled exceptions and appropriately exit routines on timeout or caller abort.
-* Ensured graceful routing failure when trying to map `StreamTask` payloads against unsupported capability intents (`unsupported_intent`).
-* Guarded `StreamTask` missing stubs in `placeholder.go` ensuring it safely returns `"placeholder method: not implemented"` without null pointers.
-* Verified `RegisterPlaceholders` correctly parses missing roadmap elements and injects them appropriately into an AdapterHub configuration to return standard fallback messages.
+| Document Name | Status | Action Taken | Evidence |
+| :--- | :--- | :--- | :--- |
+| `ui/docs/features/middleware.md` | Verified | None | `PipelineVisualizer` implemented in `ui/src/components/middleware` |
+| `ui/docs/features/test_connection.md` | Verified | None | `DiagnosticResult` logic exists in `ui/src/lib/diagnostics-utils.ts` |
+| `ui/docs/features/server-health-history.md` | Verified | None | `useServiceHealthHistory` hook and UI elements exist |
+| `server/docs/features/hitl.md` | Verified | None | `HITLMiddleware` implemented in `server/pkg/middleware/hitl.go` |
+| `server/docs/features/middleware_visualization.md` | Verified | None | Drag/Drop pipeline implemented in frontend |
+| `server/docs/features/caching/README.md` | Verified | None | `CachingMiddleware` implemented in `server/pkg/middleware/cache.go` |
+| `server/docs/features/connection-pooling/README.md` | Verified | None | HTTP pooling implemented in `server/pkg/upstream/http/http.go` |
+| `server/docs/features/sso.md` | Verified | None | `SSOMiddleware` implemented in `server/pkg/middleware/sso.go` |
+| `server/docs/features/context_optimizer.md` | Verified | None | `ContextOptimizer` implemented in `server/pkg/middleware/context_optimizer.go` |
+| `server/docs/features/sampling.md` | Verified | None | `CreateMessage` logic in `server/pkg/tool/sampling.go` |
 
-Coverage in `src/interop` has effectively improved from 61.8% to 96.7%. Overall statements covered in `github.com/mcpany/core` jumped to 96.8%.
+## 3. Remediation Log
+* **Case B (Roadmap Debt / Architecture Violation):** The frontend `marketplaceService.fetchExternalServers` was mocking the `linear` server response. This was fixed by refactoring the frontend to fetch the `linear` server dynamically from the backend using `apiClient.listTemplates()`, which aligns with the fact that `linear` is already seeded in the backend via `server/pkg/app/seeds.go`.
+* **Tests Updated:** Updated the frontend tests for `marketplace-service` to mock the API request via `apiClient` instead of testing the hardcoded array.
 
-## Verification:
-* Verified `make lint` clean structure without formatting errors.
-* Confirmed `go test ./...` test suite runs without errors, retaining complete pass execution for all new and pre-existing files ensuring "Do No Harm".
+## 4. Security Scrub
+* **PII/Secrets:** No PII, internal IPs, or unredacted secrets were found or included in this report.
+* **Code:** The frontend change removes hardcoded (empty) secrets from the client side bundle.
