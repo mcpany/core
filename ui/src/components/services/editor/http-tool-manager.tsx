@@ -29,24 +29,13 @@ interface HttpToolManagerProps {
 }
 
 /**
- * Intent: Document HttpToolManager
+ * HttpToolManager executes the HttpToolManager logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the HttpToolManager logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Manager component for HTTP tools within a service.
- * Displays a list of tools and allows adding, editing, and deleting them.
- * @param props - The component props.
- * @returns The rendered tool manager.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
     const [editingToolIndex, setEditingToolIndex] = useState<number | null>(null);

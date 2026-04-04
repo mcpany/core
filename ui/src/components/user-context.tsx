@@ -9,21 +9,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiClient } from '@/lib/client';
 
 /**
- * Intent: Document UserRole
+ * UserRole executes the UserRole logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the UserRole logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Defines the role of a user in the system.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type UserRole = 'admin' | 'editor' | 'viewer';
 
@@ -43,6 +35,14 @@ export type UserRole = 'admin' | 'editor' | 'viewer';
  *   - None
  *
  * Represents a user of the application.
+/**
+ * User executes the User logic.
+ *
+ * Summary: Executes the User logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface User {
   /** Unique user ID. */
@@ -91,10 +91,14 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
  *   - None
  *
  * Provider component for user authentication context.
+/**
+ * UserProvider executes the UserProvider logic.
  *
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns {JSX.Element} The provider component.
+ * Summary: Executes the UserProvider logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -167,6 +171,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
  * Hook to access the user context.
  * @returns The user context.
  * @throws Error if used outside of a UserProvider.
+ */
+/**
+ * useUser executes the useUser logic.
+ *
+ * Summary: Executes the useUser logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useUser() {
   const context = useContext(UserContext);

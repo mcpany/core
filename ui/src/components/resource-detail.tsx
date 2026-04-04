@@ -16,24 +16,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
 /**
- * Intent: Document ResourceDetail
+ * ResourceDetail executes the ResourceDetail logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ResourceDetail logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ResourceDetail.
- *
- * @param resourceName - The resourceName.
- * @param resourceName - The resourceName.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ResourceDetail({ serviceId, resourceName }: { serviceId: string, resourceName: string }) {
   const [resource, setResource] = useState<ResourceDefinition | null>(null);

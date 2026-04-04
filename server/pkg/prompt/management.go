@@ -73,19 +73,16 @@ type Manager struct {
 
 // NewManager creates and returns a new, empty Manager.
 //
-// Returns:
-//   - *Manager: A pointer to the newly created Manager.
-//
-// Summary: Initializes NewManager operation.
+// Summary: Executes the NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -112,6 +109,20 @@ func NewManager() *Manager {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// SetMCPServer provides the Manager with a reference to the MCP server.
+//
+// Summary: Executes the SetMCPServer operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	pm.mu.Lock()
@@ -136,11 +147,18 @@ func (pm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 // Parameters:
 //   - TODO: Document parameters.
 //
+// AddPrompt registers a new prompt with the manager.
+//
+// Summary: Executes the AddPrompt operation.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -182,6 +200,21 @@ func (pm *Manager) AddPrompt(prompt Prompt) {
 //
 // Side Effects:
 //   - None.
+// UpdatePrompt updates an existing prompt in the manager.
+//
+// Summary: Executes the UpdatePrompt operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) UpdatePrompt(prompt Prompt) {
 	pm.prompts.Store(prompt.Prompt().Name, prompt)
 	pm.mu.Lock()
@@ -211,6 +244,21 @@ func (pm *Manager) UpdatePrompt(prompt Prompt) {
 //
 // Side Effects:
 //   - None.
+// GetPrompt retrieves a prompt from the manager by its name.
+//
+// Summary: Executes the GetPrompt operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 	prompt, ok := pm.prompts.Load(name)
 	return prompt, ok
@@ -233,6 +281,21 @@ func (pm *Manager) GetPrompt(name string) (Prompt, bool) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// ListPrompts returns a slice containing all the prompts currently registered.
+//
+// Summary: Executes the ListPrompts operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -293,6 +356,20 @@ func (pm *Manager) ListPrompts() []Prompt {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// ClearPromptsForService removes all prompts associated with a given service.
+//
+// Summary: Executes the ClearPromptsForService operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

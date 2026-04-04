@@ -16,28 +16,16 @@ type ResourceMCPServer struct {
 
 // Schema returns the Terraform schema definition (Mock). Returns the result.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - map[string]interface: The resulting map[string]interface.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Schema operation.
+// Summary: Executes the Schema operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,6 +77,20 @@ func Schema() map[string]interface{} {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Create mimics the Create operation of a Terraform resource. _ is an unused parameter. Returns an error if the operation fails.
+//
+// Summary: Executes the Create operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func Create(_ *ResourceMCPServer) error {
 	// Simulate API call to provision resources
@@ -120,6 +122,19 @@ func Create(_ *ResourceMCPServer) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Read mimics the Read operation. name is the name of the resource. Returns the result. Returns an error if the operation fails.
+//
+// Summary: Executes the Read operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

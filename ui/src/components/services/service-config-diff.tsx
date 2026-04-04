@@ -18,25 +18,13 @@ interface ServiceConfigDiffProps {
 }
 
 /**
- * Intent: Document ServiceConfigDiff
+ * ServiceConfigDiff executes the ServiceConfigDiff logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceConfigDiff logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceConfigDiff component.
- * @param props - The component props.
- * @param props.original - The original property.
- * @param props.modified - The modified property.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceConfigDiff({ original, modified }: ServiceConfigDiffProps) {
   const { theme, systemTheme } = useTheme();

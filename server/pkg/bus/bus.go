@@ -84,27 +84,17 @@ type Provider struct {
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
-// multiple topic-based bus instances.
+//
+// Summary: Executes the NewProvider operation.
 //
 // Parameters:
-//
-//	messageBus: The configuration for the message bus.
-//
-// Returns:
-//
-//	*Provider: The created Provider.
-//	error: An error if creation fails.
-//
-// Summary: Initializes NewProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -170,9 +160,18 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 //
 // Returns:
 //   - TODO: Document returns.
+// GetBus retrieves a bus for the given topic. If a bus for the given topic
+//
+// Summary: Executes the GetBus operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

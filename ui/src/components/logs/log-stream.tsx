@@ -32,27 +32,13 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
 
 /**
- * Intent: Document LogStream
+ * LogStream executes the LogStream logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the LogStream logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LogStream component.
- * @param props - The component props.
- * @param props.source - Optional source to filter by initially.
- * @param props.traceId - Optional trace ID to filter logs by (requires support in log metadata).
- * @param props.traceStartTime - Optional start time of the trace for time-window filtering.
- * @param props.traceEndTime - Optional end time of the trace for time-window filtering.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function LogStream({
   source,

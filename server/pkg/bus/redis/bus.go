@@ -23,23 +23,16 @@ type Bus[T any] struct {
 
 // New creates and initializes a new RedisBus.
 //
-// Parameters:
-//   - redisConfig: *bus.RedisBus. The configuration settings for the Redis bus.
-//
-// Returns:
-//   - *Bus[T]: A pointer to the initialized Redis bus.
-//   - error: An error if initialization fails (currently always nil).
-//
-// Summary: Initializes New operation.
+// Summary: Executes the New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -78,6 +71,21 @@ func New[T any](redisConfig *bus.RedisBus) (*Bus[T], error) {
 //
 // Side Effects:
 //   - None.
+// NewWithClient creates a new RedisBus with an existing Redis client.
+//
+// Summary: Executes the NewWithClient operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWithClient[T any](client *redis.Client) *Bus[T] {
 	return &Bus[T]{
 		client: client,
@@ -104,8 +112,18 @@ func NewWithClient[T any](client *redis.Client) *Bus[T] {
 // Returns:
 //   - TODO: Document returns.
 //
+// Publish publishes a message to a Redis channel.
+//
+// Summary: Executes the Publish operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -140,6 +158,19 @@ func (b *Bus[T]) Publish(ctx context.Context, topic string, msg T) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Subscribe subscribes to a Redis channel.
+//
+// Summary: Executes the Subscribe operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -214,6 +245,21 @@ func (b *Bus[T]) Subscribe(ctx context.Context, topic string, handler func(T)) (
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// SubscribeOnce subscribes to a topic for a single message.
+//
+// Summary: Executes the SubscribeOnce operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

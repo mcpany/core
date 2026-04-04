@@ -21,22 +21,13 @@ interface ProfileStepProps {
 }
 
 /**
- * Intent: Document ProfileStep
+ * ProfileStep executes the ProfileStep logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ProfileStep logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Step for finalizing the profile configuration.
- * @param props Component properties.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");

@@ -61,19 +61,16 @@ type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
 //
-// Returns:
-//   - *MockRuntime: A new mock runtime instance.
-//
-// Summary: Initializes NewMockRuntime operation.
+// Summary: Executes the NewMockRuntime operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -98,9 +95,18 @@ func NewMockRuntime() *MockRuntime {
 //
 // Returns:
 //   - TODO: Document returns.
+// LoadPlugin loads a plugin.
+//
+// Summary: Executes the LoadPlugin operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,6 +132,21 @@ func (m *MockRuntime) LoadPlugin(_ context.Context, bytecode []byte) (Plugin, er
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the runtime.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -159,6 +180,18 @@ type MockPlugin struct{}
 //
 // Errors:
 //   - TODO: Document errors.
+// Execute executes a function.
+//
+// Summary: Executes the Execute operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -184,6 +217,21 @@ func (p *MockPlugin) Execute(_ context.Context, function string, _ ...[]byte) ([
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the plugin.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

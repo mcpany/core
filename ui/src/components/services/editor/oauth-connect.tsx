@@ -18,26 +18,13 @@ interface OAuthConnectProps {
 }
 
 /**
- * Intent: Document OAuthConnect
+ * OAuthConnect executes the OAuthConnect logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the OAuthConnect logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * OAuthConnect component.
- * @param props - The component props.
- * @param props.serviceId - The unique identifier for service.
- * @param props.serviceName - The name of the service.
- * @param props.isSaved - The issaved property.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function OAuthConnect({ serviceId, serviceName, isSaved }: OAuthConnectProps) {
     const [loading, setLoading] = useState(false);

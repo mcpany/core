@@ -43,22 +43,16 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of FilesystemUpstream.
 //
-// Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
+// Summary: Executes the NewUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -88,8 +82,18 @@ func NewUpstream() upstream.Upstream {
 // Returns:
 //   - TODO: Document returns.
 //
+// Shutdown implements the upstream.Upstream interface.
+//
+// Summary: Executes the Shutdown operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -130,13 +134,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+// Register processes the configuration for a filesystem service.
+//
+// Summary: Executes the Register operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

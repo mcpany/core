@@ -18,29 +18,13 @@ interface CollectionDetailsDialogProps {
 }
 
 /**
- * Intent: Document CollectionDetailsDialog
+ * CollectionDetailsDialog executes the CollectionDetailsDialog logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the CollectionDetailsDialog logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * CollectionDetailsDialog component.
- * Displays details about a specific service collection in a dialog.
- *
- * @param props - The component props.
- * @param props.open - Whether the dialog is open.
- * @param props.onOpenChange - Callback function when the dialog open state changes.
- * @param props.collection - The service collection to display details for.
- * @param props.onInstantiateService - Callback function to instantiate a service from the collection.
- * @returns The rendered CollectionDetailsDialog component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function CollectionDetailsDialog({
     open,

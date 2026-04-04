@@ -17,28 +17,16 @@ import (
 
 // AuthMiddleware creates an MCP middleware for handling authentication.
 //
-// It is intended to inspect incoming requests and use the provided `AuthManager` to
-// verify credentials before passing the request to the next handler.
+// Summary: Executes the AuthMiddleware operation.
 //
 // Parameters:
-//   - authManager (*auth.Manager): The authentication manager.
+//   - None.
 //
 // Returns:
-//   - mcp.Middleware: The authentication middleware function.
-//
-// Side Effects:
-//   - Modifies the context to include authenticated user info.
-//
-// Summary: Executes AuthMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

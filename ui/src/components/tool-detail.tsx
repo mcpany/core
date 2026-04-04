@@ -17,26 +17,13 @@ import { ServicePropertyCard } from "./service-property-card";
 import { SchemaViewer } from "./tools/schema-viewer";
 
 /**
- * Intent: Document ToolDetail
+ * ToolDetail executes the ToolDetail logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolDetail logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Displays details of a specific tool within a service.
- *
- * @param props - The component props.
- * @param props.serviceId - The ID of the service containing the tool.
- * @param props.toolName - The name of the tool to display.
- * @returns The rendered tool detail card, or null/error state.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolDetail({ serviceId, toolName }: { serviceId: string, toolName: string }) {
   const [tool, setTool] = useState<ToolDefinition | null>(null);

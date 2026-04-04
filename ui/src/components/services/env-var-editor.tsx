@@ -28,23 +28,13 @@ interface EnvVarEditorProps {
 }
 
 /**
- * Intent: Document EnvVarEditor
+ * EnvVarEditor executes the EnvVarEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the EnvVarEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * EnvVarEditor.
- *
- * @param onChange - The onChange.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function EnvVarEditor({ initialEnv, onChange }: EnvVarEditorProps) {
     const [envVars, setEnvVars] = useState<EnvVar[]>(() => {

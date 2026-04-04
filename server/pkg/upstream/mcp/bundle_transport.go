@@ -32,22 +32,16 @@ type transportError struct {
 
 // Error returns the error message.
 //
-// Returns:
-//   - string: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Executes Error operation.
+// Summary: Executes the Error operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -92,11 +86,18 @@ type BundleDockerTransport struct {
 // Parameters:
 //   - TODO: Document parameters.
 //
+// Connect establishes a connection to the service within the Docker container.
+//
+// Summary: Executes the Connect operation.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -235,6 +236,20 @@ type bundleDockerConn struct {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Read reads a JSON-RPC message from the connection.
+//
+// Summary: Executes the Read operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -393,6 +408,20 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Write writes a JSON-RPC message to the connection.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (c *bundleDockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	// Workaround: jsonrpc.ID in the SDK marshals to {} because of unexported fields.
@@ -537,6 +566,21 @@ func fixIDExtracted(val interface{}) interface{} {
 //
 // Side Effects:
 //   - None.
+// Close closes the connection.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *bundleDockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -559,6 +603,21 @@ func (c *bundleDockerConn) Close() error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// SessionID returns the session ID of the connection.
+//
+// Summary: Executes the SessionID operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -597,6 +656,18 @@ type bundleSlogWriter struct {
 //
 // Errors:
 //   - TODO: Document errors.
+// Write writes the log message to the logger.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

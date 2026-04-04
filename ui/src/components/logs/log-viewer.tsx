@@ -29,21 +29,13 @@ const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.V
 const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ default: m.JsonView })));
 
 /**
- * Intent: Document LogLevel
+ * LogLevel executes the LogLevel logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the LogLevel logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LogLevel defines the severity of a log entry.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
@@ -63,6 +55,14 @@ export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
  *   - None
  *
  * LogEntry represents a single structured log message.
+/**
+ * LogEntry executes the LogEntry logic.
+ *
+ * Summary: Executes the LogEntry logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface LogEntry {
   id: string
@@ -97,6 +97,14 @@ interface LogViewerProps {
  *   - None
  *
  * timeFormatter is a shared Intl.DateTimeFormat instance for formatting log timestamps.
+/**
+ * timeFormatter executes the timeFormatter logic.
+ *
+ * Summary: Executes the timeFormatter logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
   hour: 'numeric',
@@ -284,11 +292,14 @@ LogRow.displayName = 'LogRow'
  *   - None
  *
  * LogViewer component.
- * @param props - The component props.
- * @param props.logs - The list of log entries to display.
- * @param props.highlightRegex - The regex to use for highlighting text.
- * @param props.isPaused - Whether the log stream is paused.
- * @returns The rendered component.
+/**
+ * LogViewer executes the LogViewer logic.
+ *
+ * Summary: Executes the LogViewer logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function LogViewer({ logs, highlightRegex, isPaused }: LogViewerProps) {
   return (

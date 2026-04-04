@@ -18,29 +18,13 @@ interface JsonTreeProps {
 }
 
 /**
- * Intent: Document JsonTree
+ * JsonTree executes the JsonTree logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the JsonTree logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * JsonTree component.
- * Renders a recursive tree view of JSON data.
- *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.level - The current nesting level (default: 0).
- * @param props.defaultExpandedLevel - The level up to which nodes are expanded by default (default: 1).
- * @param props.className - The className.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className }: JsonTreeProps) {
   const isObject = typeof data === 'object' && data !== null;

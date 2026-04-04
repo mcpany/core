@@ -13,22 +13,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 /**
- * Intent: Document StepAuth
+ * StepAuth executes the StepAuth logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the StepAuth logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StepAuth component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StepAuth() {
   const { state, updateConfig, updateState } = useWizard();

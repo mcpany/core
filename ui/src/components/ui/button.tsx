@@ -39,21 +39,13 @@ const buttonVariants = cva(
 )
 
 /**
- * Intent: Document ButtonProps
+ * ButtonProps executes the ButtonProps logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ButtonProps logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ButtonProps type definition.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,

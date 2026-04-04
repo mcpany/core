@@ -11,22 +11,13 @@ import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "luc
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document AlertStats
+ * AlertStats executes the AlertStats logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the AlertStats logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AlertStats component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AlertStats() {
   const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string } | null>(null);

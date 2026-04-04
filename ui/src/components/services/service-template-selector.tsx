@@ -22,24 +22,13 @@ interface ServiceTemplateSelectorProps {
 const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Cloud", "System", "Utility", "Other"];
 
 /**
- * Intent: Document ServiceTemplateSelector
+ * ServiceTemplateSelector executes the ServiceTemplateSelector logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceTemplateSelector logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceTemplateSelector component.
- * Allows users to browse and search for service templates.
- *
- * @param onSelect - Callback when a template is selected.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");

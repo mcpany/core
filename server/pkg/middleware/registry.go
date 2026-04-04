@@ -44,20 +44,16 @@ var (
 
 // Register registers a HTTP middleware factory.
 //
-// Parameters:
-//   - name (string): The name of the resource.
-//   - factory (Factory): The factory.
-//
-// Summary: Executes Register operation.
+// Summary: Executes the Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -85,6 +81,20 @@ func Register(name string, factory Factory) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// RegisterMCP registers an MCP middleware factory.
+//
+// Summary: Executes the RegisterMCP operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
@@ -110,6 +120,18 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Errors:
 //   - TODO: Document errors.
+// GetHTTPMiddlewares returns a sorted list of HTTP middlewares based on configuration.
+//
+// Summary: Executes the GetHTTPMiddlewares operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -154,6 +176,20 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// GetMCPMiddlewares returns a sorted list of MCP middlewares based on configuration.
+//
+// Summary: Executes the GetMCPMiddlewares operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +253,18 @@ type StandardMiddlewares struct {
 // Summary: Executes InitStandardMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+// InitStandardMiddlewares registers standard middlewares.
+//
+// Summary: Executes the InitStandardMiddlewares operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -43,24 +43,13 @@ interface AuditLogEntry {
 }
 
 /**
- * Intent: Document AuditLogViewer
+ * AuditLogViewer executes the AuditLogViewer logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the AuditLogViewer logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AuditLogViewer component.
- * Displays a table of audit logs with filtering capabilities and detailed view.
- *
- * @returns The rendered AuditLogViewer component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AuditLogViewer() {
     SyntaxHighlighter.registerLanguage('json', json);

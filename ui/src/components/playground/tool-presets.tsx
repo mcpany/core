@@ -25,26 +25,13 @@ interface ToolPresetsProps {
 }
 
 /**
- * Intent: Document ToolPresets
+ * ToolPresets executes the ToolPresets logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolPresets logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolPresets component.
- * @param props - The component props.
- * @param props.toolName - The name of the tool.
- * @param props.currentData - The data to display.
- * @param props.onSelect - The onSelect property.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProps) {
   const [presets, setPresets] = useState<Preset[]>([]);

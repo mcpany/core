@@ -34,23 +34,16 @@ type ServiceRegistrationWorker struct {
 
 // NewServiceRegistrationWorker creates a new ServiceRegistrationWorker.
 //
-// Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - serviceRegistry: The registry that will handle the actual registration logic.
-//
-// Returns:
-//   - *ServiceRegistrationWorker: A new service registration worker.
-//
-// Summary: Initializes NewServiceRegistrationWorker operation.
+// Summary: Executes the NewServiceRegistrationWorker operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -80,6 +73,21 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 //
 // Side Effects:
 //   - None.
+// SetRetryDelay sets the retry delay for failed registrations.
+//
+// Summary: Executes the SetRetryDelay operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 	w.retryDelay = d
 }
@@ -101,6 +109,21 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Start launches the worker in a new goroutine. It subscribes to service
+//
+// Summary: Executes the Start operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -344,11 +367,18 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 // Parameters:
 //   - TODO: Document parameters.
 //
+// Stop waits for the worker to stop.
+//
+// Summary: Executes the Stop operation.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

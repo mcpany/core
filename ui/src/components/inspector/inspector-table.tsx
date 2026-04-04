@@ -81,27 +81,13 @@ interface VisibleRow {
 }
 
 /**
- * Intent: Document InspectorTable
+ * InspectorTable executes the InspectorTable logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the InspectorTable logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A table component for displaying and inspecting traces.
- * Allows clicking on a row to view detailed trace information in a sheet.
- *
- * @param props - The component props.
- * @param props.traces - The list of traces to display.
- * @param props.loading - Whether the data is loading.
- * @returns The rendered table component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);

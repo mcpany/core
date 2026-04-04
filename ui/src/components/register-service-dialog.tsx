@@ -55,23 +55,13 @@ const detectSensitiveData = (text: string) => {
 };
 
 /**
- * Intent: Document RegisterServiceDialog
+ * RegisterServiceDialog executes the RegisterServiceDialog logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the RegisterServiceDialog logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * RegisterServiceDialog.
- *
- * @param serviceToEdit - The serviceToEdit.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);

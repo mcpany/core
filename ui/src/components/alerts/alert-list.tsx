@@ -41,22 +41,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document AlertList
+ * AlertList executes the AlertList logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the AlertList logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AlertList component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AlertList() {
   const [alerts, setAlerts] = useState<Alert[]>([]);

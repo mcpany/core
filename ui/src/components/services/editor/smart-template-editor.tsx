@@ -30,21 +30,13 @@ interface SmartTemplateEditorProps {
 }
 
 /**
- * Intent: Document SmartTemplateEditor
+ * SmartTemplateEditor executes the SmartTemplateEditor logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the SmartTemplateEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A smart editor for Jinja2 templates with live preview and variable picker.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SmartTemplateEditor({
     value,

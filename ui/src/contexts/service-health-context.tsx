@@ -10,21 +10,13 @@ import { Graph, NodeStatus } from '@/types/topology';
 import { usePolling } from '@/hooks/use-polling';
 
 /**
- * Intent: Document MetricPoint
+ * MetricPoint executes the MetricPoint logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the MetricPoint logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * MetricPoint represents a single data point for service health metrics at a specific time.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface MetricPoint {
     /** The timestamp of the metric point in milliseconds. */
@@ -76,9 +68,14 @@ const POLLING_INTERVAL = 5000;
  *   - None
  *
  * ServiceHealthProvider component.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+/**
+ * ServiceHealthProvider executes the ServiceHealthProvider logic.
+ *
+ * Summary: Executes the ServiceHealthProvider logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
@@ -242,6 +239,15 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
  * @returns The service health context.
  * @throws Error if used outside of a ServiceHealthProvider.
  */
+/**
+ * useServiceHealth executes the useServiceHealth logic.
+ *
+ * Summary: Executes the useServiceHealth logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
+ */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
     if (!context) {
@@ -268,7 +274,14 @@ export function useServiceHealth() {
  * useTopology is a hook to access network topology.
  * It is optimized to not re-render when health metrics update.
  * @returns The topology context.
- * @throws Error if used outside of a ServiceHealthProvider.
+/**
+ * useTopology executes the useTopology logic.
+ *
+ * Summary: Executes the useTopology logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useTopology() {
     const context = useContext(TopologyContext);

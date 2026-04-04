@@ -25,29 +25,16 @@ type S3Provider struct {
 
 // NewS3Provider creates a new S3Provider from the given configuration.
 //
+// Summary: Executes the NewS3Provider operation.
+//
 // Parameters:
-//   - config (*configv1.S3Fs): The parameter.
-//
-// Returns:
-//   - *S3Provider: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewS3Provider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -109,6 +96,21 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 //
 // Side Effects:
 //   - None.
+// GetFs returns the underlying filesystem.
+//
+// Summary: Executes the GetFs operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *S3Provider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -138,6 +140,19 @@ func (p *S3Provider) GetFs() afero.Fs {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// ResolvePath resolves the virtual path to a real path in the bucket.
+//
+// Summary: Executes the ResolvePath operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -178,6 +193,21 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the provider.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

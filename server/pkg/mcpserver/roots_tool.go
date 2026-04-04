@@ -28,22 +28,16 @@ type RootsTool struct {
 
 // NewRootsTool creates a new instance of the RootsTool.
 //
-// Returns:
-//   - *RootsTool: A new instance of RootsTool.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewRootsTool operation.
+// Summary: Executes the NewRootsTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -88,6 +82,20 @@ func NewRootsTool() *RootsTool {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Tool returns the protobuf definition of the tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
@@ -111,6 +119,20 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -238,6 +260,20 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// GetCacheConfig returns the caching configuration for this tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

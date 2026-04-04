@@ -27,28 +27,16 @@ type Generator struct {
 
 // NewGenerator creates a new Generator instance that reads from standard input.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Generator: The resulting *Generator.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewGenerator operation.
+// Summary: Executes the NewGenerator operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -83,6 +71,19 @@ func NewGenerator() *Generator {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Generate prompts the user for service details and returns the generated configuration as a byte slice.
+//
+// Summary: Executes the Generate operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

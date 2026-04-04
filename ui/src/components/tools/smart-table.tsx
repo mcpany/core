@@ -23,25 +23,13 @@ interface SmartTableProps {
 type SortDirection = 'asc' | 'desc' | null;
 
 /**
- * Intent: Document SmartTable
+ * SmartTable executes the SmartTable logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the SmartTable logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SmartTable renders a table with sorting and filtering.
- *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });

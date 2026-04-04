@@ -18,24 +18,13 @@ import { apiClient } from "@/lib/client";
 import { Filter } from "lucide-react";
 
 /**
- * Intent: Document ServiceFilter
+ * ServiceFilter executes the ServiceFilter logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ServiceFilter logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A dropdown component to filter dashboard views by a specific service.
- * Updates the global dashboard context when a service is selected.
- *
- * @returns The rendered service filter component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceFilter() {
   const { serviceId, setServiceId } = useDashboard();

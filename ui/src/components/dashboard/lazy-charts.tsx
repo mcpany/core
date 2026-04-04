@@ -37,21 +37,13 @@ const _LazyAuditLogWidget = lazy(() =>
 );
 
 /**
- * Intent: Document LazyRequestVolumeChart
+ * LazyRequestVolumeChart executes the LazyRequestVolumeChart logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the LazyRequestVolumeChart logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * LazyRequestVolumeChart with Suspense skeleton.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const LazyRequestVolumeChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRequestVolumeChart {...(props as any)} /></Suspense>
@@ -73,6 +65,14 @@ export const LazyRequestVolumeChart = (props: object) => (
  *   - None
  *
  * LazyRecentActivityWidget with Suspense skeleton.
+/**
+ * LazyRecentActivityWidget executes the LazyRecentActivityWidget logic.
+ *
+ * Summary: Executes the LazyRecentActivityWidget logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const LazyRecentActivityWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRecentActivityWidget {...(props as any)} /></Suspense>
@@ -94,6 +94,14 @@ export const LazyRecentActivityWidget = (props: object) => (
  *   - None
  *
  * LazyTopToolsWidget with Suspense skeleton.
+/**
+ * LazyTopToolsWidget executes the LazyTopToolsWidget logic.
+ *
+ * Summary: Executes the LazyTopToolsWidget logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const LazyTopToolsWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyTopToolsWidget {...(props as any)} /></Suspense>
@@ -115,6 +123,14 @@ export const LazyTopToolsWidget = (props: object) => (
  *   - None
  *
  * LazyHealthHistoryChart with Suspense skeleton.
+/**
+ * LazyHealthHistoryChart executes the LazyHealthHistoryChart logic.
+ *
+ * Summary: Executes the LazyHealthHistoryChart logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const LazyHealthHistoryChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyHealthHistoryChart {...(props as any)} /></Suspense>
@@ -136,6 +152,14 @@ export const LazyHealthHistoryChart = (props: object) => (
  *   - None
  *
  * LazyAuditLogWidget with Suspense skeleton.
+/**
+ * LazyAuditLogWidget executes the LazyAuditLogWidget logic.
+ *
+ * Summary: Executes the LazyAuditLogWidget logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const LazyAuditLogWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyAuditLogWidget {...(props as any)} /></Suspense>

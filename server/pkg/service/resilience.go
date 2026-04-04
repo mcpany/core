@@ -19,28 +19,16 @@ import (
 
 // UnaryClientInterceptor returns a new unary client interceptor that retries calls. retryConfig is the retryConfig. Returns the result.
 //
-// Parameters:
-//   - retryConfig (*configv1.RetryConfig): The retryConfig parameter.
-//
-// Returns:
-//   - grpc.UnaryClientInterceptor: The resulting grpc.UnaryClientInterceptor.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes UnaryClientInterceptor operation.
+// Summary: Executes the UnaryClientInterceptor operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

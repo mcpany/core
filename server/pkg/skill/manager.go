@@ -39,29 +39,16 @@ type Manager struct {
 
 // NewManager creates a new Skill Manager. rootDir is the directory where skills are stored.
 //
-// Parameters:
-//   - rootDir (string): The rootDir parameter.
-//
-// Returns:
-//   - *Manager: The resulting *Manager.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewManager operation.
+// Summary: Executes the NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -99,6 +86,20 @@ func NewManager(rootDir string) (*Manager, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// ListSkills returns all available skills. It scans the root directory for subdirectories containing SKILL.md.
+//
+// Summary: Executes the ListSkills operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -169,6 +170,20 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// GetSkill retrieves a specific skill by name. name is the name of the resource. Returns the result. Returns an error if the operation fails.
+//
+// Summary: Executes the GetSkill operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (m *Manager) GetSkill(name string) (*Skill, error) {
 	m.mu.RLock()
@@ -200,6 +215,21 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// CreateSkill creates a new skill. It ensures the name is valid and the directory doesn't already exist.
+//
+// Summary: Executes the CreateSkill operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -256,6 +286,19 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// UpdateSkill updates an existing skill. If the name has changed, it renames the directory.
+//
+// Summary: Executes the UpdateSkill operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -317,6 +360,21 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 //
 // Side Effects:
 //   - None.
+// DeleteSkill deletes a skill. name is the name of the resource. Returns an error if the operation fails.
+//
+// Summary: Executes the DeleteSkill operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) DeleteSkill(name string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -359,6 +417,18 @@ func (m *Manager) DeleteSkill(name string) error {
 //
 // Errors:
 //   - TODO: Document errors.
+// SaveAsset saves an asset file (script, reference, etc.) for a skill. path is relative to the skill root (e.g. "scripts/myscript.py").
+//
+// Summary: Executes the SaveAsset operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

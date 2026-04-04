@@ -20,23 +20,13 @@ interface SchemaFormProps {
 }
 
 /**
- * Intent: Document SchemaForm
+ * SchemaForm executes the SchemaForm logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the SchemaForm logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SchemaForm - renders a form based on a JSON Schema definition.
- *
- * @param props - Component props
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SchemaForm({
   schema,

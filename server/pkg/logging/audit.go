@@ -25,29 +25,16 @@ type AuditHandler struct {
 
 // NewAuditHandler creates a new AuditHandler.
 //
-// Parameters:
-//   - next (slog.Handler): The next parameter.
-//   - config (*configv1.AuditConfig): The config parameter.
-//
-// Returns:
-//   - *AuditHandler: The resulting *AuditHandler.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewAuditHandler operation.
+// Summary: Executes the NewAuditHandler operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -122,6 +109,20 @@ func (h *AuditHandler) initializeStore(config *configv1.AuditConfig) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Enabled reports whether the handler handles records at the given level.
+//
+// Summary: Executes the Enabled operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 	return h.next.Enabled(ctx, level)
@@ -152,6 +153,20 @@ func (h *AuditHandler) Enabled(ctx context.Context, level slog.Level) bool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Handle handles the Record.
+//
+// Summary: Executes the Handle operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -192,6 +207,21 @@ func (h *AuditHandler) Handle(ctx context.Context, r slog.Record) error {
 //
 // Side Effects:
 //   - None.
+// WithAttrs returns a new generic Handler with the given attributes.
+//
+// Summary: Executes the WithAttrs operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &AuditHandler{
 		next:   h.next.WithAttrs(attrs),
@@ -224,6 +254,20 @@ func (h *AuditHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// WithGroup returns a new generic Handler with the given group.
+//
+// Summary: Executes the WithGroup operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -260,6 +304,19 @@ func (h *AuditHandler) WithGroup(name string) slog.Handler {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Export sends the log record to the configued sinks.
+//
+// Summary: Executes the Export operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

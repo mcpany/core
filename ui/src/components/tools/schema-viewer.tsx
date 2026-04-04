@@ -12,21 +12,13 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
- * Intent: Document Schema
+ * Schema executes the Schema logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the Schema logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Schema represents a JSON Schema object used for defining tool input parameters.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface Schema {
   type?: string | string[];
@@ -100,12 +92,14 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
  *   - None
  *
  * SchemaViewer component.
- * @param props - The component props.
- * @param props.schema - The schema definition.
- * @param props.name - The name.
- * @param props.required - Whether the field is required.
- * @param props.depth - The nesting depth.
- * @returns The rendered component.
+/**
+ * SchemaViewer executes the SchemaViewer logic.
+ *
+ * Summary: Executes the SchemaViewer logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
   const [isOpen, setIsOpen] = useState(true);

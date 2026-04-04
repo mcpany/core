@@ -16,24 +16,13 @@ interface ToolInspectorProps {
 }
 
 /**
- * Intent: Document ToolInspector
+ * ToolInspector executes the ToolInspector logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolInspector logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolInspector.
- * Wrapper around ToolRunner for dialog presentation.
- *
- * @param onOpenChange - The onOpenChange.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   if (!tool) return null;

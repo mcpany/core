@@ -19,23 +19,13 @@ interface ConfigEditorProps {
 }
 
 /**
- * Intent: Document ConfigEditor
+ * ConfigEditor executes the ConfigEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ConfigEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ConfigEditor.
- *
- * @param readOnly = false - The readOnly = false.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ConfigEditor({ value, onChange, language = "yaml", readOnly = false }: ConfigEditorProps) {
   const { theme, systemTheme } = useTheme();

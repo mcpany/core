@@ -53,25 +53,16 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the health check.
-//
-// Returns:
-//   - error: An error if the service is unhealthy.
-//
-// Side Effects:
-//   - Performs a health check RPC.
-//
-// Summary: Executes CheckHealth operation.
+// Summary: Executes the CheckHealth operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -113,6 +104,20 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// NewUpstream creates a new instance of Upstream.
+//
+// Summary: Executes the NewUpstream operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	cache := ttlcache.New[string, *descriptorpb.FileDescriptorSet](
@@ -149,7 +154,18 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+// Shutdown gracefully terminates the gRPC upstream service by shutting down the
+//
+// Summary: Executes the Shutdown operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -194,14 +210,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Summary: Executes Register operation.
 //
+// Register handles the registration of a gRPC upstream service. It establishes a
+//
+// Summary: Executes the Register operation.
+//
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

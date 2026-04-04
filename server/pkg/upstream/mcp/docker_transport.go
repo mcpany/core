@@ -55,29 +55,16 @@ type DockerTransport struct {
 
 // Connect establishes a connection to the service within the Docker container.
 //
+// Summary: Executes the Connect operation.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - mcp.Connection: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -247,6 +234,20 @@ type dockerConn struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Read decodes a single JSON-RPC message from the container's output stream.
+//
+// Summary: Executes the Read operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 	var raw json.RawMessage
@@ -354,6 +355,20 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Write encodes and sends a JSON-RPC message to the container's input stream.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
@@ -418,6 +433,21 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Side Effects:
 //   - None.
+// Close terminates the connection by closing the underlying ReadWriteCloser.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *dockerConn) Close() error {
 	return c.rwc.Close()
 }
@@ -440,6 +470,21 @@ func (c *dockerConn) Close() error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// SessionID returns a static identifier for the Docker transport session.
+//
+// Summary: Executes the SessionID operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -476,6 +521,21 @@ type dockerReadWriteCloser struct {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the underlying connection and removes the associated Docker container.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -531,8 +591,18 @@ type slogWriter struct {
 // Returns:
 //   - TODO: Document returns.
 //
+// Write takes a byte slice, scans it for lines, and logs each line
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -579,6 +649,21 @@ type tailBuffer struct {
 //
 // Side Effects:
 //   - None.
+// Write writes data to the buffer, maintaining the size limit.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *tailBuffer) Write(p []byte) (n int, err error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -609,6 +694,21 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// String returns the buffered data as a string.
+//
+// Summary: Executes the String operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

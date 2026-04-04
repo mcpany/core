@@ -19,21 +19,13 @@ interface InputTransformerEditorProps {
 }
 
 /**
- * Intent: Document InputTransformerEditor
+ * InputTransformerEditor executes the InputTransformerEditor logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the InputTransformerEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Editor for InputTransformer configuration.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function InputTransformerEditor({ transformer, onChange, parameters = [] }: InputTransformerEditorProps) {
     const [template, setTemplate] = useState(transformer?.template || "");

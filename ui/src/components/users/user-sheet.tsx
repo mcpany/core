@@ -58,29 +58,13 @@ const userSchema = z.object({
 type UserValues = z.infer<typeof userSchema>;
 
 /**
- * Intent: Document UserSheet
+ * UserSheet executes the UserSheet logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the UserSheet logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * UserSheet component.
- * Renders a sheet for creating or editing a user.
- *
- * @param props - The component props.
- * @param props.open - Whether the sheet is open.
- * @param props.onOpenChange - Callback when the sheet open state changes.
- * @param props.user - The user object to edit, or null for creating a new user.
- * @param props.onSave - Callback when the user is saved.
- * @returns The rendered UserSheet component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();

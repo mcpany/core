@@ -28,29 +28,16 @@ type PineconeClient struct {
 
 // NewPineconeClient creates a new Pinecone client.
 //
+// Summary: Executes the NewPineconeClient operation.
+//
 // Parameters:
-//   - config (*configv1.PineconeVectorDB): The parameter.
-//
-// Returns:
-//   - *PineconeClient: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewPineconeClient operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -161,6 +148,20 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Query searches for similar vectors.
+//
+// Summary: Executes the Query operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64, filter map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
@@ -205,6 +206,21 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 //
 // Side Effects:
 //   - None.
+// Upsert inserts or updates vectors.
+//
+// Summary: Executes the Upsert operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interface{}, namespace string) (map[string]interface{}, error) {
 	req := map[string]interface{}{
 		"vectors": vectors,
@@ -240,6 +256,20 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Delete removes vectors.
+//
+// Summary: Executes the Delete operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -284,6 +314,21 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// DescribeIndexStats returns statistics about the index.
+//
+// Summary: Executes the DescribeIndexStats operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

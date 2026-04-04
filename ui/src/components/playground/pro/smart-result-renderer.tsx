@@ -29,22 +29,13 @@ interface McpContent {
 }
 
 /**
- * Intent: Document SmartResultRenderer
+ * SmartResultRenderer executes the SmartResultRenderer logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the SmartResultRenderer logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Renders the result of a tool execution in a smart, tabular format if possible,
- * falling back to a raw JSON view.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const [userViewMode, setUserViewMode] = useState<"smart" | "raw" | "rich" | null>(null);

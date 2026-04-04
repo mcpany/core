@@ -70,23 +70,13 @@ const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isS
 TraceListItem.displayName = "TraceListItem";
 
 /**
- * Intent: Document TraceList
+ * TraceList executes the TraceList logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the TraceList logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * TraceList.
- *
- * @param onToggleLive - The onToggleLive.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
 

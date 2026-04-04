@@ -23,28 +23,16 @@ type A2ABridgeMiddleware struct {
 
 // NewA2ABridgeMiddleware creates a new A2ABridgeMiddleware.
 //
+// Summary: Executes the NewA2ABridgeMiddleware operation.
+//
 // Parameters:
-//   - contextManager (*RecursiveContextManager): The manager for A2A session tokens.
+//   - None.
 //
 // Returns:
-//   - *A2ABridgeMiddleware: The newly created middleware.
+//   - None.
 //
 // Errors:
 //   - None.
-//
-// Side Effects:
-//   - Allocates memory for the middleware struct.
-//
-// Summary: Initializes NewA2ABridgeMiddleware operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -80,8 +68,18 @@ func NewA2ABridgeMiddleware(contextManager *RecursiveContextManager) *A2ABridgeM
 // Returns:
 //   - TODO: Document returns.
 //
+// Execute processes the MCP request and intercepts A2A agent calls.
+//
+// Summary: Executes the Execute operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

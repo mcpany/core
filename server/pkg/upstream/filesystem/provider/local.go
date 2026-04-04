@@ -26,29 +26,16 @@ type LocalProvider struct {
 
 // NewLocalProvider creates a new LocalProvider from the given configuration.
 //
+// Summary: Executes the NewLocalProvider operation.
+//
 // Parameters:
-//   - _ (*configv1.OsFs): The parameter.
-//   - rootPaths (map[string]string): The parameter.
-//   - (allowedPaths): The parameter.
-//   - deniedPaths ([]string): The parameter.
-//   - symlinkMode (configv1.FilesystemUpstreamService_SymlinkMode): The parameter.
-//
-// Returns:
-//   - *LocalProvider: The result.
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewLocalProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -83,6 +70,21 @@ func NewLocalProvider(_ *configv1.OsFs, rootPaths map[string]string, allowedPath
 //
 // Side Effects:
 //   - None.
+// GetFs returns the underlying filesystem.
+//
+// Summary: Executes the GetFs operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *LocalProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -112,6 +114,19 @@ func (p *LocalProvider) GetFs() afero.Fs {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// ResolvePath resolves the virtual path to a real path in the local filesystem.
+//
+// Summary: Executes the ResolvePath operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -385,6 +400,21 @@ func (p *LocalProvider) containsSymlink(virtualPath, bestMatchVirtual, bestMatch
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the provider.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

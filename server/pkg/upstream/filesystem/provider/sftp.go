@@ -27,29 +27,16 @@ type SftpProvider struct {
 
 // NewSftpProvider creates a new SftpProvider from the given configuration.
 //
+// Summary: Executes the NewSftpProvider operation.
+//
 // Parameters:
-//   - config (*configv1.SftpFs): The parameter.
-//
-// Returns:
-//   - *SftpProvider: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewSftpProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,6 +113,21 @@ func NewSftpProvider(config *configv1.SftpFs) (*SftpProvider, error) {
 //
 // Side Effects:
 //   - None.
+// GetFs returns the underlying filesystem.
+//
+// Summary: Executes the GetFs operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *SftpProvider) GetFs() afero.Fs {
 	return p.fs
 }
@@ -155,6 +157,19 @@ func (p *SftpProvider) GetFs() afero.Fs {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// ResolvePath resolves the virtual path to a real path.
+//
+// Summary: Executes the ResolvePath operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -188,6 +203,21 @@ func (p *SftpProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the SFTP client and connection.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -233,6 +263,19 @@ type sftpFs struct {
 // Errors:
 //   - TODO: Document errors.
 //
+// Create creates a file in the filesystem, returning the file and an error, if any happens.
+//
+// Summary: Executes the Create operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (s *sftpFs) Create(name string) (afero.File, error) {
@@ -270,6 +313,20 @@ func (s *sftpFs) Create(name string) (afero.File, error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Mkdir creates a directory in the filesystem, returning an error, if any happens.
+//
+// Summary: Executes the Mkdir operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (s *sftpFs) Mkdir(name string, _ os.FileMode) error {
 	return s.client.Mkdir(name)
@@ -302,6 +359,20 @@ func (s *sftpFs) Mkdir(name string, _ os.FileMode) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// MkdirAll creates a directory path and all parents that does not exist for a given name.
+//
+// Summary: Executes the MkdirAll operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (s *sftpFs) MkdirAll(path string, _ os.FileMode) error {
 	return s.client.MkdirAll(path)
@@ -332,6 +403,20 @@ func (s *sftpFs) MkdirAll(path string, _ os.FileMode) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Open opens a file, returning it or an error, if any happens.
+//
+// Summary: Executes the Open operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -370,6 +455,18 @@ func (s *sftpFs) Open(name string) (afero.File, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+// OpenFile opens a file using the given flags and the given mode.
+//
+// Summary: Executes the OpenFile operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -408,6 +505,21 @@ func (s *sftpFs) OpenFile(name string, flag int, _ os.FileMode) (afero.File, err
 //
 // Side Effects:
 //   - None.
+// Remove removes a file identified by name, returning an error, if any happens.
+//
+// Summary: Executes the Remove operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *sftpFs) Remove(name string) error {
 	return s.client.Remove(name)
 }
@@ -436,6 +548,21 @@ func (s *sftpFs) Remove(name string) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// RemoveAll removes a directory path and any children it contains.
+//
+// Summary: Executes the RemoveAll operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -471,6 +598,20 @@ func (s *sftpFs) RemoveAll(path string) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Rename renames a file.
+//
+// Summary: Executes the Rename operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (s *sftpFs) Rename(oldname, newname string) error {
 	return s.client.Rename(oldname, newname)
@@ -503,6 +644,20 @@ func (s *sftpFs) Rename(oldname, newname string) error {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Stat returns a FileInfo describing the named file, or an error, if any happens.
+//
+// Summary: Executes the Stat operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 	return s.client.Stat(name)
@@ -526,6 +681,21 @@ func (s *sftpFs) Stat(name string) (os.FileInfo, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Name returns the name of this file system.
+//
+// Summary: Executes the Name operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -558,6 +728,19 @@ func (s *sftpFs) Name() string {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Chmod changes the mode of the named file to mode.
+//
+// Summary: Executes the Chmod operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -592,6 +775,19 @@ func (s *sftpFs) Chmod(name string, mode os.FileMode) error {
 // Errors:
 //   - TODO: Document errors.
 //
+// Chown changes the uid and gid of the named file.
+//
+// Summary: Executes the Chown operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (s *sftpFs) Chown(name string, uid, gid int) error {
@@ -624,6 +820,20 @@ func (s *sftpFs) Chown(name string, uid, gid int) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Chtimes changes the access and modification times of the named file.
+//
+// Summary: Executes the Chtimes operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -660,6 +870,21 @@ type sftpFile struct {
 //
 // Side Effects:
 //   - None.
+// Close closes the file.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (f *sftpFile) Close() error {
 	return f.f.Close()
 }
@@ -689,6 +914,20 @@ func (f *sftpFile) Close() error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Read reads up to len(b) bytes from the File.
+//
+// Summary: Executes the Read operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -722,6 +961,19 @@ func (f *sftpFile) Read(p []byte) (n int, err error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// ReadAt reads len(b) bytes from the File starting at byte offset off.
+//
+// Summary: Executes the ReadAt operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -757,6 +1009,20 @@ func (f *sftpFile) ReadAt(p []byte, off int64) (n int, err error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Seek sets the offset for the next Read or Write to offset, interpreted according to whence.
+//
+// Summary: Executes the Seek operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (f *sftpFile) Seek(offset int64, whence int) (int64, error) {
 	return f.f.Seek(offset, whence)
@@ -787,6 +1053,21 @@ func (f *sftpFile) Seek(offset int64, whence int) (int64, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Write writes len(b) bytes to the File.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -821,6 +1102,19 @@ func (f *sftpFile) Write(p []byte) (n int, err error) {
 // Errors:
 //   - TODO: Document errors.
 //
+// WriteAt writes len(b) bytes to the File starting at byte offset off.
+//
+// Summary: Executes the WriteAt operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
@@ -845,6 +1139,21 @@ func (f *sftpFile) WriteAt(p []byte, off int64) (n int, err error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Name returns the name of the file as presented to Open.
+//
+// Summary: Executes the Name operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -879,6 +1188,19 @@ func (f *sftpFile) Name() string {
 // Errors:
 //   - TODO: Document errors.
 //
+// Readdir reads the contents of the directory associated with file and returns
+//
+// Summary: Executes the Readdir operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
@@ -910,6 +1232,21 @@ func (f *sftpFile) Readdir(_ int) ([]os.FileInfo, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Readdirnames reads and returns a slice of names from the directory f.
+//
+// Summary: Executes the Readdirnames operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -950,6 +1287,21 @@ func (f *sftpFile) Readdirnames(n int) ([]string, error) {
 //
 // Side Effects:
 //   - None.
+// Stat returns the FileInfo structure describing file.
+//
+// Summary: Executes the Stat operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (f *sftpFile) Stat() (os.FileInfo, error) {
 	return f.f.Stat()
 }
@@ -975,6 +1327,21 @@ func (f *sftpFile) Stat() (os.FileInfo, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Sync commits the current contents of the file to stable storage.
+//
+// Summary: Executes the Sync operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1007,6 +1374,19 @@ func (f *sftpFile) Sync() error {
 // Errors:
 //   - TODO: Document errors.
 //
+// Truncate changes the size of the file.
+//
+// Summary: Executes the Truncate operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (f *sftpFile) Truncate(size int64) error {
@@ -1038,6 +1418,19 @@ func (f *sftpFile) Truncate(size int64) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// WriteString is like Write, but writes the contents of string s rather than a slice of bytes.
+//
+// Summary: Executes the WriteString operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

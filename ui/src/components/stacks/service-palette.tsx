@@ -49,24 +49,13 @@ interface ServicePaletteProps {
 }
 
 /**
- * Intent: Document ServicePalette
+ * ServicePalette executes the ServicePalette logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServicePalette logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServicePalette component.
- * Fetches service templates from the API and displays them for selection.
- *
- * @param {ServicePaletteProps} props - Component props.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const [search, setSearch] = useState("");

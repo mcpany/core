@@ -440,19 +440,16 @@ func NewGRPCTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, met
 
 // Tool returns the protobuf definition of the gRPC tool.
 //
-// Returns:
-//   - *v1.Tool: The underlying protobuf definition.
-//
-// Summary: Executes Tool operation.
+// Summary: Executes the Tool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -477,6 +474,18 @@ func (t *GRPCTool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -506,6 +515,21 @@ func (t *GRPCTool) MCPTool() *mcp.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig returns the cache configuration for the gRPC tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -837,6 +861,21 @@ func NewHTTPTool(tool *v1.Tool, poolManager *pool.Manager, serviceID string, aut
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the HTTP tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *HTTPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -858,6 +897,18 @@ func (t *HTTPTool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -887,6 +938,21 @@ func (t *HTTPTool) MCPTool() *mcp.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig returns the cache configuration for the HTTP tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1645,6 +1711,21 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the MCP tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *MCPTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -1666,6 +1747,18 @@ func (t *MCPTool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1695,6 +1788,21 @@ func (t *MCPTool) MCPTool() *mcp.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig returns the cache configuration for the MCP tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1986,6 +2094,21 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the OpenAPI tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *OpenAPITool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2007,6 +2130,18 @@ func (t *OpenAPITool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -2036,6 +2171,21 @@ func (t *OpenAPITool) MCPTool() *mcp.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig returns the cache configuration for the OpenAPI tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -2450,6 +2600,21 @@ func NewLocalCommandTool(
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the command-line tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *LocalCommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2471,6 +2636,18 @@ func (t *LocalCommandTool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -2500,6 +2677,21 @@ func (t *LocalCommandTool) MCPTool() *mcp.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -2930,6 +3122,21 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the command-line tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CommandTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -2951,6 +3158,18 @@ func (t *CommandTool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+// MCPTool returns the MCP-compliant tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -2980,6 +3199,21 @@ func (t *CommandTool) MCPTool() *mcp.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetCacheConfig returns the cache configuration for the command-line tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -3423,7 +3657,18 @@ type threadSafeBuffer struct {
 //   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+// Write writes bytes to the buffer in a thread-safe manner.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -3448,6 +3693,21 @@ func (tsb *threadSafeBuffer) Write(p []byte) (n int, err error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// String returns the contents of the buffer as a string in a thread-safe manner.
+//
+// Summary: Executes the String operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

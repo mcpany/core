@@ -34,23 +34,13 @@ interface ToolTableProps {
 // Memoization ensures table only updates when props change.
 
 /**
- * Intent: Document ToolTable
+ * ToolTable executes the ToolTable logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolTable logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolTable component.
- * @param props - The component props.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const ToolTable = memo(function ToolTable({
   tools,

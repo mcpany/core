@@ -13,23 +13,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OpenapiUpstreamService } from '@proto/config/v1/upstream_service';
 
 /**
- * Intent: Document StepOpenAPI
+ * StepOpenAPI executes the StepOpenAPI logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the StepOpenAPI logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StepOpenAPI component.
- * Allows users to configure an OpenAPI/Swagger upstream service.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StepOpenAPI() {
     const { state, updateConfig } = useWizard();

@@ -170,23 +170,13 @@ function WaterfallItem({
 
 
 /**
- * Intent: Document TraceDetail
+ * TraceDetail executes the TraceDetail logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the TraceDetail logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * TraceDetail.
- *
- * @param { trace - The { trace.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();

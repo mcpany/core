@@ -15,27 +15,13 @@ interface SourceEditorProps {
 }
 
 /**
- * Intent: Document SourceEditor
+ * SourceEditor executes the SourceEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the SourceEditor logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SourceEditor component for editing YAML configuration.
- * Uses Monaco Editor.
- *
- * @param props - The component props.
- * @param props.value - The current YAML string.
- * @param props.onChange - Callback when value changes.
- * @returns The rendered editor.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SourceEditor({ value, onChange }: SourceEditorProps) {
     const { theme } = useTheme();

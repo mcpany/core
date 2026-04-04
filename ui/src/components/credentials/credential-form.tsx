@@ -57,23 +57,13 @@ interface CredentialFormProps {
 }
 
 /**
- * Intent: Document CredentialForm
+ * CredentialForm executes the CredentialForm logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the CredentialForm logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * CredentialForm.
- *
- * @param onSuccess - The onSuccess.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) {
   const { toast } = useToast()

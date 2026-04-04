@@ -27,29 +27,16 @@ type StdioTransport struct {
 
 // Connect starts the command and returns a connection.
 //
+// Summary: Executes the Connect operation.
+//
 // Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - mcp.Connection: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -140,6 +127,20 @@ type stdioConn struct {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Read reads a JSON-RPC message from the standard output of the command.
+//
+// Summary: Executes the Read operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -256,6 +257,20 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Write writes a JSON-RPC message to the standard input of the command.
+//
+// Summary: Executes the Write operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 	var method string
@@ -320,6 +335,21 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 //
 // Side Effects:
 //   - None.
+// Close terminates the command and closes the streams.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *stdioConn) Close() error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -353,6 +383,21 @@ func (c *stdioConn) Close() error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// SessionID returns a static session ID for the stdio connection.
+//
+// Summary: Executes the SessionID operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

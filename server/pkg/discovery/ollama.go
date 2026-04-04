@@ -39,28 +39,16 @@ type OllamaProvider struct {
 
 // Name returns the name of the provider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Name operation.
+// Summary: Executes the Name operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -93,6 +81,19 @@ func (p *OllamaProvider) Name() string {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Discover attempts to find local Ollama instances and return them as tools.
+//
+// Summary: Executes the Discover operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

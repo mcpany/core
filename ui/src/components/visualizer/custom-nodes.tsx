@@ -28,21 +28,13 @@ const NodeWrapper = ({ children, className, selected }: { children: React.ReactN
 );
 
 /**
- * Intent: Document UserNode
+ * UserNode executes the UserNode logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the UserNode logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * UserNode represents a user in the flow.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const UserNode = memo(({ data, selected }: any) => {
   return (
@@ -78,6 +70,14 @@ UserNode.displayName = 'UserNode';
  *   - None
  *
  * AgentNode represents an agent in the flow.
+/**
+ * AgentNode executes the AgentNode logic.
+ *
+ * Summary: Executes the AgentNode logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const AgentNode = memo(({ data, selected }: any) => {
   return (
@@ -119,6 +119,14 @@ AgentNode.displayName = 'AgentNode';
  *   - None
  *
  * ToolNode represents a tool in the flow.
+/**
+ * ToolNode executes the ToolNode logic.
+ *
+ * Summary: Executes the ToolNode logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const ToolNode = memo(({ data, selected }: any) => {
   return (
@@ -154,6 +162,14 @@ ToolNode.displayName = 'ToolNode';
  *   - None
  *
  * ResourceNode represents a resource in the flow.
+/**
+ * ResourceNode executes the ResourceNode logic.
+ *
+ * Summary: Executes the ResourceNode logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const ResourceNode = memo(({ data, selected }: any) => {
     return (
@@ -190,6 +206,14 @@ ResourceNode.displayName = 'ResourceNode';
  *   - None
  *
  * ServiceNode represents a service in the flow.
+/**
+ * ServiceNode executes the ServiceNode logic.
+ *
+ * Summary: Executes the ServiceNode logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const ServiceNode = memo(({ data, selected }: any) => {
     return (

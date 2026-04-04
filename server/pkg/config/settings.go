@@ -378,17 +378,19 @@ func (s *Settings) APIKey() string {
 
 // SetAPIKey sets the Global API key.
 //
-// Summary: Sets the API key.
+// Summary: Executes the SetAPIKey operation.
 //
 // Parameters:
-//   - key: string. The API key.
+//   - None.
 //
 // Returns:
+//   - None.
 //
-//	None.
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the API key setting.
+//   - None.
 func (s *Settings) SetAPIKey(key string) {
 	s.proto.SetApiKey(key)
 }
@@ -405,7 +407,21 @@ func (s *Settings) SetAPIKey(key string) {
 //	None.
 //
 // Side Effects:
-//   - Updates the middlewares setting.
+// SetMiddlewares sets the middlewares for the global settings.
+//
+// Summary: Executes the SetMiddlewares operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Settings) SetMiddlewares(middlewares []*configv1.Middleware) {
 	s.proto.SetMiddlewares(middlewares)
 }
@@ -579,7 +595,21 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 //	None.
 //
 // Side Effects:
-//   - Updates the DLP setting.
+// SetDlp sets the DLP configuration.
+//
+// Summary: Executes the SetDlp operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }
@@ -612,6 +642,21 @@ func (s *Settings) GetSso() *configv1.SSOConfig {
 //
 // Side Effects:
 //   - Updates the SSO setting.
+// SetSso sets the SSO configuration.
+//
+// Summary: Executes the SetSso operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *Settings) SetSso(sso *configv1.SSOConfig) {
 	s.proto.SetSso(sso)
 }

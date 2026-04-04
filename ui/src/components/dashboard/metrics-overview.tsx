@@ -95,23 +95,13 @@ import { apiClient, Metric } from "@/lib/client";
 // ... (Icon map and MetricItem remain same)
 
 /**
- * Intent: Document MetricsOverview
+ * MetricsOverview executes the MetricsOverview logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the MetricsOverview logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * MetricsOverview displays a grid of key system metrics (e.g., QPS, Latency, Users)
- * and the system health status. It fetches data periodically from the API.
- * @returns The rendered MetricsOverview component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);

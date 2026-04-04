@@ -55,23 +55,13 @@ interface ServiceListProps {
 }
 
 /**
- * Intent: Document ServiceList
+ * ServiceList executes the ServiceList logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceList logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceList.
- *
- * @param onExport - The onExport.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");

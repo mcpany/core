@@ -36,23 +36,13 @@ interface ConnectionDiagnosticDialogProps {
 }
 
 /**
- * Intent: Document ConnectionDiagnosticDialog
+ * ConnectionDiagnosticDialog executes the ConnectionDiagnosticDialog logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ConnectionDiagnosticDialog logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ConnectionDiagnosticDialog.
- *
- * @param trigger - The trigger.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ConnectionDiagnosticDialog({ service, trigger }: ConnectionDiagnosticDialogProps) {
   const [open, setOpen] = useState(false);

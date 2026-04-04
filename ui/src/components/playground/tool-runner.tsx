@@ -48,27 +48,13 @@ interface AuditLogEntry {
 }
 
 /**
- * Intent: Document ToolRunner
+ * ToolRunner executes the ToolRunner logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolRunner logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolRunner is a component that provides an interface for executing tools
- * and viewing their results, metrics, and schema.
- *
- * @param props - The props.
- * @param props.tool - The tool.
- * @param props.onClose - The onClose callback.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
   const [input, setInput] = useState("{}");

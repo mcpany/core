@@ -21,21 +21,13 @@ interface State {
 }
 
 /**
- * Intent: Document ErrorBoundary
+ * ErrorBoundary executes the ErrorBoundary logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ErrorBoundary logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Global Error Boundary to catch and report UI crashes.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {

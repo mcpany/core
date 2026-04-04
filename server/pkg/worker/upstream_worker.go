@@ -29,23 +29,16 @@ type UpstreamWorker struct {
 
 // NewUpstreamWorker creates a new UpstreamWorker.
 //
-// Parameters:
-//   - bus: The event bus used for receiving requests and publishing results.
-//   - toolManager: The tool manager that will handle the actual tool execution.
-//
-// Returns:
-//   - *UpstreamWorker: A new upstream worker.
-//
-// Summary: Initializes NewUpstreamWorker operation.
+// Summary: Executes the NewUpstreamWorker operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -73,6 +66,21 @@ func NewUpstreamWorker(bus *bus.Provider, toolManager tool.ManagerInterface) *Up
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Start launches the worker in a new goroutine. It subscribes to tool execution
+//
+// Summary: Executes the Start operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -147,10 +155,18 @@ func (w *UpstreamWorker) Start(ctx context.Context) {
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+// Stop waits for the worker to stop.
+//
+// Summary: Executes the Stop operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

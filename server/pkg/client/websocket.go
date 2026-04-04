@@ -20,28 +20,16 @@ type WebsocketClientWrapper struct {
 
 // IsHealthy checks if the underlying WebSocket connection is still active. It sends a ping message with a short deadline to verify the connection's liveness.
 //
-// Parameters:
-//   - _ (context.Context): The _ parameter.
-//
-// Returns:
-//   - bool: True if successful, false otherwise.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Checks IsHealthy operation.
+// Summary: Executes the IsHealthy operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -76,6 +64,20 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Close terminates the underlying WebSocket connection. Returns an error if the operation fails.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

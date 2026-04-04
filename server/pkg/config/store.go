@@ -120,25 +120,16 @@ type yamlEngine struct {
 
 // SetSkipValidation sets whether to skip schema validation.
 //
+// Summary: Executes the SetSkipValidation operation.
+//
 // Parameters:
-//   - skip (bool): The parameter.
+//   - None.
 //
 // Returns:
 //   - None.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Updates SetSkipValidation operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -169,6 +160,20 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// SetIgnoreEnv sets whether to ignore environment variables.
+//
+// Summary: Executes the SetIgnoreEnv operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 	e.ignoreEnv = ignore
@@ -197,8 +202,18 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Returns:
 //   - TODO: Document returns.
 //
+// Unmarshal parses a YAML byte slice into a `proto.Message`.
+//
+// Summary: Executes the Unmarshal operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -246,6 +261,19 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// UnmarshalFromMap populates the provided proto.Message from a raw map.
+//
+// Summary: Executes the UnmarshalFromMap operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -381,6 +409,21 @@ type textprotoEngine struct{}
 //
 // Side Effects:
 //   - None.
+// Unmarshal parses a textproto byte slice into a `proto.Message`.
+//
+// Summary: Executes the Unmarshal operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *textprotoEngine) Unmarshal(b []byte, v proto.Message) error {
 	return prototext.Unmarshal(b, v)
 }
@@ -413,6 +456,20 @@ type jsonEngine struct{}
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Unmarshal parses a JSON byte slice into a `proto.Message`.
+//
+// Summary: Executes the Unmarshal operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -761,6 +818,21 @@ type FileStore struct {
 //
 // Side Effects:
 //   - None.
+// SetSkipValidation configures whether to skip schema validation during loading.
+//
+// Summary: Executes the SetSkipValidation operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (s *FileStore) SetSkipValidation(skip bool) {
 	s.skipValidation = skip
 }
@@ -783,6 +855,21 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// SetIgnoreMissingEnv configures whether to ignore missing environment variables during loading.
+//
+// Summary: Executes the SetIgnoreMissingEnv operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -842,6 +929,19 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// HasConfigSources returns true if the store has configuration paths configured. Side Effects: - None.
+//
+// Summary: Executes the HasConfigSources operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1493,6 +1593,20 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// HasConfigSources returns true if any of the underlying stores have configuration sources. Side Effects: - None.
+//
+// Summary: Executes the HasConfigSources operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -16,24 +16,13 @@ import { Link as LinkIcon, Check, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * Intent: Document ConnectClientButton
+ * ConnectClientButton executes the ConnectClientButton logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ConnectClientButton logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ConnectClientButton component.
- * Provides a modal with configuration snippets for connecting various MCP clients.
- *
- * @returns {JSX.Element} The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ConnectClientButton() {
   const [isOpen, setIsOpen] = useState(false);

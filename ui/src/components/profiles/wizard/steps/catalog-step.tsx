@@ -19,22 +19,13 @@ interface CatalogStepProps {
 }
 
 /**
- * Intent: Document CatalogStep
+ * CatalogStep executes the CatalogStep logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the CatalogStep logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Step for selecting services from the catalog.
- * @param props Component properties.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function CatalogStep({ onNext }: CatalogStepProps) {
   const [templates, setTemplates] = useState<any[]>([]);

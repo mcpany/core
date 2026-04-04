@@ -43,22 +43,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
 
 /**
- * Intent: Document SecretsManager
+ * SecretsManager executes the SecretsManager logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the SecretsManager logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SecretsManager component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SecretsManager() {
     const [secrets, setSecrets] = useState<SecretDefinition[]>([]);

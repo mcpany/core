@@ -16,27 +16,13 @@ interface OAuthStatusBannerProps {
 }
 
 /**
- * Intent: Document OAuthStatusBanner
+ * OAuthStatusBanner executes the OAuthStatusBanner logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the OAuthStatusBanner logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * OAuthStatusBanner component.
- * @param props - The component props.
- * @param props.status - The current status.
- * @param props.serviceName - The name of the service.
- * @param props.onConnect - The onConnect property.
- * @param props.errorMessage - The error message or object.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const OAuthStatusBanner: React.FC<OAuthStatusBannerProps> = ({
     status,

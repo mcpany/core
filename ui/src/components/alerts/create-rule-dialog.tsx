@@ -31,22 +31,13 @@ import { apiClient } from "@/lib/client";
 import { Severity } from "./types";
 
 /**
- * Intent: Document CreateRuleDialog
+ * CreateRuleDialog executes the CreateRuleDialog logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the CreateRuleDialog logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * CreateRuleDialog component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function CreateRuleDialog() {
   const [open, setOpen] = useState(false);

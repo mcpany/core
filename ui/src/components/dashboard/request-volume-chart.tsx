@@ -11,22 +11,13 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * Intent: Document RequestVolumeChart
+ * RequestVolumeChart executes the RequestVolumeChart logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the RequestVolumeChart logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * RequestVolumeChart component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; requests: number }[]>([]);

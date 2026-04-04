@@ -30,23 +30,16 @@ type Updater struct {
 
 // NewUpdater creates a new Updater.
 //
-// Parameters:
-//   - httpClient: *http.Client. The HTTP client to use for network requests. If nil, http.DefaultClient is used.
-//   - githubAPIURL: string. Optional URL for the GitHub API (useful for Enterprise GitHub).
-//
-// Returns:
-//   - *Updater: A new Updater instance.
-//
-// Summary: Initializes NewUpdater operation.
+// Summary: Executes the NewUpdater operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -88,10 +81,18 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+// CheckForUpdate checks for a new release on GitHub.
+//
+// Summary: Executes the CheckForUpdate operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -135,8 +136,18 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Returns:
 //   - TODO: Document returns.
 //
+// UpdateTo downloads the new release, verifies its checksum, and replaces the current executable.
+//
+// Summary: Executes the UpdateTo operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

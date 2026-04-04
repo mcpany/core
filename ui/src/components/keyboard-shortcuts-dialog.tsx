@@ -26,23 +26,13 @@ interface KeyboardShortcutsDialogProps {
 }
 
 /**
- * Intent: Document KeyboardShortcutsDialog
+ * KeyboardShortcutsDialog executes the KeyboardShortcutsDialog logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the KeyboardShortcutsDialog logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A dialog that displays and allows customization of keyboard shortcuts.
- *
- * @param onOpenChange - The onOpenChange.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcutsDialogProps) {
   const { shortcuts, overrides, updateOverride, resetOverride } = useKeyboardShortcuts()

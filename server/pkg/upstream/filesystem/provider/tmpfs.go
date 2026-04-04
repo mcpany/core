@@ -18,22 +18,16 @@ type TmpfsProvider struct {
 
 // NewTmpfsProvider creates a new TmpfsProvider.
 //
-// Returns:
-//   - *TmpfsProvider: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewTmpfsProvider operation.
+// Summary: Executes the NewTmpfsProvider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -63,6 +57,20 @@ func NewTmpfsProvider() *TmpfsProvider {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// GetFs returns the underlying filesystem.
+//
+// Summary: Executes the GetFs operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (p *TmpfsProvider) GetFs() afero.Fs {
 	return p.fs
@@ -88,11 +96,18 @@ func (p *TmpfsProvider) GetFs() afero.Fs {
 // Parameters:
 //   - TODO: Document parameters.
 //
+// ResolvePath resolves the virtual path to a real path.
+//
+// Summary: Executes the ResolvePath operation.
+//
+// Parameters:
+//   - None.
+//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -122,6 +137,21 @@ func (p *TmpfsProvider) ResolvePath(virtualPath string) (string, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close closes the provider.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

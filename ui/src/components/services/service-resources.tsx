@@ -25,22 +25,13 @@ interface ServiceResourcesProps {
 }
 
 /**
- * Intent: Document ServiceResources
+ * ServiceResources executes the ServiceResources logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ServiceResources logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceResources lists the resources exposed by an upstream service.
- * It allows users to view resource details and read their content.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceResources({ resources }: ServiceResourcesProps) {
     const [selectedResource, setSelectedResource] = useState<ResourceDefinition | null>(null);

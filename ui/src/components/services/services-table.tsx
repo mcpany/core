@@ -41,23 +41,13 @@ interface ServicesTableProps {
 }
 
 /**
- * Intent: Document ServicesTable
+ * ServicesTable executes the ServicesTable logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServicesTable logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServicesTable.
- *
- * @param onDelete - The onDelete.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServicesTable({ services, loading, onToggle, onDelete }: ServicesTableProps) {
 

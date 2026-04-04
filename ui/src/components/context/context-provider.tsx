@@ -30,25 +30,13 @@ interface ContextState {
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
 /**
- * Intent: Document ContextProvider
+ * ContextProvider executes the ContextProvider logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ContextProvider logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ContextProvider component that manages the application context state.
- * It provides tools, services, and simulation capabilities to its children.
- *
- * @param props - The component props.
- * @param props.children - The child components to render.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ContextProvider({ children }: { children: React.ReactNode }) {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
@@ -166,6 +154,15 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
  * Throws an error if used outside of a ContextProvider.
  *
  * @returns The context state including tools, services, and simulation helpers.
+ */
+/**
+ * useRecursiveContext executes the useRecursiveContext logic.
+ *
+ * Summary: Executes the useRecursiveContext logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useRecursiveContext() {
     const context = useContext(ContextContext);

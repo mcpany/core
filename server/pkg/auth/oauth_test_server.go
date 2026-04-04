@@ -29,28 +29,16 @@ type MockOAuth2Server struct {
 
 // NewMockOAuth2Server creates a new mock OAuth2 server. t is the t. Returns the result.
 //
-// Parameters:
-//   - t (*testing.T): The t parameter.
-//
-// Returns:
-//   - *MockOAuth2Server: The resulting *MockOAuth2Server.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewMockOAuth2Server operation.
+// Summary: Executes the NewMockOAuth2Server operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -149,6 +137,19 @@ func NewMockOAuth2Server(t *testing.T) *MockOAuth2Server {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// NewIDToken permits generating custom tokens signed by this server. t is the t. claims is the claims. Returns the result.
+//
+// Summary: Executes the NewIDToken operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

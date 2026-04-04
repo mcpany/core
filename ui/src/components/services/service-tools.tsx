@@ -26,22 +26,13 @@ interface ServiceToolsProps {
 }
 
 /**
- * Intent: Document ServiceTools
+ * ServiceTools executes the ServiceTools logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ServiceTools logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceTools lists the tools exposed by an upstream service.
- * It provides actions to try out tools in the playground and view their schema definitions.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceTools({ tools }: ServiceToolsProps) {
     if (!tools || tools.length === 0) {

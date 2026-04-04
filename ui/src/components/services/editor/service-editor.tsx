@@ -48,23 +48,13 @@ interface ServiceEditorProps {
 }
 
 /**
- * Intent: Document ServiceEditor
+ * ServiceEditor executes the ServiceEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceEditor.
- *
- * @param onCancel - The onCancel.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");

@@ -19,22 +19,13 @@ interface ServiceOverviewProps {
 }
 
 /**
- * Intent: Document ServiceOverview
+ * ServiceOverview executes the ServiceOverview logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ServiceOverview logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceOverview displays a high-level summary of the service's health and metrics.
- * It includes status indicators, sparkline charts for traffic history, and key configuration details.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceOverview({ service, status, trafficData = [] }: ServiceOverviewProps) {
     const isHealthy = !service.lastError && (!status?.status || status.status === "OK");

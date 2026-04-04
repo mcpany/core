@@ -14,27 +14,15 @@ import { render as originalRender, type RenderOptions } from '@testing-library/r
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
- /**
- * Intent: Document render
+/**
+ * render executes the render logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the render logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
-  * render wraps the component in a MemoryRouter for testing.
-  *
-  * @param ui The component to render.
-  * @param options Additional rendering options.
-  * @returns The rendered component with testing utilities.
-  */
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
+ */
 export function render(
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType<{ children: React.ReactNode }> }

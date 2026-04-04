@@ -114,29 +114,13 @@ const getTableData = (data: unknown, smartTable: boolean) => {
 };
 
 /**
- * Intent: Document JsonView
+ * JsonView executes the JsonView logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the JsonView logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * JsonView component.
- * Renders data with interactive tree view, optional smart table view, and raw syntax highlighting.
- *
- * @param props - The component props.
- * @param props.data - The data to display.
- * @param props.className - The className.
- * @param props.smartTable - Whether to attempt smart table rendering.
- * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function JsonView({ data, className, smartTable = true, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily

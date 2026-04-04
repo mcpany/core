@@ -12,22 +12,13 @@ import { apiClient, DoctorReport } from "@/lib/client";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * Intent: Document SystemStatusBanner
+ * SystemStatusBanner executes the SystemStatusBanner logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the SystemStatusBanner logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SystemStatusBanner component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SystemStatusBanner() {
   const [report, setReport] = useState<DoctorReport | null>(null);

@@ -56,22 +56,13 @@ import { OptimizationTab } from "./optimization-tab";
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899', '#6366f1'];
 
 /**
- * Intent: Document AnalyticsDashboard
+ * AnalyticsDashboard executes the AnalyticsDashboard logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the AnalyticsDashboard logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AnalyticsDashboard component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");

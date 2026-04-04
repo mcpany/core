@@ -34,21 +34,17 @@ type VectorEntry struct {
 }
 
 // NewSimpleVectorStore creates a new SimpleVectorStore.
-// It initializes the store with a default configuration.
 //
-// Returns:
-//   - *SimpleVectorStore: A pointer to the newly created SimpleVectorStore.
-//
-// Summary: Initializes NewSimpleVectorStore operation.
+// Summary: Executes the NewSimpleVectorStore operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -77,10 +73,18 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+// Add adds a new entry to the vector store.
+//
+// Summary: Executes the Add operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -134,6 +138,20 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Search searches for the most similar entry in the vector store for the given key and query vector.
+//
+// Summary: Executes the Search operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float32) (any, float32, bool) {
 	s.mu.RLock()
@@ -185,6 +203,21 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Prune removes expired entries from the vector store for the given key.
+//
+// Summary: Executes the Prune operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

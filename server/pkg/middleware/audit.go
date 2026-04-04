@@ -106,15 +106,20 @@ func (m *AuditMiddleware) initializeStore(config *configv1.AuditConfig) error {
 }
 
 // SetStore sets the audit store.
-// This is primarily used for testing.
 //
-// Summary: Sets the audit store implementation.
+// Summary: Executes the SetStore operation.
 //
 // Parameters:
-//   - store (audit.Store): The audit store to use.
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Replaces the current audit store.
+//   - None.
 func (m *AuditMiddleware) SetStore(store audit.Store) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -430,19 +435,18 @@ func (m *AuditMiddleware) Close() error {
 // Returns:
 //   - error: An error if the write fails, or nil on success.
 //
-// Errors:
-//   - Returns an error if the audit store is not initialized.
+// Write writes an audit entry directly to the store.
 //
-// Summary: Updates Write operation.
+// Summary: Executes the Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

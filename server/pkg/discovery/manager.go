@@ -34,28 +34,16 @@ type Manager struct {
 
 // NewManager creates a new discovery manager.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Manager: The resulting *Manager.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewManager operation.
+// Summary: Executes the NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,6 +77,20 @@ func NewManager() *Manager {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// RegisterProvider registers a new provider.
+//
+// Summary: Executes the RegisterProvider operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,6 +128,20 @@ func (m *Manager) RegisterProvider(p Provider) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Run runs all registered providers and returns the aggregated discovered services. It also updates the internal status of each provider.
+//
+// Summary: Executes the Run operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -202,6 +218,20 @@ func (m *Manager) Run(ctx context.Context) []*configv1.UpstreamServiceConfig {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// GetStatuses returns the current status of all providers.
+//
+// Summary: Executes the GetStatuses operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (m *Manager) GetStatuses() []*ProviderStatus {
 	m.mu.RLock()
@@ -243,6 +273,19 @@ func (m *Manager) GetStatuses() []*ProviderStatus {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// GetProviderStatus returns the status of a specific provider.
+//
+// Summary: Executes the GetProviderStatus operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

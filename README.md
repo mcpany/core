@@ -1,17 +1,16 @@
-# MCP Any
+# MCP Any: The Universal Adapter for AI Agents
 
 ## Elevator Pitch
-**What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+MCP Any is the Universal Adapter for AI agents, acting as the ultimate bridge between diverse, unstandardized APIs and the autonomous systems that need to consume them. By providing a single, configuration-driven binary that translates REST, gRPC, GraphQL, and CLI tools into standardized Model Context Protocol (MCP) capabilities, it eliminates the need for developers to write boilerplate integration code. This allows teams to safely and rapidly expose enterprise capabilities to AI without modifying existing infrastructure.
 
 ## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
+MCP Any is designed around a robust "Configuration over Code" paradigm. Rather than compiling custom adapters for each new service, developers define their API surfaces using lightweight YAML/JSON configurations. At its core, the dynamic router reads these definitions at runtime and handles bidirectional translation between the Model Context Protocol (MCP) and the underlying protocols.
 
-**Key Design Patterns & Features:**
-- **Dynamic Tool Registration**: Add and modify capabilities purely via configuration files at runtime.
-- **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution and contain side effects safely.
-- **Upstream Authentication**: Out-of-the-box identity federation with various standard identity providers.
-- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain boundary domains between differing agent systems.
+Key Design Patterns & Features include:
+- **Dynamic Tool Registration**: Capabilities can be hot-reloaded and modified purely via configuration.
+- **Safety Policies**: Built-in strict egress controls, safety engines, and validation layers restrict arbitrary code execution and contain side-effects.
+- **Upstream Authentication**: Out-of-the-box identity federation supports mTLS, API keys, Bearer tokens, and OAuth2, shielding the AI from raw credentials.
+- **Multi-Tenant Isolation**: Safe-by-default execution spaces maintain boundary domains between differing agent systems through profiles.
 
 ### High-Level Flow
 ```mermaid
@@ -33,7 +32,7 @@ graph TD
 ```
 
 ## Getting Started
-Follow these step-by-step instructions to get a "Hello World" instance running locally:
+Getting an instance of MCP Any running is straightforward. Here are the steps to initialize a basic server:
 
 1. **Clone the repository:**
    ```bash
@@ -41,31 +40,36 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
    cd core
    ```
 
-2. **Ensure dependencies:**
-   Make sure you have `bazelisk` and `make` installed and available in your `PATH`.
+2. **Install requirements:**
+   Ensure you have `bazelisk` and `make` installed and available in your system's `PATH`.
 
-3. **Run a Hello World example:**
+3. **Run the Hello World example:**
+   Start the adapter using the provided test configuration:
    ```bash
    bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
    ```
 
 ## Development
-We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
+Maintaining a clean and tested repository is critical. We use `make` for common workflow tasks and `bazelisk` for deterministic builds.
 
-```bash
-# Run the test suite to ensure no code logic breaks
-make test
+- To verify formatting and ensure all codebase documentation adheres to the "Gold Standard" conventions, run the linter:
+  ```bash
+  make lint
+  ```
 
-# Run the linter to verify formatting and documentation conventions
-make lint
+- To run the test suite and ensure no regressions or logic breaks have occurred:
+  ```bash
+  make test
+  ```
 
-# Build the main binary
-bazelisk build //server/cmd/mcpany
-```
+- To build the main binary:
+  ```bash
+  bazelisk build //server/cmd/mcpany
+  ```
 
 ## Configuration
-MCP Any uses environment variables and secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios, but here are the core variables:
+MCP Any secures its environment and adjusts its behavior using environment variables and configuration files. While specific setups vary, the following variables are core to the runtime:
 
-- `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
-- `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
-- `MCPANY_LOG_LEVEL`: Adjust the verbosity of application logging. Options: `debug`, `info`, `warn`, `error`. (Default: `info`)
+- `MCPANY_CONFIG_PATH`: The absolute or relative path to the YAML/JSON service definitions (e.g. `/etc/mcpany/config.yaml`).
+- `MCPANY_LOG_LEVEL`: Adjusts the verbosity of application logging. Valid options are `debug`, `info`, `warn`, and `error` (Defaults to `info`).
+- `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Controls whether loopback resources are permitted. Set to `true` to enable (Defaults to `false`).

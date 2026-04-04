@@ -77,25 +77,13 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 }
 
 /**
- * Intent: Document FileConfigCard
+ * FileConfigCard executes the FileConfigCard logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the FileConfigCard logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Displays the configuration of a service in multiple formats (YAML, JSON, TextProto).
- *
- * @param props - The component props.
- * @param props.service - The service configuration to display.
- * @returns {JSX.Element} The rendered config card.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {

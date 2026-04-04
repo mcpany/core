@@ -16,24 +16,13 @@ interface MetricCardProps {
 }
 
 /**
- * Intent: Document MetricCard
+ * MetricCard executes the MetricCard logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the MetricCard logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * MetricCard.
- *
- * @param icon - The icon.
- * @param trend - The trend.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function MetricCard({ title, value, icon: Icon, description, trend }: MetricCardProps) {
   return (

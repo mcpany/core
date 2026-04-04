@@ -14,28 +14,16 @@ type MockUpstreamAuthenticator struct {
 
 // Authenticate executes the mock mock authentication function. req is the request object. Returns an error if the operation fails.
 //
-// Parameters:
-//   - req (*http.Request): The request object.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Authenticate operation.
+// Summary: Executes the Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

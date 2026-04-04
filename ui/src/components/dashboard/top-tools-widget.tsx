@@ -19,22 +19,13 @@ interface ToolUsageStats {
 }
 
 /**
- * Intent: Document TopToolsWidget
+ * TopToolsWidget executes the TopToolsWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the TopToolsWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * TopToolsWidget displays a bar chart of the most frequently executed tools.
- * @returns The rendered TopToolsWidget component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function TopToolsWidget() {
   const [data, setData] = useState<ToolUsageStats[]>([]);

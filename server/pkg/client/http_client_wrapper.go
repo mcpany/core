@@ -27,30 +27,16 @@ type HTTPClientWrapper struct {
 
 // NewHTTPClientWrapper creates a new HTTPClientWrapper. It accepts a shared health checker to avoid creating a new one for every client.
 //
-// Parameters:
-//   - client (*http.Client): The client parameter.
-//   - config (*configv1.UpstreamServiceConfig): The config parameter.
-//   - checker (health.Checker): The checker parameter.
-//
-// Returns:
-//   - *HTTPClientWrapper: The resulting *HTTPClientWrapper.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewHTTPClientWrapper operation.
+// Summary: Executes the NewHTTPClientWrapper operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -93,6 +79,21 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 //
 // Side Effects:
 //   - None.
+// IsHealthy checks the health of the upstream service by making a request to the configured health check endpoint. ctx is the context for the request. Returns true if successful.
+//
+// Summary: Executes the IsHealthy operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -124,6 +125,21 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Close is a no-op for the wrapper as it does not own the http.Client. The owner of the http.Client (e.g., the pool manager) is responsible for closing idle connections on the shared Transport when the service is shut down. Previously, this called CloseIdleConnections on the shared transport, which would negatively impact other concurrent requests sharing the same Transport.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

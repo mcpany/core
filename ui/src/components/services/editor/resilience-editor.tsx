@@ -29,22 +29,13 @@ const durationToString = (d: any): string => {
 };
 
 /**
- * Intent: Document ResilienceEditor
+ * ResilienceEditor executes the ResilienceEditor logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ResilienceEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ResilienceEditor component.
- * Allows configuring Retry Policy, Circuit Breaker, and Timeouts.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ResilienceEditor({ resilience, onChange }: ResilienceEditorProps) {
     // Local state to handle UI interactions before committing to parent

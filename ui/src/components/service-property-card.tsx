@@ -19,23 +19,13 @@ interface ServicePropertyCardProps {
 }
 
 /**
- * Intent: Document ServicePropertyCard
+ * ServicePropertyCard executes the ServicePropertyCard logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServicePropertyCard logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A card component that displays a list of properties.
- *
- * @param data - The data.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServicePropertyCard({ title, data }: ServicePropertyCardProps) {
     return (

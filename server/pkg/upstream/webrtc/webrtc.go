@@ -44,28 +44,16 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
+// Summary: Executes the CheckHealth operation.
+//
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -110,6 +98,19 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 // Errors:
 //   - TODO: Document errors.
 //
+// Shutdown is a no-op for the WebRTC upstream, as connections are transient
+//
+// Summary: Executes the Shutdown operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
@@ -147,6 +148,21 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+// NewUpstream creates a new instance of WebrtcUpstream.
+//
+// Summary: Executes the NewUpstream operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager:       poolManager,
@@ -180,12 +196,18 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //
 // Parameters:
 //   - TODO: Document parameters.
+// Register processes the configuration for a WebRTC service, creating and registering tools for each call definition specified in the configuration.
+//
+// Summary: Executes the Register operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

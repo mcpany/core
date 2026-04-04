@@ -23,22 +23,13 @@ interface AuthStepProps {
 }
 
 /**
- * Intent: Document AuthStep
+ * AuthStep executes the AuthStep logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the AuthStep logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Step for authenticating services.
- * @param props Component properties.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
     const [authServices, setAuthServices] = useState<WizardService[]>([...services]);

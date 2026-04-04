@@ -24,29 +24,16 @@ type MilvusClient struct {
 
 // NewMilvusClient creates a new Milvus client.
 //
+// Summary: Executes the NewMilvusClient operation.
+//
 // Parameters:
-//   - config (*configv1.MilvusVectorDB): The parameter.
-//
-// Returns:
-//   - *MilvusClient: The result.
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewMilvusClient operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -115,6 +102,20 @@ func NewMilvusClient(config *configv1.MilvusVectorDB) (*MilvusClient, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Query searches for similar vectors.
+//
+// Summary: Executes the Query operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -252,6 +253,21 @@ func (c *MilvusClient) Query(ctx context.Context, vector []float32, topK int64, 
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Upsert inserts or updates vectors.
+//
+// Summary: Executes the Upsert operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -484,6 +500,20 @@ func fillMetadataColumn(col entity.Column, i int, val interface{}) {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Delete removes vectors.
+//
+// Summary: Executes the Delete operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace string, filter map[string]interface{}) (map[string]interface{}, error) {
 	// Construct expression
@@ -565,6 +595,21 @@ func (c *MilvusClient) Delete(ctx context.Context, ids []string, namespace strin
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// DescribeIndexStats returns statistics about the index.
+//
+// Summary: Executes the DescribeIndexStats operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

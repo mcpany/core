@@ -20,29 +20,16 @@ type MockServiceRegistry struct {
 
 // RegisterService registers a new upstream service based on the provided configuration.
 //
-// Parameters:
-//   - ctx (context.Context): The registration context.
-//   - serviceConfig (*configv1.UpstreamServiceConfig): The configuration for the service.
-//
-// Returns:
-//   - string: The unique service ID.
-//   - []*configv1.ToolDefinition: A list of discovered tools.
-//   - []*configv1.ResourceDefinition: A list of discovered resources.
-//   - error: An error if registration fails.
-//
-// Side Effects:
-//   - Records method call for mock.
-//
-// Summary: Executes RegisterService operation.
+// Summary: Executes the RegisterService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -76,6 +63,21 @@ func (m *MockServiceRegistry) RegisterService(ctx context.Context, serviceConfig
 //
 // Side Effects:
 //   - None.
+// UnregisterService removes a service from the registry.
+//
+// Summary: Executes the UnregisterService operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName string) error {
 	args := m.Called(ctx, serviceName)
 	return args.Error(0)
@@ -100,6 +102,21 @@ func (m *MockServiceRegistry) UnregisterService(ctx context.Context, serviceName
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetAllServices returns a list of all currently registered services.
+//
+// Summary: Executes the GetAllServices operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -136,6 +153,21 @@ func (m *MockServiceRegistry) GetAllServices() ([]*configv1.UpstreamServiceConfi
 //
 // Side Effects:
 //   - None.
+// GetServiceInfo retrieves the metadata for a service by its ID.
+//
+// Summary: Executes the GetServiceInfo operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, bool) {
 	args := m.Called(serviceID)
 	if info, ok := args.Get(0).(*tool.ServiceInfo); ok {
@@ -166,6 +198,20 @@ func (m *MockServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInf
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// GetServiceConfig returns the configuration for a given service ID.
+//
+// Summary: Executes the GetServiceConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -199,6 +245,20 @@ func (m *MockServiceRegistry) GetServiceConfig(serviceID string) (*configv1.Upst
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// GetServiceError returns the last known registration or health error for a service.
+//
+// Summary: Executes the GetServiceError operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

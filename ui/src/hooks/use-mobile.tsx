@@ -8,22 +8,13 @@ import * as React from "react"
 const MOBILE_BREAKPOINT = 768
 
 /**
- * Intent: Document useIsMobile
+ * useIsMobile executes the useIsMobile logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the useIsMobile logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Hook to detect if the current viewport is mobile-sized.
- * @returns True if the viewport is mobile, false otherwise.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)

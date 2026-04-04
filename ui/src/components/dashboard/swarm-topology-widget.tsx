@@ -106,23 +106,13 @@ function layoutGraph(graph: any): SwarmTopologyData {
 }
 
 /**
- * Intent: Document SwarmTopologyWidget
+ * SwarmTopologyWidget executes the SwarmTopologyWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the SwarmTopologyWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SwarmTopologyWidget component displays a visual representation of the swarm network of agents.
- *
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);

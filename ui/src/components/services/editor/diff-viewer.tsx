@@ -16,28 +16,13 @@ interface DiffViewerProps {
 }
 
 /**
- * Intent: Document DiffViewer
+ * DiffViewer executes the DiffViewer logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the DiffViewer logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * DiffViewer component for comparing configurations (YAML/JSON).
- * Uses Monaco Diff Editor.
- *
- * @param props - The component props.
- * @param props.original - The original content string.
- * @param props.modified - The modified content string.
- * @param props.language - The language for syntax highlighting (default: "yaml").
- * @returns The rendered diff editor.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DiffViewer({ original, modified, language = "yaml" }: DiffViewerProps) {
     const { theme } = useTheme();

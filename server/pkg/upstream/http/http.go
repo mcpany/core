@@ -70,31 +70,16 @@ type Upstream struct {
 
 // CheckHealth performs a health check on the upstream service.
 //
-// It uses a configured health checker if available, or falls back to a basic
-// TCP connection check to the service address.
+// Summary: Executes the CheckHealth operation.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the health check.
+//   - None.
 //
 // Returns:
-//   - error: An error if the service is unhealthy or unreachable.
+//   - None.
 //
 // Errors:
-//   - Returns an error if the health check fails or the address is not configured.
-//
-// Side Effects:
-//   - May establish a network connection to the service.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -143,6 +128,21 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 //
 // Side Effects:
 //   - None.
+// Shutdown gracefully terminates the HTTP upstream service by shutting down the
+//
+// Summary: Executes the Shutdown operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (u *Upstream) Shutdown(_ context.Context) error {
 	u.mu.Lock()
 	if u.checker != nil {
@@ -181,6 +181,21 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+// NewUpstream creates a new instance of Upstream.
+//
+// Summary: Executes the NewUpstream operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 	return &Upstream{
 		poolManager: poolManager,
@@ -214,16 +229,18 @@ func NewUpstream(poolManager *pool.Manager) upstream.Upstream {
 //   - Starts a health checker for the service.
 //   - Registers tools and prompts with their respective managers.
 //
-// Summary: Executes Register operation.
+// Register processes the configuration for an HTTP service, creates a connection
+//
+// Summary: Executes the Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

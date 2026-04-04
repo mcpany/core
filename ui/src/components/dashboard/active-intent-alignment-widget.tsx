@@ -21,23 +21,13 @@ interface SubagentStatus {
 
 
 /**
- * Intent: Document ActiveIntentAlignmentWidget
+ * ActiveIntentAlignmentWidget executes the ActiveIntentAlignmentWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ActiveIntentAlignmentWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ActiveIntentAlignmentWidget displays the intent alignment of active subagents.
- *
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ActiveIntentAlignmentWidget() {
     const [agents, setAgents] = useState<SubagentStatus[]>([]);

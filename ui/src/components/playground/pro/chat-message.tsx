@@ -49,21 +49,13 @@ const DiffEditor = (props: any) => (
 );
 
 /**
- * Intent: Document MessageType
+ * MessageType executes the MessageType logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the MessageType logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * MessageType type definition.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
@@ -83,6 +75,14 @@ export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "
  *   - None
  *
  * Message type definition.
+/**
+ * Message executes the Message logic.
+ *
+ * Summary: Executes the Message logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface Message {
   id: string;
@@ -140,8 +140,14 @@ function analyzeError(error: string): string | null {
  *   - None
  *
  * ChatMessage.
+/**
+ * ChatMessage executes the ChatMessage logic.
  *
- * @param { message - The { message.
+ * Summary: Executes the ChatMessage logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);

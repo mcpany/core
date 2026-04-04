@@ -113,22 +113,13 @@ const nodeTypes = {
 };
 
 /**
- * Intent: Document StackGraph
+ * StackGraph executes the StackGraph logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the StackGraph logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StackGraph component.
- * Visualizes the stack configuration as a graph.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StackGraph({ yamlContent }: StackGraphProps) {
     const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[]);

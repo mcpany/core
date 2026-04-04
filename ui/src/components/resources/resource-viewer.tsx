@@ -30,23 +30,13 @@ interface ResourceViewerProps {
 }
 
 /**
- * Intent: Document ResourceViewer
+ * ResourceViewer executes the ResourceViewer logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ResourceViewer logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ResourceViewer.
- *
- * @param loading - The loading.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     if (loading) {

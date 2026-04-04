@@ -28,22 +28,16 @@ type httpPool struct {
 
 // Close closes the connection pool and the idle connections.
 //
-// Returns:
-//   - error: An error if the pool cannot be closed.
-//
-// Side Effects:
-//   - Closes idle network connections.
-//
-// Summary: Executes Close operation.
+// Summary: Executes the Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

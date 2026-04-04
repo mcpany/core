@@ -24,21 +24,13 @@ interface KeyValuePair {
 }
 
 /**
- * Intent: Document KeyValueEditor
+ * KeyValueEditor executes the KeyValueEditor logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the KeyValueEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * KeyValueEditor allows editing a map of strings.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key", valuePlaceholder = "Value" }: KeyValueEditorProps) {
     const [pairs, setPairs] = useState<KeyValuePair[]>([]);

@@ -32,28 +32,13 @@ interface OptimizationTabProps {
 }
 
 /**
- * Intent: Document OptimizationTab
+ * OptimizationTab executes the OptimizationTab logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the OptimizationTab logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * OptimizationTab displays analysis of tool usage and suggests optimizations.
- * It identifies "Ghost Tools" which are heavy in tokens but rarely used.
- *
- * @param props - The component props.
- * @param props.tools - The list of available tools.
- * @param props.toolUsage - A record of tool usage statistics.
- * @param props.onToggleTool - Callback function to toggle a tool's enabled state.
- * @returns The rendered optimization tab.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function OptimizationTab({ tools, toolUsage, onToggleTool }: OptimizationTabProps) {
     const analysis = useMemo(() => {

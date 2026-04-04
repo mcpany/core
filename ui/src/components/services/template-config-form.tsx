@@ -17,24 +17,13 @@ interface TemplateConfigFormProps {
 }
 
 /**
- * Intent: Document TemplateConfigForm
+ * TemplateConfigForm executes the TemplateConfigForm logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the TemplateConfigForm logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * TemplateConfigForm renders a form based on a service template definition.
- * It handles variable substitution inputs.
- * @param props - Component props.
- * @returns The TemplateConfigForm component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateConfigFormProps) {
   const [values, setValues] = useState<Record<string, string>>({});

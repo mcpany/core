@@ -27,22 +27,13 @@ interface ProviderStatus {
 }
 
 /**
- * Intent: Document DiscoveryStatus
+ * DiscoveryStatus executes the DiscoveryStatus logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the DiscoveryStatus logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * DiscoveryStatus displays the status of auto-discovery providers.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DiscoveryStatus() {
     const [statuses, setStatuses] = useState<ProviderStatus[]>([]);

@@ -21,6 +21,20 @@ var (
 )
 
 // AITool represents an AI tool used in testing.
+//
+// Summary: Represents a AITool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AITool interface {
 	// Install performs any necessary installation steps for the AI tool.
 	Install()

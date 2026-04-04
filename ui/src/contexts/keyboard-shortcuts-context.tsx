@@ -5,21 +5,13 @@
 import * as React from "react"
 
 /**
- * Intent: Document ShortcutDefinition
+ * ShortcutDefinition executes the ShortcutDefinition logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ShortcutDefinition logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Defines a keyboard shortcut.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type ShortcutDefinition = {
   /** Unique identifier for the shortcut. */
@@ -78,8 +70,14 @@ const STORAGE_KEY = "mcp_any_shortcut_overrides"
  *   - None
  *
  * Provider component for keyboard shortcuts.
+/**
+ * KeyboardShortcutsProvider executes the KeyboardShortcutsProvider logic.
  *
- * @param { children - The { children.
+ * Summary: Executes the KeyboardShortcutsProvider logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function KeyboardShortcutsProvider({ children }: { children: React.ReactNode }) {
   const [shortcuts, setShortcuts] = React.useState<Record<string, ShortcutDefinition>>({})
@@ -177,6 +175,15 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
  * Hook to access the keyboard shortcuts context.
  * @returns The context.
  */
+/**
+ * useKeyboardShortcuts executes the useKeyboardShortcuts logic.
+ *
+ * Summary: Executes the useKeyboardShortcuts logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
+ */
 export function useKeyboardShortcuts() {
   const context = React.useContext(KeyboardShortcutsContext)
   if (!context) {
@@ -226,9 +233,14 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
  *
  * Hook to register and listen for a keyboard shortcut.
  * @param id Unique identifier.
- * @param defaultKeys Default key combinations.
- * @param action Callback function when shortcut is triggered.
- * @param options Additional options (label, category, enabled).
+/**
+ * useShortcut executes the useShortcut logic.
+ *
+ * Summary: Executes the useShortcut logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useShortcut(
   id: string,

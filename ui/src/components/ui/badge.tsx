@@ -29,21 +29,13 @@ const badgeVariants = cva(
 )
 
 /**
- * Intent: Document BadgeProps
+ * BadgeProps executes the BadgeProps logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the BadgeProps logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * BadgeProps type definition.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,

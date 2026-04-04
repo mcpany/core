@@ -38,23 +38,13 @@ const edgeTypes = {
 };
 
 /**
- * Intent: Document AgentFlow
+ * AgentFlow executes the AgentFlow logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the AgentFlow logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AgentFlow component renders the interactive flow visualization.
- * Renamed conceptually to NetworkTopology but keeping component name for compatibility.
- * @returns The AgentFlow component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AgentFlow() {
   const { nodes, edges, onNodesChange, onEdgesChange, isLive, setIsLive, refresh, lastUpdated } = useRealTimeTopology();

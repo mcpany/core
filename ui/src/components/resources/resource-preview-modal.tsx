@@ -28,27 +28,13 @@ interface ResourcePreviewModalProps {
 }
 
 /**
- * Intent: Document ResourcePreviewModal
+ * ResourcePreviewModal executes the ResourcePreviewModal logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ResourcePreviewModal logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ResourcePreviewModal component.
- * @param props - The component props.
- * @param props.isOpen - Whether the component is open.
- * @param props.onClose - The onClose property.
- * @param props.resource - The resource property.
- * @param props.initialContent - The initialContent property.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ResourcePreviewModal({
   isOpen,

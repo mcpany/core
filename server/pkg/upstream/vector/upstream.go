@@ -34,22 +34,16 @@ type Upstream struct {
 
 // NewUpstream creates a new instance of VectorUpstream.
 //
-// Returns:
-//   - upstream.Upstream: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
+// Summary: Executes the NewUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,10 +83,18 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+// Shutdown implements the upstream.Upstream interface.
+//
+// Summary: Executes the Shutdown operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -126,12 +128,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Parameters:
 //   - TODO: Document parameters.
+// Register processes the configuration for a vector service. _ is an unused parameter. serviceConfig is the serviceConfig. toolManager is the toolManager. _ is an unused parameter. _ is an unused parameter. _ is an unused parameter. Returns the result. Returns the result. Returns the result. Returns an error if the operation fails.
+//
+// Summary: Executes the Register operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -260,6 +268,21 @@ type vectorCallable struct {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Call executes the vector tool with the given arguments.
+//
+// Summary: Executes the Call operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

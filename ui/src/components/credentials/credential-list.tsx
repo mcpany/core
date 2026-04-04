@@ -27,22 +27,13 @@ import { Plus, Trash, Key, Lock, Globe, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 /**
- * Intent: Document CredentialList
+ * CredentialList executes the CredentialList logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the CredentialList logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * CredentialList component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function CredentialList() {
   const { toast } = useToast()

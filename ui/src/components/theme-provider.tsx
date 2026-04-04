@@ -6,24 +6,13 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 /**
- * Intent: Document ThemeProvider
+ * ThemeProvider executes the ThemeProvider logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ThemeProvider logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Provides theme context to the application using next-themes.
- *
- * @param props - The properties for the ThemeProvider, including children and theme settings.
- * @returns The ThemeProvider component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ThemeProvider({ children, ...props }: React.ComponentProps<typeof NextThemesProvider>) {
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>

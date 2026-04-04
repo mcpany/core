@@ -44,29 +44,13 @@ interface UserListProps {
 }
 
 /**
- * Intent: Document UserList
+ * UserList executes the UserList logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the UserList logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * UserList component.
- * Displays a list of users with filtering and actions.
- *
- * @param props - The component props.
- * @param props.users - The list of users to display.
- * @param props.isLoading - Whether the data is loading.
- * @param props.onEdit - Callback when a user is edited.
- * @param props.onDelete - Callback when a user is deleted.
- * @returns The rendered UserList component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");

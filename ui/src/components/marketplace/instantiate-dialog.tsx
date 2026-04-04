@@ -25,23 +25,13 @@ interface InstantiateDialogProps {
 }
 
 /**
- * Intent: Document InstantiateDialog
+ * InstantiateDialog executes the InstantiateDialog logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the InstantiateDialog logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * InstantiateDialog.
- *
- * @param onComplete - The onComplete.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function InstantiateDialog({ open, onOpenChange, templateConfig, onComplete }: InstantiateDialogProps) {
     const { toast } = useToast();

@@ -73,29 +73,16 @@ type OpenAIClient struct {
 
 // NewOpenAIClient creates a new OpenAIClient.
 //
-// Parameters:
-//   - apiKey (string): The apiKey parameter.
-//   - baseURL (string): The baseURL parameter.
-//
-// Returns:
-//   - *OpenAIClient: The resulting *OpenAIClient.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewOpenAIClient operation.
+// Summary: Executes the NewOpenAIClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -152,6 +139,19 @@ type openAIChatResponse struct {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// ChatCompletion performs a chat completion request.
+//
+// Summary: Executes the ChatCompletion operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

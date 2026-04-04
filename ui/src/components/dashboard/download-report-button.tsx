@@ -10,22 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document DownloadReportButton
+ * DownloadReportButton executes the DownloadReportButton logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the DownloadReportButton logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A button component that fetches dashboard metrics and downloads them as a JSON report.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DownloadReportButton() {
     const [isDownloading, setIsDownloading] = useState(false);

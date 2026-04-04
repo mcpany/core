@@ -23,28 +23,16 @@ type PerRPCCredentials struct {
 
 // NewPerRPCCredentials creates a new gRPC PerRPCCredentials from an UpstreamAuthenticator. It returns nil if the provided authenticator is nil. authenticator is the upstream authenticator to be used for generating gRPC request metadata.
 //
-// Parameters:
-//   - authenticator (UpstreamAuthenticator): The authenticator parameter.
-//
-// Returns:
-//   - credentials.PerRPCCredentials: The resulting credentials.PerRPCCredentials.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewPerRPCCredentials operation.
+// Summary: Executes the NewPerRPCCredentials operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -81,6 +69,18 @@ func NewPerRPCCredentials(authenticator UpstreamAuthenticator) credentials.PerRP
 //
 // Errors:
 //   - TODO: Document errors.
+// GetRequestMetadata retrieves the authentication metadata for an outgoing gRPC request. It uses the wrapped UpstreamAuthenticator to generate the necessary headers and transforms them into gRPC metadata. ctx is the context for the request. uri is the URI of the gRPC service being called.
+//
+// Summary: Executes the GetRequestMetadata operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -132,6 +132,21 @@ func (c *PerRPCCredentials) GetRequestMetadata(ctx context.Context, _ ...string)
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// RequireTransportSecurity indicates whether a secure transport (e.g., TLS) is required for the credentials. This implementation returns false, but should be updated if TLS is enabled for the gRPC connection.
+//
+// Summary: Executes the RequireTransportSecurity operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

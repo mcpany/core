@@ -23,28 +23,13 @@ interface NavItemProps {
 }
 
 /**
- * Intent: Document NavItem
+ * NavItem executes the NavItem logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the NavItem logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A navigation item for the sidebar or menu.
- *
- * @param props - The component props.
- * @param props.href - The URL to link to.
- * @param props.icon - The icon component to display.
- * @param props.title - The title of the navigation item.
- * @param props.isActive - Whether the item is currently active.
- * @returns {JSX.Element} The rendered navigation item.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function NavItem({ href, icon: Icon, title, isActive }: NavItemProps) {
   return (

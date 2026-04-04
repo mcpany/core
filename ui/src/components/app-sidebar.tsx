@@ -212,24 +212,13 @@ const configItems = [
 ]
 
 /**
- * Intent: Document AppSidebar
+ * AppSidebar executes the AppSidebar logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the AppSidebar logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * The main application sidebar.
- * Displays navigation links and user profile menu.
- *
- * @returns {JSX.Element} The rendered sidebar component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AppSidebar() {
   const { pathname } = useLocation()

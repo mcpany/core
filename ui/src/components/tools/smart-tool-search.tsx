@@ -27,29 +27,13 @@ interface SmartToolSearchProps {
 }
 
 /**
- * Intent: Document SmartToolSearch
+ * SmartToolSearch executes the SmartToolSearch logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the SmartToolSearch logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A search component that provides autocomplete for finding and selecting tools.
- * It also displays recently used tools for quick access.
- *
- * @param props - The component props.
- * @param props.tools - The list of available tools to search.
- * @param props.searchQuery - The current search query string.
- * @param props.setSearchQuery - Callback to update the search query.
- * @param props.onToolSelect - Callback invoked when a tool is selected.
- * @returns The rendered search component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SmartToolSearch({
   tools,

@@ -24,26 +24,13 @@ interface ResourceSafetyTableProps {
 }
 
 /**
- * Intent: Document ResourceSafetyTable
+ * ResourceSafetyTable executes the ResourceSafetyTable logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ResourceSafetyTable logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ResourceSafetyTable displays a table of resources and allows toggling their enabled/disabled status.
- *
- * @param props - The component props.
- * @param props.resources - The list of resources to display.
- * @param props.onUpdate - Callback function called when a resource status is updated.
- * @returns A table component for managing resource safety.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ResourceSafetyTable({ resources, onUpdate }: ResourceSafetyTableProps) {
     const { toast } = useToast();

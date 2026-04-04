@@ -30,24 +30,13 @@ interface HttpToolEditorProps {
 }
 
 /**
- * Intent: Document HttpToolEditor
+ * HttpToolEditor executes the HttpToolEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the HttpToolEditor logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Editor for configuring a single HTTP tool.
- * Allows defining tool metadata and the mapped HTTP request details.
- * @param props - The component props.
- * @returns The rendered tool editor.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEditorProps) {
     const [localTool, setLocalTool] = useState<ToolDefinition>(tool);

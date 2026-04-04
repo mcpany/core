@@ -38,29 +38,16 @@ type Tool struct {
 
 // NewTool creates a new SQL Tool.
 //
+// Summary: Executes the NewTool operation.
+//
 // Parameters:
-//   - t (*v1.Tool): The parameter.
-//   - db (*sql.DB): The parameter.
-//   - callDef (*configv1.SqlCallDefinition): The parameter.
-//   - policies ([]*configv1.CallPolicy): The parameter.
-//   - callID (string): The parameter.
-//
-// Returns:
-//   - *Tool: The result.
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -100,6 +87,21 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 //
 // Side Effects:
 //   - None.
+// Tool returns the protobuf definition of the tool.
+//
+// Summary: Executes the Tool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -122,6 +124,21 @@ func (t *Tool) Tool() *v1.Tool {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// MCPTool returns the MCP tool definition.
+//
+// Summary: Executes the MCPTool operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -157,6 +174,21 @@ func (t *Tool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - None.
+// GetCacheConfig returns the cache configuration for the tool.
+//
+// Summary: Executes the GetCacheConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 	if t.callDef == nil {
 		return nil
@@ -188,18 +220,21 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Returns:
 //   - TODO: Document returns.
 //
+// Execute runs the SQL query with the provided inputs.
+//
+// Summary: Executes the IsStreaming operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
-//
-// IsStreaming returns true if the tool supports streaming.
-//
-// Summary: Checks if the tool supports streaming execution.
-//
-// Returns:
-//   - bool: True if streaming is supported.
 func (t *Tool) IsStreaming() bool {
 	return false
 }

@@ -18,21 +18,13 @@ export enum WizardStep {
 }
 
 /**
- * Intent: Document WizardWebhook
+ * WizardWebhook executes the WizardWebhook logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the WizardWebhook logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * WizardState type definition.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface WizardWebhook {
     name: string;
@@ -59,6 +51,14 @@ export interface WizardWebhook {
  *   - None
  *
  * WizardState type definition.
+/**
+ * WizardState executes the WizardState logic.
+ *
+ * Summary: Executes the WizardState logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface WizardState {
     currentStep: WizardStep;
@@ -118,10 +118,14 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
  *   - None
  *
  * WizardProvider manages the state of the configuration wizard and provides
- * methods to navigate between steps and update the configuration.
- * @param props - The component props.
- * @param props.children - The child components.
- * @returns The rendered component.
+/**
+ * WizardProvider executes the WizardProvider logic.
+ *
+ * Summary: Executes the WizardProvider logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WizardState>(defaultState);
@@ -251,6 +255,15 @@ export function WizardProvider({ children }: { children: ReactNode }) {
  * useWizard is a hook to access the wizard context.
  * @returns The wizard context containing state and navigation methods.
  * @throws Error if used outside of a WizardProvider.
+ */
+/**
+ * useWizard executes the useWizard logic.
+ *
+ * Summary: Executes the useWizard logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useWizard() {
     const context = useContext(WizardContext);

@@ -22,22 +22,16 @@ type MockClientConn struct {
 
 // NewMockClientConn creates a new mock client connection.
 //
-// Parameters:
-//   - t: The testing instance.
-//
-// Returns:
-//   - *MockClientConn: A new mock client connection.
-//
-// Summary: Initializes NewMockClientConn operation.
+// Summary: Executes the NewMockClientConn operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -67,6 +61,21 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 //
 // Side Effects:
 //   - None.
+// SetClient sets a mock client for a given type.
+//
+// Summary: Executes the SetClient operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
 	m.clients[method] = client
 }
@@ -90,9 +99,18 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 //
 // Returns:
 //   - TODO: Document returns.
+// Invoke is a mock implementation of the Invoke method.
+//
+// Summary: Executes the Invoke operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -123,6 +141,20 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// NewStream is a mock implementation of the NewStream method.
+//
+// Summary: Executes the NewStream operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

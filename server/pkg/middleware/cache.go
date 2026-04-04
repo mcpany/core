@@ -53,28 +53,16 @@ type CachingMiddleware struct {
 
 // NewCachingMiddleware creates a new CachingMiddleware. toolManager is the toolManager. Returns the result.
 //
-// Parameters:
-//   - toolManager (tool.ManagerInterface): The toolManager parameter.
-//
-// Returns:
-//   - *CachingMiddleware: The resulting *CachingMiddleware.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewCachingMiddleware operation.
+// Summary: Executes the NewCachingMiddleware operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -162,6 +150,20 @@ func NewCachingMiddleware(toolManager tool.ManagerInterface) *CachingMiddleware 
 //   - TODO: Document errors.
 //
 // Side Effects:
+// SetProviderFactory allows overriding the default provider factory for testing. factory is the factory.
+//
+// Summary: Executes the SetProviderFactory operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 	m.providerFactory = factory
@@ -193,7 +195,18 @@ func (m *CachingMiddleware) SetProviderFactory(factory ProviderFactory) {
 //   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+// Execute executes the caching middleware. ctx is the context for the request. req is the request object. next is the next. Returns the result. Returns an error if the operation fails.
+//
+// Summary: Executes the Execute operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -513,6 +526,21 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Clear clears the cache. ctx is the context for the request. Returns an error if the operation fails.
+//
+// Summary: Executes the Clear operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

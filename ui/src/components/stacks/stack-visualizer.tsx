@@ -14,23 +14,13 @@ interface StackVisualizerProps {
 }
 
 /**
- * Intent: Document StackVisualizer
+ * StackVisualizer executes the StackVisualizer logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the StackVisualizer logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StackVisualizer.
- *
- * @param { yamlContent - The { yamlContent.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     return (

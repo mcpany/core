@@ -18,24 +18,13 @@ interface ServiceInspectorProps {
 }
 
 /**
- * Intent: Document ServiceInspector
+ * ServiceInspector executes the ServiceInspector logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceInspector logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceInspector component.
- * @param props - The component props.
- * @param props.service - The service property.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {

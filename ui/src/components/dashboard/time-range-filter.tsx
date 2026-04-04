@@ -16,23 +16,13 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Clock } from "lucide-react";
 
 /**
- * Intent: Document TimeRangeFilter
+ * TimeRangeFilter executes the TimeRangeFilter logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the TimeRangeFilter logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A dropdown component to filter dashboard views by time range.
- *
- * @returns The rendered time range filter component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function TimeRangeFilter() {
   const { timeRange, setTimeRange } = useDashboard();

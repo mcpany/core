@@ -24,21 +24,13 @@ interface GlobalSettings {
 }
 
 /**
- * Intent: Document PipelineVisualizer
+ * PipelineVisualizer executes the PipelineVisualizer logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the PipelineVisualizer logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * PipelineVisualizer allows verifying and modifying the middleware pipeline order.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function PipelineVisualizer() {
     const [middlewares, setMiddlewares] = useState<Middleware[]>([]);

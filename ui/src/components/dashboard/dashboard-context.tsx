@@ -17,26 +17,13 @@ interface DashboardContextType {
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 /**
- * Intent: Document DashboardProvider
+ * DashboardProvider executes the DashboardProvider logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the DashboardProvider logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Provides dashboard context to children, allowing them to access and update shared state
- * like the currently selected service filter.
- *
- * @param props - The component props.
- * @param props.children - Child components.
- * @returns The context provider.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const [serviceId, setServiceId] = useState<string | undefined>(undefined);
@@ -69,6 +56,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
  *
  * @returns The dashboard context value.
  * @throws Error if used outside of a DashboardProvider.
+ */
+/**
+ * useDashboard executes the useDashboard logic.
+ *
+ * Summary: Executes the useDashboard logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function useDashboard() {
   const context = useContext(DashboardContext);

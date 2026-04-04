@@ -21,23 +21,13 @@ interface ToolFailureRate {
 }
 
 /**
- * Intent: Document ToolFailureRateWidget
+ * ToolFailureRateWidget executes the ToolFailureRateWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ToolFailureRateWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolFailureRateWidget component.
- * Displays tools with the highest error rates.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolFailureRateWidget() {
     const [tools, setTools] = useState<ToolFailureRate[]>([]);

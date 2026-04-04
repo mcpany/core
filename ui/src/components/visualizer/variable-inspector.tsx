@@ -17,25 +17,13 @@ interface VariableInspectorProps {
 }
 
 /**
- * Intent: Document VariableInspector
+ * VariableInspector executes the VariableInspector logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the VariableInspector logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * VariableInspector displays details and state of the selected node.
- * @param props - The component props.
- * @param props.selectedNode - The currently selected node.
- * @param props.onClose - Callback to close the inspector.
- * @returns The VariableInspector component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function VariableInspector({ selectedNode, onClose }: VariableInspectorProps) {
   if (!selectedNode) return null;

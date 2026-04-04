@@ -112,22 +112,13 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 /**
- * Intent: Document ContextTreemap
+ * ContextTreemap executes the ContextTreemap logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ContextTreemap logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Visualization component that renders a treemap of tool token costs.
- * It groups tools by service and color-codes them for easy analysis.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ContextTreemap() {
     const { tools, getToolCost, loading, disabledToolIds } = useRecursiveContext();

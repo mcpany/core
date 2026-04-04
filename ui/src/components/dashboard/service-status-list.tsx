@@ -16,22 +16,13 @@ import { apiClient } from "@/lib/client"
 import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
 
 /**
- * Intent: Document ServiceStatusList
+ * ServiceStatusList executes the ServiceStatusList logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ServiceStatusList logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceStatusList component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceStatusList() {
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);

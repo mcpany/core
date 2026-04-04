@@ -58,25 +58,13 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
 };
 
 /**
- * Intent: Document PolicyEditor
+ * PolicyEditor executes the PolicyEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the PolicyEditor logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A component for editing call policies.
- * @param props The component props.
- * @param props.policies The list of policies to edit.
- * @param props.onUpdate A callback to update the policies.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function PolicyEditor({ policies = [], onUpdate }: PolicyEditorProps) {
     const { toast } = useToast();

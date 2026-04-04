@@ -23,22 +23,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document WebhookDialog
+ * WebhookDialog executes the WebhookDialog logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the WebhookDialog logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * WebhookDialog component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function WebhookDialog() {
   const [open, setOpen] = useState(false);

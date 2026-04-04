@@ -15,23 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 /**
- * Intent: Document ThemeToggle
+ * ThemeToggle executes the ThemeToggle logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ThemeToggle logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A dropdown menu button to toggle between light, dark, and system themes.
- *
- * @returns {JSX.Element} The rendered theme toggle component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ThemeToggle() {
   const { setTheme } = useTheme()

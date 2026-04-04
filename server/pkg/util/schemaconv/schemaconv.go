@@ -41,26 +41,17 @@ const (
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
-// message into a `structpb.Struct` for use as the `properties` field in a tool
-// input schema.
+//
+// Summary: Executes the MethodDescriptorToProtoProperties operation.
 //
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
+//   - None.
 //
 // Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - error: An error if the conversion fails.
-//
-// Summary: Executes MethodDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -89,6 +80,20 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// MethodOutputDescriptorToProtoProperties converts the fields of a method's
+//
+// Summary: Executes the MethodOutputDescriptorToProtoProperties operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -246,6 +251,19 @@ type McpFieldParameter interface {
 // Errors:
 //   - TODO: Document errors.
 //
+// ConfigSchemaToProtoProperties converts a slice of parameter schema definitions
+//
+// Summary: Executes the ConfigSchemaToProtoProperties operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Struct, []string, error) {
@@ -304,6 +322,21 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// McpFieldsToProtoProperties converts a slice of McpField definitions into a
+//
+// Summary: Executes the McpFieldsToProtoProperties operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

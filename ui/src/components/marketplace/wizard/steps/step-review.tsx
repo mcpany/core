@@ -10,23 +10,13 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
 
 /**
- * Intent: Document StepReview
+ * StepReview executes the StepReview logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the StepReview logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StepReview.
- *
- * @param { onComplete - The { onComplete.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {
     const { state } = useWizard();

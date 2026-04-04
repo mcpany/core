@@ -46,24 +46,13 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
 );
 
 /**
- * Intent: Document NetworkLegend
+ * NetworkLegend executes the NetworkLegend logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the NetworkLegend logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * NetworkLegend component.
- * Displays a legend for the network topology graph, explaining node types and status indicators.
- *
- * @returns The rendered NetworkLegend component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function NetworkLegend() {
     return (

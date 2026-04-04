@@ -14,25 +14,13 @@ import { ActiveIntentAlignmentWidget } from "@/components/dashboard/active-inten
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
 
 /**
- * Intent: Document WidgetSize
+ * WidgetSize executes the WidgetSize logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the WidgetSize logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Defines the possible sizes for a dashboard widget.
- * - full: Takes up the full width (12 columns).
- * - two-thirds: Takes up 2/3 of the width (8 columns).
- * - half: Takes up 1/2 of the width (6 columns).
- * - third: Takes up 1/3 of the width (4 columns).
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
@@ -52,6 +40,15 @@ export type WidgetSize = "full" | "half" | "third" | "two-thirds";
  *   - None
  *
  * Defines the metadata and component for a dashboard widget.
+ */
+/**
+ * WidgetDefinition executes the WidgetDefinition logic.
+ *
+ * Summary: Executes the WidgetDefinition logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface WidgetDefinition {
     /** Unique identifier for the widget type. */
@@ -85,6 +82,15 @@ export interface WidgetDefinition {
  *
  * Registry of all available dashboard widgets.
  * This list determines what widgets are available to add to the dashboard.
+ */
+/**
+ * WIDGET_DEFINITIONS executes the WIDGET_DEFINITIONS logic.
+ *
+ * Summary: Executes the WIDGET_DEFINITIONS logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     {
@@ -203,7 +209,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
  * Retrieves a widget definition by its type.
  *
  * @param type - The widget type identifier.
- * @returns The widget definition if found, otherwise undefined.
+/**
+ * getWidgetDefinition executes the getWidgetDefinition logic.
+ *
+ * Summary: Executes the getWidgetDefinition logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
     return WIDGET_DEFINITIONS.find(w => w.type === type);

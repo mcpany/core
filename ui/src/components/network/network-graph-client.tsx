@@ -110,21 +110,13 @@ const defaultEdgeOptions = {
 };
 
 /**
- * Intent: Document NetworkGraphFlowProps
+ * NetworkGraphFlowProps executes the NetworkGraphFlowProps logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the NetworkGraphFlowProps logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Props for the NetworkGraphFlow component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface NetworkGraphFlowProps {
     /**
@@ -149,9 +141,14 @@ export interface NetworkGraphFlowProps {
  *   - None
  *
  * NetworkGraphFlow component.
- * Renders the interactive network graph using ReactFlow.
- * @param props - The component props.
- * @returns The rendered component.
+/**
+ * NetworkGraphFlow executes the NetworkGraphFlow logic.
+ *
+ * Summary: Executes the NetworkGraphFlow logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) {
     const router = useRouter();
@@ -470,6 +467,15 @@ MetricCard.displayName = 'MetricCard';
  *
  * NetworkGraphClient component.
  * @returns The rendered component.
+ */
+/**
+ * NetworkGraphClient executes the NetworkGraphClient logic.
+ *
+ * Summary: Executes the NetworkGraphClient logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function NetworkGraphClient() {
     return (

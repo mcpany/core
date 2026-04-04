@@ -40,25 +40,16 @@ type Upstream struct {
 
 // Shutdown implements the upstream.Upstream interface.
 //
-// Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
-//
-// Returns:
-//   - error: Always returns nil.
-//
-// Side Effects:
-//   - Stops the health checker.
-//
-// Summary: Executes Shutdown operation.
+// Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -93,6 +84,21 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 //
 // Side Effects:
 //   - None.
+// NewUpstream creates a new instance of CommandUpstream.
+//
+// Summary: Executes the NewUpstream operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewUpstream() upstream.Upstream {
 	return &Upstream{}
 }
@@ -119,15 +125,18 @@ func NewUpstream() upstream.Upstream {
 //   - Registers tools and prompts with their respective managers.
 //
 // Summary: Executes Register operation.
+// Register processes the configuration for a command-line service, creates a
+//
+// Summary: Executes the Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

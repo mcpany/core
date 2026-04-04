@@ -40,28 +40,16 @@ var _ resource.Resource = &SkillResource{}
 
 // NewSkillResource creates a new resource for the main SKILL.md.
 //
-// It wraps the provided Skill definition into a Resource that serves the skill's
-// documentation file (SKILL.md).
+// Summary: Executes the NewSkillResource operation.
 //
 // Parameters:
-//   - s (*skill.Skill): The skill definition to expose as a resource.
-//
-// Returns:
-//   - *SkillResource: A new instance of SkillResource pointing to the skill's documentation.
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Initializes NewSkillResource operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -97,6 +85,20 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// NewSkillAssetResource creates a new resource for a skill asset.
+//
+// Summary: Executes the NewSkillAssetResource operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 	return &SkillResource{
@@ -123,6 +125,21 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// URI returns the URI of the resource.
+//
+// Summary: Executes the URI operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -154,6 +171,21 @@ func (r *SkillResource) URI() string {
 //
 // Side Effects:
 //   - None.
+// Name returns the human-readable name of the resource.
+//
+// Summary: Executes the Name operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Name() string {
 	if r.assetPath == "" {
 		return fmt.Sprintf("Skill: %s", r.skill.Name)
@@ -182,6 +214,21 @@ func (r *SkillResource) Name() string {
 //
 // Side Effects:
 //   - None.
+// Service returns the service identifier associated with the resource.
+//
+// Summary: Executes the Service operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Service() string {
 	return "skills"
 }
@@ -204,6 +251,21 @@ func (r *SkillResource) Service() string {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Resource returns the underlying MCP resource definition.
+//
+// Summary: Executes the Resource operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -295,10 +357,18 @@ func (r *SkillResource) resolvePath() (string, error) {
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+// Read returns the contents of the resource.
+//
+// Summary: Executes the Read operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -411,6 +481,21 @@ func isTextMime(mimeType string) bool {
 //
 // Side Effects:
 //   - None.
+// Subscribe subscribes to changes on the resource.
+//
+// Summary: Executes the Subscribe operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *SkillResource) Subscribe(_ context.Context) error {
 	// No-op for now
 	return nil
@@ -441,6 +526,20 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// RegisterSkillResources registers all skills from the manager into the resource manager.
+//
+// Summary: Executes the RegisterSkillResources operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

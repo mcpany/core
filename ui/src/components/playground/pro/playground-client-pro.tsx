@@ -35,22 +35,13 @@ import { ToolRunner } from "@/components/playground/tool-runner";
 import { Zap } from "lucide-react";
 
 /**
- * Intent: Document PlaygroundClientPro
+ * PlaygroundClientPro executes the PlaygroundClientPro logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the PlaygroundClientPro logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * PlaygroundClientPro component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);

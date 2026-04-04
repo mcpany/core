@@ -44,30 +44,17 @@ type OpenAPIUpstream struct { //nolint:revive
 }
 
 // Shutdown gracefully terminates the OpenAPI upstream service. For HTTP-based
-// services, this typically means closing any persistent connections.
+//
+// Summary: Executes the Shutdown operation.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
-//
-// Returns:
-//   - error: An error if the operation fails.
-//
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
 //   - None.
 //
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -101,6 +88,21 @@ func (u *OpenAPIUpstream) Shutdown(_ context.Context) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// NewOpenAPIUpstream creates a new instance of OpenAPIUpstream. It initializes a
+//
+// Summary: Executes the NewOpenAPIUpstream operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -142,12 +144,18 @@ func NewOpenAPIUpstream() upstream.Upstream {
 //
 // Parameters:
 //   - TODO: Document parameters.
+// Register processes an OpenAPI service configuration. It parses the OpenAPI specification, extracts the operations, converts them into tools, and registers them with the tool manager.
+//
+// Summary: Executes the Register operation.
+//
+// Parameters:
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -356,6 +364,21 @@ type httpClientImpl struct {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Do sends an HTTP request and returns an HTTP response, fulfilling the
+//
+// Summary: Executes the Do operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

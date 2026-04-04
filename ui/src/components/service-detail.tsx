@@ -145,23 +145,13 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 }
 
 /**
- * Intent: Document ServiceDetail
+ * ServiceDetail executes the ServiceDetail logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceDetail logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceDetail.
- *
- * @param { serviceId - The { serviceId.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceDetail({ serviceId }: { serviceId: string }) {
   const [service, setService] = useState<UpstreamServiceConfig | null>(null);

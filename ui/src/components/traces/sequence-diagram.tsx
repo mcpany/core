@@ -88,23 +88,13 @@ const PADDING_BOTTOM = 40;
 const PADDING_X = 40;
 
 /**
- * Intent: Document SequenceDiagram
+ * SequenceDiagram executes the SequenceDiagram logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the SequenceDiagram logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SequenceDiagram renders a visual timeline of a trace, showing the sequence of tool calls and responses between actors.
- *
- * @param props.trace - The trace data to visualize.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);

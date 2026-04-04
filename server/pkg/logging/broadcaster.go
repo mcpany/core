@@ -27,28 +27,16 @@ var (
 
 // NewBroadcaster creates a new Broadcaster. Returns the result.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *Broadcaster: The resulting *Broadcaster.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes NewBroadcaster operation.
+// Summary: Executes the NewBroadcaster operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -84,6 +72,20 @@ func NewBroadcaster() *Broadcaster {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Reset clears the broadcaster history and subscribers. This is primarily for testing to ensure a clean state.
+//
+// Summary: Executes the Reset operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -122,6 +124,20 @@ func (b *Broadcaster) Reset() {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// Subscribe returns a channel that will receive broadcast messages. The channel has a small buffer to prevent slow consumers from blocking the broadcaster. It is the caller's responsibility to read from the channel promptly.
+//
+// Summary: Executes the Subscribe operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (b *Broadcaster) Subscribe() chan any {
 	return b.SubscribeBuffered(100)
@@ -151,6 +167,20 @@ func (b *Broadcaster) Subscribe() chan any {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// SubscribeBuffered returns a channel that will receive broadcast messages with a custom buffer size. The channel has a buffer to prevent slow consumers from blocking the broadcaster. It is the caller's responsibility to read from the channel promptly.
+//
+// Summary: Executes the SubscribeBuffered operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -188,6 +218,19 @@ func (b *Broadcaster) SubscribeBuffered(size int) chan any {
 // Errors:
 //   - TODO: Document errors.
 //
+// SubscribeWithHistory returns a channel that will receive broadcast messages, and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
+//
+// Summary: Executes the SubscribeWithHistory operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
@@ -219,6 +262,20 @@ func (b *Broadcaster) SubscribeWithHistory() (chan any, []any) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// SubscribeWithHistoryBuffered returns a channel that will receive broadcast messages with a custom buffer size, and the current history of messages. This is atomic to ensure no messages are missed or duplicated.
+//
+// Summary: Executes the SubscribeWithHistoryBuffered operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -282,6 +339,21 @@ func (b *Broadcaster) SubscribeWithHistoryBuffered(size int) (chan any, []any) {
 //
 // Side Effects:
 //   - None.
+// Unsubscribe removes a subscriber channel. ch is the ch.
+//
+// Summary: Executes the Unsubscribe operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) Unsubscribe(ch chan any) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -315,6 +387,20 @@ func (b *Broadcaster) Unsubscribe(ch chan any) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Broadcast sends a message to all subscribers. This method is non-blocking; if a subscriber's channel is full, the message is dropped for that subscriber.
+//
+// Summary: Executes the Broadcast operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -360,6 +446,21 @@ func (b *Broadcaster) Broadcast(msg any) {
 //
 // Side Effects:
 //   - None.
+// ClearHistory clears the history of the broadcaster without removing subscribers.
+//
+// Summary: Executes the ClearHistory operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Broadcaster) ClearHistory() {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -392,6 +493,19 @@ func (b *Broadcaster) ClearHistory() {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// GetHistory returns the current log history.
+//
+// Summary: Executes the GetHistory operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -446,6 +560,20 @@ func (b *Broadcaster) GetHistory() []any {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Hydrate populates the history buffer with messages. It is intended to be called at startup. Messages are NOT broadcasted to subscribers, as subscribers shouldn't exist yet, or shouldn't receive old history as "new" events.
+//
+// Summary: Executes the Hydrate operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -25,22 +25,16 @@ var (
 
 // SetLevel updates the global log level dynamically.
 //
-// Parameters:
-//   - level (slog.Level): The new log level.
-//
-// Side Effects:
-//   - Updates the global log level atomic variable.
-//
-// Summary: Updates SetLevel operation.
+// Summary: Executes the SetLevel operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -68,10 +62,18 @@ func SetLevel(level slog.Level) {
 //   - TODO: Document parameters.
 //
 // Returns:
-//   - TODO: Document returns.
+// ForTestsOnlyResetLogger is for use in tests to reset the `sync.Once` mechanism. This allows the global logger to be re-initialized in different test cases. This function should not be used in production code.
+//
+// Summary: Executes the ForTestsOnlyResetLogger operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -109,6 +111,18 @@ func ForTestsOnlyResetLogger() {
 //
 // Errors:
 //   - TODO: Document errors.
+// Init initializes the application's global logger with a specific log level
+//
+// Summary: Executes the Init operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -202,6 +216,21 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Side Effects:
 //   - None.
+// GetLogger returns the shared global logger instance.
+//
+// Summary: Executes the GetLogger operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -242,6 +271,21 @@ func GetLogger() *slog.Logger {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// ToSlogLevel converts a string log level to a slog.Level.
+//
+// Summary: Executes the ToSlogLevel operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

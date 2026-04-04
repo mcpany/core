@@ -18,22 +18,13 @@ import { Ghost, RefreshCw, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 /**
- * Intent: Document ContextSimulator
+ * ContextSimulator executes the ContextSimulator logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ContextSimulator logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Component that simulates context reduction by allowing users to toggle tools.
- * It displays statistics about current tokens and potential savings.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ContextSimulator() {
     const {

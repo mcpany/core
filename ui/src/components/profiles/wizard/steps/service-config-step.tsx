@@ -21,22 +21,13 @@ interface ServiceConfigStepProps {
 }
 
 /**
- * Intent: Document ServiceConfigStep
+ * ServiceConfigStep executes the ServiceConfigStep logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceConfigStep logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Step for configuring service parameters.
- * @param props Component properties.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits

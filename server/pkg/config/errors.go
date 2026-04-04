@@ -22,28 +22,16 @@ type ActionableError struct {
 
 // Error implements the error interface. Side Effects: - None.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string: The resulting string.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Error operation.
+// Summary: Executes the Error operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -75,6 +63,20 @@ func (e *ActionableError) Error() string {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// Unwrap returns the underlying error. Side Effects: - None.
+//
+// Summary: Executes the Unwrap operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

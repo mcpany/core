@@ -181,23 +181,13 @@ const MemoizedResourceGridItem = React.memo(({ res, isSelected, onSelect, onPrev
 MemoizedResourceGridItem.displayName = "MemoizedResourceGridItem";
 
 /**
- * Intent: Document ResourceExplorer
+ * ResourceExplorer executes the ResourceExplorer logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ResourceExplorer logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ResourceExplorer.
- *
- * @param { initialResources = [] - The { initialResources = [].
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProps) {
     const [resources, setResources] = useState<ResourceDefinition[]>(initialResources);

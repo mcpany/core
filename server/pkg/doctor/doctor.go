@@ -63,29 +63,16 @@ type CheckResult struct {
 
 // RunChecks performs connectivity and health checks on the provided configuration.
 //
-// It iterates through all upstream services defined in the configuration and executes
-// the appropriate check logic for each service type.
+// Summary: Executes the RunChecks operation.
 //
 // Parameters:
-//   - ctx: context.Context. The context for the request, used for timeouts and cancellation.
-//   - config: *configv1.McpAnyServerConfig. The server configuration containing upstream service definitions.
+//   - None.
 //
 // Returns:
-//   - []CheckResult: A slice of results for each checked service.
-//
-// Side Effects:
-//   - Performs network I/O to connect to upstream services.
-//
-// Summary: Executes RunChecks operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -138,6 +125,20 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// CheckService performs a connectivity check for a single service.
+//
+// Summary: Executes the CheckService operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

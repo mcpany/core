@@ -28,22 +28,13 @@ const MANUAL_TEMPLATE: any = {
 };
 
 /**
- * Intent: Document StepServiceType
+ * StepServiceType executes the StepServiceType logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the StepServiceType logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StepServiceType component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();

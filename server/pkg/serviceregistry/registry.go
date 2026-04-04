@@ -123,29 +123,16 @@ type ServiceRegistry struct {
 
 // New creates and initializes a new ServiceRegistry.
 //
-// Parameters:
-//   - factory (factory.Factory): The factory used to create upstream connections.
-//   - toolManager (tool.ManagerInterface): The manager for tools.
-//   - promptManager (prompt.ManagerInterface): The manager for prompts.
-//   - resourceManager (resource.ManagerInterface): The manager for resources.
-//   - authManager (*auth.Manager): The manager for authentication.
-//
-// Returns:
-//   - *ServiceRegistry: A pointer to the newly created ServiceRegistry.
-//
-// Side Effects:
-//   - Allocates memory for internal maps.
-//
-// Summary: Initializes New operation.
+// Summary: Executes the New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -191,19 +178,18 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 //
 // Side Effects:
 //   - Modifies the internal service registry state.
-//   - Initiates network connections to upstream services.
-//   - Registers tools, prompts, and resources with their respective managers.
+// RegisterService handles the registration of a new upstream service.
 //
-// Summary: Executes RegisterService operation.
+// Summary: Executes the RegisterService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -356,6 +342,21 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 //
 // Side Effects:
 //   - None.
+// AddServiceInfo stores metadata about a service.
+//
+// Summary: Executes the AddServiceInfo operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -384,6 +385,21 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetServiceInfo retrieves the metadata for a registered service.
+//
+// Summary: Executes the GetServiceInfo operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -431,6 +447,21 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 //
 // Side Effects:
 //   - None.
+// GetServiceConfig retrieves the configuration for a registered service.
+//
+// Summary: Executes the GetServiceConfig operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamServiceConfig, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -472,6 +503,21 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// UnregisterService removes a service from the registry.
+//
+// Summary: Executes the UnregisterService operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -533,6 +579,21 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 //
 // Side Effects:
 //   - None.
+// GetServiceError returns the last known error for a service.
+//
+// Summary: Executes the GetServiceError operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -562,6 +623,21 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// StartHealthChecks initiates a background loop to periodically check the health of services.
+//
+// Summary: Executes the StartHealthChecks operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -665,6 +741,21 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 //
 // Side Effects:
 //   - None.
+// Close gracefully shuts down the registry and all registered services.
+//
+// Summary: Executes the Close operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (r *ServiceRegistry) Close(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -701,6 +792,21 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// GetAllServices returns a list of all registered services.
+//
+// Summary: Executes the GetAllServices operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

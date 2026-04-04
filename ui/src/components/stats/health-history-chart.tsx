@@ -17,23 +17,13 @@ interface HealthPoint {
 }
 
 /**
- * Intent: Document HealthHistoryChart
+ * HealthHistoryChart executes the HealthHistoryChart logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the HealthHistoryChart logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * HealthHistoryChart component.
- * Displays server uptime history over the last 24 hours.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function HealthHistoryChart() {
     const [data, setData] = useState<HealthPoint[]>([]);

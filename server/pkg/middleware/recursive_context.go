@@ -34,28 +34,16 @@ type RecursiveContextManager struct {
 
 // NewRecursiveContextManager initializes and returns a new RecursiveContextManager.
 //
+// Summary: Executes the NewRecursiveContextManager operation.
+//
 // Parameters:
 //   - None.
 //
 // Returns:
-//   - *RecursiveContextManager: A pointer to the newly created manager instance.
+//   - None.
 //
 // Errors:
 //   - None.
-//
-// Side Effects:
-//   - Allocates memory for the manager and its internal session map.
-//
-// Summary: Initializes NewRecursiveContextManager operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -91,6 +79,18 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 //
 // Errors:
 //   - TODO: Document errors.
+// CreateSession generates a new recursive context session with the provided data and expiration time.
+//
+// Summary: Executes the CreateSession operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -146,6 +146,21 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 //
 // Side Effects:
 //   - None.
+// GetSession retrieves an active context session by its unique identifier.
+//
+// Summary: Executes the GetSession operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -185,6 +200,20 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// APIHandler constructs an HTTP handler function for managing Recursive Context Protocol endpoints.
+//
+// Summary: Executes the APIHandler operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -281,6 +310,19 @@ const (
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// HandleContext intercepts HTTP requests to inject recursive context state based on the X-MCP-Parent-Context-ID header.
+//
+// Summary: Executes the HandleContext operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

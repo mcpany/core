@@ -12,22 +12,13 @@ import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 /**
- * Intent: Document StepParameters
+ * StepParameters executes the StepParameters logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the StepParameters logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StepParameters component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();

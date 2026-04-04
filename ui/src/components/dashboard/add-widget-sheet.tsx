@@ -25,24 +25,13 @@ interface AddWidgetSheetProps {
 }
 
 /**
- * Intent: Document AddWidgetSheet
+ * AddWidgetSheet executes the AddWidgetSheet logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the AddWidgetSheet logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AddWidgetSheet component.
- * A sheet that displays a gallery of available widgets to add to the dashboard.
- * @param props - The component props.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
     const [open, setOpen] = useState(false);

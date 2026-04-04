@@ -35,21 +35,16 @@ const (
 
 // String returns the string representation of the severity.
 //
-// It converts the Severity enum to its string counterpart (ERROR, WARNING, INFO).
-//
-// Returns:
-//   - string: The string representation of the severity.
-//
-// Summary: Executes String operation.
+// Summary: Executes the String operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -101,6 +96,20 @@ type Result struct {
 //   - TODO: Document errors.
 //
 // Side Effects:
+// String returns the string representation of the result.
+//
+// Summary: Executes the String operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (r Result) String() string {
 	pathStr := ""
@@ -142,6 +151,19 @@ type Linter struct {
 // Errors:
 //   - TODO: Document errors.
 //
+// NewLinter creates a new Linter instance.
+//
+// Summary: Executes the NewLinter operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
 // Side Effects:
 //   - None.
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
@@ -168,8 +190,18 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Returns:
 //   - TODO: Document returns.
 //
+// Run executes all linting checks.
+//
+// Summary: Executes the Run operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

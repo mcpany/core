@@ -10,21 +10,13 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
- * Intent: Document CalendarProps
+ * CalendarProps executes the CalendarProps logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the CalendarProps logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * CalendarProps type definition.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 

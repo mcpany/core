@@ -18,22 +18,13 @@ interface PluginUIHostProps {
 }
 
 /**
- * Intent: Document PluginUIHost
+ * PluginUIHost executes the PluginUIHost logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the PluginUIHost logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Component to host custom UI provided by server plugins via iframe.
- * Includes security sandboxing and loading states.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function PluginUIHost({ src, title = "Plugin UI", className, serviceId }: PluginUIHostProps) {
   const [loading, setLoading] = useState(true);

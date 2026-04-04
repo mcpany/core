@@ -24,26 +24,13 @@ interface ToolSafetyTableProps {
 }
 
 /**
- * Intent: Document ToolSafetyTable
+ * ToolSafetyTable executes the ToolSafetyTable logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolSafetyTable logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolSafetyTable displays a table of tools and allows toggling their enabled/disabled status.
- *
- * @param props - The component props.
- * @param props.tools - The list of tools to display.
- * @param props.onUpdate - Callback function called when a tool status is updated.
- * @returns A table component for managing tool safety.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolSafetyTable({ tools, onUpdate }: ToolSafetyTableProps) {
     const { toast } = useToast();

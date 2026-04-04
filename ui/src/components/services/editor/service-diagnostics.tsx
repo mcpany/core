@@ -26,26 +26,13 @@ interface DiagnosticResult {
 }
 
 /**
- * Intent: Document ServiceDiagnostics
+ * ServiceDiagnostics executes the ServiceDiagnostics logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ServiceDiagnostics logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A component that runs and displays diagnostic checks for a service.
- * Checks include configuration validation, runtime status, and tool discovery.
- *
- * @param props - The component props.
- * @param props.service - The service configuration to diagnose.
- * @returns The rendered diagnostic component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
     const [running, setRunning] = useState(false);

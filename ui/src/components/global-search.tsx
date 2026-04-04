@@ -41,21 +41,13 @@ import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
 /**
- * Intent: Document reloadPage
+ * reloadPage executes the reloadPage logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the reloadPage logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Reloads the current page. Extracted as a module-level function to allow test mocking.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const reloadPage = () => window.location.reload();
 
@@ -75,7 +67,14 @@ export const reloadPage = () => window.location.reload();
  *   - None
  *
  * Global search component that provides quick access to navigation, tools, services, and actions.
- * It is triggered by a keyboard shortcut (Cmd/Ctrl+K) or by clicking the search button.
+/**
+ * GlobalSearch executes the GlobalSearch logic.
+ *
+ * Summary: Executes the GlobalSearch logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)

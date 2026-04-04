@@ -32,28 +32,16 @@ type DefaultBus[T any] struct {
 
 // New creates and returns a new instance of DefaultBus, which is the default, thread-safe implementation of the Bus interface. It is initialized with the default publish timeout. The type parameter T specifies the type of message that the bus will handle.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *DefaultBus[T]: The resulting *DefaultBus[T].
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
-//
-// Summary: Initializes New operation.
+// Summary: Executes the New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -87,6 +75,21 @@ func New[T any]() *DefaultBus[T] {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// Publish sends a message to all handlers subscribed to the specified topic.
+//
+// Summary: Executes the Publish operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -146,7 +149,18 @@ func (b *DefaultBus[T]) Publish(_ context.Context, topic string, msg T) error {
 //   - TODO: Document returns.
 //
 // Errors:
-//   - TODO: Document errors.
+// Subscribe registers a handler function for a given topic. It starts a new
+//
+// Summary: Executes the Subscribe operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -216,6 +230,21 @@ func (b *DefaultBus[T]) Subscribe(_ context.Context, topic string, handler func(
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
+// SubscribeOnce registers a handler for a topic that will be executed only
+//
+// Summary: Executes the SubscribeOnce operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

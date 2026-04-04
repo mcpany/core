@@ -15,25 +15,13 @@ interface OAuthConfigProps {
 }
 
 /**
- * Intent: Document OAuthConfig
+ * OAuthConfig executes the OAuthConfig logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the OAuthConfig logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * OAuthConfig component.
- * @param props - The component props.
- * @param props.auth - The authentication configuration.
- * @param props.onChange - Callback function when value changes.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function OAuthConfig({ auth, onChange }: OAuthConfigProps) {
     const updateAuth = (updates: Partial<NonNullable<Authentication["oauth2"]>>) => {

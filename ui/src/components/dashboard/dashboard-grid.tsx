@@ -35,21 +35,13 @@ import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 import { fetchWithAuth } from "@/lib/client";
 
 /**
- * Intent: Document WidgetInstance
+ * WidgetInstance executes the WidgetInstance logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the WidgetInstance logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Represents a specific instance of a widget on the dashboard.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface WidgetInstance {
     /** Unique ID for this instance (allows multiple widgets of same type). */
@@ -207,8 +199,14 @@ MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
  *   - None
  *
  * DashboardGrid component.
- * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
- * @returns The rendered component.
+/**
+ * DashboardGrid executes the DashboardGrid logic.
+ *
+ * Summary: Executes the DashboardGrid logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);

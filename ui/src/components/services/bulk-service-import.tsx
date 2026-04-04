@@ -48,22 +48,13 @@ interface ServiceImportItem {
 }
 
 /**
- * Intent: Document BulkServiceImport
+ * BulkServiceImport executes the BulkServiceImport logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the BulkServiceImport logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * BulkServiceImport provides a wizard-like interface for importing multiple service configurations.
- * It supports JSON/YAML input, file uploads, and URL imports with validation steps.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function BulkServiceImport({ onImportSuccess, onCancel }: BulkServiceImportProps) {
     const [step, setStep] = useState<"input" | "review" | "import">("input");

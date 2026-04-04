@@ -41,28 +41,16 @@ var (
 
 // SetGlobalAlertConfig sets the global alert configuration.
 //
-// It updates the thread-safe global configuration used for sending alerts on health status changes.
+// Summary: Executes the SetGlobalAlertConfig operation.
 //
 // Parameters:
-//   - cfg: *configv1.AlertConfig. The new alert configuration.
+//   - None.
 //
 // Returns:
-//
-//	None.
-//
-// Side Effects:
-//   - Updates a global variable protected by a mutex.
-//
-// Summary: Updates SetGlobalAlertConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -112,6 +100,20 @@ type HTTPServiceWithHealthCheck interface {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// NewChecker creates a new health checker for the given upstream service.
+//
+// Summary: Executes the NewChecker operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -134,21 +134,13 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
 };
 
 /**
- * Intent: Document Profile
+ * Profile executes the Profile logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the Profile logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Represents a user profile configuration in the UI.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface Profile {
     /** Unique identifier for the profile (usually same as name). */
@@ -199,14 +191,14 @@ interface ProfileEditorProps {
  *   - None
  *
  * A sheet component for creating or editing a user profile.
- * Allows configuring profile details and selecting accessible services.
+/**
+ * ProfileEditor executes the ProfileEditor logic.
  *
- * @param props - The component props.
- * @param props.profile - The profile to edit, or null to create a new one.
- * @param props.open - Whether the editor sheet is open.
- * @param props.onOpenChange - Callback to toggle the sheet's open state.
- * @param props.onSave - Callback invoked when the profile is saved.
- * @returns The rendered profile editor component.
+ * Summary: Executes the ProfileEditor logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEditorProps) {
     const [name, setName] = useState("");

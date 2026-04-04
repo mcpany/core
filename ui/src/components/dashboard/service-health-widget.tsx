@@ -175,22 +175,13 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
 });
 
 /**
- * Intent: Document ServiceHealthWidget
+ * ServiceHealthWidget executes the ServiceHealthWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ServiceHealthWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ServiceHealthWidget component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ServiceHealthWidget() {
   const { services, history, isLoading } = useServiceHealthHistory();

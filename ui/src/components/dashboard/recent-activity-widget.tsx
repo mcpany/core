@@ -48,23 +48,13 @@ function safeParsePayload(payload: any) {
 }
 
 /**
- * Intent: Document RecentActivityWidget
+ * RecentActivityWidget executes the RecentActivityWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the RecentActivityWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * RecentActivityWidget component.
- * Displays the most recent tool executions.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function RecentActivityWidget() {
   const [traces, setTraces] = useState<any[]>([]);

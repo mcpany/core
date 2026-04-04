@@ -22,22 +22,13 @@ interface ReplayDiffDialogProps {
 }
 
 /**
- * Intent: Document ReplayDiffDialog
+ * ReplayDiffDialog executes the ReplayDiffDialog logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ReplayDiffDialog logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ReplayDiffDialog component.
- * Allows replaying a tool call from a trace and viewing the diff between original and new output.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ReplayDiffDialog({ open, onOpenChange, trace }: ReplayDiffDialogProps) {
     const [loading, setLoading] = useState(false);

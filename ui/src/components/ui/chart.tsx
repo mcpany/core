@@ -11,21 +11,13 @@ import { cn } from "@/lib/utils"
 const THEMES = { light: "", dark: ".dark" } as const
 
 /**
- * Intent: Document ChartConfig
+ * ChartConfig executes the ChartConfig logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the ChartConfig logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ChartConfig type definition.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export type ChartConfig = {
   [k in string]: {

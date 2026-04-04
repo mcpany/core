@@ -21,23 +21,13 @@ interface ToolSidebarProps {
 }
 
 /**
- * Intent: Document ToolSidebar
+ * ToolSidebar executes the ToolSidebar logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the ToolSidebar logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * ToolSidebar.
- *
- * @param className - The className.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps) {
     const [searchQuery, setSearchQuery] = useState("");

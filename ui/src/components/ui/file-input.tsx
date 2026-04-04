@@ -18,24 +18,13 @@ interface FileInputProps {
 }
 
 /**
- * Intent: Document FileInput
+ * FileInput executes the FileInput logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the FileInput logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * FileInput is a form component for selecting a file and converting it to a Base64 string.
- * It displays the selected filename and allows clearing the selection.
- * @param props - Component props.
- * @returns The FileInput component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function FileInput({ value, onChange, accept, className, disabled, id }: FileInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)

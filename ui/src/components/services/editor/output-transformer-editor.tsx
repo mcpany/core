@@ -20,21 +20,13 @@ interface OutputTransformerEditorProps {
 }
 
 /**
- * Intent: Document OutputTransformerEditor
+ * OutputTransformerEditor executes the OutputTransformerEditor logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the OutputTransformerEditor logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Editor for OutputTransformer configuration.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function OutputTransformerEditor({ transformer, onChange }: OutputTransformerEditorProps) {
     const [localTransformer, setLocalTransformer] = useState<OutputTransformer>({

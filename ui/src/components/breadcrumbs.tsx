@@ -18,21 +18,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /**
- * Intent: Document BreadcrumbItem
+ * BreadcrumbItem executes the BreadcrumbItem logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the BreadcrumbItem logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Represents a single item in the breadcrumb navigation.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export interface BreadcrumbItem {
     /** The label to display for the breadcrumb. */
@@ -69,11 +61,14 @@ interface BreadcrumbsProps {
  *   - None
  *
  * Breadcrumbs navigation component.
+/**
+ * Breadcrumbs executes the Breadcrumbs logic.
  *
- * @param props - The component props.
- * @param props.items - The list of breadcrumb items to display.
- * @param props.className - Optional CSS class names.
- * @returns {JSX.Element} The rendered breadcrumbs navigation.
+ * Summary: Executes the Breadcrumbs logic.
+ *
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     const [history, setHistory] = useState<BreadcrumbItem[]>([]);

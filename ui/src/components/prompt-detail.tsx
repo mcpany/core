@@ -16,24 +16,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ServicePropertyCard } from "./service-property-card";
 
 /**
- * Intent: Document PromptDetail
+ * PromptDetail executes the PromptDetail logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the PromptDetail logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * PromptDetail.
- *
- * @param promptName - The promptName.
- * @param promptName - The promptName.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function PromptDetail({ serviceId, promptName }: { serviceId: string, promptName: string }) {
   const [prompt, setPrompt] = useState<PromptDefinition | null>(null);

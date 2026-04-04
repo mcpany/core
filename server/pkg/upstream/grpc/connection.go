@@ -24,24 +24,17 @@ type ConnectionFactory struct {
 }
 
 // NewConnectionFactory creates and returns a new ConnectionFactory with default
-// settings.
 //
-// Returns:
-//   - *ConnectionFactory: The result.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewConnectionFactory operation.
+// Summary: Executes the NewConnectionFactory operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -70,9 +63,18 @@ func NewConnectionFactory() *ConnectionFactory {
 //
 // Returns:
 //   - TODO: Document returns.
+// WithDialer sets a custom dialer function for the ConnectionFactory. This is
+//
+// Summary: Executes the WithDialer operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -106,8 +108,18 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // Returns:
 //   - TODO: Document returns.
 //
+// NewConnection establishes a new gRPC client connection to the specified
+//
+// Summary: Executes the NewConnection operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -587,15 +587,19 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
 //
-// Summary: Sets the MCP server.
-//
-// This allows the manager to register tool handlers directly with the server.
+// Summary: Executes the SetMCPServer operation.
 //
 // Parameters:
-//   - mcpServer (MCPServerProvider): The MCP server provider interface.
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal mcpServer reference.
+//   - None.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

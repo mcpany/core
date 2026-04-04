@@ -28,28 +28,13 @@ interface StackEditorProps {
 }
 
 /**
- * Intent: Document StackEditor
+ * StackEditor executes the StackEditor logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the StackEditor logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * StackEditor component for editing stack configurations with visual feedback.
- *
- * @param props - Component properties
- * @param props.stackId - Optional stack ID to load from API
- * @param props.initialValue - Initial YAML content (when stackId not provided)
- * @param props.onSave - Callback when saving (when stackId not provided)
- * @param props.onCancel - Callback when cancelling
- * @returns The rendered StackEditor
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function StackEditor({ stackId, initialValue = "", onSave, onCancel }: StackEditorProps) {
   const [value, setValue] = useState(initialValue);

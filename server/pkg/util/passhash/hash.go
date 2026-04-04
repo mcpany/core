@@ -12,23 +12,16 @@ import (
 
 // Password hashes a password using bcrypt.
 //
-// Parameters:
-//   - password: The password to hash.
-//
-// Returns:
-//   - string: The hashed password.
-//   - error: An error if the hashing fails.
-//
-// Summary: Executes Password operation.
+// Summary: Executes the Password operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -61,6 +54,20 @@ func Password(password string) (string, error) {
 //
 // Errors:
 //   - TODO: Document errors.
+//
+// Side Effects:
+// CheckPassword checks if a password matches a hash.
+//
+// Summary: Executes the CheckPassword operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

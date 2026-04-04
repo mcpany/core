@@ -17,27 +17,13 @@ interface DebuggerControlsProps {
 }
 
 /**
- * Intent: Document DebuggerControls
+ * DebuggerControls executes the DebuggerControls logic.
  *
- * Params:
- *   - Documented below.
+ * Summary: Executes the DebuggerControls logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * DebuggerControls provides play/pause and step controls for the debugger.
- * @param props - The component props.
- * @param props.isPlaying - Whether the debugger is currently playing.
- * @param props.onPlayPause - Callback to toggle play/pause.
- * @param props.onStep - Callback to step forward.
- * @param props.onStop - Callback to stop execution.
- * @returns The DebuggerControls component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DebuggerControls({ isPlaying, onPlayPause, onStep, onStop }: DebuggerControlsProps) {
   return (

@@ -28,23 +28,13 @@ const PageFallback = () => (
 );
 
 /**
- * Intent: Document Layout
+ * Layout executes the Layout logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the Layout logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Layout component that wraps all main application routes with the
- * sidebar, header, and context providers.  Uses React Router's
- * <Outlet /> to render the matched child route.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function Layout() {
   return (

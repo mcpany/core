@@ -18,22 +18,13 @@ const formatUptime = (seconds: number) => {
 }
 
 /**
- * Intent: Document SystemHealthCard
+ * SystemHealthCard executes the SystemHealthCard logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the SystemHealthCard logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * SystemHealthCard component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export const SystemHealthCard = memo(function SystemHealthCard() {
   const [status, setStatus] = useState<SystemStatus | null>(null)

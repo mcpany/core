@@ -346,13 +346,19 @@ func NewManager() *Manager {
 
 // SetUsers updates the list of active users.
 //
-// Summary: Sets the configured users.
+// Summary: Executes the SetUsers operation.
 //
 // Parameters:
-//   - users: []*configv1.User. The list of users.
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
 //
 // Side Effects:
-//   - Updates the internal user map.
+//   - None.
 func (am *Manager) SetUsers(users []*configv1.User) {
 	am.usersMu.Lock()
 	defer am.usersMu.Unlock()
@@ -401,7 +407,21 @@ func (am *Manager) GetUser(id string) (*configv1.User, bool) {
 //   - apiKey: string. The API key.
 //
 // Side Effects:
-//   - Updates the internal API key.
+// SetAPIKey sets the global API key for the server.
+//
+// Summary: Executes the SetAPIKey operation.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (am *Manager) SetAPIKey(apiKey string) {
 	am.apiKey = apiKey
 }

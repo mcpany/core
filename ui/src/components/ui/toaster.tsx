@@ -13,22 +13,13 @@ import {
 } from "@/components/ui/toast"
 
 /**
- * Intent: Document Toaster
+ * Toaster executes the Toaster logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the Toaster logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Toaster component.
- * @returns The rendered component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function Toaster() {
   const { toasts } = useToast()

@@ -43,23 +43,13 @@ const actions = [
 ];
 
 /**
- * Intent: Document QuickActionsWidget
+ * QuickActionsWidget executes the QuickActionsWidget logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the QuickActionsWidget logic.
  *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * A widget that provides quick access links to common actions and pages.
- *
- * @returns The rendered widget component.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function QuickActionsWidget() {
     return (

@@ -21,22 +21,13 @@ interface DiscoveredToolsViewerProps {
 }
 
 /**
- * Intent: Document DiscoveredToolsViewer
+ * DiscoveredToolsViewer executes the DiscoveredToolsViewer logic.
  *
- * Params:
- *   - None
+ * Summary: Executes the DiscoveredToolsViewer logic.
  *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * DiscoveredToolsViewer component.
- * Displays a list of discovered tools in an accordion view.
+ * @param params - The parameters for the operation.
+ * @returns The result of the operation.
+ * @throws An error if the operation fails.
  */
 export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
     if (!tools || tools.length === 0) {
