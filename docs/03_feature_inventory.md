@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Wait-Free Task Auction (WFTA) Broker**: (P0) Authoritative coordination service for optimistic task-claiming with asynchronous, hardware-attested conflict resolution.
+- **Hardware-Attested Auction Integrity (HAAI)**: (P0) Security standard mandating TPM-bound signatures for all inter-agent task bids and claims to neutralize "Bid-Shadowing."
+- **Higher-Dimensional Stylometric Attestation (HDSA)**: (P1) Identity service anchoring agent signatures to multi-modal trace patterns (SVG/UI) to neutralize visual reasoning mimicry.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving into the **WFTA Broker** to support decentralized, wait-free coordination.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **RRCB-compliant** context lease extensions.
