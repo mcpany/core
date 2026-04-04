@@ -138,7 +138,11 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/traces');
 
     // Select the seeded trace
+
+    await page.waitForTimeout(1000); // Give traces time to load
+    await expect(page.locator('text=orchestrator-task').first()).toBeVisible({ timeout: 15000 });
     await page.locator('text=orchestrator-task').first().click();
+
 
     // Check that we're viewing the overview
     await expect(page.locator('text=Execution Waterfall')).toBeVisible({ timeout: 15000 });
