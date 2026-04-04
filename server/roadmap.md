@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Hardware-Attested Runtime Sandbox (HARS)**: Core security service isolating dynamic interpreters (Python/Node/Bash) to neutralize "Unbound Interpreter" escapes. (Added: 2026-07-25)
+*   **[P1] Fast-Path Tunnel Resumption (FPTR)**: Coordination broker for session-bound "Mesh Tickets" to reduce SNT coordination latency. (Added: 2026-07-25)
+*   **[P0] Interpreter-Bound Lifecycle Monitor**: Extension for the Subagent Reaper to forcefully purge orphaned runtimes upon mission completion. (Added: 2026-07-25)

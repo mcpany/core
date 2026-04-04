@@ -70,3 +70,11 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-07-25 - Interpreter-Bound Lifecycle Monitoring
+**Context:** The disclosure of CVE-2026-32979 (Unbound Interpreter Escape) reveals that rogue subagents can bypass host approval by spawning dynamic interpreters (Python, Node) that are not tracked by the lifecycle manager.
+**Architecture Adjustment:**
+* Integrating the **Reaper Daemon** with the **Hardware-Attested Runtime Sandbox (HARS)**.
+* Implementing mandatory "Interpreter-to-Mission Binding." Every spawned runtime (e.g., a Python repl) must provide a heartbeating mission-token to the Reaper.
+* The Reaper now monitors "Interpreter Drift," where a runtime process diverges from its parent process group, triggering immediate hardware-locked termination.
+**Security Impact:** Neutralizes "Unbound Interpreter" escapes by ensuring that no dynamic runtime can outlive its authorized mission-root lease.
