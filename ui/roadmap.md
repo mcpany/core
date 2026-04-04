@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-04 Evolution)
+- [ ] **[P0] Headless Session Dashboard**: (2026-04-04) Real-time monitor for HMR leases, node migration, and session resumption status.
+- [ ] **[P1] ZRA Proof Viewer**: (2026-04-04) Visual workspace for reviewing Zero-Knowledge reasoning proofs without context exposure.
+- [ ] **[P0] SNT Tunnel Monitor**: (2026-04-04) Visual indicator for P2P tunnel health, latency, and inter-node tool coordination.
+- [ ] **[P0] Context Attestation Reviewer**: (2026-04-04) UI for reviewing and hashing natural-language context files (Markdown) to prevent injection.
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

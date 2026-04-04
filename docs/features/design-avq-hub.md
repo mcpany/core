@@ -47,3 +47,10 @@ While 60% of developers use AI agents, only 20% can "fully delegate" tasks due t
 
 ## 7. Evolutionary Changelog
 * **2026-06-02:** Initial Document Creation.
+
+### Update: 2026-04-04 - Headless CI/CD Integration
+**Context:** The release of Claude Code "Remote Control" highlights the need for AVQ quorums to operate in non-interactive, persistent environments.
+**Architecture Adjustment:**
+* Integrating AVQ status checks into the Headless Mission-Root (HMR) Controller.
+* Transitioning from user-pulsed approvals to HMR-bound hardware attestation for quorum commits.
+**Security Impact:** Prevents "Approval Deadlocks" in autonomous CI/CD pipelines while maintaining hardware-locked mission-root integrity.

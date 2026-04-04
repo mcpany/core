@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-04] Updates
+
+### Proposed Additions
+- **Headless Mission-Root (HMR) Controller**: (P0) Authoritative session manager for non-interactive agents, facilitating hardware-locked session resumption and identity persistence.
+- **ZK-Reasoning Attestation (ZRA) Provider**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without context exposure.
+- **SNT-Native Bridge**: (P0) High-performance coordination middleware implementing OpenClaw's SNT protocol for secure, low-latency inter-node tunneling.
+- **Deceptive Context Shield**: (P0) Security middleware mandating hardware-bound hash validation for natural-language context files (Markdown/JSON) before ingestion.
+
+### Priority Shifts
+- **Autonomous Verification Quorums (AVQ)**: (Promoted to P0) Critical for bridging the "Approval Fatigue" bottleneck in headless CI/CD pipelines.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

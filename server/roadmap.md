@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-04 Evolution)
+*   **[P0] Headless Mission-Root (HMR) Controller**: Authoritative session manager for non-interactive agents, facilitating hardware-locked resumption. (Added: 2026-04-04)
+*   **[P1] ZK-Reasoning Attestation (ZRA) Provider**: Identity service for privacy-preserving reasoning proofs using PPRP. (Added: 2026-04-04)
+*   **[P0] SNT-Native Bridge**: High-performance inter-node tunneling middleware implementing the OpenClaw SNT protocol. (Added: 2026-04-04)
+*   **[P0] Deceptive Context Shield**: Hardware-bound hash validation for natural-language context files (Markdown/JSON). (Added: 2026-04-04)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)

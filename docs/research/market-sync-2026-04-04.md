@@ -1,17 +1,23 @@
 # Market Sync: 2026-04-04
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
-### 1. OpenClaw: Swarm Negotiation Exhaustion
-As OpenClaw swarms grow in depth, the "Distributed Capability Auction" (DCA) has introduced a new failure mode: **Negotiation Exhaustion**. Agents spend more compute cycles bidding on tasks than executing them, leading to a "Negotiation Storm" that can freeze swarm progress. This highlights the need for a high-speed, hardware-accelerated auction broker in MCP Any.
+### 1. Claude Code: Headless "Remote Control" GA
+- **Finding**: Anthropic has officially released the "Remote Control" feature for Claude Code, allowing it to run as a persistent, headless process in CI/CD and server environments.
+- **Context**: This shifts the interaction model from terminal-bound to API-driven, requiring robust session management and remote authentication.
+- **Significance**: Confirms the need for MCP Any to act as a **Headless Mission-Root (HMR) Controller** to maintain session sovereignty without local terminal attachment.
 
-### 2. Claude Code: Metadata Provenance Chains
-In response to CVE-2026-42001 (Metadata Context Poisoning), the community is pushing for **Metadata Provenance Chains**. Tool definitions (JSON schemas) are no longer treated as static config but as signed artifacts. Any mutation to a tool's description or examples must be cryptographically linked to a verified developer identity.
+### 2. Gemini CLI: Privacy-Preserving Reason Proofs (PPRP)
+- **Finding**: Gemini CLI v0.58.0 introduced PPRP, utilizing Zero-Knowledge proofs to attest reasoning integrity without context exposure.
+- **Context**: Solves the "Auditor Dilemma" where security teams need to verify agent behavior without seeing sensitive PII.
+- **Significance**: Directly aligns with MCP Any's roadmap for **ZK-Reasoning Attestation**.
 
-### 3. Agent Swarms: Cross-Framework State Leakage
-Research into inter-agent communication (UAB) has identified **Cross-Framework State Leakage**. When an OpenClaw agent hands off to an AutoGen subagent, "Dirty State" from speculative branches is sometimes inadvertently committed to the global Blackboard because of mismatched lifecycle hooks.
+### 3. OpenClaw: Sovereign Node Tunneling (SNT) & VS Code Integration
+- **Finding**: OpenClaw v3.6.1 stable release emphasizes SNT for secure P2P bridging and deeper VS Code integration.
+- **Context**: Focuses on reducing the "Tunneling Overhead" that has plagued secure mesh coordination.
+- **Significance**: Validates the priority of the **SNT-Native Bridge** to optimize inter-node tool execution.
 
 ## Autonomous Agent Pain Points
-- **Negotiation Latency**: The overhead of subagent bidding in high-velocity swarms.
-- **Unauthenticated Metadata**: Tool schemas acting as high-trust injection vectors.
-- **Lifecycle Desync**: Inconsistent state commit/rollback across disparate agent frameworks.
+- **Coordination Deadlock**: Parallel teammates in headless environments are experiencing 10s+ "Cognitive Stalls" when resolving task-claim conflicts.
+- **Context Injection via Markdown**: New exploits using "Deceptive Context" in `README.md` and `AGENTS.md` files to trick headless agents into unauthorized shell execution.
+- **Approval Fatigue in CI/CD**: High-frequency autonomous PRs are overwhelming human reviewers, demanding **Autonomous Verification Quorums**.
