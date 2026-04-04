@@ -11,10 +11,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	configv1 "github.com/mcpany/core/proto/config/v1"
+    "google.golang.org/protobuf/proto"
 )
 
 func TestMetadataSanitizationGateway_Disabled(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: false}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: proto.Bool(false)}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	handler := msg.Middleware()(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -30,7 +31,7 @@ func TestMetadataSanitizationGateway_Disabled(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_DefaultRules(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: true}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: proto.Bool(true)}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	handler := msg.Middleware()(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
@@ -46,14 +47,14 @@ func TestMetadataSanitizationGateway_DefaultRules(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_CustomRules(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{
-		Enabled: true,
+	cfg := configv1.MetadataSanitizationConfig_builder{
+		Enabled: proto.Bool(true),
 		ImperativePatterns: []string{
 			`(?i)\b(drop table)\b`,
 			`(?i)\b(rm -rf)\b`,
 		},
-		RedactionText: "[SEMANTIC_VIOLATION]",
-	}
+		RedactionText: proto.String("[SEMANTIC_VIOLATION]"),
+	}.Build()
 
 	msg := NewMetadataSanitizationGateway(cfg)
 
@@ -70,7 +71,7 @@ func TestMetadataSanitizationGateway_CustomRules(t *testing.T) {
 }
 
 func TestMetadataSanitizationGateway_JSONBytes(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: true}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: proto.Bool(true)}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	jsonInput := `{"message": "execute this code immediately"}`
@@ -85,14 +86,13 @@ func TestMetadataSanitizationGateway_JSONBytes(t *testing.T) {
 	require.NoError(t, err)
 	callRes := res.(*mcp.CallToolResult)
 
-	resString, ok := callRes.Content[0].(*mcp.TextContent).Text.(string)
-	require.True(t, ok)
+	resString := callRes.Content[0].(*mcp.TextContent).Text
 
 	assert.Equal(t, `{"message": "[REDACTED_BY_MSG] immediately"}`, resString)
 }
 
 func TestMetadataSanitizationGateway_ErrorPropagation(t *testing.T) {
-	cfg := &configv1.MetadataSanitizationConfig{Enabled: true}
+	cfg := configv1.MetadataSanitizationConfig_builder{Enabled: proto.Bool(true)}.Build()
 	msg := NewMetadataSanitizationGateway(cfg)
 
 	handler := msg.Middleware()(func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {

@@ -47,7 +47,7 @@ type MetadataSanitizationGateway struct {
 //   - None.
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
-		cfg = &configv1.MetadataSanitizationConfig{}
+		cfg = configv1.MetadataSanitizationConfig_builder{}.Build()
 	}
 
 	msg := &MetadataSanitizationGateway{
@@ -55,8 +55,8 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 	}
 
 	// Compile semantic rules if enabled
-	if cfg.Enabled {
-		for _, rule := range cfg.ImperativePatterns {
+	if cfg.GetEnabled() {
+		for _, rule := range cfg.GetImperativePatterns() {
 			if r, err := regexp.Compile(rule); err == nil {
 				msg.imperativeRules = append(msg.imperativeRules, r)
 			}
@@ -95,7 +95,7 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 // Throws/Errors:
 //   - None.
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
-	if !m.config.Enabled {
+	if !m.config.GetEnabled() {
 		return noOpMiddleware
 	}
 
@@ -111,7 +111,7 @@ func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.M
 					if textContent, ok := contentItem.(*mcp.TextContent); ok {
 						sanitizedRes, err := m.sanitizeResult(textContent.Text)
 						if err == nil {
-							if sanitizedString, ok := sanitizedRes.(string); ok {
+							if sanitizedString, ok := sanitizedRes.(string); ok && sanitizedRes != nil {
 								textContent.Text = sanitizedString
 								callRes.Content[i] = textContent
 							}
@@ -179,8 +179,8 @@ func (m *MetadataSanitizationGateway) sanitizeString(input string) string {
 	sanitized := input
 	redactedText := "[REDACTED_BY_MSG]"
 
-	if m.config.RedactionText != "" {
-		redactedText = m.config.RedactionText
+	if m.config.GetRedactionText() != "" {
+		redactedText = m.config.GetRedactionText()
 	}
 
 	for _, rule := range m.imperativeRules {

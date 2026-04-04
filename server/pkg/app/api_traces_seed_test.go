@@ -8,13 +8,14 @@ import (
 	"testing"
 	"time"
 
+	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/audit"
 	"github.com/mcpany/core/server/pkg/middleware"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestSeedTraces(t *testing.T) {
-	app, _, cleanup := setupTestApp(t)
-	defer cleanup()
+	app := setupTestApp()
 
 	// Need to initialize db and middleware
 	mid := app.GetAuditMiddleware()
@@ -47,19 +48,21 @@ func TestSeedTraces(t *testing.T) {
 	}
 }
 
-func setupTestAppWithAudit(t *testing.T) (*Application, func()) {
-	app, _, cleanup := setupTestApp(t)
+func setupTestAppWithAudit(t *testing.T) *Application {
+	app := setupTestApp()
 
 	// Inject fake audit middleware
-	auditMid := middleware.NewAuditMiddleware(nil, 100)
-	app.auditMiddleware = auditMid
+	auditCfg := configv1.AuditConfig_builder{
+		Enabled: proto.Bool(true),
+	}.Build()
+	auditMid, _ := middleware.NewAuditMiddleware(auditCfg)
+	app.standardMiddlewares = &middleware.StandardMiddlewares{Audit: auditMid}
 
-	return app, cleanup
+	return app
 }
 
 func TestSeedTracesWithMockMiddleware(t *testing.T) {
-	app, cleanup := setupTestAppWithAudit(t)
-	defer cleanup()
+	app := setupTestAppWithAudit(t)
 
 	err := app.seedTraces(context.Background())
 	if err != nil {

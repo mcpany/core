@@ -2,9 +2,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "lifecycle",
-    srcs = [
-        "reaper.go",
-    ],
+    srcs = ["reaper.go"],
     importpath = "github.com/mcpany/core/server/pkg/lifecycle",
     visibility = ["//visibility:public"],
 )

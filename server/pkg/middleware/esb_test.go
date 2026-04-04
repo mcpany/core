@@ -10,10 +10,11 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/assert"
+    "google.golang.org/protobuf/proto"
 )
 
 func TestESBMiddleware_Disabled(t *testing.T) {
-	middleware := NewESBMiddleware(&configv1.Middleware{Disabled: true})
+	middleware := NewESBMiddleware(configv1.Middleware_builder{Disabled: proto.Bool(true)}.Build())
 
 	req := mcp.CallToolRequest{}
 	nextCalled := false
@@ -30,7 +31,7 @@ func TestESBMiddleware_Disabled(t *testing.T) {
 }
 
 func TestESBMiddleware_NotCallToolRequest(t *testing.T) {
-	middleware := NewESBMiddleware(&configv1.Middleware{Disabled: false})
+	middleware := NewESBMiddleware(configv1.Middleware_builder{Disabled: proto.Bool(false)}.Build())
 
 	// Use InitializeRequest, which should bypass the ESB logic
 	req := mcp.InitializeRequest{}
@@ -48,7 +49,7 @@ func TestESBMiddleware_NotCallToolRequest(t *testing.T) {
 }
 
 func TestESBMiddleware_MissingMissionIntent(t *testing.T) {
-	middleware := NewESBMiddleware(&configv1.Middleware{Disabled: false})
+	middleware := NewESBMiddleware(configv1.Middleware_builder{Disabled: proto.Bool(false)}.Build())
 
 	req := mcp.CallToolRequest{}
 	nextCalled := false
@@ -77,7 +78,7 @@ func TestESBMiddleware_MissingMissionIntent(t *testing.T) {
 }
 
 func TestESBMiddleware_MissingEntanglementShard(t *testing.T) {
-	middleware := NewESBMiddleware(&configv1.Middleware{Disabled: false})
+	middleware := NewESBMiddleware(configv1.Middleware_builder{Disabled: proto.Bool(false)}.Build())
 
 	req := mcp.CallToolRequest{}
 	nextCalled := false
@@ -106,7 +107,7 @@ func TestESBMiddleware_MissingEntanglementShard(t *testing.T) {
 }
 
 func TestESBMiddleware_Success_TypedContext(t *testing.T) {
-	middleware := NewESBMiddleware(&configv1.Middleware{Disabled: false})
+	middleware := NewESBMiddleware(configv1.Middleware_builder{Disabled: proto.Bool(false)}.Build())
 
 	req := mcp.CallToolRequest{}
 	nextCalled := false
@@ -127,7 +128,7 @@ func TestESBMiddleware_Success_TypedContext(t *testing.T) {
 }
 
 func TestESBMiddleware_Success_StringContext(t *testing.T) {
-	middleware := NewESBMiddleware(&configv1.Middleware{Disabled: false})
+	middleware := NewESBMiddleware(configv1.Middleware_builder{Disabled: proto.Bool(false)}.Build())
 
 	req := mcp.CallToolRequest{}
 	nextCalled := false

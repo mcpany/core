@@ -7,14 +7,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 
-	v1 "github.com/mcpany/core/proto/api/v1"
+	pb "github.com/mcpany/core/proto/mcp_router/v1"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
 func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
-	tool := &v1.Tool{Name: "test-tool"}
-	callDef := &configv1.WebrtcCallDefinition{}
+	tool := pb.Tool_builder{Name: proto.String("test-tool")}.Build()
+	callDef := configv1.WebrtcCallDefinition_builder{}.Build()
 
 	webrtcTool, err := NewWebrtcTool(tool, nil, "test-service", nil, callDef)
 	require.NoError(t, err)
@@ -34,8 +35,8 @@ func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
 }
 
 func TestWebrtcTool_StreamExecute(t *testing.T) {
-	tool := &v1.Tool{Name: "test-tool"}
-	callDef := &configv1.WebrtcCallDefinition{}
+	tool := pb.Tool_builder{Name: proto.String("test-tool")}.Build()
+	callDef := configv1.WebrtcCallDefinition_builder{}.Build()
 
 	webrtcTool, err := NewWebrtcTool(tool, nil, "test-service", nil, callDef)
 	require.NoError(t, err)
@@ -62,8 +63,8 @@ func TestWebrtcTool_StreamExecute(t *testing.T) {
 }
 
 func TestWebrtcTool_ExecuteWithPeerConnection_InvalidJSON(t *testing.T) {
-	tool := &v1.Tool{Name: "test-tool"}
-	callDef := &configv1.WebrtcCallDefinition{}
+	tool := pb.Tool_builder{Name: proto.String("test-tool")}.Build()
+	callDef := configv1.WebrtcCallDefinition_builder{}.Build()
 	webrtcTool, err := NewWebrtcTool(tool, nil, "test-service", nil, callDef)
 	require.NoError(t, err)
 

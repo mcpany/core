@@ -332,3 +332,13 @@ message Middleware {
   // Whether this middleware is disabled.
   bool disabled = 3 [json_name = "disabled"];
 }
+
+// MetadataSanitizationConfig configures the Tool Metadata Sanitizer middleware.
+message MetadataSanitizationConfig {
+  // Whether the metadata sanitizer is enabled.
+  bool enabled = 1 [json_name = "enabled"];
+  // Custom regex patterns for imperative instruction detection.
+  repeated string imperative_patterns = 2 [json_name = "imperative_patterns"];
+  // Text used to replace redacted fragments.
+  string redaction_text = 3 [json_name = "redaction_text"];
+}
