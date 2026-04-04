@@ -138,7 +138,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/traces');
 
     // Select the seeded trace
-    await page.locator('text=calculate_sum').first().click();
+    await page.locator('text=orchestrator-task').first().click();
 
     // Check that we're viewing the overview
     await expect(page.locator('text=Execution Waterfall')).toBeVisible({ timeout: 15000 });
@@ -146,8 +146,8 @@ test.describe('MCP Any UI E2E Tests', () => {
     // The overview tab should contain the table structure for the flat object
     // "Value" is a column we introduced
     await expect(page.locator('th:has-text("Value")').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('text=result').first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator('text=15').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=summary').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('text=Revenue up 15%').first()).toBeVisible({ timeout: 15000 });
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
       await page.screenshot({ path: path.join(AUDIT_DIR, 'trace_flat_object_table.png'), fullPage: true });
