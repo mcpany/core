@@ -145,8 +145,8 @@ test.describe('MCP Any UI E2E Tests', () => {
 
     // The default tab should be JSON, check if JsonView container exists (either by class or text structure)
     // JsonView renders standard keys. Let's look for known keys from the seeded 'svc_echo'.
-    // e.g. "command_line_service"
-    await expect(page.getByText('command_line_service')).toBeVisible();
+    // e.g. "commandLineService"
+    await expect(page.getByText('commandLineService')).toBeVisible();
 
     // Switch to YAML tab
     await page.getByRole('tab', { name: 'YAML' }).click();
