@@ -16,9 +16,9 @@ test('HITL Approvals Dashboard', async ({ page }) => {
     await expect(page.locator('text=aws.terminate_instance')).toBeVisible();
 
     // Find the aws.terminate_instance card and click Approve
-    const awsCard = page.locator('.bg-background\\/50').filter({ hasText: 'aws.terminate_instance' });
+    const awsCard = page.locator('[data-testid="hitl-card"]').filter({ hasText: 'aws.terminate_instance' });
     await awsCard.locator('button:has-text("Approve")').click();
 
-    // Verify toast notification
-    await expect(page.locator('text=Action Approved')).toBeVisible();
+    // Verify toast notification (exact text to avoid matching screen reader text)
+    await expect(page.getByText('Action Approved', { exact: true }).first()).toBeVisible();
 });
