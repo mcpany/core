@@ -80,7 +80,7 @@ func (a *Application) mountHITL(mux *http.ServeMux) {
 		logging.GetLogger().Warn("Could not subscribe to hitl.requests", "error", err)
 	}
 
-	mux.HandleFunc("/api/v1/hitl/approvals", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/hitl/approvals", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -112,14 +112,14 @@ func (a *Application) mountHITL(mux *http.ServeMux) {
 		json.NewEncoder(w).Encode(list)
 	})
 
-	mux.HandleFunc("/api/v1/hitl/approvals/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/hitl/approvals/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 		// Extract ID from /hitl/approvals/{id}
-		id := r.URL.Path[len("/api/v1/hitl/approvals/"):]
+		id := r.URL.Path[len("/hitl/approvals/"):]
 
 		var reqBody struct {
 			Action  string `json:"action"`
