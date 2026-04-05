@@ -1,5 +1,19 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-05] Updates
+
+### Proposed Additions
+- **RL Telemetry Provider**: (P1) Standardized middleware for exporting tool performance and feedback metrics to agent training frameworks (e.g., OpenClaw-RL).
+- **Attested Discovery Authority**: (P0) Cryptographic identity broker for local MCP servers, providing the "Trust Verification" required by Claude Code.
+- **Optimistic Execution Gate**: (P0) Implementation of speculative context loading for tools, synchronized with background discovery quorums.
+
+### Priority Shifts
+- **Unified RL Feedback Telemetry Bridge**: (Re-affirmed P1) Now a core strategic requirement to support OpenClaw-RL v1.
+- **Provenance-First Discovery**: (Promoted to P0) Critical for satisfying the new Claude Code trust verification requirements.
+
+### Deprecations / Monitoring
+- **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

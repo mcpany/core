@@ -450,6 +450,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
+*   **[P0] OpenShell SSH Sandboxing Adapter**: Native integration with OpenClaw's sandboxing standard to neutralize host-level RCE. (Added: 2026-04-05)
+*   **[P1] Gemini-Compliant Hook Orchestrator**: Support for v0.26.0 lifecycle hooks and Folder Trust handshakes. (Added: 2026-04-05)
 
 #### Upcoming (2026-04-06 Evolution)
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context poisoning instructions in tool schemas. (Added: 2026-04-06)
