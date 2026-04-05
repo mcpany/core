@@ -598,7 +598,42 @@ const getMetadata = () => {
  *
  * API Client for interacting with the MCP Any server.
  */
+export interface HITLApproval {
+    id: string;
+    tool: string;
+    intent: string;
+    status: string;
+    requireMfa: boolean;
+}
+
 export const apiClient = {
+
+    /**
+     * Fetches pending HITL approvals.
+     *
+     * @returns Array of pending approvals.
+     */
+    getHITLApprovals: async (): Promise<HITLApproval[]> => {
+        const res = await fetchWithAuth("/api/v1/hitl/approvals");
+        if (!res.ok) throw new Error("Failed to fetch HITL approvals");
+        return res.json();
+    },
+
+    /**
+     * Resolves a HITL approval.
+     *
+     * @param id The execution ID.
+     * @param action The action ("approved" or "denied").
+     * @param mfaCode The optional MFA code.
+     */
+    resolveHITLApproval: async (id: string, action: "approved" | "denied", mfaCode?: string): Promise<void> => {
+        const res = await fetchWithAuth(`/api/v1/hitl/approvals/${id}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action, mfaCode: mfaCode || "" }),
+        });
+        if (!res.ok) throw new Error(`Failed to resolve HITL approval: ${res.statusText}`);
+    },
     /**
      * Retrieves the current active intent alignment status.
      * @returns A promise that resolves to an array of SubagentStatus.

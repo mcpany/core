@@ -3,11 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { apiClient, HITLApproval } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, ShieldAlert, CheckCircle2, XCircle } from "lucide-react";
 
 /**
  * Intent: Document HitlDashboard
@@ -21,48 +25,17 @@ import { Input } from "@/components/ui/input";
  * HitlDashboard component for managing Human-in-the-Loop approvals.
  *
  * Summary: Renders a dashboard for reviewing and managing pending HITL approvals.
- *
- * Parameters:
- *   - None.
- *
- * Returns:
- *   - JSX.Element: The rendered dashboard component.
- *
- * Errors/Throws:
- *   - None explicitly thrown by the component itself.
- *
- * Side Effects:
- *   - Uses local React state to manage approval statuses.
  */
-interface HITLApproval {
-    id: string;
-    tool: string;
-    intent: string;
-    status: string;
-    requireMfa: boolean;
-}
 
-/**
- * Renders a dashboard for reviewing and managing pending HITL approvals.
- *
- * Summary: Displays a dashboard component for HITL (Human-in-the-Loop) approvals.
- *
- * Parameters:
- *   - None.
- *
- * Returns:
- *   - JSX.Element: The rendered dashboard component.
- *
- * Throws/Errors:
- *   - None explicitly thrown by the component itself.
- */
 export function HitlDashboard() {
-    const [approvals, setApprovals] = React.useState<HITLApproval[]>([]);
+    const [approvals, setApprovals] = useState<HITLApproval[]>([]);
     const [mfaDialogOpen, setMfaDialogOpen] = useState(false);
     const [mfaCode, setMfaCode] = useState("");
     const [pendingApprovalId, setPendingApprovalId] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchApprovals();
         const interval = setInterval(fetchApprovals, 3000);
         return () => clearInterval(interval);
@@ -70,13 +43,17 @@ export function HitlDashboard() {
 
     const fetchApprovals = async () => {
         try {
-            const res = await fetch("/api/v1/hitl/approvals");
-            if (res.ok) {
-                const data = await res.json();
-                setApprovals(data || []);
-            }
+            const data = await apiClient.getHITLApprovals();
+            setApprovals(data || []);
         } catch (err) {
             console.error("Failed to fetch HITL approvals", err);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to fetch pending approvals.",
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -92,14 +69,19 @@ export function HitlDashboard() {
 
     const executeAction = async (id: string, action: "approved" | "denied", code?: string) => {
         try {
-            await fetch(`/api/v1/hitl/approvals/${id}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action, mfaCode: code || "" })
+            await apiClient.resolveHITLApproval(id, action, code);
+            toast({
+                title: action === "approved" ? "Action Approved" : "Action Denied",
+                description: `Successfully ${action} the requested action.`,
             });
             fetchApprovals();
         } catch (err) {
             console.error("Action failed", err);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: `Failed to execute action: ${err instanceof Error ? err.message : "Unknown error"}`,
+            });
         }
     };
 
@@ -112,26 +94,70 @@ export function HitlDashboard() {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex h-[400px] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+        );
+    }
+
+    if (approvals.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[400px] border border-dashed rounded-lg bg-muted/20">
+                <ShieldAlert className="h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-medium tracking-tight">No pending approvals</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                    All clear. There are no intercepted actions requiring human intervention.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {approvals.map(a => (
-                <Card key={a.id}>
-                    <CardHeader>
-                        <CardTitle>{a.tool}</CardTitle>
-                        <CardDescription>Intent: {a.intent}</CardDescription>
+                <Card key={a.id} data-testid="hitl-card" className="backdrop-blur-sm bg-background/50 flex flex-col justify-between">
+                    <CardHeader className="pb-3">
+                        <div className="flex justify-between items-start mb-2">
+                            <Badge variant={a.status === "pending" ? "default" : "secondary"}>
+                                {a.status}
+                            </Badge>
+                            {a.requireMfa && (
+                                <Badge variant="outline" className="border-amber-500/50 text-amber-500">
+                                    MFA Required
+                                </Badge>
+                            )}
+                        </div>
+                        <CardTitle className="text-lg font-semibold">{a.tool}</CardTitle>
+                        <CardDescription className="line-clamp-2" title={a.intent}>
+                            {a.intent}
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pb-4">
+                        <div className="text-sm font-medium text-muted-foreground mb-1">Execution ID</div>
+                        <code className="text-xs bg-muted px-2 py-1 rounded block truncate" title={a.id}>
+                            {a.id}
+                        </code>
+                    </CardContent>
+                    <CardFooter className="pt-0">
                         {a.status === "pending" ? (
-                            <div className="flex gap-2">
-                                <Button onClick={() => handleAction(a.id, "approved")} variant="default">Approve</Button>
-                                <Button onClick={() => handleAction(a.id, "denied")} variant="destructive">Deny</Button>
+                            <div className="flex gap-2 w-full">
+                                <Button className="flex-1" onClick={() => handleAction(a.id, "approved")} variant="default">
+                                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                                    Approve
+                                </Button>
+                                <Button className="flex-1" onClick={() => handleAction(a.id, "denied")} variant="destructive">
+                                    <XCircle className="w-4 h-4 mr-2" />
+                                    Deny
+                                </Button>
                             </div>
                         ) : (
-                            <div className="text-sm font-medium uppercase text-muted-foreground">
+                            <div className="text-sm font-medium uppercase text-muted-foreground w-full text-center py-2 bg-muted/50 rounded">
                                 Status: {a.status}
                             </div>
                         )}
-                    </CardContent>
+                    </CardFooter>
                 </Card>
             ))}
 
