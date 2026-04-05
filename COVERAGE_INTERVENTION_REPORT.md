@@ -27,3 +27,10 @@ Based on cyclomatic complexity and risk (e.g. data transformation, tool injectio
 8. `server/pkg/storage/sqlite/store.go`
 9. `server/pkg/app/api.go`
 10. `server/pkg/upstream/filesystem/provider/gcs.go`
+
+---
+
+* **Target:** `server/pkg/lifecycle/reaper.go`
+* **Risk Profile:** The lifecycle reaper is a critical component for managing background subagent sessions, keeping track of active intents, and cleaning up memory/connections to avoid process leaks or zombie tasks. High risk if there are unregistered/rogue subagents or panic inducing edge cases when dealing with them. It also had only 73% coverage overall with 0% coverage on important functions like `RegisterSubagent`.
+* **New Coverage:** Added coverage for `RegisterSubagent` happy and error paths (when lease doesn't exist or is pruned), as well as covering error paths for `RecordHeartbeat`, `PruneIntent`, and `GetLeaseStatus` when the lease is missing or already pruned. Coverage in the package was raised to 96.8%.
+* **Verification:** Confirmed that `go test` in the package passed cleanly, as well as `make test` for the whole repo.
