@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-11-02 - Error-Drift Correlation
+**Context:** Retrospective analysis of failed missions reveals a high correlation between un-normalized upstream errors and subsequent "Intent Drift" in subagents.
+**Architecture Adjustment:**
+* Integrating the **Universal Error Mapping (UEM)** signals into the Semantic Consistency Engine in Section 4.
+* The ARI Hub will now flag fragments as "High Entropy" if they follow an upstream error, triggering mandatory **Reasoning Re-alignment** heartbeats.
+**Security Impact:** Prevents subagents from using transient failures as a cover for drifting away from the mission-root intent during recovery.

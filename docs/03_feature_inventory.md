@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Universal Error Mapping (UEM) Middleware**: (P0) Authoritative translation service normalizing arbitrary upstream failures (HTTP, gRPC, CLI) into standardized `mcp.Error` payloads to improve autonomous MTTR.
+- **Global Agent Activity Map**: (P1) Premium interactive visualization displaying real-time geolocated tool usage across the MCP ecosystem.
+- **High-Fidelity Swarm Topology Monitor**: (P0) Hardware-accelerated visualization of inter-agent coordination, context sharding, and cryptographic sovereignty.
+
+### Priority Shifts
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Elevated with the requirement for **UEM-integrated** error sanitization.
+- **Visual Attention Dashboard**: (Re-affirmed P1) Evolving into the **Global Agent Activity Map** for spatial sovereignty.

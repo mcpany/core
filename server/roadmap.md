@@ -218,6 +218,9 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-11-02 Evolution)
+*   **[P0] Universal Error Mapping (UEM) Middleware**: authoritative translation service normalizing arbitrary upstream failures into standardized `mcp.Error` payloads. (Added: 2026-11-02)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

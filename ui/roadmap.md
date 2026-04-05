@@ -658,6 +658,11 @@
 - [ ] **[P0] Sharded Mailbox Hub Monitor**: (2026-06-24) Real-time visualization of lock-free teammate synchronization and CRDT conflict resolution.
 - [ ] **[P1] ZKD Discovery Portal**: (2026-06-24) Authorization workspace for reviewing and masking agent capability cards during the discovery phase.
 
+#### Upcoming (2026-11-02 Evolution)
+- [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally. (Added: 2026-11-02)
+- [ ] **[P0] High-Fidelity Swarm Topology Monitor**: hardware-accelerated visualization of inter-agent coordination and sovereignty. (Added: 2026-11-02)
+- [ ] **[P0] Actionable Observability Feed**: UI component merging geolocated activity with normalized error signals. (Added: 2026-11-02)
+
 #### Upcoming (2026-03-26 Evolution)
 - [ ] **[P0] Action-Chain Sovereignty Monitor**: Real-time visualization of automated workflow sequences and interdiction events. (Added: 2026-03-26)
 - [ ] **[P0] Cache Integrity Auditor**: Visual workspace for verifying cryptographic signatures of CI/CD build caches. (Added: 2026-03-26)
