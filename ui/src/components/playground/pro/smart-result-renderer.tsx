@@ -161,7 +161,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                                         if (item.text) {
                                             const parsed = JSON.parse(item.text);
                                             if (typeof parsed === 'object' && parsed !== null) {
-                                                return <JsonView data={parsed} maxHeight={400} smartTable={false} />;
+                                                return <JsonView data={parsed} maxHeight={400} smartTable={true} />;
                                             }
                                         }
                                     } catch (e) {}
