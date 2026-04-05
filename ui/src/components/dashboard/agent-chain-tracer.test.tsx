@@ -26,8 +26,12 @@ describe('AgentChainTracer', () => {
           }
         } as any
       ],
-      isLoading: false,
-      error: null
+      loading: false,
+      isConnected: true,
+      isPaused: false,
+      setIsPaused: vi.fn(),
+      clearTraces: vi.fn(),
+      refresh: vi.fn()
     });
 
     render(<AgentChainTracer />);
@@ -53,8 +57,12 @@ describe('AgentChainTracer', () => {
           }
         } as any
       ],
-      isLoading: false,
-      error: null
+      loading: false,
+      isConnected: true,
+      isPaused: false,
+      setIsPaused: vi.fn(),
+      clearTraces: vi.fn(),
+      refresh: vi.fn()
     });
 
     render(<AgentChainTracer />);
