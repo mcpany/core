@@ -253,7 +253,7 @@ test.describe('Playground Complex UI', () => {
     await page.getByRole('button', { name: 'Execute' }).click();
 
     // Verify success result
-    await expect(page.getByText('metadata_updated')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('metadata_updated').first()).toBeVisible({ timeout: 10000 });
   });
 
 });

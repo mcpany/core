@@ -24,7 +24,8 @@ test.describe('Audit Log Viewer Rich View', () => {
             await expect(page.locator('text=Audit Log Detail')).toBeVisible();
             await expect(page.locator('h4:has-text("Arguments")')).toBeVisible();
             await expect(page.locator('h4:has-text("Result")')).toBeVisible();
-            await expect(page.locator('div[role="tablist"]')).toHaveCount(2);
+            // In SmartResultRenderer, "JSON" is a toggle button indicating the renderer is active
+            await expect(page.getByRole('button', { name: /JSON/i })).toHaveCount(2);
         }
     });
 });

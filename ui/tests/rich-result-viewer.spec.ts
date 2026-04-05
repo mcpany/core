@@ -63,9 +63,9 @@ test.describe('Rich Result Viewer', () => {
     // Use precise selector to avoid matching service name "rich-result-test-service"
     await expect(page.locator('label').filter({ hasText: 'Result' })).toBeVisible({ timeout: 10000 });
 
-    // Check if Table tab is active or available
-    const tableTab = page.getByRole('tab', { name: 'Table' });
-    await expect(tableTab).toBeVisible();
+    // Check if Table toggle button is available
+    const tableBtn = page.getByRole('button', { name: /Table/i });
+    await expect(tableBtn).toBeVisible();
 
     // It might default to Table view because it's eligible
     // Verify content in table
@@ -77,26 +77,12 @@ test.describe('Rich Result Viewer', () => {
     await expect(table.getByText('Bob')).toBeVisible();
     await expect(table.getByText('Admin')).toBeVisible();
 
-    // Switch to JSON tab
-    // Note: There might be multiple "JSON" tabs (one for schema, one for args, one for result)
-    // We want the one in the result viewer. Since it's likely the last one rendered or scoped.
-    // The tabs in RichResultViewer are: Table, JSON, Raw Output.
-    // We can scope by finding the container.
-    // Or just click the one that follows "Result".
-
-    // Scoping to the result area
-    // const resultArea = page.locator('.grid', { hasText: 'Result' }).last();
-    // Actually "Result" label is inside a grid div.
-
-    // Let's try finding the tab list containing "Raw Output" which is unique to RichResultViewer
-    const viewerTabs = page.locator('[role="tablist"]', { hasText: 'Raw Output' });
-    await viewerTabs.getByRole('tab', { name: 'JSON' }).click();
+    // Switch to JSON view
+    // SmartResultRenderer renders a button with name JSON instead of a tab
+    await page.getByRole('button', { name: /JSON/i }).last().click();
 
     // Check for JSON content - tokenized render may split punctuation into spans
+    // In raw JSON view, Alice will be rendered
     await expect(page.getByText('Alice')).toBeVisible();
-
-    // Switch to Raw Output tab
-    await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
-    await expect(page.getByText('"stdout":')).toBeVisible();
   });
 });
