@@ -48,11 +48,8 @@ const (
 	contentTypeJSON     = "application/json"
 	redactedPlaceholder = "[REDACTED]"
 
-	// Summary: Indicates that an upstream service failed its readiness or liveness health check and should not receive traffic.
-	// Parameters: None
-	// Returns: None
-	// Errors: None
-	// Side Effects: None
+	// HealthStatusUnhealthy indicates that a service is in an unhealthy state.
+	// Summary: Defines HealthStatusUnhealthy.
 	HealthStatusUnhealthy = "unhealthy"
 
 	gitCommand = "git"
@@ -70,8 +67,7 @@ var (
 
 var fastJSON = jsoniter.ConfigCompatibleWithStandardLibrary
 
-// ⚡ Bolt: Global JSON decoder configuration with UseNumber enabled.
-// Randomized Selection from Top 5 High-Impact Targets
+// fastJSONNumber is a global JSON decoder configuration with UseNumber enabled.
 // This prevents creating a new decoder on every tool execution (allocation reduction)
 // while preserving the UseNumber behavior required for accurate number handling.
 // Note: This config is frozen and thread-safe.
@@ -151,11 +147,10 @@ type Tool interface {
 	GetCacheConfig() *configv1.CacheConfig
 }
 
-// Summary: Encapsulates runtime and configuration metadata for an upstream service, bridging the gap between its static protobuf definitions and its active health state.
-// Parameters: None
-// Returns: None
-// Errors: None
-// Side Effects: None
+// ServiceInfo holds metadata about a registered upstream service, including its
+// configuration and any associated protobuf file descriptors.
+//
+// Summary: Metadata for a registered service.
 type ServiceInfo struct {
 	// Name is the unique name of the service.
 	Name string
@@ -176,11 +171,10 @@ type ServiceInfo struct {
 	HealthStatus string
 }
 
-// Summary: Represents a structured invocation request for a specific tool, containing dynamic arguments and optional dry-run contexts required for safe execution.
-// Parameters: None
-// Returns: None
-// Errors: None
-// Side Effects: None
+// ExecutionRequest represents a request to execute a specific tool, including
+// its name and input arguments as a raw JSON message.
+//
+// Summary: Request payload for tool execution.
 type ExecutionRequest struct {
 	// ToolName is the name of the tool to be executed.
 	ToolName string `json:"name"`
@@ -198,11 +192,11 @@ type ExecutionRequest struct {
 	Tool Tool `json:"-"`
 }
 
-// Summary: Provides a read-only registry interface enabling dynamic lookup of available tools and their corresponding upstream service configurations without tight coupling to the active manager.
-// Parameters: None
-// Returns: None
-// Errors: None
-// Side Effects: None
+// ServiceRegistry defines an interface for a component that can look up tools
+// and service information. It is used for dependency injection to decouple
+// components from the main service registry.
+//
+// Summary: Interface for tool and service lookup.
 type ServiceRegistry interface {
 	// GetTool retrieves a tool by name.
 	//
@@ -225,7 +219,9 @@ type ServiceRegistry interface {
 	GetServiceInfo(serviceID string) (*ServiceInfo, bool)
 }
 
-// Summary: Defines the functional signature for middleware execution nodes, allowing request interception, augmentation, or short-circuiting before reaching the core tool logic.
+// ExecutionFunc represents the next middleware in the chain.
+//
+// Summary: Function signature for tool execution middleware.
 //
 // Parameters:
 //   - ctx: context.Context. The execution context.
@@ -240,7 +236,9 @@ type contextKey string
 
 const toolContextKey = contextKey("tool")
 
-// Summary: Injects an active Tool instance into a context, enabling downstream consumers or middleware to dynamically access tool metadata during request propagation.
+// NewContextWithTool creates a new context with the given tool embedded.
+//
+// Summary: Embeds a tool into the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to extend.
@@ -252,7 +250,9 @@ func NewContextWithTool(ctx context.Context, t Tool) context.Context {
 	return context.WithValue(ctx, toolContextKey, t)
 }
 
-// Summary: Extracts a previously injected Tool instance from the provided context, facilitating decoupled access to tool metadata within isolated execution boundaries.
+// GetFromContext retrieves a tool from the context if present.
+//
+// Summary: Retrieves a tool from the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -265,11 +265,9 @@ func GetFromContext(ctx context.Context) (Tool, bool) {
 	return t, ok
 }
 
-// Summary: Establishes a contract for executable entities capable of synchronously processing context-aware requests and returning generic structural responses.
-// Parameters: None
-// Returns: None
-// Errors: None
-// Side Effects: None
+// Callable is an interface that represents a callable tool.
+//
+// Summary: Interface for executing a tool.
 type Callable interface {
 	// Call executes the callable with the given request.
 	//
@@ -283,11 +281,9 @@ type Callable interface {
 	Call(ctx context.Context, req *ExecutionRequest) (any, error)
 }
 
-// Summary: Extends the base Callable contract to support asynchronous, continuous data streams for large or long-running computations.
-// Parameters: None
-// Returns: None
-// Errors: None
-// Side Effects: None
+// StreamingCallable is an interface that represents a callable tool that can stream output.
+//
+// Summary: Interface for executing a tool with streaming output.
 type StreamingCallable interface {
 	Callable
 
@@ -350,7 +346,9 @@ func NewContextWithCacheControl(ctx context.Context, cc *CacheControl) context.C
 	return context.WithValue(ctx, cacheControlContextKey, cc)
 }
 
-// Summary: Extracts embedded caching policies from the current request scope, allowing middleware to conditionally mutate standard caching behaviors.
+// GetCacheControl retrieves the CacheControl from the context.
+//
+// Summary: Retrieves CacheControl from the context.
 //
 // Parameters:
 //   - ctx: context.Context. The context to search.
@@ -658,7 +656,7 @@ func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 		return nil, fmt.Errorf("failed to marshal grpc response to json: %w", err)
 	}
 
-	// ⚡ Bolt: Use json-iterator
+	// Use json-iterator for performance
 	var result map[string]any
 	if err := fastJSON.Unmarshal(responseJSON, &result); err != nil {
 		return string(responseJSON), nil
@@ -1197,9 +1195,9 @@ func (t *HTTPTool) prepareInputsAndURL(ctx context.Context, req *ExecutionReques
 		req.ToolInputs = bytes.TrimSpace(req.ToolInputs)
 	}
 
-	// ⚡ Bolt: Use json-iterator
+	// Use json-iterator for performance
 	if len(req.ToolInputs) > 0 {
-		// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+		// Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 		if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 			return nil, "", "", false, fmt.Errorf("failed to unmarshal tool inputs: %w (inputs: %q)", err, string(req.ToolInputs))
 		}
@@ -1439,7 +1437,7 @@ func (t *HTTPTool) prepareBody(ctx context.Context, inputs map[string]any, metho
 		return nil, "", nil
 	}
 
-	// ⚡ Bolt: Use json-iterator
+	// Use json-iterator for performance
 	var body io.Reader
 	var contentType string
 
@@ -1552,7 +1550,7 @@ func (t *HTTPTool) processResponse(ctx context.Context, resp *http.Response) (an
 		return parsedResult, nil
 	}
 
-	// ⚡ Bolt: Use json-iterator
+	// Use json-iterator for performance
 	var result any
 	if err := fastJSON.Unmarshal(respBody, &result); err != nil {
 		return string(respBody), nil //nolint:nilerr
@@ -1792,8 +1790,8 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 		req.ToolInputs = []byte("{}")
 	}
 
-	// ⚡ Bolt: Use json-iterator
-	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	// Use json-iterator for performance
+	// Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
@@ -2132,8 +2130,8 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		req.ToolInputs = []byte("{}")
 	}
 
-	// ⚡ Bolt: Use json-iterator
-	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	// Use json-iterator for performance
+	// Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
@@ -2606,8 +2604,8 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 		req.ToolInputs = []byte("{}")
 	}
 
-	// ⚡ Bolt: Use json-iterator
-	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	// Use json-iterator for performance
+	// Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
@@ -2804,8 +2802,7 @@ func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (
 	startTime := time.Now()
 	limit := getMaxCommandOutputSize()
 
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
+	// Optimization: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
 	redactor := util.NewSecretRedactor(secrets)
 
 	// Redact arguments before returning them in the result
@@ -3085,8 +3082,8 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 		req.ToolInputs = []byte("{}")
 	}
 
-	// ⚡ Bolt: Use json-iterator
-	// ⚡ Bolt Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
+	// Use json-iterator for performance
+	// Optimization: Use pre-configured fastJSONNumber to avoid per-request decoder allocation.
 	if err := fastJSONNumber.Unmarshal(req.ToolInputs, &inputs); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal tool inputs: %w", err)
 	}
@@ -3292,8 +3289,7 @@ func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	startTime := time.Now()
 	limit := getMaxCommandOutputSize()
 
-	// ⚡ BOLT: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
-	// Randomized Selection from Top 5 High-Impact Targets
+	// Optimization: Reuse Redactor to avoid re-sorting secrets and rebuilding replacer multiple times.
 	redactor := util.NewSecretRedactor(secrets)
 
 	// Redact arguments before returning them in the result
@@ -3604,7 +3600,7 @@ func checkForPathTraversal(val string) error {
 
 	// Also check for encoded traversal sequences often used to bypass filters
 	// %2e%2e is ..
-	// ⚡ Bolt Optimization: Manual scan to avoid strings.ToLower allocation
+	// Optimization: Manual scan to avoid strings.ToLower allocation
 	for i := 0; i < len(val); {
 		idx := strings.IndexByte(val[i:], '%')
 		if idx == -1 {
@@ -4122,7 +4118,7 @@ var checkBufferPool = sync.Pool{
 
 func checkContextualKeywords(val string, keywords []string, suffixes []rune) error {
 	var state quoteState
-	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
+	// Optimization: Use []byte buffer to avoid string allocations
 	wordBufPtr := checkBufferPool.Get().(*[]byte)
 	wordBuf := (*wordBufPtr)[:0]
 	defer checkBufferPool.Put(wordBufPtr)
@@ -4197,7 +4193,7 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 	inBacktick := false
 	escaped := false
 
-	// ⚡ Bolt Optimization: Use []byte buffer to avoid string allocations
+	// Optimization: Use []byte buffer to avoid string allocations
 	wordBufPtr := checkBufferPool.Get().(*[]byte)
 	wordBuf := (*wordBufPtr)[:0]
 	defer checkBufferPool.Put(wordBufPtr)
@@ -4312,8 +4308,7 @@ func checkUnquotedKeywords(val string, keywords []string) error {
 func checkKeyword(word []byte, keywords []string, lastChar rune, lastWord []byte) error {
 	// Check if word is dangerous keyword
 	for _, kw := range keywords {
-		// Randomized Selection from Top 5 High-Impact Targets
-		// ⚡ Bolt Optimization: Using string(word) == kw is optimized by the compiler
+		// Optimization: Using string(word) == kw is optimized by the compiler
 		// to avoid allocation when comparing []byte with string.
 		if string(word) == kw {
 			// Allow $var, @var, %var, ->method

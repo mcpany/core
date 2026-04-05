@@ -1931,6 +1931,20 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-24] Updates
+
+### Proposed Additions
+- **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections between distributed agent nodes to neutralize "Mesh Shadowing."
+- **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
+- **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
+- **Cross-Reasoning Validation (CRV) Hub**: (P0) Advanced security service for the AEM that performs multi-modal comparison of subagent reasoning against parent intent to neutralize instruction reflection exploits.
+- **Stateful Workspace Hook Guard (SWHG)**: (P0) Real-time sanitization middleware for filesystem-triggered events in shared workspaces to prevent hook-poisoning.
+- **Branch-Bound Context Quota Manager**: (P0) Resource management service enforcing granular token and compute budgets for specific reasoning branches (Gemini CWB compliance).
+- **Temporal State Integrity (TSI) Broker**: (P0) Advanced state management service providing hardware-attested monotonic sequencing for workspace writes to prevent state inversion.
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
-- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states and **MBR-validated** reflection states.
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPW-compliant** watermark verification.
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Evolving into the **CRV Hub** to counter CVE-2026-55001.
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **SWHG-compliant** hook sanitization.

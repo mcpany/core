@@ -1027,6 +1027,10 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
-*   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
+*   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-specific capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+*   **[P0] Cross-Reasoning Validation (CRV) Hub**: Implementation of multi-modal comparison to neutralize instruction reflection exploits in subagents. (Added: 2026-07-24)
+*   **[P0] Stateful Workspace Hook Guard (SWHG)**: Real-time sanitization of filesystem-triggered events in shared agent workspaces. (Added: 2026-07-24)
+*   **[P0] Branch-Bound Context Quota Manager**: Enforcement of granular token and compute budgets for specific reasoning branches. (Added: 2026-07-24)
+*   **[P0] Temporal State Integrity (TSI) Broker**: Hardware-attested monotonic sequencing for shared workspace writes. (Added: 2026-07-24)

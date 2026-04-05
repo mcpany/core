@@ -46,21 +46,24 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
 
 3. **Run a Hello World example:**
    ```bash
-   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+   bazelisk run //server/cmd/server -- run --config examples/hello_world.yaml
    ```
 
 ## Development
 We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
 
 ```bash
-# Run the test suite to ensure no code logic breaks
-make test
+# Run the test suite
+make docker-test
 
-# Run the linter to verify formatting and documentation conventions
-make lint
+# Run the linter
+make docker-lint
+
+# Run Kubernetes E2E tests
+make k8s-e2e
 
 # Build the main binary
-bazelisk build //server/cmd/mcpany
+bazelisk build //server/cmd/server
 ```
 
 ## Configuration
