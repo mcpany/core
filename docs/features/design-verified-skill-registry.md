@@ -67,3 +67,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 * **Multi-Signature Requirement**: Transitioning from single-provider signing to MSSA. Dynamic skill grafting now requires cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor.
 * **Auditor Sidecars**: Introducing "Auditor Sidecars" in the analysis engine that provide real-time, independent behavioral monitoring for high-risk tools.
 **Security Impact:** Mitigates the risk of "Rug-Pull" supply chain attacks by ensuring no single entity can authorize high-risk tool execution.
+
+### Update: 2026-07-25 - Integration with ClawHub & SSH Sandboxing
+**Context:** The OpenClaw v2026.3.22 release has introduced the curated ClawHub marketplace and OpenShell SSH sandboxing, fundamentally changing how plugins are sourced and executed.
+**Architecture Adjustment:**
+* **ClawHub SDK Integration**: The registry now acts as the authoritative bridge for ClawHub, performing automated behavioral profiling of skills before they are exposed to the agent.
+* **SSH Sandbox Enforcement**: Integrating with OpenShell to mandate that all dynamic skills imported from ClawHub execute in a strictly isolated SSH-based environment, neutralizing JVM injection and other shell-level escapes.
+**Security Impact:** Moves from regulating raw npm packages to a curated, sandbox-enforced skill discovery model, significantly reducing the RCE attack surface.

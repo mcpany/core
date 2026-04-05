@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Parallel Task-List Arbiter (PTLA)**: (P0) Kernel-level lock manager for shared task lists using CRDTs to ensure non-blocking task claiming.
+- **Agentic Privilege Auditor (APA)**: (P0) Authoritative privilege broker performing real-time analysis and "masking" of over-permissioned inherited data access.
+- **Epistemic Memory Sanitizer**: (P0) Lifecycle security service for periodic pruning and hardware-re-attestation of long-term memory shards.
+- **Mission-Bound Coordination Auth**: (P0) Advanced security extension for teammate coordindation mandating mission-root tokens before mailbox task claiming.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Elevated with mandatory support for **PTLA-compliant** task locking.
+- **Verified Skill Registry**: (Re-affirmed P0) Designated as the primary gate for **ClawHub SDK** skill grafting attestation.
