@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative Reflection Arbiter (SRA)**: (P0) Authoritative broker utilizing probabilistic state buffers to isolate speculative tool results until mission-root quorum attestation.
+- **Cross-Framework Provenance Translator (CFPT)**: (P0) Identity service providing real-time translation between proprietary reasoning watermarks (Gemini RPW) and framework-neutral formats.
+- **Active Anchor Protection (AAP) Middleware**: (P0) Cognitive security service performing real-time attention-window health monitoring and proactive mission-root fragment re-injection.
+
+### Priority Shifts
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Elevated with mandatory support for **Kernel-Mediated Shard Handoffs** (Linux memfd) to align with OpenClaw MMSS.
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **CFPT-compliant** watermark translation.

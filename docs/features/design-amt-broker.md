@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Kernel-Mediated Shard Handoffs
+**Context:** Today's market sync revealed the launch of OpenClaw's MMSS, which utilizes Linux memfd for zero-copy state synchronization. To maintain competitive parity and reduce MTTC (Mean Time to Coordinate) in physical meshes, the AMT Broker must evolve to support local-bus shortcuts.
+**Architecture Adjustment:**
+* Implementing a "Physical Locality Detector" within the Broker.
+* When two nodes are detected on the same physical kernel, the AMT Broker will bypass P2P encrypted tunnels in favor of Linux `memfd_create` shared memory regions for state handoffs.
+**Security Impact:** Reduces attack surface by eliminating unnecessary network-stack traversal for local teammate coordination while maintaining hardware-attested mission-root integrity through local inode-pinning.
