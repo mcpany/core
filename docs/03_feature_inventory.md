@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Autonomous Audit Sovereignty (AAS) Hub**: (P0) Authoritative security service that verifies the reasoning traces of auditing agents in real-time using hardware-attested policies. Neutralizes "Audit Hijacking" where gatekeeper agents are subverted by malicious analysis targets.
+- **OpenShell-Native Sandbox Adapter**: (P0) Kernel-level security middleware providing native integration with NVIDIA's OpenShell runtime for OS-enforced agent isolation.
+- **Audit-Aware Monotonic Anchoring**: (P1) Identity middleware cryptographically binding audit signals and safety proofs to hardware enclave IDs and monotonic counters to prevent replay attacks.
+- **Zero-Trust Audit Discovery Proxy**: (P0) Discovery extension that mandates cryptographic masking of audit capabilities until a hardware-attested audit handshake is completed.
+
+### Priority Shifts
+- **Privacy-Preserving Audit (PPA) Hub**: (Promoted from P1 to P0) Critical for satisfying AAS requirements for hardware-attested, privacy-preserving audit trails.
+- **Monotonic Mission Lineage (MML) Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Audit-Aware Anchoring** integration.
