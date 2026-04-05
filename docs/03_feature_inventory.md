@@ -1924,6 +1924,18 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Kernel-Resident TOCTOU Protection (KRTP)**: (P0) Security service utilizing Memory-Protection Keys (MPK) to freeze state fragments at the moment of validation, neutralizing MRMM exploits.
+- **Mission-Drift Interdiction Middleware (MDIM)**: (P0) Authoritative resource monitor enforcing absolute turn limits and refinement entropy checks to prevent subagent coercion.
+- **Cross-Node Attention Resumption (CNAR) Broker**: (P0) Advanced continuity service managing hardware-attested "Attention Snapshots" for 2M+ token reasoning sessions across physical nodes.
+- **Attestation-Lease Fast-Path (ALFP) Provider**: (P0) Performance-optimizing identity service issuing session-bound "Trust Tickets" to reduce redundant hardware signatures.
+
+### Priority Shifts
+- **Memfd-Bound BSH Sanitizer**: (Re-affirmed P0) Now elevated with the requirement for **KRTP-compliant** memory freezing.
+- **Agentic SLA Middleware**: (Re-affirmed P0) Evolving to support the new **MDIM-compliant** refinement interdiction.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

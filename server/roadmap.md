@@ -1025,6 +1025,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Kernel-Resident TOCTOU Protection (KRTP)**: Utilize Memory-Protection Keys (MPK) to freeze state fragments at validation. (Added: 2026-07-25)
+*   **[P0] Mission-Drift Interdiction Middleware (MDIM)**: Enforce absolute turn limits and refinement entropy checks. (Added: 2026-07-25)
+*   **[P0] Cross-Node Attention Resumption (CNAR) Broker**: Hardware-attested continuity for 2M+ token reasoning sessions. (Added: 2026-07-25)
+*   **[P0] Attestation-Lease Fast-Path (ALFP)**: Session-bound "Trust Tickets" to reduce redundant hardware signatures. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
