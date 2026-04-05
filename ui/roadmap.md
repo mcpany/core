@@ -3,6 +3,10 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Shard Re-alignment Monitor**: Visual tracking of NDSR speculative pre-fetching and intent-prediction scores. (Added: 2026-07-25)
+- [ ] **[P0] HLML Occupancy Dashboard**: UI for reviewing HLML lease task-entropy and blocked "Squatting" attempts. (Added: 2026-07-25)
+- [ ] **[P0] MSA Watermark Auditor**: UI for verifying non-repudiable watermarks in multimodal traces. (Added: 2026-07-25)
+- [ ] **[P1] Entitlement Decay Visualizer**: Visual tracker for hardware-attested entitlement expiration. (Added: 2026-07-25)
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)

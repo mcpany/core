@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Tunneling Overhead via NDSR
+**Context:** Today's market sync revealed that mandatory P2P tunneling in distributed meshes is impacting sub-millisecond execution, leading to "Swarm Gridlock."
+**Architecture Adjustment:** * Integrating Non-Deterministic Shard Re-alignment (NDSR) hooks into the AMT Broker.
+* Implementing speculative pre-fetching of context shards across established tunnels based on intent-prediction signals.
+**Security Impact:** Reduces "Cognitive Stall" without bypassing hardware-attested handshakes.

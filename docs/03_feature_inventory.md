@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Non-Deterministic Shard Re-alignment (NDSR) Hub**: (P0) Authoritative predictive sync service for pre-fetching context shards across distributed nodes based on intent analysis.
+- **Lease-Squatting Detection Middleware**: (P0) Real-time occupancy monitor for HLML-bound leases, identifying and interdicting "Dummy Task" patterns (CVE-2026-94001 defense).
+- **Multimodal Stylometric Anchoring (MSA) Provider**: (P0) Advanced identity service utilizing visual/auditory watermarking for reasoning traces to neutralize multi-modal trace-mimicry.
+- **Temporal Entitlement Pruning Service**: (P1) Governance service implementing hardware-attested decay functions for high-trust capability entitlements.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **NDSR-aware pre-fetching** integration.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with mandatory **Lease-Squatting Detection** integration.

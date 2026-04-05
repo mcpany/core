@@ -1026,6 +1026,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
 #### Upcoming (2026-07-24 Evolution)
+*   **[P0] Non-Deterministic Shard Re-alignment (NDSR) Hub**: predictive sync for multi-node context pre-fetching. (Added: 2026-07-25)
+*   **[P0] Lease-Squatting Detection Middleware**: semantic occupancy monitor for HLML-bound leases to neutralize CVE-2026-94001. (Added: 2026-07-25)
+*   **[P0] Multimodal Stylometric Anchoring (MSA) Provider**: advanced identity watermarking to neutralize trace-mimicry. (Added: 2026-07-25)
+*   **[P1] Temporal Entitlement Pruning Service**: hardware-attested decay functions for high-trust entitlements. (Added: 2026-07-25)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
