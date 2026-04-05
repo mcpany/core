@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Multi-Registry Discovery Broker (MRDB)**: (P0) Authoritative coordination service for heterogeneous tool registries, utilizing hardware-attested shards to maintain absolute namespace isolation.
+- **Subagent Tool Filtering Middleware (STFM)**: (P0) Advanced security service performing real-time, semantic filtering of agent capability cards based on mission-root roles.
+- **Isolated Discovery Sandbox**: (P0) Ephemeral, zero-trust environment for pre-flight capability mapping, ensuring tools remain invisible until hardware-bound handshake.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Elevated with mandatory **STFM** integration for granular subagent scoping.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving to support **Loop-Immune** pinning for reasoning-loop sovereignty.
