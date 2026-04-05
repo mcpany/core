@@ -25,7 +25,7 @@ test.describe('System Status Banner', () => {
 
     await page.goto('/');
     await expect(page.locator('div[role="alert"]').filter({ hasText: 'System Status' })).not.toBeVisible();
-    await expect(page.getByText('Connection Error')).not.toBeVisible();
+    await expect(page.getByText('Backend Unreachable')).not.toBeVisible();
     await expect(page.getByText('Configuration Error')).not.toBeVisible();
   });
 
@@ -36,8 +36,8 @@ test.describe('System Status Banner', () => {
      });
 
      await page.goto('/');
-     await expect(page.getByText('Connection Error')).toBeVisible();
-     await expect(page.getByText('Could not connect to the server health check')).toBeVisible();
+     await expect(page.getByText('Backend Unreachable')).toBeVisible();
+     await expect(page.getByText("We've lost connection to the MCP Any backend")).toBeVisible();
   });
 
   test('should show configuration error when config check fails', async ({ page }) => {

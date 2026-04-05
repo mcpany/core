@@ -13,12 +13,12 @@ test.describe('System Status Banner', () => {
     // Navigate to any page
     await page.goto('/');
 
-    // Verify "Connection Error" IS visible
-    const connectionErrorAlert = page.getByText(/Connection Error/i);
+    // Verify "Backend Unreachable" IS visible
+    const connectionErrorAlert = page.getByText(/Backend Unreachable/i);
     await expect(connectionErrorAlert).toBeVisible({ timeout: 15000 });
 
     // Verify specific description IS visible
-    const errorDescription = page.getByText(/Could not connect to the server health check/i);
+    const errorDescription = page.getByText(/We've lost connection to the MCP Any backend/i);
     await expect(errorDescription).toBeVisible({ timeout: 15000 });
   });
 });

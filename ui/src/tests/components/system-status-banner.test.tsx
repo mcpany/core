@@ -39,8 +39,8 @@ describe('SystemStatusBanner', () => {
     render(<SystemStatusBanner />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Connection Error/i)).toBeInTheDocument();
-      expect(screen.getByText(/Network error/i)).toBeInTheDocument();
+      expect(screen.getByText(/Backend Unreachable/i)).toBeInTheDocument();
+      expect(screen.getByText(/We've lost connection to the MCP Any backend/i)).toBeInTheDocument();
     });
   });
 
