@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attestation Lease (LFTA v2.5) Provider**: (P0) Authoritative trust resumption service utilizing hardware-bound session tickets to eliminate attestation jitter.
+- **Dynamic Role-Bound Partitioning (DRBP) Manager**: (P0) Advanced state isolation service hosting cryptographically isolated shards (Role-Bound Scratchpads) for horizontal teams.
+- **Reasoning-Aware Attention Filter (RAAF)**: (P0) Cognitive security middleware dynamically gating mesh signals based on real-time reasoning confidence.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Evolving into the **LFTA v2.5 Provider** to address mesh-level performance bottlenecks.
+- **Atomic Scratchpad Arbiter**: (Re-affirmed P0) Elevated with mandatory **DRBP** integration to counter context smearing.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
