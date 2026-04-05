@@ -451,6 +451,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
 
+#### Upcoming (2026-04-05 Evolution - Iteration 2)
+*   **[P0] Mesh-Resident Mailbox Hub**: Coordination service for horizontal swarms hosting task-bound shards and CRDT-based state synchronization. (Added: 2026-04-05)
+*   **[P0] Progressive Skill Disclosure Engine**: Advanced discovery middleware that only exposes metadata initially, pulling full instructions on model activation. (Added: 2026-04-05)
+*   **[P0] Origin-Bound WebSocket Auth (OBWA)**: Security middleware cryptographically binding session tokens to initiating browser/CLI origins. (Added: 2026-04-05)
+*   **[P0] Teammate Identity Attestation Provider**: Identity service mandating hardware-attested lineage tokens before mailbox task-claiming. (Added: 2026-04-05)
+
 #### Upcoming (2026-04-06 Evolution)
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context poisoning instructions in tool schemas. (Added: 2026-04-06)
 *   **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)

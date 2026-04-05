@@ -57,3 +57,10 @@ As the number of available MCP tools grows, agents face "context pollution"—wh
 
 ## 7. Evolutionary Changelog
 *   **2026-02-25:** Initial Document Creation.
+*   **2026-04-05: Evolution to Progressive Skill Disclosure Engine**
+    *   **Context:** Market research into Gemini CLI "Agent Skills" reveals a shift toward instruction-bundling and progressive disclosure to save tokens.
+    *   **Architecture Adjustment:**
+        *   Updating the Lazy-MCP index to store "Instruction Bundles" and "Asset Manifests".
+        *   Implementing a "Progressive Loader" that only returns metadata in the search results, pulling the full instruction set only upon explicit `activate_skill` tool calls.
+        *   Supporting "Skill Tiers" (Workspace vs. User) for hierarchical discovery.
+    *   **Security Impact:** Reduces "Intent Drift" by ensuring the LLM only reasons against the minimal set of active instructions required for the current sub-task.

@@ -1,17 +1,27 @@
 # Market Sync: 2026-04-05
 
-## Ecosystem Shifts & Findings
+## Ecosystem Updates
 
-### 1. OpenClaw: Asynchronous RL & Plug-and-Play Memory
-OpenClaw has released **OpenClaw-RL v1**, a fully asynchronous reinforcement learning framework. It allows agents to learn from natural conversation feedback in real-time. Additionally, the new **ContextEngine** plugin interface (v2026.3.7) allows for granular, pluggable memory management. This shifts the requirement for MCP Any to support high-fidelity telemetry export for RL training loops.
+### OpenClaw (The "Security Crisis" Phase)
+*   **Vulnerability Taxonomy**: Recent reports identify 190+ advisories. Key clusters: identity spoofing, exec allowlist bypasses (lexical parsing failures), and cross-layer composition.
+*   **ClawJacked (CVE-2026-25253)**: Cross-site WebSocket hijacking (CVSS 8.8) is the primary "make-or-break" security failure. Attackers are bridging the browser-to-local gap to execute arbitrary code.
+*   **Malicious Skills**: 335+ malicious skills discovered in ClawHub using innocuous names and "two-stage droppers" that execute entirely within LLM context.
 
-### 2. Claude Code: Hardened MCP Trust & Isolated Fetches
-Anthropic has addressed critical MCP configuration vulnerabilities (CVE-2025-59536). Claude Code now implements mandatory **Trust Verification** for new MCP servers and **Isolated Context Windows** for web fetches. MCP Any must align by providing "Attested Discovery" where MCP servers can prove their identity before Claude Code ingest them.
+### Claude Code (Horizontal Agent Teams)
+*   **Peer-to-Peer Messaging**: Introduction of "Agent Teams" where agents coordinate via a directory-based mailbox system rather than just hierarchical lead-synthesis.
+*   **Git-based Locking**: Task claiming is managed via filesystem writes in a shared directory, enabling autonomous coordination on shared codebases.
+*   **Headless Remote Control**: Structural change allowing connection to running sessions from outside the terminal, moving Claude Code from a solo tool to infrastructure.
 
-### 3. Gemini CLI: Conversational Infrastructure Maturity
-Gemini CLI's roadmap emphasizes moving from simple chat to complex conversational infrastructure. This reinforces the need for MCP Any to act as a stable, cross-model gateway that can normalize Gemini's specific tool-calling patterns (e.g., optimistic loading) for other agents.
+### Gemini CLI (On-Demand Skills)
+*   **Agent Skills Standard**: Packaging instructions and assets into discoverable capabilities.
+*   **Progressive Disclosure**: Only metadata is loaded initially; full instructions/resources are pulled only when activated to save tokens.
+*   **Workspace vs. User Skills**: Standardizing the hierarchy of capability discovery (local project vs. global user).
 
-## Autonomous Agent Pain Points
-- **RL Training Data Gap**: Lack of standardized, privacy-preserving telemetry for local agent optimization.
-- **Config-as-Attack-Vector**: Malicious MCP servers leveraging auto-discovery to execute unauthorized commands.
-- **Memory Fragmenting**: Difficulty in maintaining state consistency when switching between pluggable context engines.
+## Agent Swarm Pain Points
+*   **Cognitive Stall**: High-density swarms failing to reach convergence in state synchronization.
+*   **Token Storms**: Peer-to-peer messaging causing exponential cost increases when context windows are mirrored across teammates.
+*   **Identity Hijacking**: Compromised specialist agents "ghosting" or impersonating team leads within the mailbox bus.
+
+## Unique Findings for Today
+*   The shift from **Hierarchical Delegation** to **Horizontal Teammate Meshes** (Claude Code v2.1.32) confirms that MCP Any must support multi-mailbox coordination.
+*   The **Progressive Disclosure** pattern in Gemini CLI suggests that our "Lazy-MCP" implementation should evolve into a full "Skill Registry" that supports instruction-bundling, not just JSON-RPC definitions.

@@ -1302,6 +1302,18 @@
 ### Deprecations / Monitoring
 - **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
 
+## Evolution: [2026-04-05] (Iteration 2) Updates
+
+### Proposed Additions
+- **Mesh-Resident Mailbox Hub**: (P0) Coordination service for horizontal swarms hosting task-bound shards and CRDT-based state synchronization.
+- **Progressive Skill Disclosure Engine**: (P0) Advanced discovery middleware that only exposes metadata initially, pulling full instructions on model activation.
+- **Origin-Bound WebSocket Auth (OBWA)**: (P0) Security middleware cryptographically binding session tokens to initiating browser/CLI origins (CVE-2026-25253 defense).
+- **Teammate Identity Attestation Provider**: (P0) Identity service mandating hardware-attested lineage tokens before mailbox task-claiming.
+
+### Priority Shifts
+- **Lazy-MCP Middleware**: (Evolved to Progressive Skill Disclosure Engine) Now elevated with the requirement for instruction-bundle "pulling".
+- **Inter-Agent Mailbox Guard (IAMG)**: (Re-affirmed P0) Evolving into the **Mesh-Resident Mailbox Hub** for horizontal mesh support.
+
 ---
 
 ## Evolution: [2026-04-06] Updates

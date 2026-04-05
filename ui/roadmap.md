@@ -203,6 +203,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-05 Evolution - Iteration 2)
+- [ ] **[P0] Mesh Mailbox Shard Monitor**: (2026-04-05) Real-time visualization of task-bound CRDT mailbox shards and teammate claim status.
+- [ ] **[P0] Progressive Disclosure Inspector**: (2026-04-05) Visual debugger for monitoring instruction-bundle "pulling" and active skill disclosure scores.
+- [ ] **[P0] Origin-Bound Session Security Hub**: (2026-04-05) Re-affirmed dashboard for tracking session-to-origin bindings and blocked hijacking attempts.
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

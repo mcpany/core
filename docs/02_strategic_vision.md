@@ -873,6 +873,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
 - **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
 
+## Strategic Evolution: [2026-04-05] (Iteration 2)
+### Focus: Horizontal Mesh Sovereignty & Progressive Skill Disclosure
+**Context**: The emergence of Claude Code "Agent Teams" and the disclosure of "ClawJacked" (CVE-2026-25253) confirm that the "Universal Agent Bus" must now bridge the gap between hierarchical delegation and horizontal teammate meshes. Security must move from point-to-point tool calls to the collective integrity of the **Mailbox Bus**, while discovery must move to a **Progressive Disclosure** model to prevent context-window flooding in massive swarms.
+**Strategic Pivot**:
+- **Mesh-Resident Mailbox Hub**: Supporting the efficiency of horizontal swarms (Claude Code), MCP Any will host task-bound mailbox shards. We will implement "Git-Free" coordination utilizing CRDTs for the shared task list, ensuring non-blocking performance without the filesystem overhead of git-based locking.
+- **Progressive Skill Disclosure Gateway**: Leveraging Gemini CLI patterns, we are evolving the Lazy-MCP middleware into a "Progressive Disclosure" engine. MCP Any will only expose skill metadata initially, cryptographically "pulling" instruction bundles and resources only when the model explicitly activates the skill.
+- **Origin-Bound WebSocket Auth (OBWA)**: To neutralize "ClawJacked" style WebSocket hijacking, we are mandating session-bound authentication for all local listeners. Tokens will be cryptographically bound to the initiating browser or CLI origin, ensuring that malicious browser scripts cannot command the gateway.
+- **Teammate Identity Attestation**: We are implementing "Auth-before-Coordination" for the teammate mailbox. Specialist agents must provide a hardware-attested lineage token before claiming tasks, ensuring that a compromised peer cannot "ghost" or hijack the team's shared directory.
+
 ---
 
 ## Strategic Evolution: [2026-04-06]

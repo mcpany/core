@@ -61,3 +61,9 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+*   **2026-04-05: Update - Transition to Origin-Bound WebSocket Auth (OBWA)**
+    *   **Context:** Market research into "ClawJacked" (CVE-2026-25253) confirmed that standard origin checking is insufficient against sophisticated browser-to-local bridging.
+    *   **Architecture Adjustment:**
+        *   Mandating session-bound cryptographic signatures for every WebSocket frame, not just the handshake.
+        *   Implementing "Origin-Locking" where tokens are hardware-bound to the specific CLI or Browser process ID to prevent cross-process token leakage.
+    *   **Security Impact:** Prevents malicious browser extensions or separate browser profiles from hijacking an active, authenticated local session.
