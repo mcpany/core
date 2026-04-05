@@ -62,3 +62,8 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+### Update: 2026-07-25 - Evolution to Zero-Copy Tunneling (ZCT)
+**Context:** Today's market sync revealed OpenClaw v3.7.0's introduction of ZCT to resolve tunneling overhead.
+**Architecture Adjustment:** * Integrated Linux `io_uring` and `splice` into Section 4 (System Flow) to allow kernel-mediated state handoffs between nodes.
+* Deprecating userspace buffer copying for remote tool execution.
+**Security Impact:** Reduces attack surface by minimizing data exposure in userspace memory while achieving sub-millisecond round-trip times.

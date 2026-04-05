@@ -59,3 +59,8 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+### Update: 2026-07-25 - Evolution to Speculative Teammate Handoffs (STH)
+**Context:** Today's market sync revealed Claude Code v3.3.0's STH patterns to resolve cognitive stall in horizontal teams.
+**Architecture Adjustment:** * Added a "Probabilistic State Buffer" to Section 4 (Data Storage/State) to allow teammates to prep context before CRDT convergence.
+* Introduced `POST /v1/mesh/speculate` endpoint for high-probability task claims.
+**Security Impact:** Requires hardware-attested rollbacks to ensure that unsuccessful speculations do not leave "Intent Residue" on the blackboard.

@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Zero-Copy Tunneling (ZCT) Extension**: Integration of `io_uring` and `splice` into the AMT Broker for kernel-mediated mesh state handoffs. (Added: 2026-07-25)
+*   **[P0] Speculative Teammate Handoff (STH) Manager**: Probationary state buffer for LFMA to resolve cognitive stall in horizontal teams. (Added: 2026-07-25)
+*   **[P0] Mission-Phase Lease Anchoring (MPLA)**: Cryptographic binding of hardware leases to unique mission phases to neutralize Lease Splicing (CVE-2026-99102). (Added: 2026-07-25)
+*   **[P1] Multi-Modal Reason Proof (MM-RPP) Hub**: Multi-modal extension for the ZK-Attestation provider to support visual and audio reasoning paths. (Added: 2026-07-25)

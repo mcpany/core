@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Copy Mesh Broker (ZCT)**: (P0) High-performance coordination extension for the AMT Broker using `io_uring` and `splice` to eliminate userspace copying in distributed meshes.
+- **Speculative Teammate Handoff (STH) Manager**: (P0) Performance middleware for the LFMA allowing parallel teammates to overlap reasoning with CRDT convergence via a probabilistic state buffer.
+- **Mission-Phase Lease Anchoring (MPLA) Provider**: (P0) Authoritative scope enforcement service cryptographically binding hardware leases to unique mission phases and monotonic counters (CVE-2026-99102 defense).
+- **Multi-Modal Reason Proof (MM-RPP) Validator**: (P1) Advanced identity service providing Zero-Knowledge attestation for visual and audio reasoning paths without context exposure.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **ZCT** integration for sub-millisecond mesh performance.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with mandatory **STH** support to resolve the 5s+ cognitive stall in horizontal teams.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with mandatory **MPLA** requirement to neutralize Lease Splicing.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

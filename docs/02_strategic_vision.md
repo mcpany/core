@@ -1550,3 +1550,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Speculative Coordination Sovereignty & Zero-Latency Mesh Tunneling
+**Context**: The introduction of **Zero-Copy Tunneling (ZCT)** in OpenClaw and **Speculative Teammate Handoffs (STH)** in Claude Code marks a shift from reactive security to **predictive, kernel-mediated governance**. Simultaneously, the disclosure of **Lease Splicing (CVE-2026-99102)** reveals that hardware leases must be anchored to specific mission phases, not just mission roots. As swarms become distributed and speculative, infrastructure must provide **Kernel-Level Performance** without sacrificing **Hardware-Locked Sovereignty**.
+**Strategic Pivot**:
+- **Zero-Copy Mesh Broker**: MCP Any will evolve its AMT Broker to support kernel-mediated state handoffs using `io_uring` and `splice`. We will implement "ZCT-Bound Tunnels," eliminating userspace copies and achieving sub-millisecond round-trip times for distributed tool calls.
+- **Speculative Handoff Arbiter**: Supporting the efficiency of horizontal swarms, we are upgrading the LFMA to include a "Probabilistic State Buffer." Teammates will be allowed to speculatively prepare context based on high-probability task claims, with automated rollbacks handled by the arbiter upon CRDT convergence.
+- **Mission-Phase Lease Anchoring (MPLA)**: To neutralize "Lease Splicing" exploits, we are mandating MPLA. All hardware-attested leases (MBHL) must be cryptographically bound to a unique mission-phase ID and monotonic counter, preventing the reuse of privileges across session boundaries.
+- **Multi-Modal Reason Proof (MM-RPP) Hub**: Leveraging Gemini CLI v0.59.0 patterns, MCP Any will act as the authoritative source for Multi-Modal Zero-Knowledge proofs. We will provide the infrastructure to attest the integrity of visual and audio reasoning paths without revealing raw context fragments.
