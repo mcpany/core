@@ -203,6 +203,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Intent Reconciliation Hub**: (2026-07-25) Workspace for managing multi-node peer instruction quorums and hardware-attested vote resolution.
+- [ ] **[P0] Hierarchical Lease Visualizer**: (2026-07-25) Forensic UI for visualizing recursive lease delegation trees and lineage-aware scope subsets.
+- [ ] **[P0] Attention Sharding Heatmap**: (2026-07-25) Real-time monitor for DAS-isolated attention tiers and noise-leakage alerts.
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

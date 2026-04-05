@@ -212,6 +212,12 @@
 *   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
 *   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Multi-Node Intent Reconciliation (MNIR) Hub**: Authoritative swarm arbiter for distributed nodes utilizing hardware-attested peer voting.
+*   **[P0] Recursive Lease Delegation (RLD) Manager**: Hierarchical subsetting of TPM-signed hardware leases to prevent scope exhaustion.
+*   **[P0] Distributed Peer Voting (DPV) Protocol**: Non-blocking voting for inter-node state transitions to reduce MTTC in P2P tunnels.
+*   **[P0] Dynamic Attention Sharding (DAS) Enforcer**: Hardware-enforced isolation between reasoning and safety-monitoring attention fragments.
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)

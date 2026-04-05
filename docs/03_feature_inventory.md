@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Multi-Node Intent Reconciliation (MNIR) Hub**: (P0) Authoritative swarm arbiter for distributed nodes utilizing hardware-attested peer voting to resolve conflicting instructions across node boundaries.
+- **Recursive Lease Delegation (RLD) Manager**: (P0) Advanced security service providing hierarchical subsetting of TPM-signed hardware leases to prevent scope exhaustion in deep chains.
+- **Distributed Peer Voting (DPV) Protocol**: (P0) Non-blocking voting protocol for inter-node state transitions to reduce MTTC in high-latency P2P tunnels.
+
+### Priority Shifts
+- **AIR (Autonomous Intent Reconciliation) Hub**: (Re-affirmed P0) Evolving into the **MNIR Hub** to support cross-node decentralized coordination.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory support for **DAS-compliant** isolated attention tiers.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
