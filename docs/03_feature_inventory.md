@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reasoning Confidence Scoring (RCS) Gateway**: (P0) Authoritative confidence broker utilizing hardware-attested uncertainty signals to trigger automated supervisor escalations.
+- **Temporal Shard Jitter (TSJ) Injector**: (P0) Security extension for the ESB that injects hardware-attested timing jitter to neutralize EnclaveEcho side-channel attacks.
+- **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the hardware-attested mission manifest.
+- **Distributed Intent Reconciliation (DIR) Hub**: (P0) Multi-node coordination service facilitating hardware-attested quorums for objective consensus in decentralized meshes.
+
+### Priority Shifts
+- **AIR Hub**: (Re-affirmed P0) Evolving into the **DIR Hub** to support cross-node intent reconciliation.
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Elevated with mandatory support for **Context-Mirroring Mitigation (CMM)**.

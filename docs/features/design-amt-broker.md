@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Supporting Distributed Intent Reconciliation (DIR)
+**Context:** Today's market sync revealed that multi-node meshes require consensus on objectives before tunnel establishment to prevent "Intent Split" attacks.
+**Architecture Adjustment:** * Integrating the DIR Hub into the pre-handshake phase.
+* Tunnels will now require a DIR-attested "Mesh Quorum" signal if the remote tool call involves multi-node state mutations.
+**Security Impact:** Prevents a compromised node from creating unauthorized tunnels by mimicking a split mission-root.
