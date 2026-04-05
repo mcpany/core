@@ -133,7 +133,14 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Service Configuration renders JSON view correctly', async ({ page }) => {
     // Navigate to a service detail page
-    await page.goto('/service/svc_echo');
+    // Note: The service link uses the friendly name, but the API endpoint handles either name or ID
+    // depending on the backend version. Actually, the services table links to `/services/${service.name}`
+    // which redirects or maps. Wait, looking at the code `services-table` links to `/services/${service.name}`,
+    // but the `ServiceDetail` page is at `/service/${id}`. Let's use the UI flow to reach it to be safe,
+    // or use the known name 'Echo Service'.
+    await page.goto('/upstream-services');
+    await expect(page.getByText('Echo Service')).toBeVisible();
+    await page.getByText('Echo Service').click();
 
     // Switch to Configuration tab
     await page.getByRole('tab', { name: /Configuration/i }).click();
