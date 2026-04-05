@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Ephemeral Pipe Attestation (EPA)**: (P0) Authoritative transport security service for Docker-bound named pipes that rotates cryptographic keys per-message.
+- **Mission-Locked Execution (MLE) Gateway**: (P0) Core security service mandating that all tool calls and sub-delegations are cryptographically locked to the mission-root manifest.
+- **Reasoning-Responsive Rate Limiting (RRRL) Enforcer**: (P1) Advanced resource management middleware that dynamically scales agent rate limits based on stylometric confidence and ARE-headers.
+
+### Priority Shifts
+- **Non-Blocking AMS Core**: (Re-affirmed P0) Elevated with mandatory support for **EPA-compliant** message-bound key rotation.
+- **Recursive Mission-Root Attestation (RMRA)**: (Re-affirmed P0) Designated as the primary integration point for **MLE-compliant** sub-process spawning.

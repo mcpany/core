@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Ephemeral Pipe Attestation (EPA)**: Implementation of message-bound key rotation for Docker-bound named pipes. (Added: 2026-07-25)
+*   **[P0] Mission-Locked Execution (MLE) Gateway**: Authoritative interdiction service for mission-manifest locked tool calls. (Added: 2026-07-25)
+*   **[P1] Reasoning-Responsive Rate Limiting (RRRL)**: Dynamic quota scaling based on real-time stylometric confidence and ARE-headers. (Added: 2026-07-25)

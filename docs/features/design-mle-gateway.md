@@ -82,3 +82,10 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 * MLE Gateway now enforces mandatory hardware-signed leases for "High-Impact" tool categories (e.g., `run_shell_command`).
 * Leases are cryptographically tied to the TPM-attested mission fragment and expire automatically upon mission termination signals.
 **Security Impact:** Mitigates persistent privilege escalation by ensuring that high-privilege tool access is physically revoked by the hardware root at the end of a specific mission, even if the agent process remains active.
+
+### Update: 2026-07-25 - Interdicting Shadow Delegation
+**Context**: Today's market sync revealed the "Shadow Delegation" exploit pattern, where specialist agents bypass supervision via ephemeral hooks.
+**Architecture Adjustment**:
+*   Mandating that all sub-process spawns and peer delegations must be pre-declared in the TPM-signed mission manifest.
+*   MLE Gateway now performs real-time interdiction of any "Ghost Peer" initiation that lacks an explicit mission-root anchor.
+**Security Impact**: Neutralizes the ability for specialist agents to expand the mesh without explicit parent authorization.
