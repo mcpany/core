@@ -36,14 +36,35 @@ const _SyntaxHighlighterLazy = lazy(
     })
 );
 const SyntaxHighlighter = (props: any) => (
-    <Suspense fallback={<div className="p-4 bg-[rgba(0,0,0,0.4)] h-12 animate-pulse rounded" />}>
+    <Suspense fallback={
+        <div className="p-4 bg-[rgba(0,0,0,0.4)] h-32 animate-pulse rounded-md flex flex-col gap-2">
+            <div className="h-4 w-1/3 bg-white/10 rounded" />
+            <div className="h-4 w-1/2 bg-white/10 rounded" />
+            <div className="h-4 w-1/4 bg-white/10 rounded" />
+        </div>
+    }>
         <_SyntaxHighlighterLazy {...props} />
     </Suspense>
 );
 
 const _DiffEditorLazy = lazy(() => import("@monaco-editor/react").then((mod) => ({ default: mod.DiffEditor })));
 const DiffEditor = (props: any) => (
-    <Suspense fallback={<div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md" />}>
+    <Suspense fallback={
+        <div className="h-full w-full bg-[#1e1e1e] animate-pulse rounded-md p-4 flex flex-col gap-3">
+             <div className="flex gap-4 w-full">
+                 <div className="h-4 w-1/2 bg-white/5 rounded" />
+                 <div className="h-4 w-1/2 bg-white/5 rounded" />
+             </div>
+             <div className="flex gap-4 w-full">
+                 <div className="h-4 w-1/3 bg-white/5 rounded" />
+                 <div className="h-4 w-1/4 bg-white/5 rounded" />
+             </div>
+             <div className="flex gap-4 w-full">
+                 <div className="h-4 w-2/3 bg-white/5 rounded" />
+                 <div className="h-4 w-1/3 bg-white/5 rounded" />
+             </div>
+        </div>
+    }>
         <_DiffEditorLazy {...props} />
     </Suspense>
 );

@@ -56,12 +56,19 @@ export function SystemStatusBanner() {
 
   if (error) {
     return (
-      <div className="p-4 pb-0">
-        <Alert variant="destructive">
+      <div className="px-4 pt-4 pb-0 animate-in fade-in slide-in-from-top-2 duration-300">
+        <Alert variant="destructive" className="border-red-500/30 bg-red-500/5 shadow-sm">
             <WifiOff className="h-4 w-4" />
-            <AlertTitle>Connection Error</AlertTitle>
-            <AlertDescription>
-            Could not connect to the server health check. Is the backend running? ({error})
+            <AlertTitle className="font-semibold tracking-tight">Backend Unreachable</AlertTitle>
+            <AlertDescription className="text-muted-foreground">
+            We've lost connection to the MCP Any backend. The application may be degraded until connection is restored.
+            <div className="mt-2 flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+                <span className="text-xs font-mono opacity-70">Retrying connection...</span>
+            </div>
             </AlertDescription>
         </Alert>
       </div>

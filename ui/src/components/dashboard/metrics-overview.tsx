@@ -115,6 +115,7 @@ import { apiClient, Metric } from "@/lib/client";
  */
 export const MetricsOverview = memo(function MetricsOverview() {
   const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [loading, setLoading] = useState(true);
   const { serviceId } = useDashboard();
 
   const fetchMetrics = useCallback(async () => {
@@ -123,10 +124,13 @@ export const MetricsOverview = memo(function MetricsOverview() {
       setMetrics(data);
     } catch (error) {
       console.error("Failed to fetch metrics", error);
+    } finally {
+      setLoading(false);
     }
   }, [serviceId]);
 
   useEffect(() => {
+    setLoading(true);
     fetchMetrics();
   }, [fetchMetrics]);
 
@@ -136,8 +140,27 @@ export const MetricsOverview = memo(function MetricsOverview() {
 
   return (
     <div className="space-y-4">
-      {metrics.length === 0 ? (
-        <div className="text-muted-foreground animate-pulse">Loading dashboard metrics...</div>
+      {loading ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {[...Array(4)].map((_, i) => (
+                  <Card key={i} className="backdrop-blur-sm bg-background/50 border-border/50">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
+                          <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+                      </CardHeader>
+                      <CardContent>
+                          <div className="h-8 w-1/2 bg-muted animate-pulse rounded mt-2" />
+                          <div className="h-3 w-2/3 bg-muted animate-pulse rounded mt-3" />
+                      </CardContent>
+                  </Card>
+              ))}
+          </div>
+      ) : metrics.length === 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+             <div className="col-span-4 text-center p-8 text-muted-foreground">
+                 No metrics available.
+             </div>
+          </div>
       ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {metrics.map((metric) => (

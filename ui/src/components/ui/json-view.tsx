@@ -222,7 +222,13 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                     maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined
                 }}
             >
-                <Suspense fallback={<pre className="p-4 text-xs text-muted-foreground">Loading…</pre>}>
+                <Suspense fallback={
+                    <div className="p-4 bg-white/5 h-32 animate-pulse rounded-md flex flex-col gap-2">
+                        <div className="h-4 w-1/3 bg-white/10 rounded" />
+                        <div className="h-4 w-1/2 bg-white/10 rounded" />
+                        <div className="h-4 w-1/4 bg-white/10 rounded" />
+                    </div>
+                }>
                     <SyntaxHighlighter
                         language="json"
                         style={vs2015}

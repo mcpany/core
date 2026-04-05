@@ -18,10 +18,23 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             id: "svc_01",
             name: "Payment Gateway",
             version: "v1.2.0",
+            tags: ["financial", "production"],
             http_service: {
                 address: "https://stripe.com",
                 tools: [
-                    { name: "process_payment", description: "Process a payment", call_id: "process_payment_call" }
+                    {
+                        name: "process_payment",
+                        description: "Process a payment",
+                        call_id: "process_payment_call",
+                        input_schema: {
+                            type: "object",
+                            properties: {
+                                amount: { type: "number", description: "Payment amount in cents" },
+                                currency: { type: "string", description: "Currency code (e.g., USD)" }
+                            },
+                            required: ["amount", "currency"]
+                        }
+                    }
                 ],
                 calls: {
                     process_payment_call: {
@@ -35,6 +48,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             id: "svc_02",
             name: "User Service",
             version: "v1.0",
+            tags: ["core", "internal"],
             http_service: {
                 address: "http://localhost:50051", // Dummy address
                 tools: [
