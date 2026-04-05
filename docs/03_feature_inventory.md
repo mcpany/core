@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **ToxicSkill Static Analysis (TSSA)**: (P0) Automated security service that performs real-time static analysis of dynamic skill grafts to detect malicious payloads.
+- **Flag-Locked Agent Execution (FLAX) Proxy**: (P0) Kernel-level security middleware that intercepts agent invocations to strip or block unauthorized security-override flags.
+- **Fast-Path Identity Resumption (FPIR) Broker**: (P0) Performance-optimizing service issuing hardware-attested trust tickets for low-latency P2P tunnel resumption.
+
+### Priority Shifts
+- **Behavioral Skill Profiler**: (Re-affirmed P0) Elevated with mandatory **TSSA** integration to provide multi-layered supply-chain defense.
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Now elevated with the requirement for **FPIR** integration to solve the "Tunneling Overhead" pain point.

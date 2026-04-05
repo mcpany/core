@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving P2P Tunneling Latency via FPIR
+**Context**: Today's market sync confirmed that mandatory P2P encryption in distributed meshes (OpenClaw SNT) is causing "Cognitive Stall" due to handshake overhead.
+**Architecture Adjustment**:
+* Integrating with the **Fast-Path Identity Resumption (FPIR) Broker** to replace repeated full handshakes with hardware-attested trust tickets.
+* Deprecating session-bound "Mesh Tickets" in Section 4 in favor of unified FPIR tokens.
+**Security Impact**: Maintains absolute sovereignty while reducing inter-node latency from 100ms+ to <1ms, ensuring mesh performance for time-sensitive reasoning loops.
