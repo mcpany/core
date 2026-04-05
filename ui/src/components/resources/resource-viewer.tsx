@@ -8,7 +8,7 @@
 import { Eye, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ResourceContent } from "@/lib/client";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 
 import ReactSyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
@@ -101,7 +101,7 @@ export function ResourceViewer({ content, loading }: ResourceViewerProps) {
             const parsed = JSON.parse(text || "{}");
             return (
                 <div className="h-full p-4 overflow-auto">
-                    <RichResultViewer result={parsed} />
+                    <SmartResultRenderer result={parsed} />
                 </div>
             );
         } catch (e) {

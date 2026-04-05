@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/light';
 import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 
 interface AuditLogEntry {
     timestamp: string;
@@ -363,14 +363,14 @@ export function AuditLogViewer() {
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Arguments</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <RichResultViewer result={safeParse(selectedLog.arguments) || {}} />
+                                    <SmartResultRenderer result={safeParse(selectedLog.arguments) || {}} />
                                 </div>
                             </div>
 
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Result</h4>
                                 <div className="rounded-md overflow-hidden border">
-                                    <RichResultViewer result={safeParse(selectedLog.result) || (selectedLog.error ? null : {})} />
+                                    <SmartResultRenderer result={safeParse(selectedLog.result) || (selectedLog.error ? null : {})} />
                                 </div>
                             </div>
                         </div>

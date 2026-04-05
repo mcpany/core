@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 import { Badge } from "@/components/ui/badge";
 import { User, Cpu, Terminal, Globe, Database, ArrowRight, ArrowLeft, Clock, MessageSquare } from "lucide-react";
 
@@ -410,7 +410,7 @@ export function SequenceDiagram({ trace }: SequenceDiagramProps) {
                     <div className="space-y-1">
                         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Payload</div>
                         <div className="max-h-[400px] overflow-y-auto border rounded-md">
-                            <RichResultViewer result={selectedMessage?.payload || {}} />
+                            <SmartResultRenderer result={selectedMessage?.payload || {}} />
                         </div>
                     </div>
                 </div>

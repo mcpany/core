@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "@/components/tools/schema-viewer";
 import { UniversalSchemaForm as SchemaForm, Schema } from "@/components/shared/universal-schema-form";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 import { Switch } from "@/components/ui/switch";
 import { generateCurlCommand, generatePythonCode } from "@/lib/code-generator";
 import { useToast } from "@/hooks/use-toast";
@@ -339,7 +339,7 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                       </div>
                       <div className="flex-1 overflow-y-auto p-4">
                           {output ? (
-                              <RichResultViewer result={output} />
+                              <SmartResultRenderer result={output} />
                           ) : (
                               <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-2 opacity-50">
                                   <PlayCircle className="h-12 w-12 stroke-[1]" />

@@ -9,7 +9,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
-import { SmartTable } from "../../tools/smart-table";
+import { SmartTable } from "./smart-table";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 /**

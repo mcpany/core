@@ -34,7 +34,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 import { PromptEditor } from "./prompt-editor";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 
 interface PromptWorkbenchProps {
   initialPrompts?: PromptDefinition[];
@@ -436,7 +436,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                                     {executionResult ? (
                                         <div className="p-4 space-y-4 h-full flex flex-col">
                                             <div className="flex-1 overflow-auto">
-                                                <RichResultViewer result={executionResult.messages || executionResult} />
+                                                <SmartResultRenderer result={executionResult.messages || executionResult} />
                                             </div>
                                             <div className="pt-4 flex justify-end shrink-0 border-t mt-4">
                                                 <Button size="sm" variant="outline" onClick={openInPlayground}>

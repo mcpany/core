@@ -4,7 +4,7 @@
  */
 
 import { render, screen, fireEvent } from '@testing-library/react';
-import { SmartResultRenderer } from '@/components/playground/pro/smart-result-renderer';
+import { SmartResultRenderer } from '@/components/tools/smart-result-renderer';
 import { describe, it, expect } from 'vitest';
 
 describe('SmartResultRenderer', () => {

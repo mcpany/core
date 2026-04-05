@@ -19,7 +19,7 @@ import React from "react";
 import { useNavigate as useRouter } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JsonView } from "@/components/ui/json-view";
-import { RichResultViewer } from "@/components/tools/rich-result-viewer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 import { analyzeTrace } from "@/lib/diagnostics";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { SequenceDiagram } from "@/components/traces/sequence-diagram";
@@ -130,7 +130,7 @@ function WaterfallItem({
                                 </div>
                                 <TabsContent value="input" className="mt-0 border-none p-0">
                                     {span.input && Object.keys(span.input).length > 0 ? (
-                                        <RichResultViewer result={span.input} />
+                                        <SmartResultRenderer result={span.input} />
                                     ) : (
                                         <div className="text-muted-foreground p-2">No input data.</div>
                                     )}
@@ -141,7 +141,7 @@ function WaterfallItem({
                                             {span.errorMessage}
                                         </div>
                                     ) : span.output && Object.keys(span.output).length > 0 ? (
-                                        <RichResultViewer result={span.output} />
+                                        <SmartResultRenderer result={span.output} />
                                     ) : (
                                         <div className="text-muted-foreground p-2">No output data.</div>
                                     )}
@@ -371,7 +371,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <CardTitle className="text-sm font-medium flex items-center gap-2"><Code className="h-4 w-4"/> Root Input</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <RichResultViewer result={trace.rootSpan.input} />
+                                    <SmartResultRenderer result={trace.rootSpan.input} />
                                 </CardContent>
                             </Card>
                             <Card>
@@ -379,7 +379,7 @@ export function TraceDetail({ trace }: { trace: Trace | null }) {
                                     <CardTitle className="text-sm font-medium flex items-center gap-2"><Terminal className="h-4 w-4"/> Root Output</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                     <RichResultViewer result={trace.rootSpan.output} />
+                                     <SmartResultRenderer result={trace.rootSpan.output} />
                                 </CardContent>
                             </Card>
                         </div>
