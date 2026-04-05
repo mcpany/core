@@ -53,6 +53,48 @@ func TestCheckUnquotedKeywords_ExtraCoverage(t *testing.T) {
 			keywords: []string{"system"},
 			wantErr:  false,
 		},
+		{
+			name:     "single quote delimiter check",
+			val:      "echo 'system'",
+			keywords: []string{"system"},
+			wantErr:  false,
+		},
+		{
+			name:     "double quote delimiter check",
+			val:      "echo \"system\"",
+			keywords: []string{"system"},
+			wantErr:  false,
+		},
+		{
+			name:     "non-ascii delimiter before keyword",
+			val:      "日本語system",
+			keywords: []string{"system"},
+			wantErr:  true,
+		},
+		{
+			name:     "multiple keywords with non-ascii",
+			val:      "hello 世界 system and exec",
+			keywords: []string{"system", "exec"},
+			wantErr:  true,
+		},
+		{
+			name:     "non-ascii after keyword",
+			val:      "system日本語",
+			keywords: []string{"system"},
+			wantErr:  true,
+		},
+		{
+			name:     "keyword preceded by backslash (escaped)",
+			val:      "hello \\system",
+			keywords: []string{"system"},
+			wantErr:  false,
+		},
+		{
+			name:     "escaped quote inside single quote",
+			val:      "echo '\\'system'",
+			keywords: []string{"system"},
+			wantErr:  false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -219,6 +261,75 @@ func TestCheckNodePerlPhpInjection_ExtraCoverage(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
+		})
+	}
+}
+
+func TestStripInterpreterComments_ExtraCoverage(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		val      string
+		language string
+		expected string
+	}{
+		{
+			name:     "php line comment hash",
+			val:      "echo 'hi'; # comment\n echo 'bye';",
+			language: "php",
+			expected: "echo 'hi'; \n echo 'bye';",
+		},
+		{
+			name:     "php line comment slash",
+			val:      "echo 'hi'; // comment\n echo 'bye';",
+			language: "php",
+			expected: "echo 'hi'; \n echo 'bye';",
+		},
+		{
+			name:     "php block comment",
+			val:      "echo 'hi'; /* block\n comment */ echo 'bye';",
+			language: "php",
+			expected: "echo 'hi';  echo 'bye';",
+		},
+		{
+			name:     "unknown language defaults to all comments",
+			val:      "code # hash\n code // slash\n code /* block */ code",
+			language: "unknown-lang",
+			expected: "code \n code \n code  code",
+		},
+		{
+			name:     "single quote string with escaped quote",
+			val:      "print 'isn\\'t'; # comment",
+			language: "python",
+			expected: "print 'isn\\'t'; ",
+		},
+		{
+			name:     "double quote string with escaped quote",
+			val:      "print \"isn\\\"t\"; # comment",
+			language: "python",
+			expected: "print \"isn\\\"t\"; ",
+		},
+		{
+			name:     "backtick string",
+			val:      "echo `ls -la`; # comment",
+			language: "bash",
+			expected: "echo `ls -la`; ",
+		},
+		{
+			name:     "backtick string with escaped backtick",
+			val:      "echo `echo \\`hi\\``; # comment",
+			language: "bash",
+			expected: "echo `echo \\`hi\\``; ",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := stripInterpreterComments(tt.val, tt.language)
+			assert.Equal(t, tt.expected, got)
 		})
 	}
 }
