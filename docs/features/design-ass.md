@@ -43,3 +43,9 @@ As AI agents move from single-threaded sessions to horizontal teammate meshes (e
 
 ## 7. Evolutionary Changelog
 * **2026-07-16:** Initial Document Creation.
+
+### Update: 2026-07-25 - Implementing Atomic State Segregation
+**Context:** Today's market sync revealed a "Memory Bleed" vulnerability in Claude Code horizontal swarms where specialists could probe sibling scratchpads.
+**Architecture Adjustment:** * Transitioning from logical environment isolation to hardware-locked Team-Bound Memory Shards (TBMS).
+* Mandating hardware-enclave (TPM/SEP) checks for all shared teammate workspace access.
+**Security Impact:** Physically neutralizes lateral state movement and context-stitching exfiltration by rogue subagents.

@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Agentic Mesh DNS (AM-DNS) Provider**: (P0) Authoritative naming service for the mesh providing cryptographically signed handles for secure agent-to-agent addressing.
+- **Atomic State Segregation (ASS)**: (P0) Hardware-locked memory isolation for shared teammate workspaces to prevent cross-scratchpad probing.
+- **Hardware-Locked Attention Persistence (HLAP)**: (P0) Physical context restoration service ensuring mission-root anchors maintain original attention priority across session restarts.
+
+### Priority Shifts
+- **Namespace-Locked Discovery (NLD)**: (Re-affirmed P0) Elevated to integrate with the new **AM-DNS** naming standard for decentralized discovery.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Now elevated with mandatory **Mission-Bound Filtering** to counter discovery noise in large swarms.

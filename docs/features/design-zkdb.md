@@ -57,3 +57,9 @@ The Zero-Knowledge Discovery Broker (ZKDB) evolves the discovery process by mand
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Discovery Noise Mitigation & Mission-Bound Filtering
+**Context:** Today's market sync revealed "Discovery Collision" as a primary pain point in large-scale swarms (20+ peers).
+**Architecture Adjustment:** * Introducing active mission-bound relevance filtering in Section 4.
+* Capability cards are now filtered by the ZKDB based on the requester's active mission manifest before being presented as masked results.
+**Security Impact:** Reduces the metadata surface area for side-channel probing by ensuring agents only discover skills strictly relevant to their hierarchical intent branch.
