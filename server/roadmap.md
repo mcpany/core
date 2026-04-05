@@ -447,6 +447,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
 
 #### Upcoming (2026-04-05 Evolution)
+*   **[P0] Governance Checkpoint Middleware**: Implementation of high-risk action interdiction and HITL approval broker. (Added: 2026-04-05)
+*   **[P0] TOCTOU-Resistant Discovery**: Integration of Hardware-Locked Inode Pinning (HLIP) into the Attested Discovery Authority. (Added: 2026-04-05)
 *   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)

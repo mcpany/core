@@ -199,6 +199,8 @@
 - [ ] **[P0] Metadata Provenance Viewer**: (2026-04-04) UI for verifying the cryptographic lineage and signing status of tool metadata.
 - [ ] **[P0] Metadata Poisoning Alert Hub**: (2026-04-04) Security dashboard for reviewing and approving redacted metadata fragments.
 - [ ] **[P1] Lifecycle Synchronization Monitor**: (2026-04-04) Visual tracker for cross-framework state commit/rollback events.
+- [ ] **[P0] Governance Approval Queue**: Interactive UI for reviewing and approving high-risk agent actions held by checkpoints. (Added: 2026-04-05)
+- [ ] **[P0] Inode Pinning Status Widget**: Real-time visualization of hardware-pinned tool paths and TOCTOU violation alerts. (Added: 2026-04-05)
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.

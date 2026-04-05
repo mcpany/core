@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-05] Updates
+
+### Proposed Additions
+- **Governance Checkpoint Middleware**: (P0) Authoritative "Checkpoint Broker" for high-risk tool calls, enforcing mandatory HITL approval or hardware-attested auditor signatures.
+- **Hardware-Locked Inode Pinning (HLIP)**: (P0) Kernel-level security layer for the Shadow-FS that prevents TOCTOU races by pinning hardware Inodes to session-bound file handles.
+- **Cross-Node Remote Sovereignty (CNRS)**: (P0) Distributed identity service that cryptographically binds agent capabilities to node identity and mission-root.
+
+### Priority Shifts
+- **Attested Discovery Authority**: (Re-affirmed P0) Elevated with mandatory **HLIP** integration to counter OpenClaw-style TOCTOU race conditions.
+- **RL Telemetry Provider**: (Re-affirmed P1) Designated as the primary provider for high-fidelity reasoning trace exports to OpenClaw-RL.
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Elevated to neutralize command/prompt injection vectors seen in Gemini CLI.
