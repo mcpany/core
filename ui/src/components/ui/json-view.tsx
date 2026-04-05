@@ -195,7 +195,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
     const showCollapse = maxHeight > 0;
 
     const renderCollapseButton = () => (
-        <div className="flex justify-center p-1 border-t border-white/10 bg-[#1e1e1e] rounded-b-md">
+        <div className="flex justify-center p-1 border-t border-border/50 bg-muted/10 rounded-b-xl backdrop-blur-sm">
             <Button
                 variant="ghost"
                 size="sm"
@@ -212,7 +212,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
     );
 
     const renderRaw = () => (
-        <div className={cn("relative group/code rounded-md bg-[#1e1e1e]", className)}>
+        <div className={cn("relative group/code rounded-xl bg-muted/10 backdrop-blur-sm border border-border/50 shadow-sm", className)}>
             <div
                 className={cn(
                     "overflow-hidden transition-all",
@@ -229,7 +229,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                         customStyle={{
                             margin: 0,
                             padding: '1rem',
-                            borderRadius: '0.375rem',
+                            borderRadius: '0.75rem',
                             fontSize: '12px',
                             lineHeight: '1.5',
                             backgroundColor: 'transparent' // We set bg on parent
@@ -242,7 +242,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                 </Suspense>
 
                 {showCollapse && !isExpanded && (
-                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background/80 to-transparent pointer-events-none backdrop-blur-[2px]" />
                 )}
             </div>
 
@@ -250,7 +250,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                 <Button
                     size="icon"
                     variant="ghost"
-                    className="h-6 w-6 bg-white/10 hover:bg-white/20 text-white"
+                    className="h-6 w-6 bg-muted/50 hover:bg-muted/80 backdrop-blur-md border border-border/50 text-foreground"
                     onClick={handleCopy}
                     title="Copy JSON"
                 >
@@ -259,11 +259,11 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
             </div>
 
             {showCollapse && (
-                <div className="flex justify-center p-1 border-t border-white/10 bg-[#1e1e1e] rounded-b-md">
+                <div className="flex justify-center p-1 border-t border-border/50 bg-muted/10 rounded-b-xl backdrop-blur-sm">
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="h-5 text-[10px] text-muted-foreground hover:text-white w-full"
+                        className="h-5 text-[10px] text-muted-foreground hover:text-foreground w-full"
                         onClick={() => setIsExpanded(!isExpanded)}
                     >
                         {isExpanded ? (
@@ -280,7 +280,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
     const renderTree = () => {
         // parsedData is already available via useMemo
         return (
-            <div className={cn("rounded-md border bg-[#1e1e1e]", className)}>
+            <div className={cn("rounded-xl border border-border/50 shadow-sm bg-muted/10 backdrop-blur-sm", className)}>
                 <div
                     className="p-4 overflow-auto transition-all"
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
@@ -288,7 +288,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                     <JsonTree data={parsedData} defaultExpandedLevel={defaultExpandedLevel} />
 
                     {showCollapse && !isExpanded && (
-                        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1e1e1e] to-transparent pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background/80 to-transparent pointer-events-none backdrop-blur-[2px]" />
                     )}
                 </div>
                 {showCollapse && renderCollapseButton()}
@@ -298,11 +298,11 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
 
     const renderImage = () => {
         return (
-            <div className={cn("rounded-md border bg-black/50 p-4 flex justify-center", className)}>
+            <div className={cn("rounded-xl border border-border/50 shadow-sm bg-muted/10 backdrop-blur-sm p-4 flex justify-center", className)}>
                 <img
                     src={parsedData as string}
                     alt="Preview"
-                    className="max-w-full h-auto rounded-md shadow-lg"
+                    className="max-w-full h-auto rounded-lg shadow-md"
                     style={{ maxHeight: maxHeight > 0 ? `${maxHeight}px` : undefined }}
                 />
             </div>
@@ -313,7 +313,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         if (!tableData) return renderRaw();
 
         return (
-            <div className={cn("rounded-md border overflow-hidden bg-card", className)}>
+            <div className={cn("rounded-xl border border-border/50 overflow-hidden bg-card shadow-sm", className)}>
                 <div
                     className={cn(showCollapse && !isExpanded ? "relative" : "")}
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
@@ -323,12 +323,12 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                     </div>
 
                     {showCollapse && !isExpanded && (
-                        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background/90 to-transparent pointer-events-none backdrop-blur-[1px]" />
                     )}
                 </div>
 
                 {showCollapse && (
-                    <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t flex justify-between items-center">
+                    <div className="bg-muted/20 backdrop-blur-sm px-2 py-1 text-[10px] text-muted-foreground border-t border-border/50 flex justify-between items-center">
                         <span />
                         <Button
                             variant="ghost"
@@ -354,13 +354,13 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
     return (
         <div className="flex flex-col gap-0 w-full relative">
             {showToolbar && (
-                <div className="flex justify-end mb-1 px-1">
-                    <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border backdrop-blur-sm">
+                <div className="flex justify-end mb-2 px-1">
+                    <div className="flex items-center bg-muted/30 backdrop-blur-md rounded-xl shadow-sm border border-border/50 p-1">
                         {isImage && (
                             <Button
                                 variant={viewMode === "image" ? "secondary" : "ghost"}
                                 size="sm"
-                                className="h-6 px-2 text-[10px] gap-1"
+                                className="h-6 px-2 text-[10px] gap-1 rounded-lg"
                                 onClick={() => setViewMode("image")}
                             >
                                 <ImageIcon className="size-3" /> Image
@@ -370,7 +370,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                             <Button
                                 variant={viewMode === "smart" ? "secondary" : "ghost"}
                                 size="sm"
-                                className="h-6 px-2 text-[10px] gap-1"
+                                className="h-6 px-2 text-[10px] gap-1 rounded-lg"
                                 onClick={() => setViewMode("smart")}
                             >
                                 <TableIcon className="size-3" /> Table
@@ -380,7 +380,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                             <Button
                                 variant={viewMode === "tree" ? "secondary" : "ghost"}
                                 size="sm"
-                                className="h-6 px-2 text-[10px] gap-1"
+                                className="h-6 px-2 text-[10px] gap-1 rounded-lg"
                                 onClick={() => setViewMode("tree")}
                             >
                                 <ListTree className="size-3" /> Tree
@@ -389,7 +389,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                         <Button
                             variant={viewMode === "raw" ? "secondary" : "ghost"}
                             size="sm"
-                            className="h-6 px-2 text-[10px] gap-1"
+                            className="h-6 px-2 text-[10px] gap-1 rounded-lg"
                             onClick={() => setViewMode("raw")}
                         >
                             <Code className="size-3" /> Raw
@@ -398,7 +398,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
                 </div>
             )}
 
-            <div className="mt-0">
+            <div className="mt-1">
                 {viewMode === "smart" && hasSmartView ? renderSmart() :
                     viewMode === "tree" ? renderTree() :
                         viewMode === "image" ? renderImage() :

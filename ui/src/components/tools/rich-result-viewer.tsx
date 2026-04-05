@@ -211,22 +211,22 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
             <div className="flex items-center justify-between mb-2">
-                <TabsList>
+                <TabsList className="bg-muted/20 backdrop-blur-md p-1 rounded-lg border border-border/50 shadow-sm flex-wrap h-auto">
                     {mcpContent && (
-                        <TabsTrigger value="rendered" className="flex items-center gap-2">
+                        <TabsTrigger value="rendered" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all">
                             <FileText className="h-4 w-4" /> Rendered
                         </TabsTrigger>
                     )}
                     {isTableEligible && (
-                        <TabsTrigger value="table" className="flex items-center gap-2">
+                        <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all">
                             <TableIcon className="h-4 w-4" /> Table
                         </TabsTrigger>
                     )}
-                    <TabsTrigger value="json" className="flex items-center gap-2">
+                    <TabsTrigger value="json" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all">
                         <FileJson className="h-4 w-4" /> JSON
                     </TabsTrigger>
                     {isExtracted && (
-                        <TabsTrigger value="raw" className="flex items-center gap-2">
+                        <TabsTrigger value="raw" className="flex items-center gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md transition-all">
                             <Terminal className="h-4 w-4" /> Raw Output
                         </TabsTrigger>
                     )}
@@ -234,7 +234,7 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             </div>
 
             {mcpContent && (
-                <TabsContent value="rendered" className="border rounded-md bg-card">
+                <TabsContent value="rendered" className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden mt-2">
                     <ScrollArea className="h-[400px]">
                         <McpContentRenderer content={mcpContent} />
                     </ScrollArea>
@@ -242,19 +242,19 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
             )}
 
             {isTableEligible && (
-                <TabsContent value="table" className="border rounded-md">
+                <TabsContent value="table" className="bg-card border border-border/50 rounded-xl shadow-sm overflow-hidden mt-2">
                     <div className="h-[400px]">
                         <SmartTable data={tableData} />
                     </div>
                 </TabsContent>
             )}
 
-            <TabsContent value="json">
+            <TabsContent value="json" className="mt-2">
                 <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} smartTable={true} />
             </TabsContent>
 
             {isExtracted && (
-                <TabsContent value="raw">
+                <TabsContent value="raw" className="mt-2">
                     <JsonView data={result} maxHeight={400} smartTable={false} />
                 </TabsContent>
             )}
