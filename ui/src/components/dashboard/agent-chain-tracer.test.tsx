@@ -24,8 +24,10 @@ describe('AgentChainTracer', () => {
             input: 'test-input',
             errorMessage: null
           }
-        }
-      ]
+        } as any
+      ],
+      isLoading: false,
+      error: null
     });
 
     render(<AgentChainTracer />);
@@ -49,8 +51,10 @@ describe('AgentChainTracer', () => {
             input: 'fail-input',
             errorMessage: 'something went wrong'
           }
-        }
-      ]
+        } as any
+      ],
+      isLoading: false,
+      error: null
     });
 
     render(<AgentChainTracer />);
