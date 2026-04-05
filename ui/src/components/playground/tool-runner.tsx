@@ -15,6 +15,8 @@ import { PlayCircle, Loader2, Zap, Activity, History as HistoryIcon, RefreshCw, 
 import { Area, AreaChart, ResponsiveContainer, Tooltip as ChartTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SchemaViewer } from "@/components/tools/schema-viewer";
 import { UniversalSchemaForm as SchemaForm, Schema } from "@/components/shared/universal-schema-form";
@@ -331,6 +333,51 @@ export function ToolRunner({ tool, onClose }: ToolRunnerProps) {
                                   >
                                       <Download className="h-3.5 w-3.5" />
                                   </Button>
+                                  <Dialog>
+                                      <DialogTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground hover:bg-muted" title="Copy as Code">
+                                              <Code className="h-3.5 w-3.5" />
+                                          </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-3xl">
+                                          <DialogHeader>
+                                              <DialogTitle>Copy as Code</DialogTitle>
+                                          </DialogHeader>
+                                          <Tabs defaultValue="curl">
+                                              <TabsList>
+                                                  <TabsTrigger value="curl">cURL</TabsTrigger>
+                                                  <TabsTrigger value="python">Python</TabsTrigger>
+                                              </TabsList>
+                                              <TabsContent value="curl">
+                                                  <div className="relative">
+                                                      <pre className="p-4 rounded-md bg-muted text-xs overflow-x-auto whitespace-pre-wrap font-mono">
+                                                          {generateCurlCommand({ toolName: tool.name, args: parsedInput as any })}
+                                                      </pre>
+                                                      <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
+                                                          navigator.clipboard.writeText(generateCurlCommand({ toolName: tool.name, args: parsedInput as any }));
+                                                          toast({ title: "Copied to clipboard" });
+                                                      }}>
+                                                          <Code className="h-3 w-3" />
+                                                      </Button>
+                                                  </div>
+                                              </TabsContent>
+                                              <TabsContent value="python">
+                                                  <div className="relative">
+                                                      <pre className="p-4 rounded-md bg-muted text-xs overflow-x-auto whitespace-pre-wrap font-mono">
+                                                          {generatePythonCode({ toolName: tool.name, args: parsedInput as any })}
+                                                      </pre>
+                                                      <Button size="icon" variant="ghost" className="absolute top-2 right-2 h-6 w-6" onClick={() => {
+                                                          navigator.clipboard.writeText(generatePythonCode({ toolName: tool.name, args: parsedInput as any }));
+                                                          toast({ title: "Copied to clipboard" });
+                                                      }}>
+                                                          <Code className="h-3 w-3" />
+                                                      </Button>
+                                                  </div>
+                                              </TabsContent>
+                                          </Tabs>
+                                      </DialogContent>
+                                  </Dialog>
+
                                   <Badge variant={output.isError || output.error ? "destructive" : "outline"} className={cn("text-[10px]", output.isError || output.error ? "" : "text-green-600 border-green-200 bg-green-50")}>
                                       {output.isError || output.error ? "Failed" : "Success"}
                                   </Badge>

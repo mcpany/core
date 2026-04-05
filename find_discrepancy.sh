@@ -1,5 +1,4 @@
 #!/bin/bash
-# Check all docs
-for f in $(find ui/docs server/docs -type f -name "*.md"); do
+for f in $(find server/docs/features ui/docs/features -type f -name "*.md"); do
     echo "Processing $f"
 done
