@@ -17,6 +17,7 @@ import json from 'react-syntax-highlighter/dist/esm/languages/hljs/json';
 import yamlLang from 'react-syntax-highlighter/dist/esm/languages/hljs/yaml';
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { ScrollArea } from "./ui/scroll-area";
+import { JsonView } from "@/components/ui/json-view";
 
 SyntaxHighlighter.registerLanguage('json', json);
 SyntaxHighlighter.registerLanguage('yaml', yamlLang);
@@ -98,21 +99,21 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
  * @returns {JSX.Element} The rendered config card.
  */
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
-    const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {
+    const { yamlConfig, textProtoConfig, jsonObject } = useMemo(() => {
         const tempService = structuredClone(service);
         delete (tempService as { id?: string }).id;
 
         return {
-            jsonConfig: JSON.stringify(tempService, null, 2),
             yamlConfig: yaml.dump(tempService),
-            textProtoConfig: objectToTextProto(tempService)
+            textProtoConfig: objectToTextProto(tempService),
+            jsonObject: tempService
         };
     }, [service]);
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2"><File /> File Config</CardTitle>
+                <CardTitle className="text-xl flex items-center gap-2"><File /> Source Configuration</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="mb-4">
@@ -121,17 +122,17 @@ export const FileConfigCard = memo(function FileConfigCard({ service }: { servic
                         You can edit these in the configuration JSON below.
                     </p>
                 </div>
-                <Tabs defaultValue="yaml">
+                <Tabs defaultValue="json">
                     <TabsList>
-                        <TabsTrigger value="yaml">YAML</TabsTrigger>
                         <TabsTrigger value="json">JSON</TabsTrigger>
+                        <TabsTrigger value="yaml">YAML</TabsTrigger>
                         <TabsTrigger value="textproto">Text Proto</TabsTrigger>
                     </TabsList>
+                    <TabsContent value="json" className="mt-4">
+                        <JsonView data={jsonObject} maxHeight={600} />
+                    </TabsContent>
                     <TabsContent value="yaml" className="mt-4">
                         <CodeBlock language="yaml" code={yamlConfig} />
-                    </TabsContent>
-                    <TabsContent value="json" className="mt-4">
-                        <CodeBlock language="json" code={jsonConfig} />
                     </TabsContent>
                     <TabsContent value="textproto" className="mt-4">
                         <CodeBlock language="protobuf" code={textProtoConfig} />

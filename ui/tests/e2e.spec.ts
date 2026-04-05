@@ -131,4 +131,33 @@ test.describe('MCP Any UI E2E Tests', () => {
     // We skip checking error details as it depends on runtime health check timing
   });
 
+  test('Service Configuration renders JSON view correctly', async ({ page }) => {
+    // Navigate to a service detail page
+    await page.goto('/service/svc_echo');
+
+    // Switch to Configuration tab
+    await page.getByRole('tab', { name: /Configuration/i }).click();
+
+    // Ensure File Config Card is visible
+    await expect(page.getByText('Source Configuration')).toBeVisible();
+
+    // The default tab should be JSON, check if JsonView container exists (either by class or text structure)
+    // JsonView renders standard keys. Let's look for known keys from the seeded 'svc_echo'.
+    // e.g. "command_line_service"
+    await expect(page.getByText('command_line_service')).toBeVisible();
+
+    // Switch to YAML tab
+    await page.getByRole('tab', { name: 'YAML' }).click();
+    // In yaml we expect typical yaml format text
+    await expect(page.locator('.language-yaml').first()).toBeVisible();
+
+    // Switch to Text Proto tab
+    await page.getByRole('tab', { name: 'Text Proto' }).click();
+    await expect(page.locator('.language-protobuf').first()).toBeVisible();
+
+    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
+      await page.screenshot({ path: path.join(AUDIT_DIR, 'service_config_view.png'), fullPage: true });
+    }
+  });
+
 });
