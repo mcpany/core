@@ -8,6 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Summary: Represents the core data structure or logic for LazyMcpDashboard.
+ * Parameters:
+ *   - None
+ * Returns: The resulting output state or mapped value.
+ * Throws/Errors: May throw a validation error if inputs fail schema checks.
+ */
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<{name: string, score: number}[]>([]);
