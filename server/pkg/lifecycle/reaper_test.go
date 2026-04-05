@@ -42,6 +42,73 @@ func TestSubagentReaper_RecordHeartbeat(t *testing.T) {
 	}
 }
 
+func TestSubagentReaper_RegisterSubagent(t *testing.T) {
+	reaper := lifecycle.NewSubagentReaper()
+	intentID := "branch-register"
+	ttl := 5 * time.Second
+
+	// Case 1: Lease not found
+	err := reaper.RegisterSubagent(intentID, "session-1")
+	if err == nil {
+		t.Fatal("Expected error for non-existent lease, got nil")
+	}
+
+	// Create lease
+	reaper.RegisterBranch(intentID, ttl)
+
+	// Case 2: Success
+	err = reaper.RegisterSubagent(intentID, "session-1")
+	if err != nil {
+		t.Fatalf("Failed to register subagent: %v", err)
+	}
+
+	// Case 3: Lease is not Active
+	reaper.PruneIntent(intentID)
+	err = reaper.RegisterSubagent(intentID, "session-2")
+	if err == nil {
+		t.Fatal("Expected error for pruned lease, got nil")
+	}
+}
+
+func TestSubagentReaper_RecordHeartbeatEdgeCases(t *testing.T) {
+	reaper := lifecycle.NewSubagentReaper()
+	intentID := "branch-heartbeat"
+
+	// Case 1: Lease not found
+	err := reaper.RecordHeartbeat(intentID, "sig", 1*time.Second)
+	if err == nil {
+		t.Fatal("Expected error for non-existent lease, got nil")
+	}
+
+	// Create lease
+	reaper.RegisterBranch(intentID, 5*time.Second)
+
+	// Case 2: Lease is not Active
+	reaper.PruneIntent(intentID)
+	err = reaper.RecordHeartbeat(intentID, "sig", 1*time.Second)
+	if err == nil {
+		t.Fatal("Expected error for pruned lease, got nil")
+	}
+}
+
+func TestSubagentReaper_PruneIntentEdgeCases(t *testing.T) {
+	reaper := lifecycle.NewSubagentReaper()
+	intentID := "branch-prune-not-found"
+	err := reaper.PruneIntent(intentID)
+	if err == nil {
+		t.Fatal("Expected error for non-existent lease, got nil")
+	}
+}
+
+func TestSubagentReaper_GetLeaseStatusEdgeCases(t *testing.T) {
+	reaper := lifecycle.NewSubagentReaper()
+	intentID := "branch-status-not-found"
+	_, err := reaper.GetLeaseStatus(intentID)
+	if err == nil {
+		t.Fatal("Expected error for non-existent lease, got nil")
+	}
+}
+
 func TestSubagentReaper_PruneIntent(t *testing.T) {
 	reaper := lifecycle.NewSubagentReaper()
 	intentID := "branch-003"
