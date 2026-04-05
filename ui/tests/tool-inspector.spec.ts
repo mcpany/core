@@ -24,7 +24,7 @@ test.describe('Tool Inspector', () => {
     await expect(inspectBtn).toBeVisible({ timeout: 10000 });
 
     // Evaluate click directly to bypass pointer interception
-    await inspectBtn.evaluate(b => b.click());
+    await inspectBtn.evaluate(b => (b as HTMLElement).click());
 
     // Wait for dialog
     await page.waitForTimeout(1000);

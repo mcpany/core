@@ -20,25 +20,10 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
-import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare, Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
-
-/**
- * Props for the InspectorTable component.
- */
-interface InspectorTableProps {
-  /**
-   * List of traces to display in the table.
-   */
-  traces: Trace[];
-  /**
-   * Whether the table is currently loading data.
-   */
-  loading?: boolean;
-}
-
 /**
  * Renders an icon representing the status of a trace span.
  *
@@ -103,7 +88,37 @@ interface VisibleRow {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+interface InspectorTableProps {
+  /**
+   * List of traces to display in the table.
+   */
+  traces: Trace[];
+  /**
+   * Whether the table is currently loading data.
+   */
+  loading?: boolean;
+  /**
+   * Whether the trace stream is currently paused.
+   */
+  isPaused?: boolean;
+  /**
+   * Callback to set the paused state.
+   */
+  setIsPaused?: (paused: boolean) => void;
+}
+
+/**
+ * A table component for displaying and inspecting traces.
+ * Allows clicking on a row to view detailed trace information in a sheet.
+ *
+ * @param props - The component props.
+ * @param props.traces - The list of traces to display.
+ * @param props.loading - Whether the data is loading.
+ * @param props.isPaused - Whether the stream is paused.
+ * @param props.setIsPaused - Callback to change paused state.
+ * @returns The rendered table component.
+ */
+export function InspectorTable({ traces, loading, isPaused, setIsPaused }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
 
@@ -152,6 +167,15 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 Loading traces...
              </div>
         ) : (
+            <div className="relative h-full w-full">
+              {isPaused && (
+                  <div className="absolute top-2 right-4 z-50">
+                      <Badge variant="outline" className="bg-background/80 backdrop-blur-sm border-amber-500/50 text-amber-500 shadow-sm animate-pulse flex items-center gap-1.5 cursor-pointer" onClick={() => setIsPaused && setIsPaused(false)}>
+                          <Pause className="h-3 w-3" fill="currentColor" />
+                          Paused
+                      </Badge>
+                  </div>
+              )}
             <TableVirtuoso
                 style={{ height: '100%', width: '100%' }}
                 data={visibleRows}
@@ -220,6 +244,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     </>
                 )}
             />
+            </div>
         )}
       </div>
 

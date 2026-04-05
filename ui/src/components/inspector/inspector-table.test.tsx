@@ -69,6 +69,17 @@ describe('InspectorTable', () => {
     expect(screen.getByText('Loading traces...')).toBeInTheDocument();
   });
 
+  it('renders paused badge correctly and unpauses on click', () => {
+    const setIsPaused = vi.fn();
+    render(<InspectorTable traces={[mockTrace]} isPaused={true} setIsPaused={setIsPaused} />);
+
+    const pauseBadge = screen.getByText('Paused');
+    expect(pauseBadge).toBeInTheDocument();
+
+    fireEvent.click(pauseBadge);
+    expect(setIsPaused).toHaveBeenCalledWith(false);
+  });
+
   it('opens details on click', () => {
     // Note: This tests that the row is clickable.
     // The actual Sheet opening depends on the implementation, but we can verify the TraceDetail would be rendered if we could inspect state.
