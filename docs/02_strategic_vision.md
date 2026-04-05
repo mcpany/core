@@ -866,12 +866,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-04-05]
-### Focus: RL-Ready Infrastructure & Attested Context Hubs
-**Context**: Today's findings on OpenClaw-RL v1 and Claude Code's security hardening (CVE-2025-59536) mark a shift from simple "Agent Serving" to "Agent Learning & Trust Brokerage." Swarms now require standardized telemetry for optimization and hardware-linked identity for local tool execution.
+### Focus: RL-Ready Infrastructure & Attested Discovery
+**Context**: The emergence of **OpenClaw-RL v1** and Claude Code's mandatory **Trust Verification** mark a shift from simple "Agent Serving" to "Agent Learning & Trust Brokerage." Swarms now require standardized telemetry for optimization and hardware-linked identity for local tool execution. Simultaneously, Gemini's **Progressive Skill Disclosure** demands that infrastructure manages metadata-heavy discovery without context window exhaustion.
 **Strategic Pivot**:
 - **RL Telemetry Provider**: MCP Any will evolve into a "Telemetry Hub" for RL-driven agents. We will implement standardized, privacy-preserving hooks to export tool performance and conversation-feedback loops directly to OpenClaw-RL training pipelines.
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
-- **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
+- **Optimistic Execution Gate**: Standardizing the "Optimistic Load" pattern, MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
+- **Progressive Disclosure Orchestrator**: Supporting Gemini-style skill discovery, we will implement metadata-only initial discovery with just-in-time instruction fetching, reducing context token consumption in large-scale swarm environments.
 
 ---
 

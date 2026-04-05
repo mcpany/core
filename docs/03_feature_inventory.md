@@ -1291,16 +1291,14 @@
 ## Evolution: [2026-04-05] Updates
 
 ### Proposed Additions
-- **RL Telemetry Provider**: (P1) Standardized middleware for exporting tool performance and feedback metrics to agent training frameworks (e.g., OpenClaw-RL).
-- **Attested Discovery Authority**: (P0) Cryptographic identity broker for local MCP servers, providing the "Trust Verification" required by Claude Code.
-- **Optimistic Execution Gate**: (P0) Implementation of speculative context loading for tools, synchronized with background discovery quorums.
+- **Attested Discovery Authority**: (P0) Authoritative identity broker for local MCP servers providing the "Trust Verification" required by Claude Code.
+- **Optimistic Execution Gate**: (P0) High-performance coordination middleware allowing speculative tool preparation while background discovery quorums verify attestation.
+- **RL Telemetry Provider**: (P1) Standardized telemetry middleware for exporting privacy-sanitized reasoning traces to OpenClaw-RL training loops.
+- **Progressive Disclosure Orchestrator**: (P1) Efficiency middleware supporting Gemini-style "Pull-on-Demand" skill discovery to optimize context window utilization.
 
 ### Priority Shifts
-- **Unified RL Feedback Telemetry Bridge**: (Re-affirmed P1) Now a core strategic requirement to support OpenClaw-RL v1.
-- **Provenance-First Discovery**: (Promoted to P0) Critical for satisfying the new Claude Code trust verification requirements.
-
-### Deprecations / Monitoring
-- **Implicitly Trusted Local Discovery**: Moving toward total deprecation. All local tool discovery must eventually be backed by an Attested Discovery signal.
+- **Provenance-First Discovery**: (Promoted to P0) Now mandatory for satisfaction of Claude Code v2.4+ trust requirements.
+- **RL Telemetry Provider**: (Re-affirmed P1) Elevated with mandatory support for **Process-Reward Model** (PRM) metadata.
 
 ---
 

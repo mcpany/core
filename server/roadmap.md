@@ -447,9 +447,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Unified Lifecycle Bridge**: Standardized commit/rollback middleware for cross-framework lifecycle synchronization. (Added: 2026-04-04)
 
 #### Upcoming (2026-04-05 Evolution)
-*   **[P0] Attested Discovery Authority**: Cryptographic identity broker for local MCP servers to satisfy Claude Code's "Trust Verification." (Added: 2026-04-05)
-*   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
-*   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
+*   **[P0] Attested Discovery Authority**: Authoritative identity broker for local MCP servers providing the "Trust Verification" required by Claude Code. (Added: 2026-04-05)
+*   **[P0] Optimistic Execution Gate**: High-performance coordination middleware allowing speculative tool preparation while background discovery quorums verify attestation. (Added: 2026-04-05)
+*   **[P1] RL Telemetry Provider**: Standardized telemetry middleware for exporting privacy-sanitized reasoning traces to OpenClaw-RL training loops. (Added: 2026-04-05)
+*   **[P1] Progressive Disclosure Orchestrator**: Efficiency middleware supporting Gemini-style "Pull-on-Demand" skill discovery to optimize context window utilization. (Added: 2026-04-05)
 
 #### Upcoming (2026-04-06 Evolution)
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context poisoning instructions in tool schemas. (Added: 2026-04-06)
