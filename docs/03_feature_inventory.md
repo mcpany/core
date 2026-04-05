@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Epistemic Governance Gateway (EGG)**: (P0) Authoritative confidence broker utilizing OpenClaw EUM signals to trigger reflection quorums for low-confidence reasoning.
+- **Attention-Persistence Provider**: (P0) Security middleware performing periodic, hardware-attested context re-injection (CWPP-compliant) to prevent guardrail eviction.
+- **Hierarchical Continuity Broker**: (P0) Mission persistence service implementing the HIL standard for recursive sub-mission state management.
+- **Automated Compliance Attestation (ACA)**: (P1) Autonomous audit service matching real-time reasoning paths against hardware-attested mission manifests.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Evolving into the **Epistemic Governance Gateway (EGG)** for active quorum mediation.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with mandatory support for **CWPP-compliant** attention-persistence.

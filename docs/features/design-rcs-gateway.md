@@ -46,3 +46,12 @@ The RCS Gateway provides a standardized infrastructure layer to ingest confidenc
 
 ## 7. Evolutionary Changelog
 * **2026-07-21:** Initial Document Creation.
+* **2026-07-25:** Evolution to Epistemic Governance Gateway (EGG).
+
+### Update: 2026-07-25 - Evolution to Epistemic Governance Gateway (EGG)
+**Context:** Today's market sync revealed the maturation of OpenClaw's EUM (Epistemic Uncertainty Mapping), confirming that confidence-based gating must evolve into active governance.
+**Architecture Adjustment:**
+* **Active Mediation**: Transitioning from a passive threshold gate to an active "Quorum Mediator."
+* **Multi-Agent Reflection**: When confidence drops below threshold, the EGG now triggers a "Reflection Quorum" where independent auditor agents must reach consensus on the reasoning path before tool execution.
+* **EUM Integration**: Native support for OpenClaw v3.7.0 EUM headers as a primary confidence signal.
+**Security Impact:** Prevents "hallucination-driven exfiltration" by forcing a second-order reasoning check on uncertain intents.
