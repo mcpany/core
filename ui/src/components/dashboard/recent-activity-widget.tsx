@@ -15,6 +15,7 @@ import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
 import { JsonView } from "@/components/ui/json-view";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
