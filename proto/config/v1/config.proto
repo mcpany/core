@@ -117,6 +117,8 @@ message GlobalSettings {
   OIDCConfig oidc = 14 [json_name = "oidc"];
   // Rate limiting configuration for the server.
   RateLimitConfig rate_limit = 15 [json_name = "rate_limit"];
+  // Guardrails configuration.
+  GuardrailsConfig guardrails = 30 [json_name = "guardrails"];
   // Telemetry configuration.
   TelemetryConfig telemetry = 16 [json_name = "telemetry"];
 
@@ -229,6 +231,12 @@ message GCSettings {
   // A list of absolute paths to directories that should be scanned for cleanup.
   // The worker will not traverse outside these directories.
   repeated string paths = 4 [json_name = "paths"];
+}
+
+// GuardrailsConfig defines the configuration for Prompt Injection Guardrails.
+message GuardrailsConfig {
+  // A list of phrases to block.
+  repeated string blocked_phrases = 1 [json_name = "blocked_phrases"];
 }
 
 // DLPConfig configures Data Loss Prevention (redaction).

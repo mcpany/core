@@ -584,6 +584,29 @@ func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
 }
 
+// GetGuardrails returns the Guardrails configuration.
+//
+// Summary: Retrieves the Guardrails configuration.
+//
+// Returns:
+//   - *configv1.GuardrailsConfig: The Guardrails config.
+func (s *Settings) GetGuardrails() *configv1.GuardrailsConfig {
+	return s.proto.GetGuardrails()
+}
+
+// SetGuardrails sets the Guardrails configuration.
+//
+// Summary: Sets the Guardrails configuration.
+//
+// Parameters:
+//   - guardrails: *configv1.GuardrailsConfig. The Guardrails config.
+//
+// Side Effects:
+//   - Updates the Guardrails setting.
+func (s *Settings) SetGuardrails(guardrails *configv1.GuardrailsConfig) {
+	s.proto.SetGuardrails(guardrails)
+}
+
 // GetSso returns the SSO configuration.
 //
 // Summary: Retrieves the SSO configuration.

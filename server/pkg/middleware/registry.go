@@ -4,10 +4,13 @@
 package middleware
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"sort"
+	"strings"
 	"sync"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -206,6 +209,7 @@ type StandardMiddlewares struct {
 //   - cachingMiddleware (*CachingMiddleware): The cachingMiddleware.
 //   - globalRateLimitConfig (*configv1.RateLimitConfig): The globalRateLimitConfig.
 //   - dlpConfig (*configv1.DLPConfig): The dlpConfig.
+//   - guardrailsConfig (*configv1.GuardrailsConfig): The guardrailsConfig.
 //   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The contextOptimizerConfig.
 //   - debuggerConfig (*configv1.DebuggerConfig): The debuggerConfig.
 //   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smartRecoveryConfig.
@@ -234,6 +238,7 @@ func InitStandardMiddlewares(
 	cachingMiddleware *CachingMiddleware,
 	globalRateLimitConfig *configv1.RateLimitConfig,
 	dlpConfig *configv1.DLPConfig,
+	guardrailsConfig *configv1.GuardrailsConfig,
 	contextOptimizerConfig *configv1.ContextOptimizerConfig,
 	debuggerConfig *configv1.DebuggerConfig,
 	smartRecoveryConfig *configv1.SmartRecoveryConfig,
@@ -387,6 +392,45 @@ func InitStandardMiddlewares(
 		// NOTE: DLPMiddleware signature is: func DLPMiddleware(config *configv1.DLPConfig, log *slog.Logger) mcp.Middleware
 		return DLPMiddleware(dlpConfig, nil)
 	})
+
+	// Guardrails
+	if guardrailsConfig != nil && len(guardrailsConfig.GetBlockedPhrases()) > 0 {
+		Register("guardrails", func(_ *configv1.Middleware) func(http.Handler) http.Handler {
+			return func(next http.Handler) http.Handler {
+				// We wrap the standard http.Handler into a Gin handler using gin.WrapH,
+				// but NewGuardrailsMiddleware returns a gin.HandlerFunc.
+				// We need a standard http.Handler wrapper for the HTTP side of MCP Any.
+				// However, NewGuardrailsMiddleware is Gin-specific.
+				// We can rewrite a simple http.Handler version inline to support the MCP Any HTTP router.
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					if r.Method != "POST" {
+						next.ServeHTTP(w, r)
+						return
+					}
+
+					bodyBytes, err := io.ReadAll(r.Body)
+					if err != nil {
+						next.ServeHTTP(w, r)
+						return
+					}
+
+					r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+					bodyLower := strings.ToLower(string(bodyBytes))
+
+					for _, phrase := range guardrailsConfig.GetBlockedPhrases() {
+						if strings.Contains(bodyLower, strings.ToLower(phrase)) {
+							w.Header().Set("Content-Type", "application/json")
+							w.WriteHeader(http.StatusBadRequest)
+							_, _ = w.Write([]byte(`{"error": "Prompt Injection Detected: Request blocked by validation policy.", "policy": "no-jailbreak"}`))
+							return
+						}
+					}
+
+					next.ServeHTTP(w, r)
+				})
+			}
+		})
+	}
 
 	// Context Optimizer
 	var contextOptimizer *ContextOptimizer

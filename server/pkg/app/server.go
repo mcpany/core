@@ -725,6 +725,7 @@ func (a *Application) Run(opts RunOptions) error {
 		cachingMiddleware,
 		cfg.GetGlobalSettings().GetRateLimit(),
 		cfg.GetGlobalSettings().GetDlp(),
+		cfg.GetGlobalSettings().GetGuardrails(),
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
@@ -786,6 +787,10 @@ func (a *Application) Run(opts RunOptions) error {
 			config_v1.Middleware_builder{
 				Name:     proto.String("dlp"),
 				Priority: proto.Int32(42),
+			}.Build(),
+			config_v1.Middleware_builder{
+				Name:     proto.String("guardrails"),
+				Priority: proto.Int32(43),
 			}.Build(),
 			config_v1.Middleware_builder{
 				Name:     proto.String("global_ratelimit"),

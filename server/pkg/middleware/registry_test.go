@@ -304,7 +304,7 @@ func TestInitStandardMiddlewares_ContextOptimizer_Default(t *testing.T) {
 	config := &configv1.ContextOptimizerConfig{} // Defaults to 0
 
 	stdMws, err := InitStandardMiddlewares(
-		nil, nil, nil, nil, nil, nil,
+		nil, nil, nil, nil, nil, nil, nil,
 		config, // Pass empty config
 		nil,
 		nil,
