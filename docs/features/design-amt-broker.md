@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating Handshake Racing
+**Context:** Market sync findings identified a "Coordination DoS" (CDoS) pattern where malicious subagents initiate high-frequency partial handshakes to exhaust AMT Broker buffers.
+**Architecture Adjustment:**
+* Implementing **Handshake Integrity Guard (HIG)** within Section 4.
+* Introducing hardware-attested "Pre-Auth Tickets" for mesh initiation.
+* Mandating monotonic expiry for all pending tunnel sessions to prevent buffer bloating.
+**Security Impact:** Prevents handshake racing from stalling the multi-node coordination bus.

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Reputation Quorum (RRQ) Provider**: (P0) Authoritative reputation service that derives subagent trust scores from hardware-attested parent lineage to neutralize identity washing.
+- **Atomic Teammate Branching (ATB) Bridge**: (P0) High-speed coordination middleware facilitating private speculative mailbox branches to eliminate teammate mailbox locks.
+- **Attention-Weighted Context Pinning (AWCP) Hub**: (P0) Cognitive security middleware that dynamically adjusts attention-locking weights for mission-critical fragments.
+- **Handshake Integrity Guard (HIG)**: (P0) Transport-level security service mandating rate-limited session buffers for partial AMT handshakes to neutralize "Handshake Racing" DoS.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **HIG** integration.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Evolving into the **AWCP Hub** for dynamic attention weighting.
