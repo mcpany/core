@@ -208,9 +208,11 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     return (
         <div className="flex flex-col gap-0 w-full">
             <div className="flex justify-end mb-1 px-1">
-                 <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border">
+                 <div className="flex items-center bg-muted/50 rounded-lg p-0.5 border" role="tablist">
                      {tableData && (
                         <Button
+                            role="tab"
+                            aria-selected={activeView === "smart"}
                             variant={activeView === "smart" ? "secondary" : "ghost"}
                             size="sm"
                             className="h-6 px-2 text-[10px] gap-1"
@@ -221,6 +223,8 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                      )}
                      {mcpContent && (
                         <Button
+                            role="tab"
+                            aria-selected={activeView === "rich"}
                             variant={activeView === "rich" ? "secondary" : "ghost"}
                             size="sm"
                             className="h-6 px-2 text-[10px] gap-1"
@@ -230,7 +234,9 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                         </Button>
                      )}
                      <Button
-                        variant={activeView === "raw" ? "secondary" : "ghost"}
+                        role="tab"
+                            aria-selected={activeView === "raw"}
+                            variant={activeView === "raw" ? "secondary" : "ghost"}
                         size="sm"
                         className="h-6 px-2 text-[10px] gap-1"
                         onClick={() => setUserViewMode("raw")}
