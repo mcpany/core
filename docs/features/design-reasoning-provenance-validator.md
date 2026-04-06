@@ -52,3 +52,10 @@ The Reasoning Provenance Validator acts as the authoritative verification engine
 
 ## 7. Evolutionary Changelog
 * **2026-06-29:** Initial Document Creation.
+
+### Update: 2026-07-25 - Reasoning-Path Watermarking (RPW) Integration
+**Context:** Today's market sync revealed a mandate for RPW in Claude Code, addressing "Code Handoff Hijacking" and "Semantic Erasure" attacks.
+**Architecture Adjustment:**
+- **Watermark Verification**: Upgrading the Validator to scan reasoning fragments for embedded cryptographic watermarks (RPW).
+- **Build Pipeline Hook**: Introducing a new interface for CI/CD systems to query the Validator for RPW-attestation before merging agent-generated code.
+**Security Impact:** Ensures that agent-generated PRs remain cryptographically linked to a verified, untampered reasoning path even if the text is paraphrased by subsequent specialists.

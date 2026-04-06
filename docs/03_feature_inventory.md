@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cognitive Honeypot Provider (CHP)**: (P0) Authoritative security service for injecting decoy state fragments (traps) into the Blackboard to neutralize malicious reasoning.
+- **Reasoning-Path Watermark (RPW) Hub**: (P0) Integration for the Reasoning Provenance Validator providing cryptographic watermarking for all agent-generated code modifications.
+- **Sub-Intent gVisor Isolator**: (P0) Advanced sandboxing service providing kernel-level isolation for individual intent branches to prevent cross-fragment contamination.
+- **Optimistic Intent Branching Manager**: (P1) Performance-optimizing coordination service for SII, allowing speculative reasoning during enclave provisioning.
+
+### Priority Shifts
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPW-compliant** watermarking.
+- **Shadow-FS Virtualization Adapter**: (Re-affirmed P0) Designated as a critical component for the **Sub-Intent gVisor Isolator** workflow.
