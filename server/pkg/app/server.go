@@ -2295,6 +2295,11 @@ func (a *Application) runServerMode(
 							gwmux.ServeHTTP(w, r)
 						}
 					})))
+					// API router is registered to /api/v1/ but the grpc-gateway expects the path defined in proto: /api/v1/...
+					// So we need to route /api/v1/admin to gwmux as well.
+					mux.Handle("/api/v1/admin/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						gwmux.ServeHTTP(w, r)
+					})))
 				}
 			}
 			expectedReady++

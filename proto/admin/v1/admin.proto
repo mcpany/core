@@ -19,7 +19,12 @@ option java_outer_classname = "AdminProto";
 // AdminService provides administrative operations for the MCP Any server.
 service AdminService {
   // ClearCache clears all cached data in the server.
-  rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse);
+  rpc ClearCache(ClearCacheRequest) returns (ClearCacheResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/cache/clear"
+      body: "*"
+    };
+  }
 
   // ListServices returns all registered services.
   rpc ListServices(ListServicesRequest) returns (ListServicesResponse);

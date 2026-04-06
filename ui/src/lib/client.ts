@@ -2824,5 +2824,25 @@ export const apiClient = {
         });
         if (!res.ok) throw new Error('Failed to trigger discovery');
         return {};
+    },
+
+    /**
+     * Clears the server cache.
+     *
+     * Summary: Clears the cache.
+     *
+     * @returns A promise that resolves when the cache is cleared.
+     * @throws {Error} If the request fails.
+     *
+     * Side Effects: Makes a POST request to /api/v1/admin/cache/clear.
+     */
+    clearCache: async () => {
+        const res = await fetchWithAuth('/api/v1/admin/cache/clear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({})
+        });
+        if (!res.ok) throw new Error('Failed to clear cache');
+        return res.json();
     }
 };

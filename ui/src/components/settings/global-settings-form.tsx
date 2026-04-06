@@ -24,6 +24,8 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { apiClient } from "@/lib/client";
+import { useToast } from "@/hooks/use-toast";
+import { Trash2 } from "lucide-react";
 
 const settingsSchema = z.object({
   mcp_listen_address: z.string().min(1, "Address is required"),
@@ -61,6 +63,8 @@ type SettingsValues = z.infer<typeof settingsSchema>;
 export function GlobalSettingsForm() {
   const [loading, setLoading] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isClearingCache, setIsClearingCache] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<SettingsValues>({
     resolver: zodResolver(settingsSchema),
@@ -133,6 +137,25 @@ export function GlobalSettingsForm() {
       console.error("Failed to save settings", e);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleClearCache() {
+    setIsClearingCache(true);
+    try {
+      await apiClient.clearCache();
+      toast({
+        title: "Cache Cleared",
+        description: "The system cache has been successfully cleared.",
+      });
+    } catch (e: any) {
+      toast({
+        variant: "destructive",
+        title: "Error Clearing Cache",
+        description: e.message || "An unexpected error occurred.",
+      });
+    } finally {
+      setIsClearingCache(false);
     }
   }
 
@@ -380,6 +403,25 @@ export function GlobalSettingsForm() {
             </Button>
           </form>
         </Form>
+        <div className="mt-8 border-t pt-6">
+          <h3 className="text-lg font-medium mb-4">System Actions</h3>
+          <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/20">
+            <div className="space-y-0.5">
+              <h4 className="text-base font-medium">Clear Cache</h4>
+              <p className="text-sm text-muted-foreground">
+                Clears all cached data in the system. This may temporarily impact performance.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={handleClearCache}
+              disabled={isClearingCache}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {isClearingCache ? "Clearing..." : "Clear Cache"}
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
