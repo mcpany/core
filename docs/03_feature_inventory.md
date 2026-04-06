@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Intent-Minimization Proxy (IMP) Middleware**: (P0) Authoritative context management service performing real-time semantic pruning while protecting mission-root anchors.
+- **CoT Entropy Watermark (CEW) Validator**: (P0) Advanced provenance service for verifying hardware-attested entropy signatures in reasoning traces.
+- **CRDT Semantic Arbiter**: (P0) Kernel-level coordination service for resolving conflicting state mutations in lock-free teammate meshes.
+- **Invariable Instruction Anchors (IIA)**: (P0) Mandatory pinning mechanism for mission-critical context fragments to prevent minimization-driven erasure.
+
+### Priority Shifts
+- **Reasoning-Path Watermark (RPW) Validator**: (Re-affirmed P0) Evolving into **CEW Validator** to support entropy-bound attestation.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with the requirement for **CRDT Semantic Arbitration**.
