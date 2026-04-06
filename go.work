@@ -1,0 +1,13 @@
+go 1.26.1
+
+use (
+	.
+	./k8s/operator
+	./proto
+	./server
+	./server/docs/features/webhooks/examples/block_rm
+	./server/docs/features/webhooks/examples/html_to_md
+	./server/examples/upstream_service_demo/grpc/client
+	./server/examples/upstream_service_demo/grpc/greeter_server
+	./server/pkg/dmr
+)
