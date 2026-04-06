@@ -33,8 +33,8 @@ describe('JsonView', () => {
   it('renders JSON string correctly', () => {
     const data = { key: 'value' };
     render(<JsonView data={data} />);
-    // SyntaxHighlighter might break it up into spans, so we search for text parts
-    expect(screen.getByText(/"key"/)).toBeInTheDocument();
+    // Since JsonView now uses JsonTree for objects, keys don't have quotes
+    expect(screen.getByText(/key/)).toBeInTheDocument();
     expect(screen.getByText(/"value"/)).toBeInTheDocument();
   });
 

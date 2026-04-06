@@ -97,6 +97,6 @@ test.describe('Rich Result Viewer', () => {
 
     // Switch to Raw Output tab
     await viewerTabs.getByRole('tab', { name: 'Raw Output' }).click();
-    await expect(page.getByText('"stdout":')).toBeVisible();
+    await expect(page.getByText(/stdout/)).toBeVisible();
   });
 });
