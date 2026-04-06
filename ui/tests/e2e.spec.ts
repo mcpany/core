@@ -131,4 +131,42 @@ test.describe('MCP Any UI E2E Tests', () => {
     // We skip checking error details as it depends on runtime health check timing
   });
 
+
+  test('Playground correctly renders stringified JSON array as SmartTable', async ({ page }) => {
+    await page.goto('/playground');
+    await expect(page.getByRole('heading', { name: 'Playground' })).toBeVisible();
+
+    // Select the Echo Service
+    await page.click('button[role="combobox"]:has-text("Select Service...")');
+    await page.click('div[role="option"]:has-text("Echo Service")');
+
+    // Select the get_users tool
+    await page.click('div.rounded-md:has-text("get_users")');
+
+    // Wait for the tool runner to appear
+    await expect(page.locator('h3:has-text("get_users")')).toBeVisible();
+
+    // The tool has no required arguments, so we can just execute it
+    // If it has arguments, we could provide them, but get_users has empty args in the seed schema
+    // actually, wait, the schema is just object, but get_users in the mock service ignores args and returns the fixture.
+
+    // Click the Run Tool button
+    await page.click('button:has-text("Run Tool")');
+
+    // The response takes a moment, wait for the table tab to become visible
+    await expect(page.locator('button[role="tab"]:has-text("Table")')).toBeVisible({ timeout: 15000 });
+
+    // Verify default tab is table by checking if the table element is visible
+    // Actually, it might be safer to explicitly click the Table tab if it's not active, but our fix made it default.
+    // Let's ensure the tab is active
+    await expect(page.locator('button[role="tab"]:has-text("Table")')).toHaveAttribute('data-state', 'active');
+
+    // Verify table content
+    await expect(page.locator('span:has-text("Alice")').first()).toBeVisible();
+    await expect(page.locator('span:has-text("Bob")').first()).toBeVisible();
+
+    if (process.env.CAPTURE_SCREENSHOTS === 'true') {
+      await page.screenshot({ path: path.join(AUDIT_DIR, 'playground_smart_table.png'), fullPage: true });
+    }
+  });
 });

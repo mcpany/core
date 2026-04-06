@@ -147,6 +147,22 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     }, [content]);
 
     const { isTableEligible, tableData } = useMemo(() => {
+        // Special check: if we have mcpContent, maybe one of the text fields is a stringified JSON array of objects
+        if (mcpContent && mcpContent.length > 0) {
+            for (const item of mcpContent) {
+                if (item.type === 'text') {
+                    try {
+                        const parsed = JSON.parse(item.text);
+                        if (Array.isArray(parsed) && parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null) {
+                            return { isTableEligible: true, tableData: parsed };
+                        }
+                    } catch {
+                        // ignore parse errors
+                    }
+                }
+            }
+        }
+
         if (mcpContent) return { isTableEligible: false, tableData: [] };
 
         // 1. Array of objects
@@ -185,28 +201,9 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return { isTableEligible: false, tableData: [] };
     }, [content, mcpContent]);
 
-    // Get columns for table
-    const columns = useMemo(() => {
-        if (!isTableEligible) return [];
-        // aggregate all keys from all objects to handle sparse data
-        const keys = new Set<string>();
-        // Limit rows scanned for columns to avoid perf issues on huge datasets
-        tableData.slice(0, 50).forEach((item: any) => {
-            if (typeof item === 'object' && item !== null) {
-                Object.keys(item).forEach(k => keys.add(k));
-            }
-        });
-        return Array.from(keys);
-    }, [tableData, isTableEligible]);
 
-    const renderCell = (value: any) => {
-        if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
-        if (typeof value === 'object') return <span className="font-mono text-xs text-muted-foreground truncate max-w-[200px] block" title={JSON.stringify(value)}>{JSON.stringify(value)}</span>;
-        if (typeof value === 'boolean') return <span className={value ? "text-green-500 font-medium" : "text-red-500 font-medium"}>{String(value)}</span>;
-        return <span className="truncate max-w-[300px] block" title={String(value)}>{String(value)}</span>;
-    }
 
-    const defaultTab = mcpContent ? "rendered" : (isTableEligible ? "table" : "json");
+    const defaultTab = isTableEligible ? "table" : (mcpContent ? "rendered" : "json");
 
     return (
         <Tabs defaultValue={defaultTab} className="w-full">
