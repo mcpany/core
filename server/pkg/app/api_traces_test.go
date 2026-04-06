@@ -229,10 +229,8 @@ func TestHandleTracesWS_DisabledAudit(t *testing.T) {
 }
 
 func TestHandleDeleteTraces(t *testing.T) {
-	app, _, _, err := setupTestApp()
-	if err != nil {
-		t.Fatalf("failed to setup app: %v", err)
-	}
+	app, cleanup := setupTestAppWithAudit(t)
+	defer cleanup()
 
 	auditMw := app.GetAuditMiddleware()
 	if auditMw == nil {
@@ -280,10 +278,8 @@ func TestHandleDeleteTraces(t *testing.T) {
 }
 
 func TestHandleClearTraces(t *testing.T) {
-	app, _, _, err := setupTestApp()
-	if err != nil {
-		t.Fatalf("failed to setup app: %v", err)
-	}
+	app, cleanup := setupTestAppWithAudit(t)
+	defer cleanup()
 
 	app.handleDebugSeedTraces()(httptest.NewRecorder(), httptest.NewRequest("POST", "/api/v1/debug/traces", nil))
 
