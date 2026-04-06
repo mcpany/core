@@ -1,9 +1,12 @@
+"use client";
 /**
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from "react";
+
+import React, { useEffect, useState } from "react";
+import { fetchWithAuth } from "@/lib/client";
 import {
   Card,
   CardContent,
@@ -47,6 +50,12 @@ import { LazyMcpDashboard } from "@/components/dashboard/lazy-mcp-dashboard";
  *   - Renders multiple dashboard cards.
  */
 export default function UniversalAgentBusPage() {
+  const [metrics, setMetrics] = useState({ sessions: 0, transports: 0 });
+
+  useEffect(() => {
+    fetchWithAuth("/api/v1/uab/metrics").then(res => res.json()).then(data => setMetrics(data)).catch(console.error);
+  }, []);
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -78,7 +87,7 @@ export default function UniversalAgentBusPage() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0 Sessions</div>
+            <div className="text-2xl font-bold">{metrics.sessions} Sessions</div>
             <p className="text-xs text-muted-foreground">
               Visual tracking of agent handoffs and shared tool state.
             </p>
@@ -92,7 +101,7 @@ export default function UniversalAgentBusPage() {
             <Network className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0 Transports</div>
+            <div className="text-2xl font-bold">{metrics.transports} Transports</div>
             <p className="text-xs text-muted-foreground">
               UI for managing and auto-discovering MCP servers across transports.
             </p>
