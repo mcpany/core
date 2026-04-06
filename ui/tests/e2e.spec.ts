@@ -136,12 +136,11 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.goto('/playground');
     await expect(page.getByRole('heading', { name: 'Console' })).toBeVisible();
 
-    // Select the Echo Service
-    await page.click('button[role="combobox"]:has-text("Select Service...")');
-    await page.click('div[role="option"]:has-text("Echo Service")');
+    // Search for the get_users tool to ensure it's visible
+    await page.fill('input[placeholder="Search tools..."]', 'get_users');
 
-    // Select the get_users tool
-    await page.click('div.rounded-md:has-text("get_users")');
+    // Select the get_users tool from the sidebar list
+    await page.click('div.group:has-text("get_users")');
 
     // Wait for the tool runner to appear
     await expect(page.locator('h3:has-text("get_users")')).toBeVisible();
