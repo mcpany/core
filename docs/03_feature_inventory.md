@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative Lock Manager (SLM)**: (P0) Authoritative coordination service utilizing hardware-attested speculative buffers to eliminate teammate coordination stalls in horizontal Agent Teams.
+- **Entropy-Aware Resource Controller (EARC)**: (P0) Stability middleware performing real-time reasoning entropy analysis to detect "Cognitive Meltdowns" and trigger automated mission resets.
+- **Monotonic Attention Pinning (MAP) Controller**: (P0) Advanced pinning service mandating monotonic priority for behavioral guardrails to prevent eviction during aggressive GC.
+- **Context-Splicing Defense Hub**: (P0) Security middleware mandating hardware-bound "Fragment Proofs" for all sharded mailbox interactions to neutralize unauthorized intent injection.
+
+### Priority Shifts
+- **Post-Quantum Mesh Handshake (PQMH)**: (Promoted from P1 to P0) Designated as a critical requirement for securing long-term mesh integrity against emergent decryption swarms.
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into the **Speculative Lock Manager** to support non-blocking horizontal coordination.
