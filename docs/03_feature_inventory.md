@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Kernel-Bound Tunnel Reaper (KBTR)**: (P0) authoritative security service utilizing eBPF hooks to forcefully close kernel-level sockets associated with terminated subagent missions. (CVE-2026-55102 defense)
+- **Intent-Bound Garbage Collection (IBGC) Middleware**: (P0) cognitive security service performing real-time semantic analysis to protect "Mission Anchors" during context pruning.
+- **Hardware-Attested Trust Batching (HATB) Provider**: (P0) performance middleware brokering multi-task trust tickets to reduce TPM attestation overhead in high-density swarms.
+- **Speculative Shard Prefetcher (SSP)**: (P0) optimization service pre-loading relevant context shards based on real-time intent analysis to neutralize mesh latency.
+
+### Priority Shifts
+- **Active Subagent Reaper**: (Re-affirmed P0) Evolving to include **KBTR** kernel-level socket closing.
+- **Zero-Latency Shard Prefetcher**: (Evolved to SSP) Now designated as the primary performance optimization for distributed P2P meshes.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

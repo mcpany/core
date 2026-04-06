@@ -843,6 +843,12 @@
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
 - [ ] **[P0] Environment-Aware Provenance Tracker**: (2026-07-23) Forensic UI for visualizing reasoning traces bound to specific execution environments.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Kernel Socket Auditor**: (2026-07-25) Real-time visualization of active and reaped kernel-level mesh sockets (KBTR).
+- [ ] **[P0] GC-Immune Anchor Visualizer**: (2026-07-25) Visual indicator for semantically pinned context anchors and IBGC pruning efficiency.
+- [ ] **[P0] Trust Batching Monitor**: (2026-07-25) Real-time tracker for hardware-attested multi-task trust tickets (HATB).
+- [ ] **[P0] Speculative Shard Dashboard**: (2026-07-25) Visualization of pre-fetched context shards and pre-flight validation status (SSP).
+
 #### Upcoming (2026-07-22 Evolution)
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.

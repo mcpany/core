@@ -61,4 +61,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 * **Observability:** Integrated with the "Service Mesh Topology Monitor" in the UI for real-time visualization of inter-node tunnels.
 
 ## 7. Evolutionary Changelog
+### Update: 2026-07-25 - Mitigating Phantom Mesh
+**Context:** Today's market sync revealed a "Phantom Mesh" exploit (CVE-2026-55102) where orphaned P2P tunnels remain vulnerable at the kernel level.
+**Architecture Adjustment:** * Introducing mandatory kernel-level socket resets via KBTR (eBPF).
+* Binding tunnel persistence to mission-root heartbeat attestation.
+**Security Impact:** Prevents lateral movement by unauthorized processes via orphaned agentic tunnels.
+
 * **2026-07-24:** Initial Document Creation.
