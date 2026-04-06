@@ -34,9 +34,9 @@ describe('JsonTree', () => {
   it('renders object keys and values', () => {
     const data = { foo: 'bar', num: 42 };
     render(<JsonTree data={data} defaultExpandedLevel={1} />);
-    expect(screen.getByText(/"foo":/)).toBeInTheDocument();
+    expect(screen.getByText(/foo/)).toBeInTheDocument();
     expect(screen.getByText(/"bar"/)).toBeInTheDocument();
-    expect(screen.getByText(/"num":/)).toBeInTheDocument();
+    expect(screen.getByText(/num/)).toBeInTheDocument();
     expect(screen.getByText('42')).toBeInTheDocument();
   });
 
@@ -72,7 +72,7 @@ describe('JsonTree', () => {
     // 1 < 0 is false. So child is collapsed.
 
     // We should see the nested object key
-    expect(screen.getByText(/"nested":/)).toBeInTheDocument();
+    expect(screen.getByText(/nested/)).toBeInTheDocument();
 
     // But the inner value "value" should still be hidden because nested object is collapsed
     expect(screen.queryByText(/"value"/)).not.toBeInTheDocument();
@@ -86,6 +86,20 @@ describe('JsonTree', () => {
 
     // Now "value" should be visible
     expect(screen.getByText(/"value"/)).toBeInTheDocument();
+  });
+
+  it('renders URLs correctly', () => {
+      render(<JsonTree data="https://example.com" />);
+      expect(screen.getByText(/"https:\/\/example.com"/)).toBeInTheDocument();
+      expect(screen.getByRole('link')).toHaveAttribute('href', 'https://example.com');
+  });
+
+  it('renders booleans correctly', () => {
+      const { unmount } = render(<JsonTree data={true} />);
+      expect(screen.getByText('true')).toBeInTheDocument();
+      unmount();
+      render(<JsonTree data={false} />);
+      expect(screen.getByText('false')).toBeInTheDocument();
   });
 
   it('handles defaultExpandedLevel', () => {

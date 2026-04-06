@@ -118,29 +118,29 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
       </div>
 
       {expanded && (
-        <div className="border-l border-white/10 ml-2 pl-2 flex flex-col">
-          {entries.map(([key, value], idx) => (
-            <div key={key} className="flex items-start gap-1">
+        <div className="border-l border-white/10 ml-2 pl-2 flex flex-col space-y-0.5 mt-0.5">
+          {entries.map(([key, value], idx) => {
+            const isChildObject = typeof value === 'object' && value !== null;
+            return (
+            <div key={key} className={cn("flex", isChildObject ? "flex-col items-start" : "items-start gap-2")}>
                {/* Key */}
-               <div className="pt-[2px] shrink-0 text-purple-400">
-                  {!isArray && (
-                      <span className="mr-1 opacity-80">
-                        "{key}":
-                      </span>
-                  )}
-               </div>
+               {!isArray && (
+                 <div className={cn("shrink-0 font-medium text-muted-foreground", isChildObject ? "mb-0.5" : "pt-[2px]")}>
+                    <span className="text-foreground/80 font-semibold">{key}</span>
+                    <span className="text-muted-foreground/50 ml-0.5">:</span>
+                 </div>
+               )}
 
                {/* Value */}
-               <div className="flex-1 min-w-0">
+               <div className={cn("flex-1 min-w-0", isChildObject && !isArray && "w-full")}>
                   <JsonTree
                     data={value}
                     level={level + 1}
                     defaultExpandedLevel={defaultExpandedLevel}
                   />
                </div>
-               {/* Comma if needed (optional purely visual preference, syntax highlighter usually omits in tree view but keeps structure) */}
             </div>
-          ))}
+          )})}
         </div>
       )}
       {expanded && (
@@ -163,24 +163,43 @@ function PrimitiveValue({ value }: { value: unknown }) {
     if (value.startsWith('data:image/') && value.length > 50) {
         return (
             <div className="mt-1 mb-2">
-                <span className="text-green-400 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
+                <span className="text-emerald-500 break-all whitespace-pre-wrap opacity-50 text-[10px] block truncate max-w-[300px]" title="Click copy to get full string">"{value}"</span>
                 <img src={value} alt="Base64 Image" className="max-w-[200px] h-auto rounded-md border bg-black/50 mt-1" />
             </div>
         );
     }
-    return <span className="text-green-400 break-all whitespace-pre-wrap">"{value}"</span>;
+
+    // Check if it's a URL to format it nicely
+    try {
+        if (value.startsWith('http://') || value.startsWith('https://')) {
+            new URL(value);
+            return <a href={value} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline break-all">"{value}"</a>;
+        }
+    } catch {}
+
+    // Check if it looks like a date/timestamp to provide a tooltip
+    const isDateStr = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value);
+
+    return <span className="text-emerald-500 break-all whitespace-pre-wrap" title={isDateStr ? new Date(value).toLocaleString() : undefined}>"{value}"</span>;
   }
   if (typeof value === 'number') {
-    return <span className="text-blue-400">{value}</span>;
+    return <span className="text-sky-500 font-semibold">{value}</span>;
   }
   if (typeof value === 'boolean') {
-    return <span className="text-orange-400">{value ? 'true' : 'false'}</span>;
+    return (
+        <span className={cn(
+            "px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider",
+            value ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"
+        )}>
+            {value ? 'true' : 'false'}
+        </span>
+    );
   }
   if (value === null) {
-    return <span className="text-gray-500 italic">null</span>;
+    return <span className="text-muted-foreground/60 italic font-semibold">null</span>;
   }
   if (value === undefined) {
-    return <span className="text-gray-500 italic">undefined</span>;
+    return <span className="text-muted-foreground/60 italic font-semibold">undefined</span>;
   }
   return <span>{String(value)}</span>;
 }
