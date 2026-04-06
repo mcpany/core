@@ -1331,10 +1331,10 @@ export const apiClient = {
      * Side Effects: Makes a POST request to /api/v1/prompts/execute.
      */
     executePrompt: async (name: string, args: Record<string, string>) => {
-        const res = await fetchWithAuth('/api/v1/prompts/execute', {
+        const res = await fetchWithAuth(`/api/v1/prompts/${encodeURIComponent(name)}/execute`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, arguments: args })
+            body: JSON.stringify(args)
         });
         if (!res.ok) throw new Error('Failed to execute prompt');
         return res.json();
