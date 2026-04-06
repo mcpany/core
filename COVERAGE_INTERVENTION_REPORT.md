@@ -15,6 +15,19 @@
 * **New Coverage:** The tests added cover logic paths handling stream execution error cases (verifying that `StreamExecute` appropriately handles execution errors without crashing), executing without pool instances and checking JSON unmarshalling. It explicitly asserts the behaviors and returned errors on bad inputs instead of just hitting the coverage.
 * **Verification:** `bazelisk test //...` verified cleanly with all legacy tests running and green. The style mimics Google Table-Driven tests inside the `stretchr/testify` framework constraints in place.
 
+---
+
+* **Target:** `server/pkg/lifecycle/reaper.go`
+* **Risk Profile:** This file was selected due to its core role in process isolation, resource leasing, and intent management for subagents. A failure in managing these components correctly can easily lead to severe resource exhaustion, orphan subagent sessions (zombies), or incorrect processing limits. Before intervention, this file was missing coverage in several error-prone edge-case paths, increasing the risk of unstable agent sessions silently failing or persisting.
+* **New Coverage:**
+  - `RegisterSubagent`: Now covers logic handling requests to register against non-existent or pruned intents.
+  - `RecordHeartbeat`: Now guards against non-existent intent checks and inactive leases.
+  - `PruneIntent`: Now correctly tests missing/not-found intent operations.
+  - `GetLeaseStatus`: Includes checking for non-existent items.
+  - `Start/Stop` Context Loop: Adds coverage verifying that cancelling the provided context stops the daemon and safely terminates the routine loop to prevent goroutine leaks.
+  - Overall file coverage increased from 73% to 96.8%.
+* **Verification:** Confirmed that `go test ./pkg/lifecycle/...` and `make lint` passed cleanly. Pre-existing tests were not broken.
+
 ### Top 10 Most Critical Untested Components
 Based on cyclomatic complexity and risk (e.g. data transformation, tool injection safety checks, execution endpoints), the top 10 most critical untested logic components are:
 1. `server/pkg/tool/types.go`
