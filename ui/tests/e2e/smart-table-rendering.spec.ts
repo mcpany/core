@@ -42,14 +42,12 @@ test.describe('SmartTable Rendering and Real Data Validation', () => {
         await dialog.getByRole('button', { name: 'Execute' }).click();
 
         // Wait for execution to complete
-        // Verify that the 'Table' tab is active or available, since the tool returns array of objects
-        const tableTab = dialog.getByRole('tab', { name: 'Table' });
+        // Verify that the 'Table' button is available, since the tool returns array of objects
+        const tableTab = dialog.getByRole('button', { name: /Table/i });
         await expect(tableTab).toBeVisible({ timeout: 15000 });
 
-        // Check if Table is selected by default, if not click it
-        if (await tableTab.getAttribute('aria-selected') !== 'true') {
-            await tableTab.click();
-        }
+        // Click Table view to ensure it's active
+        await tableTab.click();
 
         // Verify the table actually renders
         const table = dialog.locator('table').first();

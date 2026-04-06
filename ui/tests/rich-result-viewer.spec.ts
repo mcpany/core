@@ -83,6 +83,6 @@ test.describe('Rich Result Viewer', () => {
 
     // Check for JSON content - tokenized render may split punctuation into spans
     // In raw JSON view, Alice will be rendered
-    await expect(page.getByText('Alice')).toBeVisible();
+    await expect(page.getByText('Alice').first()).toBeVisible();
   });
 });

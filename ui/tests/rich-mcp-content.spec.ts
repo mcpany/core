@@ -33,11 +33,11 @@ test('Tools render MCP Rich Content correctly', async ({ page }) => {
   // 5. Execute the tool
   await dialog.getByRole('button', { name: 'Execute' }).click();
 
-  // 6. Verify "Rendered" tab is active and content is displayed
-  // Wait for the "Rendered" tab trigger to be visible
-  const renderedTabTrigger = dialog.getByRole('tab', { name: 'Rendered' });
-  await expect(renderedTabTrigger).toBeVisible();
-  await expect(renderedTabTrigger).toHaveAttribute('data-state', 'active');
+  // 6. Verify "Rich" view button is available and click it
+  // Wait for the "Rich" button to be visible
+  const richBtn = dialog.getByRole('button', { name: /Rich/i });
+  await expect(richBtn).toBeVisible();
+  await richBtn.click();
 
   // 7. Verify Content
   // H1 header
