@@ -134,7 +134,7 @@ test.describe('MCP Any UI E2E Tests', () => {
 
   test('Playground correctly renders stringified JSON array as SmartTable', async ({ page }) => {
     await page.goto('/playground');
-    await expect(page.getByRole('heading', { name: 'Playground' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Console' })).toBeVisible();
 
     // Select the Echo Service
     await page.click('button[role="combobox"]:has-text("Select Service...")');
