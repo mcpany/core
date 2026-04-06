@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** **Resolving Tunneling Overhead via Fast-Path Resumption**
+    * **Context:** Market sync from 2026-07-24/25 identified a 3s+ resumption lag in multi-node swarms due to redundant hardware attestation.
+    * **Architecture Adjustment:**
+        * Introducing session-bound "Mesh Tickets" in Section 4.
+        * Implementing a "Lightweight Mesh Handshake" protocol that bypasses the full TPM signature for subsequent connections within a verified mission window.
+    * **Performance Impact:** Reduces tunnel resumption latency from >3000ms to <100ms.

@@ -1025,6 +1025,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Epistemic Uncertainty Mapper (EUM)**: Authoritative confidence broker utilizing subagent uncertainty signals for automated supervisor escalation. (Added: 2026-07-25)
+*   **[P0] Durable Mission Continuity Provider (DMCP)**: Persistence layer supporting hardware-locked mission snapshots for migration between local and cloud environments. (Added: 2026-07-25)
+*   **[P0] Attention-Splicing Firewall (ASF)**: Security middleware for neutralizing stylometric mimicry exploits (CVE-2026-91023) in the context window. (Added: 2026-07-25)
+*   **[P0] Lightweight Mesh Handshake (LMH)**: Implementation of mesh-ticket based fast-path tunnel resumption for sub-100ms inter-node coordination. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)

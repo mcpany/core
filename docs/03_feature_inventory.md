@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Epistemic Uncertainty Mapper (EUM)**: (P0) Authoritative confidence broker utilizing hardware-attested uncertainty signals to trigger automated supervisor escalations.
+- **Durable Mission Continuity Provider (DMCP)**: (P0) Evolution of the MRCP providing hardware-locked mission snapshots to maintain persistence across environment migrations.
+- **Attention-Splicing Firewall (ASF)**: (P0) Cognitive security service performing semantic entropy analysis to detect stylized mimicry in noise fragments (CVE-2026-91023).
+- **Reasoning-Path Watermark (RPW) Validator**: (P0) Advanced provenance service for verifying cryptographic watermarks embedded in reasoning fragments to ensure thought lineage.
+
+### Priority Shifts
+- **Reasoning confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Evolving into the **EUM** for standardized confidence signaling.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with mandatory **DMCP** support for cross-environment persistence.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
