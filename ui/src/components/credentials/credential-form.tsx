@@ -82,8 +82,8 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
 
   // Determine initial auth type
   let defaultAuthType = "api_key"
-  if (initialData?.authentication?.bearerToken) defaultAuthType = "bearer_token"
-  if (initialData?.authentication?.basicAuth) defaultAuthType = "basic_auth"
+  if (initialData?.authentication?.bearerToken || (initialData?.authentication as any)?.bearer_token) defaultAuthType = "bearer_token"
+  if (initialData?.authentication?.basicAuth || (initialData?.authentication as any)?.basic_auth) defaultAuthType = "basic_auth"
   if (initialData?.authentication?.oauth2) defaultAuthType = "oauth2"
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -91,16 +91,16 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
     defaultValues: {
       name: initialData?.name || "",
       authType: defaultAuthType,
-      apiKeyParamName: initialData?.authentication?.apiKey?.paramName || "Authorization",
-      apiKeyLocation: initialData?.authentication?.apiKey?.in?.toString() || APIKeyAuth_Location.HEADER.toString(),
-      apiKeyValue: initialData?.authentication?.apiKey?.value?.plainText || "",
-      bearerToken: initialData?.authentication?.bearerToken?.token?.plainText || "",
-      basicUsername: initialData?.authentication?.basicAuth?.username || "",
-      basicPassword: initialData?.authentication?.basicAuth?.password?.plainText || "",
-      oauthClientId: initialData?.authentication?.oauth2?.clientId?.plainText || "",
-      oauthClientSecret: initialData?.authentication?.oauth2?.clientSecret?.plainText || "",
-      oauthAuthUrl: initialData?.authentication?.oauth2?.authorizationUrl || "",
-      oauthTokenUrl: initialData?.authentication?.oauth2?.tokenUrl || "",
+      apiKeyParamName: initialData?.authentication?.apiKey?.paramName || (initialData?.authentication as any)?.api_key?.param_name || "Authorization",
+      apiKeyLocation: initialData?.authentication?.apiKey?.in?.toString() || (initialData?.authentication as any)?.api_key?.in?.toString() || APIKeyAuth_Location.HEADER.toString(),
+      apiKeyValue: initialData?.authentication?.apiKey?.value?.plainText || (initialData?.authentication as any)?.api_key?.value?.plain_text || "",
+      bearerToken: initialData?.authentication?.bearerToken?.token?.plainText || (initialData?.authentication as any)?.bearer_token?.token?.plain_text || "",
+      basicUsername: initialData?.authentication?.basicAuth?.username || (initialData?.authentication as any)?.basic_auth?.username || "",
+      basicPassword: initialData?.authentication?.basicAuth?.password?.plainText || (initialData?.authentication as any)?.basic_auth?.password?.plain_text || "",
+      oauthClientId: initialData?.authentication?.oauth2?.clientId?.plainText || (initialData?.authentication as any)?.oauth2?.client_id?.plain_text || "",
+      oauthClientSecret: initialData?.authentication?.oauth2?.clientSecret?.plainText || (initialData?.authentication as any)?.oauth2?.client_secret?.plain_text || "",
+      oauthAuthUrl: initialData?.authentication?.oauth2?.authorizationUrl || (initialData?.authentication as any)?.oauth2?.authorization_url || "",
+      oauthTokenUrl: initialData?.authentication?.oauth2?.tokenUrl || (initialData?.authentication as any)?.oauth2?.token_url || "",
       oauthScopes: initialData?.authentication?.oauth2?.scopes || "",
     },
   })

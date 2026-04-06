@@ -190,33 +190,33 @@ export function CredentialList() {
                           </TableCell>
                           <TableCell>
                               <Badge variant="secondary" className="font-normal">
-                                {cred.authentication?.apiKey ? "API Key" :
-                                cred.authentication?.bearerToken ? "Bearer Token" :
-                                cred.authentication?.basicAuth ? "Basic Auth" :
+                                {(cred.authentication?.apiKey || (cred.authentication as any)?.api_key) ? "API Key" :
+                                (cred.authentication?.bearerToken || (cred.authentication as any)?.bearer_token) ? "Bearer Token" :
+                                (cred.authentication?.basicAuth || (cred.authentication as any)?.basic_auth) ? "Basic Auth" :
                                 cred.authentication?.oauth2 ? "OAuth 2.0" : "Unknown"}
                               </Badge>
                           </TableCell>
                           <TableCell className="text-muted-foreground text-sm">
                               <div className="flex items-center gap-2">
-                                {cred.authentication?.apiKey && (
+                                {(cred.authentication?.apiKey || (cred.authentication as any)?.api_key) && (
                                     <>
                                         <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-                                            {cred.authentication.apiKey.paramName}
+                                            {cred.authentication.apiKey?.paramName || (cred.authentication as any)?.api_key?.param_name}
                                         </code>
                                         <span className="text-xs opacity-70">
-                                            ({cred.authentication.apiKey.in === 0 ? "Header" : "Query"})
+                                            ({(cred.authentication.apiKey?.in || (cred.authentication as any)?.api_key?.in) === 0 ? "Header" : "Query"})
                                         </span>
                                     </>
                                 )}
-                                {cred.authentication?.bearerToken && <span>Bearer Auth</span>}
-                                {cred.authentication?.basicAuth && (
+                                {(cred.authentication?.bearerToken || (cred.authentication as any)?.bearer_token) && <span>Bearer Auth</span>}
+                                {(cred.authentication?.basicAuth || (cred.authentication as any)?.basic_auth) && (
                                     <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-                                        {cred.authentication.basicAuth.username}
+                                        {cred.authentication.basicAuth?.username || (cred.authentication as any)?.basic_auth?.username}
                                     </code>
                                 )}
                                 {cred.authentication?.oauth2 && (
-                                    <Badge variant={cred.token?.accessToken ? "default" : "outline"} className="text-[10px] uppercase tracking-wider h-5">
-                                        {cred.token?.accessToken ? "Authorized" : "Not Authorized"}
+                                    <Badge variant={(cred.token?.accessToken || (cred.token as any)?.access_token) ? "default" : "outline"} className="text-[10px] uppercase tracking-wider h-5">
+                                        {(cred.token?.accessToken || (cred.token as any)?.access_token) ? "Authorized" : "Not Authorized"}
                                     </Badge>
                                 )}
                               </div>
@@ -226,7 +226,7 @@ export function CredentialList() {
                                    {cred.authentication?.oauth2 && (
                                        <Button variant="outline" size="sm" onClick={() => handleConnect(cred)}>
                                            <ExternalLink className="mr-2 h-3 w-3" />
-                                           {cred.token?.accessToken ? "Reconnect" : "Authorize"}
+                                           {(cred.token?.accessToken || (cred.token as any)?.access_token) ? "Reconnect" : "Authorize"}
                                        </Button>
                                    )}
                                    <Button variant="ghost" size="sm" onClick={() => handleEdit(cred)}>Edit</Button>
