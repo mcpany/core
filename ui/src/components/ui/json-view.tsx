@@ -263,16 +263,7 @@ export function JsonView({ data, className, maxHeight = 400, defaultExpandedLeve
                                 <ImageIcon className="size-3" /> Image
                             </Button>
                         )}
-                        {hasSmartView && (
-                            <Button
-                                variant={viewMode === "smart" ? "secondary" : "ghost"}
-                                size="sm"
-                                className="h-6 px-2 text-[10px] gap-1"
-                                onClick={() => setViewMode("smart")}
-                            >
-                                <TableIcon className="size-3" /> Table
-                            </Button>
-                        )}
+
                         {isObject && (
                             <Button
                                 variant={viewMode === "tree" ? "secondary" : "ghost"}
@@ -296,8 +287,7 @@ export function JsonView({ data, className, maxHeight = 400, defaultExpandedLeve
             )}
 
             <div className="mt-0">
-                {viewMode === "smart" && hasSmartView ? renderSmart() :
-                    viewMode === "tree" ? renderTree() :
+                {viewMode === "tree" ? renderTree() :
                         viewMode === "image" ? renderImage() :
                             renderRaw()}
             </div>
