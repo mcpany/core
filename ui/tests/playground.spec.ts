@@ -35,7 +35,7 @@ test.describe('Playground Tool Configuration', () => {
 
     // Verify Result
     // Expect "Success" badge
-    await expect(page.getByText('Success')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Success', { exact: true })).toBeVisible({ timeout: 10000 });
 
     // Verify "Result" section is visible
     await expect(page.getByText('Result', { exact: true })).toBeVisible();

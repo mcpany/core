@@ -12,8 +12,8 @@ describe('RichResultViewer', () => {
         const result = { test: 'value' };
         render(<RichResultViewer result={result} />);
 
-        // SmartResultRenderer displays a JSON button when it renders raw JSON
-        const jsonButtons = screen.getAllByRole('button', { name: /JSON/i });
-        expect(jsonButtons.length).toBeGreaterThan(0);
+        // Ensure "tab" is returned for UI e2e compat
+        const jsonButton = screen.getByRole('tab', { name: /JSON/i });
+        expect(jsonButton).toBeDefined();
     });
 });
