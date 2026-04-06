@@ -2077,6 +2077,42 @@ func (a *Application) runServerMode(
 	// Register Config Validation Endpoint
 	mux.Handle("/api/v1/config/validate", authMiddleware(http.HandlerFunc(rest.ValidateConfigHandler)))
 
+	// Webhooks API
+	wh := rest.NewWebhookHandler(store)
+	mux.Handle("/api/v1/webhooks", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			wh.ListWebhooks(w, r)
+		case http.MethodPost:
+			wh.AddWebhook(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+	mux.Handle("/api/v1/webhooks/", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/test") {
+			if r.Method == http.MethodPost {
+				wh.TestWebhook(w, r)
+			} else {
+				http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			}
+			return
+		}
+		if r.Method == http.MethodDelete {
+			wh.DeleteWebhook(w, r)
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+	// The UI uses /api/settings/webhooks
+	mux.Handle("/api/settings/webhooks", authMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			wh.ListWebhooks(w, r)
+		} else {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
+
 	// Asset upload is handled later in the gRPC gateway block to support fallback
 
 	// Wait, we need to handle assets specifically.
