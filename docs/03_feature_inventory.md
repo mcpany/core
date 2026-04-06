@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Chain-of-Trust (CoT) Attestation Provider**: (P0) Authoritative lineage service for RIV Hub that cryptographically merges hardware tokens at each hop to neutralize Shadow-Node Chaining (SNC) trust decay.
+- **Multimodal Stylometric Anchor (MSA)**: (P0) Advanced security extension for HDBA that anchors cognitive fingerprints to visual reasoning density (SVG) and audio traces to neutralize Stylometric Mirroring (CVE-2026-99012).
+- **Project-Local Scratchpad Guard (PLSG)**: (P0) Real-time semantic monitoring service for shared workspaces (e.g., `.scratchpad`) implementing RAR-compliant intent redaction.
+
+### Priority Shifts
+- **Recursive Integrity Verification (RIV) Hub**: (Re-affirmed P0) Elevated with mandatory support for **CoT-compliant** hop-by-hop attestation.
+- **Atomic Scratchpad Arbiter**: (Re-affirmed P0) Designated as the primary kernel-level coordination service for **PLSG-protected** workspaces.

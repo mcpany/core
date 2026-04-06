@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating Shadow-Node Chaining trust decay
+**Context:** Today's market sync revealed a new "Shadow-Node Chaining" pattern in OpenClaw that risks trust decay across multi-hop device meshes.
+**Architecture Adjustment:**
+* Introducing the **Chain-of-Trust (CoT) Attestation** extension in Section 4.
+* Mandating that the `amt.EstablishTunnel` call now requires a recursive lineage token that includes hardware-attested signatures from all intermediate jump-nodes.
+**Security Impact:** Prevents a compromised intermediate node from silently shadowing or injecting tool calls into a multi-hop mesh session.
