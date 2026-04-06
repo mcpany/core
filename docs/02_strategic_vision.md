@@ -1550,3 +1550,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Ephemeral Mesh Sovereignty & Intent-Bound Secret Governance
+**Context**: The emergence of Ephemeral Node Pairing (ENP) in OpenClaw and Intent-Bound Environment Variables (IBEV) in Claude Code signal a transition toward **Just-in-Time Infrastructure** and **Reasoning-Aware Secret Injection**. Simultaneously, the rise of "Mission-Root Erasure" exploits and "Coordination Deadlocks" in high-density swarms confirm that stability now depends on **Optimistic Attestation** and **Entropy-Aware Governance**.
+**Strategic Pivot**:
+- **Ephemeral Node Pairing (ENP) Hub**: MCP Any will evolve its AMT Broker to support ENP. We will implement a session-bound, one-time pairing service that allows agents to securely bridge environments for a single task without persistent trust overhead, neutralizing "Pairing Fatigue."
+- **Intent-Bound Env-Var (IBEV) Guard**: To neutralize "Environment Scraping," we are introducing the IBEV Guard. This middleware will only inject sensitive host secrets into the agent's execution environment if its real-time reasoning trace matches a pre-authorized mission intent profile.
+- **Entropy-Aware Execution Controller (EAEC)**: Supporting the Gemini CLI RET standard, we are implementing the EAEC. MCP Any will perform real-time analysis of agent "Reasoning Entropy" and automatically pause or escalate sessions that exhibit excessive uncertainty or instruction conflict, preventing cognitive stall.
+- **Optimistic Attestation Gate (OAG)**: To resolve "Tie-Break Latency" in lock-free coordination, we are introducing OAG. This allows teammates to speculatively proceed with low-risk coordination fragments while attestation quorums verify hardware signatures in the background, neutralizing coordination bottlenecks.

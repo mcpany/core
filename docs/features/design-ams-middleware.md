@@ -86,3 +86,10 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-07-25 - Neutralizing Mission-Root Erasure
+**Context:** Today's market sync revealed CVE-2026-94002: aggressive context compaction can accidentally evict mission-root constraints from sharded context windows.
+**Architecture Adjustment:**
+*   Implementing **Compaction-Immune Anchor Pinning**: Shards now support "Permanent Anchors" that are excluded from all summarization and garbage collection events.
+*   Mandating **Hardware-Attested Anchor Integrity**: Every compaction event must be verified against the pinned mission-root hash before being committed to the shard state.
+**Security Impact:** Prevents "Unsupervised State" exploits where agents bypass parent constraints by over-summarizing their own context.

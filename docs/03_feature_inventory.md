@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Ephemeral Node Pairing (ENP) Hub**: (P0) Extension for the AMT Broker allowing session-bound, one-time pairing to reduce device-mesh trust overhead.
+- **Intent-Bound Env-Var (IBEV) Guard**: (P0) Reasoning-aware security middleware that injects host secrets into execution environments only when the agent's real-time reasoning matches an authorized intent profile.
+- **Entropy-Aware Execution Controller (EAEC)**: (P0) Authoritative stability service performing real-time analysis of "Reasoning Entropy" to prevent cognitive stall and instruction conflict.
+- **Optimistic Attestation Gate (OAG)**: (P0) Speculative coordination middleware for lock-free meshes allowing background hardware-signature verification to resolve tie-break latency.
+
+### Priority Shifts
+- **Multimodal Monologue Scrubber (MMS)**: (Re-affirmed P0) Elevated with mandatory support for **SVG-Path Complexity Analysis** to counter visual instruction injection.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Upgraded to support the **ENP** standard for ephemeral node connectivity.

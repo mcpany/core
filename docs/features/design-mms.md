@@ -54,3 +54,10 @@ The **Multimodal Monologue Scrubber (MMS)** is a semantic security middleware fo
 *   Integrating **Path-Complexity Analysis** into the SVG deconstructor.
 *   Mandating that all SVG paths conform to a "Simplicity Baseline" before being exposed to high-trust specialists.
 **Security Impact:** Neutralizes "Visual Prompt Injection" via adversarial path geometry.
+
+### Update: 2026-07-25 - Multimodal Instruction Deconstruction
+**Context:** Today's market sync confirms that SVG-based logic diagrams are being weaponized to "smuggle" instructions into parent agent context via hidden metadata.
+**Architecture Adjustment:**
+*   Implementing **Recursive Metadata Deconstruction**: MMS will now perform recursive, semantic analysis of all non-visual metadata tags in SVG and UI_DIFF fragments.
+*   Introducing **Multimodal Trace Deconstruction (MTD)** pipelines to strip imperative instructions from binary structures of WebM and Audio fragments.
+**Security Impact:** Neutralizes "Invisible" instruction injection in sharded multimodal meshes.
