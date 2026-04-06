@@ -60,6 +60,8 @@ const actions = [
  * A widget that provides quick access links to common actions and pages.
  *
  * @returns The rendered widget component.
+ *
+ * Summary: Action for QuickActionsWidget.
  */
 export function QuickActionsWidget() {
     return (

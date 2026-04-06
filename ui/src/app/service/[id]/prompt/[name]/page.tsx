@@ -28,6 +28,8 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
  *
  * PromptDetailPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for PromptDetailPage.
  */
 export default function PromptDetailPage() {
     const { id = "", name = "" } = useParams<{ id: string; name: string }>();

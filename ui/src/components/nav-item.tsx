@@ -45,6 +45,8 @@ interface NavItemProps {
  * @param props.title - The title of the navigation item.
  * @param props.isActive - Whether the item is currently active.
  * @returns {JSX.Element} The rendered navigation item.
+ *
+ * Summary: Action for NavItem.
  */
 export function NavItem({ href, icon: Icon, title, isActive }: NavItemProps) {
   return (

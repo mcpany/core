@@ -38,6 +38,8 @@ interface OAuthConnectProps {
  * @param props.serviceName - The name of the service.
  * @param props.isSaved - The issaved property.
  * @returns The rendered component.
+ *
+ * Summary: Action for OAuthConnect.
  */
 export function OAuthConnect({ serviceId, serviceName, isSaved }: OAuthConnectProps) {
     const [loading, setLoading] = useState(false);

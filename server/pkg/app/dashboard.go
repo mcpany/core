@@ -15,6 +15,18 @@ import (
 // Summary: Data structure for dashboard metrics.
 //
 // It contains the label, value, trend direction, and other visual metadata.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Metric struct {
 	// Label is the primary text description of the metric (e.g., "Total Requests").
 	Label string `json:"label"`

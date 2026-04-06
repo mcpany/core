@@ -37,6 +37,8 @@ interface SchemaFormProps {
  * SchemaForm - renders a form based on a JSON Schema definition.
  *
  * @param props - Component props
+ *
+ * Summary: Action for SchemaForm.
  */
 export function SchemaForm({
   schema,

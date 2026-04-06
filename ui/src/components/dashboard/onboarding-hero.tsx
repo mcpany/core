@@ -28,6 +28,8 @@ import { Plus, ShoppingBag, BookOpen, CheckCircle2, Circle } from "lucide-react"
  * OnboardingHero component.
  * Displays a welcome message and call-to-action for new users.
  * @returns The rendered component.
+ *
+ * Summary: Action for OnboardingHero.
  */
 export function OnboardingHero() {
   return (

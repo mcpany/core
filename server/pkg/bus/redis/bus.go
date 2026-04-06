@@ -17,6 +17,18 @@ import (
 // Bus is a Redis-backed implementation of the Bus interface.
 //
 // Summary: Represents a Bus.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	client *redis.Client
 }
@@ -254,6 +266,15 @@ func (b *Bus[T]) SubscribeOnce(ctx context.Context, topic string, handler func(T
 //
 // Returns:
 //   - error: An error if closing fails.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() error {
 	return b.client.Close()
 }

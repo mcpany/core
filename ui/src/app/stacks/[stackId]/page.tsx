@@ -39,6 +39,8 @@ services:
  * StackDetailPage component.
  * Displays the Stack Editor for creating or editing a stack.
  * @returns The rendered page.
+ *
+ * Summary: Action for StackDetailPage.
  */
 export default function StackDetailPage() {
   const params = useParams();

@@ -48,6 +48,8 @@ interface HttpToolEditorProps {
  * Allows defining tool metadata and the mapped HTTP request details.
  * @param props - The component props.
  * @returns The rendered tool editor.
+ *
+ * Summary: Action for HttpToolEditor.
  */
 export function HttpToolEditor({ tool, call, serviceName, onChange }: HttpToolEditorProps) {
     const [localTool, setLocalTool] = useState<ToolDefinition>(tool);

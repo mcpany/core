@@ -36,6 +36,8 @@ interface VariableInspectorProps {
  * @param props.selectedNode - The currently selected node.
  * @param props.onClose - Callback to close the inspector.
  * @returns The VariableInspector component.
+ *
+ * Summary: Action for VariableInspector.
  */
 export function VariableInspector({ selectedNode, onClose }: VariableInspectorProps) {
   if (!selectedNode) return null;

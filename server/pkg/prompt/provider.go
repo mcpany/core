@@ -17,6 +17,15 @@ type mcpServerProvider struct {
 //
 // Returns:
 //   - *mcp.Server: The MCP server instance.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (p *mcpServerProvider) Server() *mcp.Server {
 	return p.server
 }
@@ -30,6 +39,12 @@ func (p *mcpServerProvider) Server() *mcp.Server {
 //
 // Returns:
 //   - MCPServerProvider: The initialized provider.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewMCPServerProvider(server *mcp.Server) MCPServerProvider {
 	return &mcpServerProvider{server: server}
 }

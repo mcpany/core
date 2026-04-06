@@ -45,6 +45,8 @@ import { FileInput } from "@/components/ui/file-input";
  *
  * Schema definition interface.
  * Represents a JSON Schema object used for form generation.
+ *
+ * Summary: Action for Schema.
  */
 export interface Schema {
     type?: string | string[];
@@ -98,6 +100,8 @@ interface SchemaFieldProps {
  *
  * UniversalSchemaForm component.
  * Renders a form based on a JSON schema with improved UX for nested objects and arrays.
+ *
+ * Summary: Action for UniversalSchemaForm.
  */
 export function UniversalSchemaForm({ schema, value, onChange, errors }: UniversalSchemaFormProps) {
     return (

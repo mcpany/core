@@ -42,6 +42,8 @@ type SortDirection = 'asc' | 'desc' | null;
  * @param props - The component props.
  * @param props.data - The data to display.
  * @returns The rendered component.
+ *
+ * Summary: Action for SmartTable.
  */
 export function SmartTable({ data }: SmartTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: SortDirection }>({ key: '', direction: null });

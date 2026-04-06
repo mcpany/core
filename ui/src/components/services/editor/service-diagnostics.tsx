@@ -46,6 +46,8 @@ interface DiagnosticResult {
  * @param props - The component props.
  * @param props.service - The service configuration to diagnose.
  * @returns The rendered diagnostic component.
+ *
+ * Summary: Action for ServiceDiagnostics.
  */
 export function ServiceDiagnostics({ service }: ServiceDiagnosticsProps) {
     const [running, setRunning] = useState(false);

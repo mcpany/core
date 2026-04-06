@@ -24,6 +24,20 @@ import (
 // TestE2ECaching tests the end-to-end caching functionality.
 //
 // t is the t.
+//
+// Summary: Action for TestE2ECaching.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func TestE2ECaching(t *testing.T) {
 	t.Parallel()
 	RunE2ETest(t, &E2ETestCase{
@@ -44,6 +58,20 @@ func TestE2ECaching(t *testing.T) {
 // t is the t.
 //
 // Returns the result.
+//
+// Summary: Action for BuildCachingServer.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 	port := integration.FindFreePort(t)
 	proc := integration.NewManagedProcess(t, "http_caching_server", integration.MockBinary(t, "http_caching_server"), []string{"--port", fmt.Sprintf("%d", port)}, nil)
@@ -56,6 +84,20 @@ func BuildCachingServer(t *testing.T) *integration.ManagedProcess {
 // t is the t.
 // registrationClient is the registrationClient.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: Action for RegisterCachingService.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func RegisterCachingService(t *testing.T, registrationClient apiv1.RegistrationServiceClient, upstreamEndpoint string) {
 	serviceID := "e2e_caching_server"
 	operationID := "get_data"
@@ -103,6 +145,20 @@ func protoString(value string) *string {
 // next is the next.
 //
 // Returns the result.
+//
+// Summary: Action for NoOpMiddleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NoOpMiddleware(_ *testing.T, next http.Handler) http.Handler {
 	return next
 }
@@ -139,6 +195,20 @@ func callTool(t *testing.T, session *mcp.ClientSession, toolName string) {
 // t is the t.
 // mcpanyEndpoint is the mcpanyEndpoint.
 // upstreamEndpoint is the upstreamEndpoint.
+//
+// Summary: Action for ValidateCaching.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ValidateCaching(t *testing.T, mcpanyEndpoint, upstreamEndpoint string) {
 	session := connectMCP(t, mcpanyEndpoint)
 

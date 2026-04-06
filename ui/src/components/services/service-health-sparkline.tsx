@@ -36,6 +36,8 @@ interface ServiceHealthSparklineProps {
  * @param props.serviceName - The name of the service to display health for.
  * @param props.disabled - Whether the service is disabled.
  * @returns The rendered component.
+ *
+ * Summary: Action for ServiceHealthSparkline.
  */
 export const ServiceHealthSparkline = memo(function ServiceHealthSparkline({ serviceName, disabled }: ServiceHealthSparklineProps) {
     const { getServiceHistory } = useServiceHealth();

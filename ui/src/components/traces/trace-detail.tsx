@@ -187,6 +187,8 @@ function WaterfallItem({
  * TraceDetail.
  *
  * @param { trace - The { trace.
+ *
+ * Summary: Action for TraceDetail.
  */
 export function TraceDetail({ trace }: { trace: Trace | null }) {
     const router = useRouter();

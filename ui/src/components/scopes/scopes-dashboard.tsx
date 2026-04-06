@@ -18,6 +18,9 @@ import { Badge } from "@/components/ui/badge";
  *
  * Throws/Errors:
  *   - None.
+ *
+ * Side Effects:
+ *   - None.
  */
 export function ScopesDashboard() {
     const [roles, setRoles] = useState([

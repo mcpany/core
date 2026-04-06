@@ -30,6 +30,8 @@ import { OpenapiUpstreamService } from '@proto/config/v1/upstream_service';
  * StepOpenAPI component.
  * Allows users to configure an OpenAPI/Swagger upstream service.
  * @returns The rendered component.
+ *
+ * Summary: Action for StepOpenAPI.
  */
 export function StepOpenAPI() {
     const { state, updateConfig } = useWizard();

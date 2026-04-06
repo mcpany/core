@@ -191,6 +191,8 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
  *
  * ServiceHealthWidget component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ServiceHealthWidget.
  */
 export function ServiceHealthWidget() {
   const { services, history, isLoading } = useServiceHealthHistory();

@@ -28,6 +28,18 @@ import (
 // It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 //
 // Summary: Represents a Status.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Status string
 
 const (
@@ -50,6 +62,18 @@ const (
 // It aggregates the status, any message, and potential error encountered during the check.
 //
 // Summary: Represents a CheckResult.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

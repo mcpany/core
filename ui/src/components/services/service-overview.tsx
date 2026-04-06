@@ -35,6 +35,8 @@ interface ServiceOverviewProps {
  *
  * ServiceOverview displays a high-level summary of the service's health and metrics.
  * It includes status indicators, sparkline charts for traffic history, and key configuration details.
+ *
+ * Summary: Action for ServiceOverview.
  */
 export function ServiceOverview({ service, status, trafficData = [] }: ServiceOverviewProps) {
     const isHealthy = !service.lastError && (!status?.status || status.status === "OK");

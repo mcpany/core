@@ -25,6 +25,18 @@ import (
 // Tool implements the Tool interface for a tool that executes a SQL query.
 //
 // Summary: Represents a Tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -215,6 +227,12 @@ func (t *Tool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

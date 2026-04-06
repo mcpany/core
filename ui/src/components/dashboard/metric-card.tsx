@@ -34,6 +34,8 @@ interface MetricCardProps {
  *
  * @param icon - The icon.
  * @param trend - The trend.
+ *
+ * Summary: Action for MetricCard.
  */
 export function MetricCard({ title, value, icon: Icon, description, trend }: MetricCardProps) {
   return (

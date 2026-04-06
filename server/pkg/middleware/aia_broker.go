@@ -16,6 +16,18 @@ import (
 // AIABrokerConfig defines the configuration for the Active Intent Alignment Broker.
 //
 // Summary: Configuration for Active Intent Alignment Broker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AIABrokerConfig struct {
 	// Enabled determines if the AIA Broker is active.
 	Enabled bool `json:"enabled"`
@@ -29,6 +41,18 @@ type AIABrokerConfig struct {
 // aligned with the mission-root intent.
 //
 // Summary: Represents the AIA Broker middleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type AIABroker struct {
 	config AIABrokerConfig
 }

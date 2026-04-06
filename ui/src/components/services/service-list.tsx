@@ -72,6 +72,8 @@ interface ServiceListProps {
  * ServiceList.
  *
  * @param onExport - The onExport.
+ *
+ * Summary: Action for ServiceList.
  */
 export function ServiceList({ services, isLoading, onToggle, onEdit, onDelete, onDuplicate, onExport, onBulkToggle, onBulkDelete, onLogin, onRestart, onBulkEdit }: ServiceListProps) {
   const [tagFilter, setTagFilter] = useState("");

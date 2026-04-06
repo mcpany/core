@@ -32,6 +32,8 @@ import { WizardDialog } from "@/components/profiles/wizard/wizard-dialog";
  *
  * ProfilesPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ProfilesPage.
  */
 export default function ProfilesPage() {
   const [profiles, setProfiles] = useState<Profile[]>([]);

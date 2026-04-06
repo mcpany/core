@@ -14,6 +14,18 @@ import (
 // Callable.
 //
 // Summary: Represents a CallableTool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CallableTool struct {
 	*baseTool
 }
@@ -32,6 +44,12 @@ type CallableTool struct {
 // Returns:
 //   - *CallableTool: A pointer to the created CallableTool.
 //   - error: An error if creation fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -51,6 +69,12 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
@@ -61,6 +85,15 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Returns:
 //   - Callable: The underlying callable.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }
@@ -71,6 +104,15 @@ func (t *CallableTool) Callable() Callable {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) IsStreaming() bool {
 	_, ok := t.callable.(StreamingCallable)
 	return ok
@@ -87,6 +129,12 @@ func (t *CallableTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	if sc, ok := t.callable.(StreamingCallable); ok {
 		return sc.StreamCall(ctx, req)

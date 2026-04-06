@@ -34,6 +34,8 @@ interface InputTransformerEditorProps {
  *   - None
  *
  * Editor for InputTransformer configuration.
+ *
+ * Summary: Action for InputTransformerEditor.
  */
 export function InputTransformerEditor({ transformer, onChange, parameters = [] }: InputTransformerEditorProps) {
     const [template, setTemplate] = useState(transformer?.template || "");

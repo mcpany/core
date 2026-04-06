@@ -26,6 +26,18 @@ const (
 // SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
 //
 // Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -46,6 +58,9 @@ type SplunkAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers.
+//
+// Throws/Errors:
+//   - None.
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -187,6 +202,12 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
@@ -201,6 +222,12 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes channels.
 //   - Flushes pending batches.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

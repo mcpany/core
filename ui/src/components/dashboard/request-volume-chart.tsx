@@ -27,6 +27,8 @@ import { usePolling } from "@/hooks/use-polling";
  *
  * RequestVolumeChart component.
  * @returns The rendered component.
+ *
+ * Summary: Action for RequestVolumeChart.
  */
 export function RequestVolumeChart() {
   const [data, setData] = useState<{ time: string; requests: number }[]>([]);

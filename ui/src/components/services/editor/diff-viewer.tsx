@@ -38,6 +38,8 @@ interface DiffViewerProps {
  * @param props.modified - The modified content string.
  * @param props.language - The language for syntax highlighting (default: "yaml").
  * @returns The rendered diff editor.
+ *
+ * Summary: Action for DiffViewer.
  */
 export function DiffViewer({ original, modified, language = "yaml" }: DiffViewerProps) {
     const { theme } = useTheme();

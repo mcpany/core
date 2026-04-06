@@ -44,6 +44,8 @@ const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ def
  *   - None
  *
  * LogLevel defines the severity of a log entry.
+ *
+ * Summary: Action for LogLevel.
  */
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
@@ -63,6 +65,8 @@ export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
  *   - None
  *
  * LogEntry represents a single structured log message.
+ *
+ * Summary: Action for LogEntry.
  */
 export interface LogEntry {
   id: string
@@ -97,6 +101,8 @@ interface LogViewerProps {
  *   - None
  *
  * timeFormatter is a shared Intl.DateTimeFormat instance for formatting log timestamps.
+ *
+ * Summary: Action for timeFormatter.
  */
 export const timeFormatter = typeof Intl !== 'undefined' ? new Intl.DateTimeFormat(undefined, {
   hour: 'numeric',
@@ -289,6 +295,8 @@ LogRow.displayName = 'LogRow'
  * @param props.highlightRegex - The regex to use for highlighting text.
  * @param props.isPaused - Whether the log stream is paused.
  * @returns The rendered component.
+ *
+ * Summary: Action for LogViewer.
  */
 export function LogViewer({ logs, highlightRegex, isPaused }: LogViewerProps) {
   return (

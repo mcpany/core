@@ -17,6 +17,18 @@ import (
 // authentication headers to outgoing gRPC requests.
 //
 // Summary: Represents a PerRPCCredentials.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PerRPCCredentials struct {
 	authenticator UpstreamAuthenticator
 }

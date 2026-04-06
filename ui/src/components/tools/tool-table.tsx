@@ -51,6 +51,8 @@ interface ToolTableProps {
  * ToolTable component.
  * @param props - The component props.
  * @returns The rendered component.
+ *
+ * Summary: Action for ToolTable.
  */
 export const ToolTable = memo(function ToolTable({
   tools,

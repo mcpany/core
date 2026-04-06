@@ -49,6 +49,8 @@ const ContextContext = createContext<ContextState | undefined>(undefined);
  *
  * @param props - The component props.
  * @param props.children - The child components to render.
+ *
+ * Summary: Action for ContextProvider.
  */
 export function ContextProvider({ children }: { children: React.ReactNode }) {
     const [tools, setTools] = useState<ToolDefinition[]>([]);
@@ -166,6 +168,8 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
  * Throws an error if used outside of a ContextProvider.
  *
  * @returns The context state including tools, services, and simulation helpers.
+ *
+ * Summary: Action for useRecursiveContext.
  */
 export function useRecursiveContext() {
     const context = useContext(ContextContext);

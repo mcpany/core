@@ -53,6 +53,8 @@ import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
  * @param props.traceStartTime - Optional start time of the trace for time-window filtering.
  * @param props.traceEndTime - Optional end time of the trace for time-window filtering.
  * @returns The rendered component.
+ *
+ * Summary: Action for LogStream.
  */
 export function LogStream({
   source,

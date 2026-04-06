@@ -15,6 +15,18 @@ import (
 // Summary: Server implementation for the Catalog Service.
 //
 // It handles requests to list available services from the dynamic catalog.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CatalogServer struct {
 	manager *catalog.Manager
 }

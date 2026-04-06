@@ -31,6 +31,8 @@ import { useToast } from "@/hooks/use-toast";
  *
  * UsersPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for UsersPage.
  */
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([]);

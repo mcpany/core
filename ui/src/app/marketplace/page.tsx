@@ -44,6 +44,8 @@ import { SERVICE_REGISTRY } from "@/lib/service-registry";
  *
  * MarketplacePage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for MarketplacePage.
  */
 export default function MarketplacePage() {
   const { toast } = useToast();

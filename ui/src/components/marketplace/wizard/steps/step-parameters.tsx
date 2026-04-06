@@ -28,6 +28,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
  *
  * StepParameters component.
  * @returns The rendered component.
+ *
+ * Summary: Action for StepParameters.
  */
 export function StepParameters() {
     const { state, updateState, updateConfig } = useWizard();

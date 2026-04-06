@@ -34,6 +34,8 @@ interface HealthPoint {
  * HealthHistoryChart component.
  * Displays server uptime history over the last 24 hours.
  * @returns The rendered component.
+ *
+ * Summary: Action for HealthHistoryChart.
  */
 export function HealthHistoryChart() {
     const [data, setData] = useState<HealthPoint[]>([]);

@@ -15,4 +15,16 @@ const (
 // for local development builds.
 //
 // Summary: Represents a Version.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var Version = "dev"

@@ -45,6 +45,8 @@ interface SmartTemplateEditorProps {
  *   - None
  *
  * A smart editor for Jinja2 templates with live preview and variable picker.
+ *
+ * Summary: Action for SmartTemplateEditor.
  */
 export function SmartTemplateEditor({
     value,

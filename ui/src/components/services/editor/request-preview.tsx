@@ -68,6 +68,8 @@ const getMethodColor = (method: HttpCallDefinition_HttpMethod) => {
  *
  * @param props - The component props.
  * @returns The rendered component.
+ *
+ * Summary: Action for RequestPreview.
  */
 export function RequestPreview({ call, tool, serviceName, onExecute, executionResult, isExecuting }: RequestPreviewProps) {
     const [argsJson, setArgsJson] = useState("{}");

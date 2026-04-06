@@ -35,6 +35,8 @@ interface OutputTransformerEditorProps {
  *   - None
  *
  * Editor for OutputTransformer configuration.
+ *
+ * Summary: Action for OutputTransformerEditor.
  */
 export function OutputTransformerEditor({ transformer, onChange }: OutputTransformerEditorProps) {
     const [localTransformer, setLocalTransformer] = useState<OutputTransformer>({

@@ -38,6 +38,8 @@ interface ToolFailureRate {
  * ToolFailureRateWidget component.
  * Displays tools with the highest error rates.
  * @returns The rendered component.
+ *
+ * Summary: Action for ToolFailureRateWidget.
  */
 export function ToolFailureRateWidget() {
     const [tools, setTools] = useState<ToolFailureRate[]>([]);

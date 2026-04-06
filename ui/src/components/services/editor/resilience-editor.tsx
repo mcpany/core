@@ -45,6 +45,8 @@ const durationToString = (d: any): string => {
  *
  * ResilienceEditor component.
  * Allows configuring Retry Policy, Circuit Breaker, and Timeouts.
+ *
+ * Summary: Action for ResilienceEditor.
  */
 export function ResilienceEditor({ resilience, onChange }: ResilienceEditorProps) {
     // Local state to handle UI interactions before committing to parent

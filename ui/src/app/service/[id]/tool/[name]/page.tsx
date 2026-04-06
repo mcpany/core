@@ -28,6 +28,8 @@ import { useServiceSiblings, useToolSiblings } from "@/hooks/use-siblings";
  *
  * ToolDetailPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ToolDetailPage.
  */
 export default function ToolDetailPage() {
     const { id = "", name = "" } = useParams<{ id: string; name: string }>();

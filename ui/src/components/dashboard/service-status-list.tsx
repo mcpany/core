@@ -32,6 +32,8 @@ import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
  *
  * ServiceStatusList component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ServiceStatusList.
  */
 export function ServiceStatusList() {
     const [services, setServices] = useState<UpstreamServiceConfig[]>([]);

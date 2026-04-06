@@ -72,6 +72,8 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899'
  *
  * AnalyticsDashboard component.
  * @returns The rendered component.
+ *
+ * Summary: Action for AnalyticsDashboard.
  */
 export function AnalyticsDashboard() {
     const [timeRange, setTimeRange] = useState("1h");

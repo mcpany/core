@@ -87,6 +87,8 @@ TraceListItem.displayName = "TraceListItem";
  * TraceList.
  *
  * @param onToggleLive - The onToggleLive.
+ *
+ * Summary: Action for TraceList.
  */
 export function TraceList({ traces, selectedId, onSelect, searchQuery, onSearchChange, isLive, onToggleLive }: TraceListProps) {
 

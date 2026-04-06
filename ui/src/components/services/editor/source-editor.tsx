@@ -36,6 +36,8 @@ interface SourceEditorProps {
  * @param props.value - The current YAML string.
  * @param props.onChange - Callback when value changes.
  * @returns The rendered editor.
+ *
+ * Summary: Action for SourceEditor.
  */
 export function SourceEditor({ value, onChange }: SourceEditorProps) {
     const { theme } = useTheme();

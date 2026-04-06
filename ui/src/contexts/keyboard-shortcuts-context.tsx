@@ -20,6 +20,8 @@ import * as React from "react"
  *   - None
  *
  * Defines a keyboard shortcut.
+ *
+ * Summary: Action for ShortcutDefinition.
  */
 export type ShortcutDefinition = {
   /** Unique identifier for the shortcut. */
@@ -80,6 +82,8 @@ const STORAGE_KEY = "mcp_any_shortcut_overrides"
  * Provider component for keyboard shortcuts.
  *
  * @param { children - The { children.
+ *
+ * Summary: Action for KeyboardShortcutsProvider.
  */
 export function KeyboardShortcutsProvider({ children }: { children: React.ReactNode }) {
   const [shortcuts, setShortcuts] = React.useState<Record<string, ShortcutDefinition>>({})
@@ -176,6 +180,8 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
  *
  * Hook to access the keyboard shortcuts context.
  * @returns The context.
+ *
+ * Summary: Action for useKeyboardShortcuts.
  */
 export function useKeyboardShortcuts() {
   const context = React.useContext(KeyboardShortcutsContext)
@@ -229,6 +235,8 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
  * @param defaultKeys Default key combinations.
  * @param action Callback function when shortcut is triggered.
  * @param options Additional options (label, category, enabled).
+ *
+ * Summary: Action for useShortcut.
  */
 export function useShortcut(
   id: string,

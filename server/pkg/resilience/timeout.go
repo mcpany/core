@@ -12,6 +12,18 @@ import (
 // Timeout implements a timeout policy for operations.
 //
 // Summary: Enforces a maximum duration for operations.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Timeout struct {
 	duration *durationpb.Duration
 }
@@ -25,6 +37,12 @@ type Timeout struct {
 //
 // Returns:
 //   - *Timeout: The initialized timeout policy.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

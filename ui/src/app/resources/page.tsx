@@ -22,6 +22,8 @@ import { ResourceExplorer } from "@/components/resources/resource-explorer";
  *
  * ResourcesPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ResourcesPage.
  */
 export default function ResourcesPage() {
   return (

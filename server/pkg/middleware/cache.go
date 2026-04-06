@@ -28,6 +28,18 @@ import (
 // ProviderFactory is a function that creates an EmbeddingProvider.
 //
 // Summary: Represents a ProviderFactory.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -42,6 +54,18 @@ var (
 // CachingMiddleware handles caching of tool execution results.
 //
 // Summary: Represents a CachingMiddleware.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface

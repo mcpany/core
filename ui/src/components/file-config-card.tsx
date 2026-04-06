@@ -96,6 +96,8 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
  * @param props - The component props.
  * @param props.service - The service configuration to display.
  * @returns {JSX.Element} The rendered config card.
+ *
+ * Summary: Action for FileConfigCard.
  */
 export const FileConfigCard = memo(function FileConfigCard({ service }: { service: UpstreamServiceConfig }) {
     const { jsonConfig, yamlConfig, textProtoConfig } = useMemo(() => {

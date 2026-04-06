@@ -34,6 +34,8 @@ interface ToolInspectorProps {
  * Wrapper around ToolRunner for dialog presentation.
  *
  * @param onOpenChange - The onOpenChange.
+ *
+ * Summary: Action for ToolInspector.
  */
 export function ToolInspector({ tool, open, onOpenChange }: ToolInspectorProps) {
   if (!tool) return null;

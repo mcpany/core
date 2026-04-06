@@ -20,6 +20,18 @@ import (
 //
 // Fields:
 //   - UpstreamServices: []interface{}. A list of generic service maps.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type InitConfig struct {
 	UpstreamServices []interface{} `yaml:"upstream_services"`
 }

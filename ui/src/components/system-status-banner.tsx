@@ -28,6 +28,8 @@ import { usePolling } from "@/hooks/use-polling";
  *
  * SystemStatusBanner component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SystemStatusBanner.
  */
 export function SystemStatusBanner() {
   const [report, setReport] = useState<DoctorReport | null>(null);

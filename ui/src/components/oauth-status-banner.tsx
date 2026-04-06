@@ -37,6 +37,8 @@ interface OAuthStatusBannerProps {
  * @param props.onConnect - The onConnect property.
  * @param props.errorMessage - The error message or object.
  * @returns The rendered component.
+ *
+ * Summary: Action for OAuthStatusBanner.
  */
 export const OAuthStatusBanner: React.FC<OAuthStatusBannerProps> = ({
     status,

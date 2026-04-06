@@ -17,6 +17,18 @@ import (
 // PostgresVectorStore implements VectorStore using PostgreSQL and pgvector.
 //
 // Summary: Provides vector storage capabilities using a PostgreSQL database with the pgvector extension.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PostgresVectorStore struct {
 	db *sql.DB
 }
@@ -236,6 +248,12 @@ func (s *PostgresVectorStore) Search(ctx context.Context, key string, query []fl
 //
 // Side Effects:
 //   - Deletes rows from the 'semantic_cache_entries' table.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 	query := "DELETE FROM semantic_cache_entries WHERE expires_at <= $1"
 	args := []interface{}{time.Now()}
@@ -257,6 +275,12 @@ func (s *PostgresVectorStore) Prune(ctx context.Context, key string) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func (s *PostgresVectorStore) Close() error {
 	return s.db.Close()
 }

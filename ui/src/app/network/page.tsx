@@ -22,6 +22,8 @@ import { NetworkGraphClient } from "@/components/network/network-graph-client";
  *
  * NetworkPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for NetworkPage.
  */
 export default function NetworkPage() {
   return (

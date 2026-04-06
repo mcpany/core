@@ -22,6 +22,8 @@ import { AnalyticsDashboard } from "@/components/stats/analytics-dashboard";
  *
  * StatsPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for StatsPage.
  */
 export default function StatsPage() {
   return (

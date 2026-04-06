@@ -55,6 +55,8 @@ const edgeTypes = {
  * AgentFlow component renders the interactive flow visualization.
  * Renamed conceptually to NetworkTopology but keeping component name for compatibility.
  * @returns The AgentFlow component.
+ *
+ * Summary: Action for AgentFlow.
  */
 export function AgentFlow() {
   const { nodes, edges, onNodesChange, onEdgesChange, isLive, setIsLive, refresh, lastUpdated } = useRealTimeTopology();

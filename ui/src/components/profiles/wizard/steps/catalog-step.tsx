@@ -35,6 +35,8 @@ interface CatalogStepProps {
  *
  * Step for selecting services from the catalog.
  * @param props Component properties.
+ *
+ * Summary: Action for CatalogStep.
  */
 export function CatalogStep({ onNext }: CatalogStepProps) {
   const [templates, setTemplates] = useState<any[]>([]);

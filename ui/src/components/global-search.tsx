@@ -56,6 +56,8 @@ import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
  *   - None
  *
  * Reloads the current page. Extracted as a module-level function to allow test mocking.
+ *
+ * Summary: Action for reloadPage.
  */
 export const reloadPage = () => window.location.reload();
 
@@ -76,6 +78,8 @@ export const reloadPage = () => window.location.reload();
  *
  * Global search component that provides quick access to navigation, tools, services, and actions.
  * It is triggered by a keyboard shortcut (Cmd/Ctrl+K) or by clicking the search button.
+ *
+ * Summary: Action for GlobalSearch.
  */
 export function GlobalSearch() {
   const [open, setOpen] = React.useState(false)

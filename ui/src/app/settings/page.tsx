@@ -26,6 +26,8 @@ import { AuthSettingsForm } from "@/components/settings/auth-settings";
  *
  * SettingsPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SettingsPage.
  */
 export default function SettingsPage() {
   return (

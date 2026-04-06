@@ -29,6 +29,8 @@ import {
  *
  * Toaster component.
  * @returns The rendered component.
+ *
+ * Summary: Action for Toaster.
  */
 export function Toaster() {
   const { toasts } = useToast()

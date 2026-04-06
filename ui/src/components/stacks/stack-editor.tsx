@@ -50,6 +50,8 @@ interface StackEditorProps {
  * @param props.onSave - Callback when saving (when stackId not provided)
  * @param props.onCancel - Callback when cancelling
  * @returns The rendered StackEditor
+ *
+ * Summary: Action for StackEditor.
  */
 export function StackEditor({ stackId, initialValue = "", onSave, onCancel }: StackEditorProps) {
   const [value, setValue] = useState(initialValue);

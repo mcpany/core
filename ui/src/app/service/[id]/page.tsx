@@ -28,6 +28,8 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
  *
  * Page component for displaying service details.
  * @returns The service detail page.
+ *
+ * Summary: Action for ServiceDetailPage.
  */
 export default function ServiceDetailPage() {
   const { id } = useParams<{ id: string }>();

@@ -51,6 +51,8 @@ import { Zap } from "lucide-react";
  *
  * PlaygroundClientPro component.
  * @returns The rendered component.
+ *
+ * Summary: Action for PlaygroundClientPro.
  */
 export function PlaygroundClientPro() {
   const [messages, setMessages, isInitialized] = useLocalStorage<Message[]>("playground-messages", []);

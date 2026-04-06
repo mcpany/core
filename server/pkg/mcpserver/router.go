@@ -20,6 +20,12 @@ import (
 // Returns:
 //   - mcp.Result: The result of the operation.
 //   - error: An error if the operation fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
 
 // Router is responsible for mapping MCP method names to their corresponding handler functions.
@@ -28,6 +34,15 @@ type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error
 //
 // Side Effects:
 //   - Stores handlers in an internal map.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 type Router struct {
 	handlers map[string]MethodHandler
 }
@@ -44,6 +59,9 @@ type Router struct {
 //
 // Side Effects:
 //   - Allocates memory for the Router and its handler map.
+//
+// Throws/Errors:
+//   - None.
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
@@ -63,6 +81,9 @@ func NewRouter() *Router {
 //
 // Side Effects:
 //   - Updates the internal handler map.
+//
+// Throws/Errors:
+//   - None.
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -79,6 +100,9 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //   - bool: A boolean indicating whether a handler was found (true) or not (false).
 //
 // Side Effects:
+//   - None.
+//
+// Throws/Errors:
 //   - None.
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]

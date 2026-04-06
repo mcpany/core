@@ -50,6 +50,8 @@ import { fetchWithAuth } from "@/lib/client";
  *   - None
  *
  * Represents a specific instance of a widget on the dashboard.
+ *
+ * Summary: Action for WidgetInstance.
  */
 export interface WidgetInstance {
     /** Unique ID for this instance (allows multiple widgets of same type). */
@@ -209,6 +211,8 @@ MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
  * DashboardGrid component.
  * Implements a draggable grid for dashboard widgets with resizing and dynamic layout controls.
  * @returns The rendered component.
+ *
+ * Summary: Action for DashboardGrid.
  */
 export function DashboardGrid() {
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);

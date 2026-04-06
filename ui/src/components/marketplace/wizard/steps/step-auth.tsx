@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/button";
  *
  * StepAuth component.
  * @returns The rendered component.
+ *
+ * Summary: Action for StepAuth.
  */
 export function StepAuth() {
   const { state, updateConfig, updateState } = useWizard();

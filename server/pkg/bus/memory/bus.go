@@ -23,6 +23,18 @@ const (
 // having its own dedicated goroutine for message processing.
 //
 // Summary: Represents a DefaultBus.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DefaultBus[T any] struct {
 	mu             sync.RWMutex
 	subscribers    map[string]map[uintptr]chan T

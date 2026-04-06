@@ -27,6 +27,8 @@ import { CheckCircle2 } from 'lucide-react';
  * StepReview.
  *
  * @param { onComplete - The { onComplete.
+ *
+ * Summary: Action for StepReview.
  */
 export function StepReview({ onComplete }: { onComplete: (config: any) => void }) {
     const { state } = useWizard();

@@ -27,6 +27,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
  *   - None
  *
  * Schema represents a JSON Schema object used for defining tool input parameters.
+ *
+ * Summary: Action for Schema.
  */
 export interface Schema {
   type?: string | string[];
@@ -106,6 +108,8 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
  * @param props.required - Whether the field is required.
  * @param props.depth - The nesting depth.
  * @returns The rendered component.
+ *
+ * Summary: Action for SchemaViewer.
  */
 export function SchemaViewer({ schema, name, required = false, depth = 0 }: SchemaViewerProps) {
   const [isOpen, setIsOpen] = useState(true);

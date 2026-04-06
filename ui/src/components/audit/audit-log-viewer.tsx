@@ -61,6 +61,8 @@ interface AuditLogEntry {
  * Displays a table of audit logs with filtering capabilities and detailed view.
  *
  * @returns The rendered AuditLogViewer component.
+ *
+ * Summary: Action for AuditLogViewer.
  */
 export function AuditLogViewer() {
     SyntaxHighlighter.registerLanguage('json', json);

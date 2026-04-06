@@ -39,6 +39,8 @@ import { apiClient } from "@/lib/client";
  *
  * WebhookDialog component.
  * @returns The rendered component.
+ *
+ * Summary: Action for WebhookDialog.
  */
 export function WebhookDialog() {
   const [open, setOpen] = useState(false);

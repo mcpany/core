@@ -47,6 +47,8 @@ interface ResourceViewerProps {
  * ResourceViewer.
  *
  * @param loading - The loading.
+ *
+ * Summary: Action for ResourceViewer.
  */
 export function ResourceViewer({ content, loading }: ResourceViewerProps) {
     if (loading) {

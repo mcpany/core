@@ -72,6 +72,8 @@ const detectSensitiveData = (text: string) => {
  * RegisterServiceDialog.
  *
  * @param serviceToEdit - The serviceToEdit.
+ *
+ * Summary: Action for RegisterServiceDialog.
  */
 export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: RegisterServiceDialogProps) {
   const [open, setOpen] = useState(false);

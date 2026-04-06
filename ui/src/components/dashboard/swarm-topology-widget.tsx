@@ -123,6 +123,8 @@ function layoutGraph(graph: any): SwarmTopologyData {
  * SwarmTopologyWidget component displays a visual representation of the swarm network of agents.
  *
  * @returns The rendered component.
+ *
+ * Summary: Action for SwarmTopologyWidget.
  */
 export function SwarmTopologyWidget() {
     const [data, setData] = useState<SwarmTopologyData | null>(null);

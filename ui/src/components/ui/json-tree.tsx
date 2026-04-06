@@ -41,6 +41,8 @@ interface JsonTreeProps {
  * @param props.defaultExpandedLevel - The level up to which nodes are expanded by default (default: 1).
  * @param props.className - The className.
  * @returns The rendered component.
+ *
+ * Summary: Action for JsonTree.
  */
 export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className }: JsonTreeProps) {
   const isObject = typeof data === 'object' && data !== null;

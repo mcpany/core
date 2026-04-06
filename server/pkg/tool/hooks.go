@@ -31,6 +31,18 @@ type compiledRule struct {
 // PolicyHook implements PreCallHook using CallPolicy.
 //
 // Summary: Pre-call hook that enforces call policies defined in configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type PolicyHook struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledRule
@@ -49,6 +61,9 @@ type PolicyHook struct {
 // Side Effects:
 //   - Compiles regex patterns from the policy rules.
 //   - Logs errors for invalid regexes.
+//
+// Throws/Errors:
+//   - None.
 func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 	compiledRules := make([]compiledRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -100,6 +115,9 @@ func NewPolicyHook(policy *configv1.CallPolicy) *PolicyHook {
 // Errors:
 //   - Returns error if an explicit DENY rule is matched.
 //   - Returns error if the default policy is DENY and no ALLOW rule matches.
+//
+// Side Effects:
+//   - None.
 func (h *PolicyHook) ExecutePre(
 	_ context.Context,
 	req *ExecutionRequest,
@@ -154,6 +172,18 @@ func (h *PolicyHook) ExecutePre(
 // WebhookClient handles the communication with an external webhook.
 //
 // Summary: Client for sending CloudEvents to external webhooks.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebhookClient struct {
 	url     string
 	timeout time.Duration
@@ -173,6 +203,9 @@ type WebhookClient struct {
 //
 // Side Effects:
 //   - Initializes HTTP client and optional signer.
+//
+// Throws/Errors:
+//   - None.
 func NewWebhookClient(config *configv1.WebhookConfig) *WebhookClient {
 	timeout := 5 * time.Second
 	if t := config.GetTimeout(); t != nil {
@@ -264,6 +297,18 @@ func (c *WebhookClient) Call(ctx context.Context, eventType string, data any) (*
 // WebhookHook supports modification of requests and responses via external webhook using CloudEvents.
 //
 // Summary: Hook implementation that delegates logic to an external webhook.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebhookHook struct {
 	client *WebhookClient
 }
@@ -277,6 +322,12 @@ type WebhookHook struct {
 //
 // Returns:
 //   - *WebhookHook: The initialized hook.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWebhookHook(config *configv1.WebhookConfig) *WebhookHook {
 	return &WebhookHook{
 		client: NewWebhookClient(config),
@@ -328,6 +379,20 @@ func (h *WebhookHook) ExecutePre(
 	}
 
 	// ResponseData is a helper struct for parsing the webhook response.
+//
+// Summary: Action for ResponseData.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
@@ -401,6 +466,20 @@ func (h *WebhookHook) ExecutePost(
 	}
 
 	// ResponseData is a helper struct for parsing the webhook response.
+//
+// Summary: Action for ResponseData.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 	type ResponseData struct {
 		Allowed           bool            `json:"allowed"`
 		Status            *WebhookStatus  `json:"status,omitempty"`
@@ -434,6 +513,18 @@ func (h *WebhookHook) ExecutePost(
 // WebhookStatus represents the status returned by the webhook.
 //
 // Summary: Status information included in the webhook response.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebhookStatus struct {
 	// Code is the status code returned by the webhook.
 	Code int `json:"code"`
@@ -444,6 +535,18 @@ type WebhookStatus struct {
 // SigningRoundTripper signs the request using the webhook signer.
 //
 // Summary: HTTP Transport that adds HMAC signatures to outgoing requests.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SigningRoundTripper struct {
 	signer *webhook.Webhook
 	base   http.RoundTripper
@@ -463,6 +566,9 @@ type SigningRoundTripper struct {
 // Side Effects:
 //   - Reads and buffers the request body for signing.
 //   - Modifies request headers.
+//
+// Throws/Errors:
+//   - None.
 func (s *SigningRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if s.signer != nil {
 		payload := []byte{} // Signing requires payload, but request body might be stream.

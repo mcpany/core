@@ -33,6 +33,8 @@ const STEPS = ['Metadata', 'Instructions', 'Assets'];
  *
  * SkillWizard component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SkillWizard.
  */
 export default function SkillWizard() {
   const params = useParams();

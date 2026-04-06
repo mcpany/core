@@ -22,6 +22,8 @@ import { AgentFlow } from "@/components/visualizer/agent-flow";
  *
  * VisualizerPage is the main page for the Agent Flow visualizer.
  * @returns The VisualizerPage component.
+ *
+ * Summary: Action for VisualizerPage.
  */
 export default function VisualizerPage() {
   return (

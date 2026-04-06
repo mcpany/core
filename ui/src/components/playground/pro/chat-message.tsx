@@ -64,6 +64,8 @@ const DiffEditor = (props: any) => (
  *   - None
  *
  * MessageType type definition.
+ *
+ * Summary: Action for MessageType.
  */
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
@@ -83,6 +85,8 @@ export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "
  *   - None
  *
  * Message type definition.
+ *
+ * Summary: Action for Message.
  */
 export interface Message {
   id: string;
@@ -142,6 +146,8 @@ function analyzeError(error: string): string | null {
  * ChatMessage.
  *
  * @param { message - The { message.
+ *
+ * Summary: Action for ChatMessage.
  */
 export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);

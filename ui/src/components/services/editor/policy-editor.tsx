@@ -44,6 +44,8 @@ interface PolicyEditorProps {
  * @param props.policy - The current policy object.
  * @param props.onChange - Callback invoked when the policy is modified.
  * @returns The rendered policy editor component.
+ *
+ * Summary: Action for PolicyEditor.
  */
 export function PolicyEditor({ title, description, policy, onChange }: PolicyEditorProps) {
     // Default to empty policy if undefined

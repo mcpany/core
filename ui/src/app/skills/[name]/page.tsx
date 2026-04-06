@@ -24,6 +24,8 @@ import SkillDetail from '@/components/skills/skill-detail';
  *
  * SkillDetailPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SkillDetailPage.
  */
 export default function SkillDetailPage() {
   return <SkillDetail />;

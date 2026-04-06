@@ -37,6 +37,8 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
  * @param props - The component props.
  * @param props.children - Child components.
  * @returns The context provider.
+ *
+ * Summary: Action for DashboardProvider.
  */
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const [serviceId, setServiceId] = useState<string | undefined>(undefined);
@@ -69,6 +71,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
  *
  * @returns The dashboard context value.
  * @throws Error if used outside of a DashboardProvider.
+ *
+ * Summary: Action for useDashboard.
  */
 export function useDashboard() {
   const context = useContext(DashboardContext);

@@ -37,6 +37,8 @@ interface DiscoveredToolsViewerProps {
  *
  * DiscoveredToolsViewer component.
  * Displays a list of discovered tools in an accordion view.
+ *
+ * Summary: Action for DiscoveredToolsViewer.
  */
 export function DiscoveredToolsViewer({ tools }: DiscoveredToolsViewerProps) {
     if (!tools || tools.length === 0) {

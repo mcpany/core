@@ -44,6 +44,8 @@ interface ToolSafetyTableProps {
  * @param props.tools - The list of tools to display.
  * @param props.onUpdate - Callback function called when a tool status is updated.
  * @returns A table component for managing tool safety.
+ *
+ * Summary: Action for ToolSafetyTable.
  */
 export function ToolSafetyTable({ tools, onUpdate }: ToolSafetyTableProps) {
     const { toast } = useToast();

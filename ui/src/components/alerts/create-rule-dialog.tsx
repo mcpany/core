@@ -47,6 +47,8 @@ import { Severity } from "./types";
  *
  * CreateRuleDialog component.
  * @returns The rendered component.
+ *
+ * Summary: Action for CreateRuleDialog.
  */
 export function CreateRuleDialog() {
   const [open, setOpen] = useState(false);

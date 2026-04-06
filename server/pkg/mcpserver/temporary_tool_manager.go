@@ -17,6 +17,18 @@ import (
 // and discovered tools for the duration of the validation request but discard them afterwards.
 //
 // Summary: Represents a TemporaryToolManager.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex

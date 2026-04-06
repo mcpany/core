@@ -18,6 +18,18 @@ import (
 // Bus is a message bus implementation using NATS.
 //
 // Summary: Represents a Bus.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Bus[T any] struct {
 	nc     *natsgo.Conn
 	config *bus.NatsBus
@@ -82,6 +94,15 @@ func New[T any](config *bus.NatsBus) (*Bus[T], error) {
 // Returns:
 //
 //	None.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (b *Bus[T]) Close() {
 	if b.nc != nil {
 		b.nc.Close()

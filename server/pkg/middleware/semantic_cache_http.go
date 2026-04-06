@@ -19,6 +19,18 @@ import (
 // HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
 //
 // Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string

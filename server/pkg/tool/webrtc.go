@@ -35,6 +35,15 @@ type peerConnectionWrapper struct {
 //
 // Returns:
 //   - error: An error if the operation fails.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *peerConnectionWrapper) Close() error {
 	if w.PeerConnection == nil {
 		return nil
@@ -51,6 +60,12 @@ func (w *peerConnectionWrapper) Close() error {
 //
 // Returns:
 //   - bool: True if the connection state is valid (New, Checking, Connected, Completed).
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 	if w.PeerConnection == nil {
 		return false
@@ -70,6 +85,18 @@ func (w *peerConnectionWrapper) IsHealthy(_ context.Context) bool {
 // It handles the signaling and establishment of a peer connection to communicate
 // with the remote service. This is useful for scenarios requiring low-latency,
 // peer-to-peer communication directly from the server.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type WebrtcTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -97,6 +124,12 @@ type WebrtcTool struct {
 // Returns:
 //   - (*WebrtcTool): The initialized WebrtcTool.
 //   - (error): An error if initialization fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewWebrtcTool(
 	tool *v1.Tool,
 	poolManager *pool.Manager,
@@ -156,6 +189,15 @@ func (t *WebrtcTool) newPeerConnection(_ context.Context) (*peerConnectionWrappe
 //
 // Returns:
 //   - *v1.Tool: The tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -166,6 +208,15 @@ func (t *WebrtcTool) Tool() *v1.Tool {
 //
 // Returns:
 //   - *mcp.Tool: The MCP tool definition.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -183,6 +234,15 @@ func (t *WebrtcTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: The cache configuration.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -209,6 +269,12 @@ func (t *WebrtcTool) GetCacheConfig() *configv1.CacheConfig {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) IsStreaming() bool {
 	return false
 }
@@ -224,6 +290,12 @@ func (t *WebrtcTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {
@@ -413,6 +485,15 @@ func (t *WebrtcTool) executeWithPeerConnection(ctx context.Context, req *Executi
 //
 // Returns:
 //   - error: Always nil.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *WebrtcTool) Close() error {
 	if t.webrtcPool != nil {
 		_ = t.webrtcPool.Close()

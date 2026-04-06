@@ -27,6 +27,8 @@ import { NetworkGraphFlow } from "@/components/network/network-graph-client";
  * NetworkGraphWidget component for the dashboard.
  * Renders a simplified network topology graph.
  * @returns The rendered component.
+ *
+ * Summary: Action for NetworkGraphWidget.
  */
 export const NetworkGraphWidget = React.memo(function NetworkGraphWidget() {
     return (

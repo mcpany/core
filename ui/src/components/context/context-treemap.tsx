@@ -128,6 +128,8 @@ const CustomTooltip = ({ active, payload }: any) => {
  *
  * Visualization component that renders a treemap of tool token costs.
  * It groups tools by service and color-codes them for easy analysis.
+ *
+ * Summary: Action for ContextTreemap.
  */
 export function ContextTreemap() {
     const { tools, getToolCost, loading, disabledToolIds } = useRecursiveContext();

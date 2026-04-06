@@ -19,6 +19,18 @@ import (
 // It is set at build time via -ldflags.
 //
 // Summary: Represents Version.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 var Version = "dev"
 
 // main is the entry point for the mcpctl CLI.

@@ -67,6 +67,8 @@ interface UserListProps {
  * @param props.onEdit - Callback when a user is edited.
  * @param props.onDelete - Callback when a user is deleted.
  * @returns The rendered UserList component.
+ *
+ * Summary: Action for UserList.
  */
 export function UserList({ users, isLoading, onEdit, onDelete }: UserListProps) {
     const [searchQuery, setSearchQuery] = useState("");

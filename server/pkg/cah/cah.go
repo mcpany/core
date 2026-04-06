@@ -12,6 +12,18 @@ import (
 // MonitorAgent represents a security/policy validator in the quorum.
 //
 // Summary: Evaluates a request and returns a cryptographically bound signature.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type MonitorAgent interface {
 	// ValidateRequest evaluates a request and returns a cryptographically bound
 	// signature if approved, or an error if rejected.
@@ -23,6 +35,18 @@ type MonitorAgent interface {
 // CAHAdapter acts as the central arbiter for verifying agent interactions.
 //
 // Summary: Manages a decentralized quorum of MonitorAgents to collect approvals.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type CAHAdapter struct {
 	monitors        []MonitorAgent
 	quorumThreshold int

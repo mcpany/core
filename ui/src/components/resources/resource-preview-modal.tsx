@@ -49,6 +49,8 @@ interface ResourcePreviewModalProps {
  * @param props.resource - The resource property.
  * @param props.initialContent - The initialContent property.
  * @returns The rendered component.
+ *
+ * Summary: Action for ResourcePreviewModal.
  */
 export function ResourcePreviewModal({
   isOpen,

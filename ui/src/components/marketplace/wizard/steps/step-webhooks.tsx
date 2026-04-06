@@ -28,6 +28,8 @@ import { WizardWebhook } from "../wizard-context";
  *
  * StepWebhooks component.
  * @returns The rendered component.
+ *
+ * Summary: Action for StepWebhooks.
  */
 export function StepWebhooks() {
   const { state, updateConfig } = useWizard();

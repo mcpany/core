@@ -24,6 +24,8 @@ import { Loader2 } from "lucide-react";
  *
  * PlaygroundPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for PlaygroundPage.
  */
 export default function PlaygroundPage() {
   return (

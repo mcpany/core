@@ -32,6 +32,9 @@ import { format } from "date-fns";
  *
  * Throws/Errors:
  *   - None.
+ *
+ * Side Effects:
+ *   - None.
  */
 export function AgentChainTracer() {
   const [expandedId, setExpandedId] = useState<string | null>(null);

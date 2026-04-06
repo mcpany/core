@@ -35,6 +35,18 @@ import (
 // S3, GCS, etc.) as defined in the service configuration.
 //
 // Summary: Represents a Upstream.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -266,6 +278,12 @@ type fsCallable struct {
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

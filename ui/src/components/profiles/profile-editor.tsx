@@ -149,6 +149,8 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
  *   - None
  *
  * Represents a user profile configuration in the UI.
+ *
+ * Summary: Action for Profile.
  */
 export interface Profile {
     /** Unique identifier for the profile (usually same as name). */
@@ -207,6 +209,8 @@ interface ProfileEditorProps {
  * @param props.onOpenChange - Callback to toggle the sheet's open state.
  * @param props.onSave - Callback invoked when the profile is saved.
  * @returns The rendered profile editor component.
+ *
+ * Summary: Action for ProfileEditor.
  */
 export function ProfileEditor({ profile, open, onOpenChange, onSave }: ProfileEditorProps) {
     const [name, setName] = useState("");

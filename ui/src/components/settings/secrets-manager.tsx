@@ -59,6 +59,8 @@ import { apiClient, SecretDefinition } from "@/lib/client";
  *
  * SecretsManager component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SecretsManager.
  */
 export function SecretsManager() {
     const [secrets, setSecrets] = useState<SecretDefinition[]>([]);

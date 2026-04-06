@@ -44,6 +44,8 @@ interface ResourceSafetyTableProps {
  * @param props.resources - The list of resources to display.
  * @param props.onUpdate - Callback function called when a resource status is updated.
  * @returns A table component for managing resource safety.
+ *
+ * Summary: Action for ResourceSafetyTable.
  */
 export function ResourceSafetyTable({ resources, onUpdate }: ResourceSafetyTableProps) {
     const { toast } = useToast();

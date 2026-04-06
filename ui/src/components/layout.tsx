@@ -45,6 +45,8 @@ const PageFallback = () => (
  * Layout component that wraps all main application routes with the
  * sidebar, header, and context providers.  Uses React Router's
  * <Outlet /> to render the matched child route.
+ *
+ * Summary: Action for Layout.
  */
 export function Layout() {
   return (

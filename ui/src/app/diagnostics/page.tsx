@@ -23,6 +23,8 @@ import { DiscoveryStatus } from "@/components/diagnostics/discovery-status";
  *
  * DiagnosticsPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for DiagnosticsPage.
  */
 export default function DiagnosticsPage() {
   return (

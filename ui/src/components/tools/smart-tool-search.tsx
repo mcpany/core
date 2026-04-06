@@ -50,6 +50,8 @@ interface SmartToolSearchProps {
  * @param props.setSearchQuery - Callback to update the search query.
  * @param props.onToolSelect - Callback invoked when a tool is selected.
  * @returns The rendered search component.
+ *
+ * Summary: Action for SmartToolSearch.
  */
 export function SmartToolSearch({
   tools,

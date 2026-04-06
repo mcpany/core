@@ -16,6 +16,12 @@ import (
 //
 // Side Effects:
 //   - Reads environment variables.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func CheckAuth() map[string]CheckResult {
 	results := make(map[string]CheckResult)
 

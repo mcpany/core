@@ -57,6 +57,8 @@ import { apiClient } from "@/lib/client";
  *
  * AlertList component.
  * @returns The rendered component.
+ *
+ * Summary: Action for AlertList.
  */
 export function AlertList() {
   const [alerts, setAlerts] = useState<Alert[]>([]);

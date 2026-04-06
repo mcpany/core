@@ -1,18 +1,15 @@
-I will improve test coverage in the `src/interop` package.
-Specifically, I will:
+1. **Understand requirements**: Review and add docstrings to every public function, method, class, and exported constant in the codebase (Go and TypeScript/JS) with specific sections: `Summary:`, `Parameters:`, `Returns:`, `Throws/Errors:`, `Side Effects:`. Then rewrite `README.md` to match the "Gold Standard" (Elevator Pitch, Architecture, Getting Started, Development, Configuration).
 
-1. In `src/interop/placeholder_test.go`:
-   - Add a test for `NewPlaceholderAdapter` when passing `nil` capabilities.
-   - Add a test for `StreamTask` method to ensure it returns the correct error ("placeholder method: not implemented").
-   - Add a test for `RegisterPlaceholders` to ensure it registers all the adapters in the `AdapterHub`.
+2. **Automate Go docstring addition**: I will create a python script that utilizes the `ast` module or simple regex parsing to iterate over all Go files and correctly inject missing sections for exported functions, types, constants, and variables. The script will look for missing sections and append them to existing docstrings or create new ones.
 
-2. In `src/interop/autogen_test.go` (new file or in `swarm_test.go`):
-   - Add a test for `HandleTask` where streaming is requested.
-   - Add a test for `StreamTask` to check if it behaves correctly.
+3. **Automate TypeScript docstring addition**: Similarly, I will create a python script that iterates over all TypeScript/JS files and injects missing sections for exported functions, classes, interfaces, types, constants, and enums.
 
-3. In `src/interop/crewai_test.go` (new file or in `swarm_test.go`):
-   - Add a test for `HandleTask` where streaming is requested.
-   - Add a test for `StreamTask` for successful streaming and unsupported intents.
+4. **Run the scripts and apply fixes**: Execute the scripts and ensure the docstrings are correctly added to all public symbols.
 
-4. In `src/interop/openclaw_test.go` (new file or in `swarm_test.go`):
-   - Add a test for `StreamTask` to verify it behaves properly for supported and unsupported intents.
+5. **Fix the README.md**: Rewrite the `README.md` based on the specified structure. It currently has a similar structure, but I will review it to ensure it perfectly matches the requirements.
+
+6. **Pre commit step**: Use `pre_commit_instructions` tool to complete testing and verifications.
+
+7. **Verify**: Run `make lint` and `make test`. Ensure no errors.
+
+8. **Submit**: Submit the changes.

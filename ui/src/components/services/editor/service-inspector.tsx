@@ -36,6 +36,8 @@ interface ServiceInspectorProps {
  * @param props - The component props.
  * @param props.service - The service property.
  * @returns The rendered component.
+ *
+ * Summary: Action for ServiceInspector.
  */
 export function ServiceInspector({ service }: ServiceInspectorProps) {
     const {

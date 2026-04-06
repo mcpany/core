@@ -64,6 +64,8 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
  * Displays a legend for the network topology graph, explaining node types and status indicators.
  *
  * @returns The rendered NetworkLegend component.
+ *
+ * Summary: Action for NetworkLegend.
  */
 export function NetworkLegend() {
     return (

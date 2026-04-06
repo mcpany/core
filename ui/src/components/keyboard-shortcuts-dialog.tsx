@@ -43,6 +43,8 @@ interface KeyboardShortcutsDialogProps {
  * A dialog that displays and allows customization of keyboard shortcuts.
  *
  * @param onOpenChange - The onOpenChange.
+ *
+ * Summary: Action for KeyboardShortcutsDialog.
  */
 export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcutsDialogProps) {
   const { shortcuts, overrides, updateOverride, resetOverride } = useKeyboardShortcuts()

@@ -45,6 +45,8 @@ type LoginValues = z.infer<typeof loginSchema>;
  *
  * LoginPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for LoginPage.
  */
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);

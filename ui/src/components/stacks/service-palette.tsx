@@ -67,6 +67,8 @@ interface ServicePaletteProps {
  * Fetches service templates from the API and displays them for selection.
  *
  * @param {ServicePaletteProps} props - Component props.
+ *
+ * Summary: Action for ServicePalette.
  */
 export function ServicePalette({ onTemplateSelect }: ServicePaletteProps) {
     const [search, setSearch] = useState("");

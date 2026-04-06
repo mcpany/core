@@ -37,6 +37,8 @@ interface ServiceConfigStepProps {
  *
  * Step for configuring service parameters.
  * @param props Component properties.
+ *
+ * Summary: Action for ServiceConfigStep.
  */
 export function ServiceConfigStep({ services, onNext, onBack }: ServiceConfigStepProps) {
     // Local state for edits

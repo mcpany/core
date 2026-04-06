@@ -39,6 +39,8 @@ interface KeyValuePair {
  *   - None
  *
  * KeyValueEditor allows editing a map of strings.
+ *
+ * Summary: Action for KeyValueEditor.
  */
 export function KeyValueEditor({ initialValues, onChange, keyPlaceholder = "Key", valuePlaceholder = "Value" }: KeyValueEditorProps) {
     const [pairs, setPairs] = useState<KeyValuePair[]>([]);

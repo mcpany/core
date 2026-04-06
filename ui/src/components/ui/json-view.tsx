@@ -137,6 +137,8 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  * @param props.smartTable - Whether to attempt smart table rendering.
  * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
  * @returns The rendered component.
+ *
+ * Summary: Action for JsonView.
  */
 export function JsonView({ data, className, smartTable = true, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily

@@ -24,6 +24,8 @@ import SkillList from '@/components/skills/skill-list';
  *
  * SkillsPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SkillsPage.
  */
 export default function SkillsPage() {
   return <SkillList />;

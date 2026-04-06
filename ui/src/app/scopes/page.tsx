@@ -17,6 +17,9 @@ import { ScopesDashboard } from "@/components/scopes/scopes-dashboard";
  *
  * Throws/Errors:
  *   - None.
+ *
+ * Side Effects:
+ *   - None.
  */
 export default function ScopesPage() {
     return (

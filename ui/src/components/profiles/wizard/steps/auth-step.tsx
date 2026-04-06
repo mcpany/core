@@ -39,6 +39,8 @@ interface AuthStepProps {
  *
  * Step for authenticating services.
  * @param props Component properties.
+ *
+ * Summary: Action for AuthStep.
  */
 export function AuthStep({ services, onNext, onBack }: AuthStepProps) {
     const [authServices, setAuthServices] = useState<WizardService[]>([...services]);

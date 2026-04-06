@@ -105,6 +105,8 @@ const PADDING_X = 40;
  * SequenceDiagram renders a visual timeline of a trace, showing the sequence of tool calls and responses between actors.
  *
  * @param props.trace - The trace data to visualize.
+ *
+ * Summary: Action for SequenceDiagram.
  */
 export function SequenceDiagram({ trace }: SequenceDiagramProps) {
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);

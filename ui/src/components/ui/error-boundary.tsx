@@ -36,6 +36,8 @@ interface State {
  *   - None
  *
  * Global Error Boundary to catch and report UI crashes.
+ *
+ * Summary: Action for ErrorBoundary.
  */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {

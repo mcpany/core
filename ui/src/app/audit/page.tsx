@@ -24,6 +24,8 @@ import { AuditLogViewer } from "@/components/audit/audit-log-viewer";
  * Renders the audit logs page, which includes the AuditLogViewer.
  *
  * @returns The rendered AuditPage component.
+ *
+ * Summary: Action for AuditPage.
  */
 export default function AuditPage() {
     return (

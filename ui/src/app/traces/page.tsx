@@ -30,6 +30,8 @@ import { usePolling } from "@/hooks/use-polling";
  *
  * TracesPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for TracesPage.
  */
 export default function TracesPage() {
   const [traces, setTraces] = useState<Trace[]>([]);

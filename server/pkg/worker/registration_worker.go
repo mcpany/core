@@ -25,6 +25,18 @@ import (
 // publishes the results as ServiceRegistrationResult messages.
 //
 // Summary: Represents a ServiceRegistrationWorker.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface

@@ -27,6 +27,18 @@ const (
 // DatadogAuditStore sends audit logs to Datadog.
 //
 // Summary: Asynchronous audit store that forwards logs to Datadog's API.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DatadogAuditStore struct {
 	config *configv1.DatadogConfig
 	client *http.Client
@@ -48,6 +60,9 @@ type DatadogAuditStore struct {
 //
 // Side Effects:
 //   - Starts background workers to process the log queue.
+//
+// Throws/Errors:
+//   - None.
 func NewDatadogAuditStore(config *configv1.DatadogConfig) *DatadogAuditStore {
 	if config == nil {
 		config = &configv1.DatadogConfig{}
@@ -195,6 +210,12 @@ func (e *DatadogAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for datadog audit store")
 }
@@ -209,6 +230,12 @@ func (e *DatadogAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes internal channels.
 //   - Flushes pending logs.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
 func (e *DatadogAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

@@ -24,6 +24,8 @@ import { cn } from '@/lib/utils';
  *
  * TrafficEdge is a custom edge component that visualizes traffic flow.
  * It renders particles moving along the path if QPS > 0.
+ *
+ * Summary: Action for TrafficEdge.
  */
 export const TrafficEdge = memo(({
   id,

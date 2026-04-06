@@ -39,6 +39,8 @@ import { useState, useMemo } from "react";
  *
  * InspectorPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for InspectorPage.
  */
 export default function InspectorPage() {
   const {

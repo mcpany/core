@@ -19,6 +19,9 @@ import (
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type LeaseStatus string
 
 const (
@@ -42,6 +45,9 @@ const (
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 type Lease struct {
 	IntentID           string
 	SubagentSessionIDs []string
@@ -61,6 +67,9 @@ type Lease struct {
 //   - None.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 type SubagentReaper struct {
 	registry map[string]*Lease
@@ -82,6 +91,9 @@ type SubagentReaper struct {
 //
 // Throws/Errors:
 //   - None.
+//
+// Side Effects:
+//   - None.
 func NewSubagentReaper() *SubagentReaper {
 	return &SubagentReaper{
 		registry: make(map[string]*Lease),
@@ -101,6 +113,9 @@ func NewSubagentReaper() *SubagentReaper {
 //   - *Lease: The lease.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (r *SubagentReaper) RegisterBranch(intentID string, ttl time.Duration) *Lease {
 	r.mu.Lock()
@@ -129,6 +144,9 @@ func (r *SubagentReaper) RegisterBranch(intentID string, ttl time.Duration) *Lea
 //
 // Throws/Errors:
 //   - error: If the lease is not found.
+//
+// Side Effects:
+//   - None.
 func (r *SubagentReaper) RegisterSubagent(intentID string, sessionID string) error {
 	r.mu.RLock()
 	lease, exists := r.registry[intentID]
@@ -163,6 +181,9 @@ func (r *SubagentReaper) RegisterSubagent(intentID string, sessionID string) err
 //
 // Throws/Errors:
 //   - error: If the intent is not found.
+//
+// Side Effects:
+//   - None.
 func (r *SubagentReaper) RecordHeartbeat(intentID string, signature string, extendBy time.Duration) error {
 	r.mu.RLock()
 	lease, exists := r.registry[intentID]
@@ -198,6 +219,9 @@ func (r *SubagentReaper) RecordHeartbeat(intentID string, signature string, exte
 //
 // Throws/Errors:
 //   - error: If the intent is not found.
+//
+// Side Effects:
+//   - None.
 func (r *SubagentReaper) PruneIntent(intentID string) error {
 	r.mu.RLock()
 	lease, exists := r.registry[intentID]
@@ -226,6 +250,9 @@ func (r *SubagentReaper) PruneIntent(intentID string) error {
 //   - None.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (r *SubagentReaper) Start(ctx context.Context, interval time.Duration) {
 	r.ticker = time.NewTicker(interval)
@@ -257,6 +284,9 @@ func (r *SubagentReaper) Start(ctx context.Context, interval time.Duration) {
 //   - None.
 //
 // Throws/Errors:
+//   - None.
+//
+// Side Effects:
 //   - None.
 func (r *SubagentReaper) Stop() {
 	close(r.quit)
@@ -291,6 +321,9 @@ func (r *SubagentReaper) sweep() {
 //
 // Throws/Errors:
 //   - error: If the lease is not found.
+//
+// Side Effects:
+//   - None.
 func (r *SubagentReaper) GetLeaseStatus(intentID string) (LeaseStatus, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

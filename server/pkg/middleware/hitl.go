@@ -18,6 +18,18 @@ import (
 // HITLConfig defines the configuration for Human-In-The-Loop approval flows.
 //
 // Summary: Represents the configuration for Human-In-The-Loop (HITL) approval flows.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HITLConfig struct {
 	Enabled        bool     `json:"enabled"`
 	SensitiveTools []string `json:"sensitive_tools"`
@@ -28,6 +40,18 @@ type HITLConfig struct {
 // HITLApprovalRequest represents a request for human approval published to the bus.
 //
 // Summary: Represents a request for human approval published to the message bus.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HITLApprovalRequest struct {
 	ExecutionID string `json:"execution_id"`
 	ToolName    string `json:"tool_name"`
@@ -37,6 +61,18 @@ type HITLApprovalRequest struct {
 // HITLApprovalResponse represents the response from the human operator.
 //
 // Summary: Represents the response from a human operator regarding a tool execution approval request.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HITLApprovalResponse struct {
 	ExecutionID string `json:"execution_id"`
 	Approved    bool   `json:"approved"`
@@ -45,6 +81,18 @@ type HITLApprovalResponse struct {
 // HITLMiddleware enforces Human-In-The-Loop approvals for sensitive actions.
 //
 // Summary: Represents middleware that enforces Human-In-The-Loop (HITL) approvals for sensitive actions.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type HITLMiddleware struct {
 	config HITLConfig
 	bus    *bus.Provider

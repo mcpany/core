@@ -198,6 +198,8 @@ MemoizedResourceGridItem.displayName = "MemoizedResourceGridItem";
  * ResourceExplorer.
  *
  * @param { initialResources = [] - The { initialResources = [].
+ *
+ * Summary: Action for ResourceExplorer.
  */
 export function ResourceExplorer({ initialResources = [] }: ResourceExplorerProps) {
     const [resources, setResources] = useState<ResourceDefinition[]>(initialResources);

@@ -47,6 +47,8 @@ interface HttpToolManagerProps {
  * Displays a list of tools and allows adding, editing, and deleting them.
  * @param props - The component props.
  * @returns The rendered tool manager.
+ *
+ * Summary: Action for HttpToolManager.
  */
 export function HttpToolManager({ service, onChange }: HttpToolManagerProps) {
     const [editingToolIndex, setEditingToolIndex] = useState<number | null>(null);

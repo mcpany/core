@@ -54,6 +54,8 @@ interface OptimizationTabProps {
  * @param props.toolUsage - A record of tool usage statistics.
  * @param props.onToggleTool - Callback function to toggle a tool's enabled state.
  * @returns The rendered optimization tab.
+ *
+ * Summary: Action for OptimizationTab.
  */
 export function OptimizationTab({ tools, toolUsage, onToggleTool }: OptimizationTabProps) {
     const analysis = useMemo(() => {

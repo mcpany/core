@@ -56,6 +56,8 @@ import { applyTemplateFields } from "@/lib/template-utils";
  *
  * ServicesPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ServicesPage.
  */
 export default function ServicesPage() {
   const [services, setServices] = useState<UpstreamServiceConfig[]>([]);

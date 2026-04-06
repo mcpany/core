@@ -36,6 +36,8 @@ import { Filter } from "lucide-react";
  * Updates the global dashboard context when a service is selected.
  *
  * @returns The rendered service filter component.
+ *
+ * Summary: Action for ServiceFilter.
  */
 export function ServiceFilter() {
   const { serviceId, setServiceId } = useDashboard();

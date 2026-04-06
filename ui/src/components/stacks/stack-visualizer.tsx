@@ -31,6 +31,8 @@ interface StackVisualizerProps {
  * StackVisualizer.
  *
  * @param { yamlContent - The { yamlContent.
+ *
+ * Summary: Action for StackVisualizer.
  */
 export function StackVisualizer({ yamlContent }: StackVisualizerProps) {
     return (

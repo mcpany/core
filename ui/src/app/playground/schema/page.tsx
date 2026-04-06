@@ -31,6 +31,8 @@ import { apiClient } from "@/lib/client";
  * SchemaPlaygroundPage provides an interactive environment for users to test and validate
  * configuration snippets against the MCP Any schema.
  * @returns The Schema Playground page component.
+ *
+ * Summary: Action for SchemaPlaygroundPage.
  */
 export default function SchemaPlaygroundPage() {
   const [content, setContent] = useState("");

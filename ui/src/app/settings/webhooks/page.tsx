@@ -36,6 +36,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
  *
  * WebhooksPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for WebhooksPage.
  */
 export default function WebhooksPage() {
     const [webhooks, setWebhooks] = useState<Webhook[]>([]);

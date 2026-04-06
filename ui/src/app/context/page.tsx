@@ -33,6 +33,8 @@ import { ContextSimulator } from "@/components/context/context-simulator";
  * ContextPage component.
  * Displays the Recursive Context Dashboard.
  * @returns The rendered component.
+ *
+ * Summary: Action for ContextPage.
  */
 export default function ContextPage() {
   const [seeding, setSeeding] = useState(false);

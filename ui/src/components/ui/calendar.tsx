@@ -25,6 +25,8 @@ import { buttonVariants } from "@/components/ui/button"
  *   - None
  *
  * CalendarProps type definition.
+ *
+ * Summary: Action for CalendarProps.
  */
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 

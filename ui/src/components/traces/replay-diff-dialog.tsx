@@ -38,6 +38,8 @@ interface ReplayDiffDialogProps {
  *
  * ReplayDiffDialog component.
  * Allows replaying a tool call from a trace and viewing the diff between original and new output.
+ *
+ * Summary: Action for ReplayDiffDialog.
  */
 export function ReplayDiffDialog({ open, onOpenChange, trace }: ReplayDiffDialogProps) {
     const [loading, setLoading] = useState(false);

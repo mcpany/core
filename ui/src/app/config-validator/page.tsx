@@ -31,6 +31,8 @@ import { defineDraculaTheme } from "@/lib/monaco-theme";
  * ConfigValidatorPage allows users to validate their YAML or JSON configuration
  * against the server schema using an interactive editor.
  * @returns The Config Validator page component.
+ *
+ * Summary: Action for ConfigValidatorPage.
  */
 export default function ConfigValidatorPage() {
   const [content, setContent] = useState("");

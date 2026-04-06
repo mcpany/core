@@ -81,6 +81,8 @@ const PageFallback = () => (
  * Public routes (login, auth) get a top-level Suspense fallback.
  * Protected routes (wrapped in Layout) have Suspense inside the Layout so the
  * sidebar/header stay visible while the page content lazy-loads.
+ *
+ * Summary: Action for App.
  */
 export default function App() {
   return (

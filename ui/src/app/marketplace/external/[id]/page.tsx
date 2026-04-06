@@ -37,6 +37,8 @@ import { Link } from 'react-router-dom';
  * @param props - The component props.
  * @param props.params - The params property.
  * @returns The rendered component.
+ *
+ * Summary: Action for ExternalMarketplacePage.
  */
 export default function ExternalMarketplacePage() {
 

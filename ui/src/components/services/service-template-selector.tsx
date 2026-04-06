@@ -40,6 +40,8 @@ const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Clou
  * Allows users to browse and search for service templates.
  *
  * @param onSelect - Callback when a template is selected.
+ *
+ * Summary: Action for ServiceTemplateSelector.
  */
 export function ServiceTemplateSelector({ onSelect }: ServiceTemplateSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");

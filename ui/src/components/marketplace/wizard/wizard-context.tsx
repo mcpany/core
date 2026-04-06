@@ -8,6 +8,16 @@ import { UpstreamServiceConfig } from '@/lib/client';
 
 /**
  * WizardStep defines the sequence of steps in the configuration wizard.
+ *
+ * Summary: Action for WizardStep.
+ * Parameters:
+ *   - None.
+ * Returns:
+ *   - None.
+ * Throws/Errors:
+ *   - None.
+ * Side Effects:
+ *   - None.
  */
 export enum WizardStep {
     SERVICE_TYPE = 0,
@@ -33,6 +43,8 @@ export enum WizardStep {
  *   - None
  *
  * WizardState type definition.
+ *
+ * Summary: Action for WizardWebhook.
  */
 export interface WizardWebhook {
     name: string;
@@ -59,6 +71,8 @@ export interface WizardWebhook {
  *   - None
  *
  * WizardState type definition.
+ *
+ * Summary: Action for WizardState.
  */
 export interface WizardState {
     currentStep: WizardStep;
@@ -122,6 +136,8 @@ const WizardContext = createContext<WizardContextType | undefined>(undefined);
  * @param props - The component props.
  * @param props.children - The child components.
  * @returns The rendered component.
+ *
+ * Summary: Action for WizardProvider.
  */
 export function WizardProvider({ children }: { children: ReactNode }) {
     const [state, setState] = useState<WizardState>(defaultState);
@@ -251,6 +267,8 @@ export function WizardProvider({ children }: { children: ReactNode }) {
  * useWizard is a hook to access the wizard context.
  * @returns The wizard context containing state and navigation methods.
  * @throws Error if used outside of a WizardProvider.
+ *
+ * Summary: Action for useWizard.
  */
 export function useWizard() {
     const context = useContext(WizardContext);

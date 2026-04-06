@@ -93,6 +93,8 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
  * @param props - The component props.
  * @param props.result - The raw result object from the tool execution.
  * @returns The rendered component.
+ *
+ * Summary: Action for RichResultViewer.
  */
 export function RichResultViewer({ result }: RichResultViewerProps) {
     // Attempt to extract meaningful content if it's a command result

@@ -44,6 +44,8 @@ const MANUAL_TEMPLATE: any = {
  *
  * StepServiceType component.
  * @returns The rendered component.
+ *
+ * Summary: Action for StepServiceType.
  */
 export function StepServiceType() {
     const { state, updateConfig, updateState } = useWizard();

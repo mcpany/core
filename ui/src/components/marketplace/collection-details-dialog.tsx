@@ -41,6 +41,8 @@ interface CollectionDetailsDialogProps {
  * @param props.collection - The service collection to display details for.
  * @param props.onInstantiateService - Callback function to instantiate a service from the collection.
  * @returns The rendered CollectionDetailsDialog component.
+ *
+ * Summary: Action for CollectionDetailsDialog.
  */
 export function CollectionDetailsDialog({
     open,

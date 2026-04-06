@@ -33,6 +33,8 @@ import { DownloadReportButton } from "@/components/dashboard/download-report-but
  * The main dashboard page component.
  * Displays an overview of metrics, service health, and request volume.
  * @returns The dashboard page.
+ *
+ * Summary: Action for DashboardPage.
  */
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);

@@ -81,6 +81,8 @@ type UserValues = z.infer<typeof userSchema>;
  * @param props.user - The user object to edit, or null for creating a new user.
  * @param props.onSave - Callback when the user is saved.
  * @returns The rendered UserSheet component.
+ *
+ * Summary: Action for UserSheet.
  */
 export function UserSheet({ open, onOpenChange, user, onSave }: UserSheetProps) {
     const { toast } = useToast();

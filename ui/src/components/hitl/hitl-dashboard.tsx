@@ -55,6 +55,9 @@ interface HITLApproval {
  *
  * Throws/Errors:
  *   - None explicitly thrown by the component itself.
+ *
+ * Side Effects:
+ *   - None.
  */
 export function HitlDashboard() {
     const [approvals, setApprovals] = React.useState<HITLApproval[]>([]);

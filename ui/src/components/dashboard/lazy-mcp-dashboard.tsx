@@ -7,6 +7,23 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+/**
+ * LazyMcpDashboard ...
+ *
+ * Summary: Action for LazyMcpDashboard.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - None.
+ *
+ * Throws/Errors:
+ *   - None.
+ *
+ * Side Effects:
+ *   - None.
+ */
 
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");

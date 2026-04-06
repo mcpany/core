@@ -45,6 +45,8 @@ interface ToolPresetsProps {
  * @param props.currentData - The data to display.
  * @param props.onSelect - The onSelect property.
  * @returns The rendered component.
+ *
+ * Summary: Action for ToolPresets.
  */
 export function ToolPresets({ toolName, currentData, onSelect }: ToolPresetsProps) {
   const [presets, setPresets] = useState<Preset[]>([]);

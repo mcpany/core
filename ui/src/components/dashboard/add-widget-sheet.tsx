@@ -43,6 +43,8 @@ interface AddWidgetSheetProps {
  * A sheet that displays a gallery of available widgets to add to the dashboard.
  * @param props - The component props.
  * @returns The rendered component.
+ *
+ * Summary: Action for AddWidgetSheet.
  */
 export function AddWidgetSheet({ onAdd }: AddWidgetSheetProps) {
     const [open, setOpen] = useState(false);

@@ -32,6 +32,8 @@ interface JsonViewerProps {
  * @param props - The component props.
  * @param props.data - The JSON data to display.
  * @returns A syntax-highlighted JSON view.
+ *
+ * Summary: Action for JsonViewer.
  */
 export default function JsonViewer({ data }: JsonViewerProps) {
   return (

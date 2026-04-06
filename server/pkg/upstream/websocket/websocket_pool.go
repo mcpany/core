@@ -17,6 +17,18 @@ import (
 // It simplifies the type signature for WebSocket connection pools.
 //
 // Summary: Represents a Pool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
 // NewPool creates a new connection pool for WebSocket clients. It

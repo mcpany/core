@@ -43,6 +43,8 @@ const NodeWrapper = ({ children, className, selected }: { children: React.ReactN
  *   - None
  *
  * UserNode represents a user in the flow.
+ *
+ * Summary: Action for UserNode.
  */
 export const UserNode = memo(({ data, selected }: any) => {
   return (
@@ -78,6 +80,8 @@ UserNode.displayName = 'UserNode';
  *   - None
  *
  * AgentNode represents an agent in the flow.
+ *
+ * Summary: Action for AgentNode.
  */
 export const AgentNode = memo(({ data, selected }: any) => {
   return (
@@ -119,6 +123,8 @@ AgentNode.displayName = 'AgentNode';
  *   - None
  *
  * ToolNode represents a tool in the flow.
+ *
+ * Summary: Action for ToolNode.
  */
 export const ToolNode = memo(({ data, selected }: any) => {
   return (
@@ -154,6 +160,8 @@ ToolNode.displayName = 'ToolNode';
  *   - None
  *
  * ResourceNode represents a resource in the flow.
+ *
+ * Summary: Action for ResourceNode.
  */
 export const ResourceNode = memo(({ data, selected }: any) => {
     return (
@@ -190,6 +198,8 @@ ResourceNode.displayName = 'ResourceNode';
  *   - None
  *
  * ServiceNode represents a service in the flow.
+ *
+ * Summary: Action for ServiceNode.
  */
 export const ServiceNode = memo(({ data, selected }: any) => {
     return (

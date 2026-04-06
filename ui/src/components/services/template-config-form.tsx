@@ -35,6 +35,8 @@ interface TemplateConfigFormProps {
  * It handles variable substitution inputs.
  * @param props - Component props.
  * @returns The TemplateConfigForm component.
+ *
+ * Summary: Action for TemplateConfigForm.
  */
 export function TemplateConfigForm({ template, onCancel, onSubmit }: TemplateConfigFormProps) {
   const [values, setValues] = useState<Record<string, string>>({});

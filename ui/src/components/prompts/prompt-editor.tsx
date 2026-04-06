@@ -87,6 +87,8 @@ type PromptValues = z.infer<typeof promptSchema>;
  * @param props.prompt - The existing prompt to edit, or null for creating a new one.
  * @param props.services - List of available services.
  * @param props.onSave - Callback when the prompt is saved.
+ *
+ * Summary: Action for PromptEditor.
  */
 export function PromptEditor({ open, onOpenChange, prompt, services, onSave }: PromptEditorProps) {
     const { theme } = useTheme();

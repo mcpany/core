@@ -25,6 +25,8 @@ import { usePolling } from '@/hooks/use-polling';
  *   - None
  *
  * MetricPoint represents a single data point for service health metrics at a specific time.
+ *
+ * Summary: Action for MetricPoint.
  */
 export interface MetricPoint {
     /** The timestamp of the metric point in milliseconds. */
@@ -79,6 +81,8 @@ const POLLING_INTERVAL = 5000;
  * @param props - The component props.
  * @param props.children - The child components.
  * @returns The rendered component.
+ *
+ * Summary: Action for ServiceHealthProvider.
  */
 export function ServiceHealthProvider({ children }: { children: ReactNode }) {
     const [history, setHistory] = useState<Record<string, MetricPoint[]>>({});
@@ -241,6 +245,8 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
  * useServiceHealth is a hook to access service health history and current status.
  * @returns The service health context.
  * @throws Error if used outside of a ServiceHealthProvider.
+ *
+ * Summary: Action for useServiceHealth.
  */
 export function useServiceHealth() {
     const context = useContext(ServiceHealthContext);
@@ -269,6 +275,8 @@ export function useServiceHealth() {
  * It is optimized to not re-render when health metrics update.
  * @returns The topology context.
  * @throws Error if used outside of a ServiceHealthProvider.
+ *
+ * Summary: Action for useTopology.
  */
 export function useTopology() {
     const context = useContext(TopologyContext);

@@ -60,6 +60,8 @@ interface PromptWorkbenchProps {
  *
  * @param props - The component props.
  * @param props.initialPrompts - The initial list of prompts to display.
+ *
+ * Summary: Action for PromptWorkbench.
  */
 export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   const [prompts, setPrompts] = useState<PromptDefinition[]>(initialPrompts);

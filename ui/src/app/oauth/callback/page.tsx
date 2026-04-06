@@ -148,6 +148,8 @@ function OAuthCallbackContent() {
  *
  * OAuthCallbackPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for OAuthCallbackPage.
  */
 export default function OAuthCallbackPage() {
   return (

@@ -33,6 +33,8 @@ import { Clock } from "lucide-react";
  * A dropdown component to filter dashboard views by time range.
  *
  * @returns The rendered time range filter component.
+ *
+ * Summary: Action for TimeRangeFilter.
  */
 export function TimeRangeFilter() {
   const { timeRange, setTimeRange } = useDashboard();

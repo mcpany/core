@@ -21,6 +21,18 @@ import (
 // for available filesystem roots.
 //
 // Summary: Represents a RootsTool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type RootsTool struct {
 	tool    *v1.Tool
 	mcpTool *mcp.Tool

@@ -38,6 +38,8 @@ interface ToolSidebarProps {
  * ToolSidebar.
  *
  * @param className - The className.
+ *
+ * Summary: Action for ToolSidebar.
  */
 export function ToolSidebar({ tools, onSelectTool, className }: ToolSidebarProps) {
     const [searchQuery, setSearchQuery] = useState("");

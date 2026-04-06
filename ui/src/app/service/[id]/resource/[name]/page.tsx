@@ -28,6 +28,8 @@ import { useServiceSiblings } from "@/hooks/use-siblings";
  *
  * ResourceDetailPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ResourceDetailPage.
  */
 export default function ResourceDetailPage() {
     const { id = "", name = "" } = useParams<{ id: string; name: string }>();

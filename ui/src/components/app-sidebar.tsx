@@ -230,6 +230,8 @@ const configItems = [
  * Displays navigation links and user profile menu.
  *
  * @returns {JSX.Element} The rendered sidebar component.
+ *
+ * Summary: Action for AppSidebar.
  */
 export function AppSidebar() {
   const { pathname } = useLocation()

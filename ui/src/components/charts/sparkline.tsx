@@ -42,6 +42,8 @@ interface SparklineProps {
  * @param props.color - The line color.
  * @param props.max - The maximum value for scaling.
  * @returns The rendered component.
+ *
+ * Summary: Action for Sparkline.
  */
 export const Sparkline = memo(function Sparkline({ data, width = 60, height = 24, className, color = "#22c55e", max }: SparklineProps) {
     const { path, fillPath, gradientId } = useMemo(() => {

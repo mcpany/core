@@ -27,6 +27,8 @@ import { apiClient } from "@/lib/client";
  *
  * AlertStats component.
  * @returns The rendered component.
+ *
+ * Summary: Action for AlertStats.
  */
 export function AlertStats() {
   const [stats, setStats] = useState<{ activeCritical: number, activeWarning: number, mttr: string, totalToday: number, activeCriticalTrend?: string, activeWarningTrend?: string, mttrTrend?: string, totalTodayTrend?: string } | null>(null);

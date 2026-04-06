@@ -52,6 +52,8 @@ const _LazyAuditLogWidget = lazy(() =>
  *   - None
  *
  * LazyRequestVolumeChart with Suspense skeleton.
+ *
+ * Summary: Action for LazyRequestVolumeChart.
  */
 export const LazyRequestVolumeChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRequestVolumeChart {...(props as any)} /></Suspense>
@@ -73,6 +75,8 @@ export const LazyRequestVolumeChart = (props: object) => (
  *   - None
  *
  * LazyRecentActivityWidget with Suspense skeleton.
+ *
+ * Summary: Action for LazyRecentActivityWidget.
  */
 export const LazyRecentActivityWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyRecentActivityWidget {...(props as any)} /></Suspense>
@@ -94,6 +98,8 @@ export const LazyRecentActivityWidget = (props: object) => (
  *   - None
  *
  * LazyTopToolsWidget with Suspense skeleton.
+ *
+ * Summary: Action for LazyTopToolsWidget.
  */
 export const LazyTopToolsWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyTopToolsWidget {...(props as any)} /></Suspense>
@@ -115,6 +121,8 @@ export const LazyTopToolsWidget = (props: object) => (
  *   - None
  *
  * LazyHealthHistoryChart with Suspense skeleton.
+ *
+ * Summary: Action for LazyHealthHistoryChart.
  */
 export const LazyHealthHistoryChart = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyHealthHistoryChart {...(props as any)} /></Suspense>
@@ -136,6 +144,8 @@ export const LazyHealthHistoryChart = (props: object) => (
  *   - None
  *
  * LazyAuditLogWidget with Suspense skeleton.
+ *
+ * Summary: Action for LazyAuditLogWidget.
  */
 export const LazyAuditLogWidget = (props: object) => (
   <Suspense fallback={<ChartSkeleton />}><_LazyAuditLogWidget {...(props as any)} /></Suspense>

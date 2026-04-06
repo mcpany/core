@@ -60,6 +60,18 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 // and manages connection pooling for HTTP requests.
 //
 // Summary: Represents a Upstream.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

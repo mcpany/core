@@ -37,6 +37,8 @@ interface ProfileStepProps {
  *
  * Step for finalizing the profile configuration.
  * @param props Component properties.
+ *
+ * Summary: Action for ProfileStep.
  */
 export function ProfileStep({ services, onBack, onComplete }: ProfileStepProps) {
   const [profileName, setProfileName] = useState("");

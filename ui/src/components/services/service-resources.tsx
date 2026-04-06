@@ -41,6 +41,8 @@ interface ServiceResourcesProps {
  *
  * ServiceResources lists the resources exposed by an upstream service.
  * It allows users to view resource details and read their content.
+ *
+ * Summary: Action for ServiceResources.
  */
 export function ServiceResources({ resources }: ServiceResourcesProps) {
     const [selectedResource, setSelectedResource] = useState<ResourceDefinition | null>(null);

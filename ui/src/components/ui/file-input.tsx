@@ -36,6 +36,8 @@ interface FileInputProps {
  * It displays the selected filename and allows clearing the selection.
  * @param props - Component props.
  * @returns The FileInput component.
+ *
+ * Summary: Action for FileInput.
  */
 export function FileInput({ value, onChange, accept, className, disabled, id }: FileInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)

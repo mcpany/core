@@ -35,6 +35,18 @@ type sanitizer func(string) (string, error)
 // communicate over WebRTC data channels.
 //
 // Summary: Represents a Upstream.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type Upstream struct {
 	poolManager       *pool.Manager
 	toolNameSanitizer sanitizer

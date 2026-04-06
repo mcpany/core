@@ -85,6 +85,18 @@ var (
 // ToolMetricsMiddleware provides detailed metrics for tool executions.
 //
 // Summary: Middleware that records Prometheus metrics for tool execution calls.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
@@ -102,6 +114,9 @@ type ToolMetricsMiddleware struct {
 //
 // Side Effects:
 //   - Registers Prometheus metrics (globally, once).
+//
+// Throws/Errors:
+//   - None.
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -136,6 +151,9 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 // Side Effects:
 //   - Updates Prometheus counters, histograms, and gauges.
 //   - Measures execution duration.
+//
+// Throws/Errors:
+//   - None.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

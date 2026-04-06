@@ -12,6 +12,18 @@ import (
 // TmpfsProvider provides access to a temporary in-memory filesystem.
 //
 // Summary: Represents a TmpfsProvider.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type TmpfsProvider struct {
 	fs afero.Fs
 }

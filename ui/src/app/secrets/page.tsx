@@ -22,6 +22,8 @@ import { SecretsManager } from "@/components/settings/secrets-manager";
  *
  * SecretsPage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SecretsPage.
  */
 export default function SecretsPage() {
   return (

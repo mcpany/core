@@ -33,6 +33,8 @@ interface Middleware {
  *
  * MiddlewarePage component.
  * @returns The rendered component.
+ *
+ * Summary: Action for MiddlewarePage.
  */
 export default function MiddlewarePage() {
     const [middleware, setMiddleware] = useState<Middleware[]>([]);

@@ -34,6 +34,8 @@ import { ServicePropertyCard } from "./service-property-card";
  *
  * @param promptName - The promptName.
  * @param promptName - The promptName.
+ *
+ * Summary: Action for PromptDetail.
  */
 export function PromptDetail({ serviceId, promptName }: { serviceId: string, promptName: string }) {
   const [prompt, setPrompt] = useState<PromptDefinition | null>(null);

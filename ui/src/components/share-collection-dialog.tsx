@@ -51,6 +51,8 @@ import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils"
  *
  * ShareCollectionDialog component.
  * @returns The rendered component.
+ *
+ * Summary: Action for ShareCollectionDialog.
  */
 export function ShareCollectionDialog() {
   const [open, setOpen] = React.useState(false)

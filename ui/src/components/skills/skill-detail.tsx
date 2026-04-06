@@ -30,6 +30,8 @@ import { toast } from 'sonner';
  *
  * SkillDetail component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SkillDetail.
  */
 export default function SkillDetail() {
   const params = useParams();

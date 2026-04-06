@@ -28,6 +28,8 @@ import { toast } from 'sonner';
  *
  * SkillList component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SkillList.
  */
 export default function SkillList() {
   const [skills, setSkills] = useState<Skill[]>([]);

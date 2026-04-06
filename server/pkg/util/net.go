@@ -23,6 +23,18 @@ import (
 // Summary: Interface for IP address resolution.
 //
 // It matches the signature of net.Resolver.LookupIP.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type IPResolver interface {
 	// LookupIP looks up host using the local resolver.
 	//
@@ -44,6 +56,18 @@ type IPResolver interface {
 // Summary: Interface for network dialing.
 //
 // It matches the signature of net.Dialer.DialContext.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type NetDialer interface {
 	// DialContext connects to the address on the named network using the provided context.
 	//
@@ -63,6 +87,18 @@ type NetDialer interface {
 // SafeDialer provides control over outbound connections to prevent Server-Side Request Forgery (SSRF).
 //
 // Summary: Secure network dialer preventing SSRF.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type SafeDialer struct {
 	// AllowLoopback allows connections to loopback addresses (127.0.0.1, ::1).
 	AllowLoopback bool
@@ -86,6 +122,15 @@ type SafeDialer struct {
 //
 // Returns:
 //   - (*SafeDialer): A new SafeDialer instance with restrictive defaults.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSafeDialer() *SafeDialer {
 	return &SafeDialer{
 		AllowLoopback:  false,
@@ -108,6 +153,12 @@ func NewSafeDialer() *SafeDialer {
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if resolution fails, all resolved IPs are blocked by policy, or the connection fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
@@ -182,6 +233,12 @@ func (d *SafeDialer) DialContext(ctx context.Context, network, addr string) (net
 // Returns:
 //   - (net.Conn): The established connection.
 //   - (error): An error if the connection is blocked by policy or fails.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	return NewSafeDialer().DialContext(ctx, network, addr)
 }
@@ -199,6 +256,15 @@ func SafeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 //
 // Returns:
 //   - (*http.Client): A configured HTTP client.
+//
+// Parameters:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func NewSafeHTTPClient() *http.Client {
 	dialer := NewSafeDialer()
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == TrueStr {
@@ -234,6 +300,12 @@ func NewSafeHTTPClient() *http.Client {
 //
 // Returns:
 //   - (error): nil if the connection succeeded, or an error if it failed.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func CheckConnection(ctx context.Context, address string) error {
 	var target string
 	if strings.Contains(address, "://") {
@@ -308,6 +380,12 @@ func CheckConnection(ctx context.Context, address string) error {
 // Returns:
 //   - (net.Listener): The successfully bound listener.
 //   - (error): An error if binding fails after all retries.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func ListenWithRetry(ctx context.Context, network, address string) (net.Listener, error) {
 	var lis net.Listener
 	var err error

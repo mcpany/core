@@ -42,6 +42,8 @@ import { cn } from "@/lib/utils";
  *
  * SystemHealth component.
  * @returns The rendered component.
+ *
+ * Summary: Action for SystemHealth.
  */
 export function SystemHealth() {
   const [report, setReport] = useState<DoctorReport | null>(null);

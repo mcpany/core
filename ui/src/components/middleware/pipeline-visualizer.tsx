@@ -39,6 +39,8 @@ interface GlobalSettings {
  *   - None
  *
  * PipelineVisualizer allows verifying and modifying the middleware pipeline order.
+ *
+ * Summary: Action for PipelineVisualizer.
  */
 export function PipelineVisualizer() {
     const [middlewares, setMiddlewares] = useState<Middleware[]>([]);

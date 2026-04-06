@@ -38,6 +38,8 @@ interface DebuggerControlsProps {
  * @param props.onStep - Callback to step forward.
  * @param props.onStop - Callback to stop execution.
  * @returns The DebuggerControls component.
+ *
+ * Summary: Action for DebuggerControls.
  */
 export function DebuggerControls({ isPlaying, onPlayPause, onStep, onStop }: DebuggerControlsProps) {
   return (

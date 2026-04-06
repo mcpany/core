@@ -125,6 +125,8 @@ const defaultEdgeOptions = {
  *   - None
  *
  * Props for the NetworkGraphFlow component.
+ *
+ * Summary: Action for NetworkGraphFlowProps.
  */
 export interface NetworkGraphFlowProps {
     /**
@@ -152,6 +154,8 @@ export interface NetworkGraphFlowProps {
  * Renders the interactive network graph using ReactFlow.
  * @param props - The component props.
  * @returns The rendered component.
+ *
+ * Summary: Action for NetworkGraphFlow.
  */
 export function NetworkGraphFlow({ widgetMode = false }: NetworkGraphFlowProps) {
     const router = useRouter();
@@ -470,6 +474,8 @@ MetricCard.displayName = 'MetricCard';
  *
  * NetworkGraphClient component.
  * @returns The rendered component.
+ *
+ * Summary: Action for NetworkGraphClient.
  */
 export function NetworkGraphClient() {
     return (

@@ -42,6 +42,8 @@ interface InstantiateDialogProps {
  * InstantiateDialog.
  *
  * @param onComplete - The onComplete.
+ *
+ * Summary: Action for InstantiateDialog.
  */
 export function InstantiateDialog({ open, onOpenChange, templateConfig, onComplete }: InstantiateDialogProps) {
     const { toast } = useToast();

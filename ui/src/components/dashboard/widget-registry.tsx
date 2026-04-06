@@ -33,6 +33,8 @@ import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse
  * - two-thirds: Takes up 2/3 of the width (8 columns).
  * - half: Takes up 1/2 of the width (6 columns).
  * - third: Takes up 1/3 of the width (4 columns).
+ *
+ * Summary: Action for WidgetSize.
  */
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
@@ -52,6 +54,8 @@ export type WidgetSize = "full" | "half" | "third" | "two-thirds";
  *   - None
  *
  * Defines the metadata and component for a dashboard widget.
+ *
+ * Summary: Action for WidgetDefinition.
  */
 export interface WidgetDefinition {
     /** Unique identifier for the widget type. */
@@ -85,6 +89,8 @@ export interface WidgetDefinition {
  *
  * Registry of all available dashboard widgets.
  * This list determines what widgets are available to add to the dashboard.
+ *
+ * Summary: Action for WIDGET_DEFINITIONS.
  */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
     {
@@ -204,6 +210,8 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
  *
  * @param type - The widget type identifier.
  * @returns The widget definition if found, otherwise undefined.
+ *
+ * Summary: Action for getWidgetDefinition.
  */
 export const getWidgetDefinition = (type: string): WidgetDefinition | undefined => {
     return WIDGET_DEFINITIONS.find(w => w.type === type);

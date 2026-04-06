@@ -22,6 +22,18 @@ import (
 // DoctorRunner runs the doctor command checks.
 //
 // Summary: Component to run system health diagnostics.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type DoctorRunner struct {
 	Out        io.Writer
 	Fs         afero.Fs
@@ -42,6 +54,9 @@ type DoctorRunner struct {
 // Side Effects:
 //   - Prints check results to r.Out.
 //   - Makes HTTP requests to the running server.
+//
+// Throws/Errors:
+//   - None.
 func (r *DoctorRunner) Run(cmd *cobra.Command, _ []string) error {
 	ctx := cmd.Context()
 	if ctx == nil {

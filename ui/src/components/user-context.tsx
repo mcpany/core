@@ -24,6 +24,8 @@ import { apiClient } from '@/lib/client';
  *   - None
  *
  * Defines the role of a user in the system.
+ *
+ * Summary: Action for UserRole.
  */
 export type UserRole = 'admin' | 'editor' | 'viewer';
 
@@ -43,6 +45,8 @@ export type UserRole = 'admin' | 'editor' | 'viewer';
  *   - None
  *
  * Represents a user of the application.
+ *
+ * Summary: Action for User.
  */
 export interface User {
   /** Unique user ID. */
@@ -95,6 +99,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
  * @param props - The component props.
  * @param props.children - The child components.
  * @returns {JSX.Element} The provider component.
+ *
+ * Summary: Action for UserProvider.
  */
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -167,6 +173,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
  * Hook to access the user context.
  * @returns The user context.
  * @throws Error if used outside of a UserProvider.
+ *
+ * Summary: Action for useUser.
  */
 export function useUser() {
   const context = useContext(UserContext);

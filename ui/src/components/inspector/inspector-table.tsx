@@ -102,6 +102,8 @@ interface VisibleRow {
  * @param props.traces - The list of traces to display.
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
+ *
+ * Summary: Action for InspectorTable.
  */
 export function InspectorTable({ traces, loading }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);

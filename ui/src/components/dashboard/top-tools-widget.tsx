@@ -35,6 +35,8 @@ interface ToolUsageStats {
  *
  * TopToolsWidget displays a bar chart of the most frequently executed tools.
  * @returns The rendered TopToolsWidget component.
+ *
+ * Summary: Action for TopToolsWidget.
  */
 export function TopToolsWidget() {
   const [data, setData] = useState<ToolUsageStats[]>([]);

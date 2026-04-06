@@ -34,6 +34,8 @@ import { ServicePropertyCard } from "./service-property-card";
  *
  * @param resourceName - The resourceName.
  * @param resourceName - The resourceName.
+ *
+ * Summary: Action for ResourceDetail.
  */
 export function ResourceDetail({ serviceId, resourceName }: { serviceId: string, resourceName: string }) {
   const [resource, setResource] = useState<ResourceDefinition | null>(null);

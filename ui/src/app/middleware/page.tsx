@@ -23,6 +23,8 @@ import { PipelineVisualizer } from "@/components/middleware/pipeline-visualizer"
  *   - None
  *
  * MiddlewarePage renders the middleware pipeline visualization page.
+ *
+ * Summary: Action for MiddlewarePage.
  */
 export default function MiddlewarePage() {
     return (

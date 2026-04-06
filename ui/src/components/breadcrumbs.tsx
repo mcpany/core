@@ -33,6 +33,8 @@ import {
  *   - None
  *
  * Represents a single item in the breadcrumb navigation.
+ *
+ * Summary: Action for BreadcrumbItem.
  */
 export interface BreadcrumbItem {
     /** The label to display for the breadcrumb. */
@@ -74,6 +76,8 @@ interface BreadcrumbsProps {
  * @param props.items - The list of breadcrumb items to display.
  * @param props.className - Optional CSS class names.
  * @returns {JSX.Element} The rendered breadcrumbs navigation.
+ *
+ * Summary: Action for Breadcrumbs.
  */
 export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     const [history, setHistory] = useState<BreadcrumbItem[]>([]);

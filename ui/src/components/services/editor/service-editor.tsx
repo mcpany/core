@@ -65,6 +65,8 @@ interface ServiceEditorProps {
  * ServiceEditor.
  *
  * @param onCancel - The onCancel.
+ *
+ * Summary: Action for ServiceEditor.
  */
 export function ServiceEditor({ service, onChange, onSave, onCancel }: ServiceEditorProps) {
     const [activeTab, setActiveTab] = useState("general");
