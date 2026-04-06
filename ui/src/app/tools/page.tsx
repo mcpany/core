@@ -31,6 +31,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * Intent: Document ToolsPage
@@ -233,8 +234,54 @@ export default function ToolsPage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex-1 p-8 animate-pulse text-muted-foreground">
-        Loading tools...
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold tracking-tight">Tools</h2>
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-10 w-[300px]" />
+            <div className="flex items-center space-x-2">
+               <Skeleton className="h-10 w-[180px]" />
+            </div>
+            <div className="flex items-center space-x-2">
+               <Skeleton className="h-10 w-[200px]" />
+            </div>
+            <div className="flex items-center space-x-2">
+               <Skeleton className="h-6 w-10 rounded-full" />
+               <Skeleton className="h-4 w-24" />
+            </div>
+            <Skeleton className="h-9 w-9" />
+          </div>
+        </div>
+        <Card className="backdrop-blur-sm bg-background/50">
+          <CardHeader>
+             <Skeleton className="h-6 w-48 mb-2" />
+             <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between border-b pb-2">
+               <Skeleton className="h-4 w-12" />
+               <Skeleton className="h-4 w-24" />
+               <Skeleton className="h-4 w-48" />
+               <Skeleton className="h-4 w-24" />
+               <Skeleton className="h-4 w-24" />
+               <Skeleton className="h-4 w-12" />
+            </div>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex justify-between items-center py-2">
+                <div className="flex items-center space-x-4">
+                   <Skeleton className="h-4 w-4" />
+                   <Skeleton className="h-4 w-4" />
+                   <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-6 w-20" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     );
   }

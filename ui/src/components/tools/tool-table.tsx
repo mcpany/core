@@ -156,7 +156,7 @@ export const ToolTable = memo(function ToolTable({
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="animate-in fade-in slide-in-from-bottom-2 duration-500">
           {tools.length === 0 ? (
             <TableRow>
               <TableCell colSpan={10} className="h-24 text-center">
@@ -169,7 +169,7 @@ export const ToolTable = memo(function ToolTable({
             </TableRow>
           ) : (
           tools.map((tool) => (
-            <TableRow key={tool.name} className={cn("group", isCompact ? "h-8" : "", selected.has(tool.name) ? "bg-muted/50" : "")}>
+            <TableRow key={tool.name} className={cn("group hover:bg-muted/50 transition-colors", isCompact ? "h-8" : "", selected.has(tool.name) ? "bg-muted/50" : "")}>
                <TableCell className={cn("pr-0", isCompact ? "py-0 px-2" : "")}>
                  <Checkbox
                     checked={selected.has(tool.name)}
