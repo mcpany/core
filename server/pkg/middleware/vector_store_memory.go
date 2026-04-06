@@ -42,13 +42,13 @@ type VectorEntry struct {
 // Summary: Initializes NewSimpleVectorStore operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SimpleVectorStore: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -74,13 +74,17 @@ func NewSimpleVectorStore() *SimpleVectorStore {
 // Summary: Executes Add operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - key (string): The key.
+//   - vector ([]float32): The vector.
+//   - result (any): The result.
+//   - ttl (time.Duration): The ttl.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -125,13 +129,17 @@ func (s *SimpleVectorStore) Add(_ context.Context, key string, vector []float32,
 // Summary: Executes Search operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - key (string): The key.
+//   - query ([]float32): The query.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - any: The result.
+//   - float32: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -178,13 +186,14 @@ func (s *SimpleVectorStore) Search(_ context.Context, key string, query []float3
 // Summary: Executes Prune operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - key (string): The key.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

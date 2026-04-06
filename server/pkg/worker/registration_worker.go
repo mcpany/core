@@ -44,13 +44,14 @@ type ServiceRegistrationWorker struct {
 // Summary: Initializes NewServiceRegistrationWorker operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - bus (*bus.Provider): The bus.
+//   - serviceRegistry (serviceregistry.ServiceRegistryInterface): The service registry.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ServiceRegistrationWorker: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -70,13 +71,13 @@ func NewServiceRegistrationWorker(bus *bus.Provider, serviceRegistry serviceregi
 // Summary: Updates SetRetryDelay operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - d (time.Duration): The d.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -94,13 +95,13 @@ func (w *ServiceRegistrationWorker) SetRetryDelay(d time.Duration) {
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -342,13 +343,13 @@ func (w *ServiceRegistrationWorker) Start(ctx context.Context) {
 // Summary: Executes Stop operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

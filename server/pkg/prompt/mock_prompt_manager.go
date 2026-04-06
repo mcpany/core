@@ -98,13 +98,13 @@ func (mr *MockManagerInterfaceMockRecorder) AddPrompt(prompt any) *gomock.Call {
 // Summary: Executes Clear operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

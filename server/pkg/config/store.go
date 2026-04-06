@@ -132,13 +132,13 @@ type yamlEngine struct {
 // Summary: Updates SetSkipValidation operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skip (bool): The skip.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -160,13 +160,13 @@ func (e *yamlEngine) SetSkipValidation(skip bool) {
 // Summary: Updates SetIgnoreEnv operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ignore (bool): The ignore.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -192,13 +192,14 @@ func (e *yamlEngine) SetIgnoreEnv(ignore bool) {
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - b ([]byte): The b.
+//   - v (proto.Message): The v.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -239,13 +240,15 @@ func (e *yamlEngine) Unmarshal(b []byte, v proto.Message) error {
 // Summary: Executes UnmarshalFromMap operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - yamlMap (map[string]interface{}): The yaml map.
+//   - v (proto.Message): The v.
+//   - originalBytes ([]byte): The original bytes.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -371,13 +374,14 @@ type textprotoEngine struct{}
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - b ([]byte): The b.
+//   - v (proto.Message): The v.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -406,13 +410,14 @@ type jsonEngine struct{}
 // Summary: Executes Unmarshal operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - b ([]byte): The b.
+//   - v (proto.Message): The v.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -751,13 +756,13 @@ type FileStore struct {
 // Summary: Updates SetSkipValidation operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skip (bool): The skip.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -776,13 +781,13 @@ func (s *FileStore) SetSkipValidation(skip bool) {
 // Summary: Updates SetIgnoreMissingEnv operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ignore (bool): The ignore.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -835,13 +840,13 @@ func NewFileStoreWithSkipErrors(fs afero.Fs, paths []string) *FileStore {
 // Summary: Checks HasConfigSources operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -1486,13 +1491,13 @@ func collectFieldNames(md protoreflect.MessageDescriptor, candidates map[string]
 // Summary: Checks HasConfigSources operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

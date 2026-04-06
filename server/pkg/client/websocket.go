@@ -35,13 +35,13 @@ type WebsocketClientWrapper struct {
 // Summary: Checks IsHealthy operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -69,13 +69,13 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

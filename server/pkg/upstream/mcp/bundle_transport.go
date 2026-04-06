@@ -41,13 +41,13 @@ type transportError struct {
 // Summary: Executes Error operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +90,14 @@ type BundleDockerTransport struct {
 // Summary: Executes Connect operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -228,13 +229,14 @@ type bundleDockerConn struct {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -384,13 +386,14 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - msg (jsonrpc.Message): The msg.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -527,13 +530,13 @@ func fixIDExtracted(val interface{}) interface{} {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -552,13 +555,13 @@ func (c *bundleDockerConn) Close() error {
 // Summary: Executes SessionID operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -590,13 +593,14 @@ type bundleSlogWriter struct {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The n.
+//   - error: The error.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

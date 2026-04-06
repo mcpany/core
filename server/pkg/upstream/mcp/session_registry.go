@@ -30,13 +30,13 @@ type SessionRegistry struct {
 // Summary: Initializes NewSessionRegistry operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SessionRegistry: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -61,13 +61,14 @@ func NewSessionRegistry() *SessionRegistry {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - upstreamSession (mcp.Session): The upstream session.
+//   - downstreamSession (tool.Session): The downstream session.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -91,13 +92,13 @@ func (r *SessionRegistry) Register(upstreamSession mcp.Session, downstreamSessio
 // Summary: Executes Unregister operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - upstreamSession (mcp.Session): The upstream session.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -122,13 +123,14 @@ func (r *SessionRegistry) Unregister(upstreamSession mcp.Session) {
 // Summary: Retrieves Get operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - upstreamSession (mcp.Session): The upstream session.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - tool.Session: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

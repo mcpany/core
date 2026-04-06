@@ -35,13 +35,13 @@ type ConnectionFactory struct {
 // Summary: Initializes NewConnectionFactory operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ConnectionFactory: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -66,13 +66,13 @@ func NewConnectionFactory() *ConnectionFactory {
 // Summary: Executes WithDialer operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - dialer (func(context.Context, string) (net.Conn, error)): The dialer.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -101,13 +101,15 @@ func (f *ConnectionFactory) WithDialer(dialer func(context.Context, string) (net
 // Summary: Initializes NewConnection operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - targetAddress (string): The target address.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *grpc.ClientConn: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

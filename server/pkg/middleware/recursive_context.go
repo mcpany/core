@@ -49,13 +49,13 @@ type RecursiveContextManager struct {
 // Summary: Initializes NewRecursiveContextManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *RecursiveContextManager: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -84,13 +84,14 @@ func NewRecursiveContextManager() *RecursiveContextManager {
 // Summary: Initializes CreateSession operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - data (map[string]interface{}): The data.
+//   - ttl (time.Duration): The ttl.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SessionState: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -136,13 +137,14 @@ func (m *RecursiveContextManager) CreateSession(data map[string]interface{}, ttl
 // Summary: Retrieves GetSession operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - id (string): The id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SessionState: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -178,13 +180,13 @@ func (m *RecursiveContextManager) GetSession(id string) (*SessionState, bool) {
 // Summary: Executes APIHandler operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - http.HandlerFunc: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -274,13 +276,13 @@ const (
 // Summary: Executes HandleContext operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - next (http.Handler): The next.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - http.Handler: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

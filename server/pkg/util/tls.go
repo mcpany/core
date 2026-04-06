@@ -31,13 +31,14 @@ import (
 // Summary: Initializes NewHTTPClientWithTLS operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - tlsConfig (*configv1.TLSConfig): The tls config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *http.Client: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

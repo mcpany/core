@@ -61,13 +61,13 @@ func IsDockerSocketAccessible() bool {
 // Summary: Executes CloseDockerClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -54,13 +54,17 @@ type Tool struct {
 // Summary: Initializes NewTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (*v1.Tool): The t.
+//   - db (*sql.DB): The db.
+//   - callDef (*configv1.SqlCallDefinition): The call def.
+//   - policies ([]*configv1.CallPolicy): The policies.
+//   - callID (string): The call id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Tool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +94,13 @@ func NewTool(t *v1.Tool, db *sql.DB, callDef *configv1.SqlCallDefinition, polici
 // Summary: Executes Tool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *v1.Tool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -115,13 +119,13 @@ func (t *Tool) Tool() *v1.Tool {
 // Summary: Executes MCPTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -147,13 +151,13 @@ func (t *Tool) MCPTool() *mcp.Tool {
 // Summary: Retrieves GetCacheConfig operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *configv1.CacheConfig: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -183,13 +187,13 @@ func (t *Tool) GetCacheConfig() *configv1.CacheConfig {
 // Summary: Executes Execute operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

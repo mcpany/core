@@ -67,13 +67,14 @@ type UpstreamAuthenticator interface {
 // Summary: Initializes NewUpstreamAuthenticator operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authConfig (*configv1.Authentication): The auth config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - UpstreamAuthenticator: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -161,13 +162,13 @@ type APIKeyAuth struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request object.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +218,13 @@ type BearerTokenAuth struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request object.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -259,13 +260,13 @@ type BasicAuth struct {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request object.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -327,13 +328,13 @@ func (o *OAuth2Auth) getTokenURL(ctx context.Context) (string, error) {
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - req (*http.Request): The request object.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

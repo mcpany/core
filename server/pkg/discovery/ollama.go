@@ -54,13 +54,13 @@ type OllamaProvider struct {
 // Summary: Executes Name operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -86,13 +86,14 @@ func (p *OllamaProvider) Name() string {
 // Summary: Executes Discover operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*configv1.UpstreamServiceConfig: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

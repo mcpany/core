@@ -44,13 +44,14 @@ type PineconeClient struct {
 // Summary: Initializes NewPineconeClient operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*configv1.PineconeVectorDB): The config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *PineconeClient: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -152,13 +153,18 @@ func (c *PineconeClient) doRequest(ctx context.Context, method, path string, bod
 // Summary: Executes Query operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - vector ([]float32): The vector.
+//   - topK (int64): The top k.
+//   - filter (map[string]interface{}): The filter.
+//   - namespace (string): The namespace.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -195,13 +201,16 @@ func (c *PineconeClient) Query(ctx context.Context, vector []float32, topK int64
 // Summary: Executes Upsert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - vectors ([]map[string]interface{}): The vectors.
+//   - namespace (string): The namespace.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -233,13 +242,17 @@ func (c *PineconeClient) Upsert(ctx context.Context, vectors []map[string]interf
 // Summary: Executes Delete operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - ids ([]string): The ids.
+//   - namespace (string): The namespace.
+//   - filter (map[string]interface{}): The filter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -277,13 +290,15 @@ func (c *PineconeClient) Delete(ctx context.Context, ids []string, namespace str
 // Summary: Executes DescribeIndexStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - filter (map[string]interface{}): The filter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - map[string]interface{}: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

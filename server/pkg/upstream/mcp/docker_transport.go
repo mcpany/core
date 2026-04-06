@@ -71,13 +71,14 @@ type DockerTransport struct {
 // Summary: Executes Connect operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Connection: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -238,13 +239,14 @@ type dockerConn struct {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - jsonrpc.Message: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -345,13 +347,14 @@ func (c *dockerConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - msg (jsonrpc.Message): The msg.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -408,13 +411,13 @@ func (c *dockerConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -433,13 +436,13 @@ func (c *dockerConn) Close() error {
 // Summary: Executes SessionID operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -469,13 +472,13 @@ type dockerReadWriteCloser struct {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -526,13 +529,14 @@ type slogWriter struct {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The n.
+//   - error: The error.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -569,13 +573,14 @@ type tailBuffer struct {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The n.
+//   - error: The error.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -602,13 +607,13 @@ func (b *tailBuffer) Write(p []byte) (n int, err error) {
 // Summary: Executes String operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

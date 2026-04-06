@@ -42,13 +42,13 @@ type poolWithChecker[T pool.ClosableClient] struct {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -88,13 +88,20 @@ func (p *poolWithChecker[T]) Close() error {
 // Summary: Initializes NewGrpcPool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - minSize (int): The min size.
+//   - maxSize (int): The max size.
+//   - idleTimeout (time.Duration): The idle timeout.
+//   - dialer (func(context.Context, string) (net.Conn, error)): The dialer.
+//   - creds (credentials.PerRPCCredentials): The creds.
+//   - config (*configv1.UpstreamServiceConfig): The config.
+//   - disableHealthCheck (bool): The disable health check.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - pool.Pool[*client.GrpcClientWrapper]: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

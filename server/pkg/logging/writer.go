@@ -34,13 +34,14 @@ type RedactingWriter struct {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - p ([]byte): The p.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The n.
+//   - error: The error.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

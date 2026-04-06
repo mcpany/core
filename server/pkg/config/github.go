@@ -134,13 +134,13 @@ func isGitHubURL(rawURL string) bool {
 // Summary: Executes ToRawContentURL operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

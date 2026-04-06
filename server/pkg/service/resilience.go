@@ -34,13 +34,13 @@ import (
 // Summary: Executes UnaryClientInterceptor operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - retryConfig (*configv1.RetryConfig): The retry config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - grpc.UnaryClientInterceptor: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

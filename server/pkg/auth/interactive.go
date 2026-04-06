@@ -40,13 +40,19 @@ import (
 // Summary: Executes InitiateOAuth operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - userID (string): The user id.
+//   - serviceID (string): The service id.
+//   - credentialID (string): The credential id.
+//   - redirectURL (string): The redirect url.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
+//   - string: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -170,13 +176,18 @@ func (am *Manager) InitiateOAuth(ctx context.Context, userID, serviceID, credent
 // Summary: Executes HandleOAuthCallback operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - userID (string): The user id.
+//   - serviceID (string): The service id.
+//   - credentialID (string): The credential id.
+//   - code (string): The code.
+//   - redirectURL (string): The redirect url.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -41,13 +41,13 @@ type Upstream struct {
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Upstream: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -72,13 +72,13 @@ func NewUpstream() *Upstream {
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -120,13 +120,21 @@ func ptr(s string) *string {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - serviceConfig (*configv1.UpstreamServiceConfig): The service config.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - _ (prompt.ManagerInterface): Unused parameter.
+//   - _ (resource.ManagerInterface): Unused parameter.
+//   - _ (bool): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
+//   - []*configv1.ToolDefinition: The result.
+//   - []*configv1.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

@@ -48,13 +48,13 @@ type MockManagerInterfaceMockRecorder struct {
 // Summary: Initializes NewMockManagerInterface operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctrl (*gomock.Controller): The ctrl.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *MockManagerInterface: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -81,13 +81,13 @@ func NewMockManagerInterface(ctrl *gomock.Controller) *MockManagerInterface {
 // Summary: Executes EXPECT operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *MockManagerInterfaceMockRecorder: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -112,13 +112,13 @@ func (m *MockManagerInterface) EXPECT() *MockManagerInterfaceMockRecorder {
 // Summary: Executes AddResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - resource (Resource): The resource.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -144,13 +144,13 @@ func (m *MockManagerInterface) AddResource(resource Resource) {
 // Summary: Executes AddResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - resource (any): The resource.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -176,13 +176,13 @@ func (mr *MockManagerInterfaceMockRecorder) AddResource(resource any) *gomock.Ca
 // Summary: Executes Clear operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -208,13 +208,13 @@ func (m *MockManagerInterface) Clear() {
 // Summary: Executes Clear operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -240,13 +240,13 @@ func (mr *MockManagerInterfaceMockRecorder) Clear() *gomock.Call {
 // Summary: Executes ClearResourcesForService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -272,13 +272,13 @@ func (m *MockManagerInterface) ClearResourcesForService(serviceID string) {
 // Summary: Executes ClearResourcesForService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (any): The service id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -305,13 +305,14 @@ func (mr *MockManagerInterfaceMockRecorder) ClearResourcesForService(serviceID a
 // Summary: Retrieves GetResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (string): The uri.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - Resource: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -340,13 +341,13 @@ func (m *MockManagerInterface) GetResource(uri string) (Resource, bool) {
 // Summary: Retrieves GetResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (any): The uri.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -372,13 +373,13 @@ func (mr *MockManagerInterfaceMockRecorder) GetResource(uri any) *gomock.Call {
 // Summary: Executes ListResources operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []Resource: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -406,13 +407,13 @@ func (m *MockManagerInterface) ListResources() []Resource {
 // Summary: Executes ListResources operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -438,13 +439,13 @@ func (mr *MockManagerInterfaceMockRecorder) ListResources() *gomock.Call {
 // Summary: Executes OnListChanged operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg0 (func()): The arg0.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -470,13 +471,13 @@ func (m *MockManagerInterface) OnListChanged(arg0 func()) {
 // Summary: Executes OnListChanged operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - arg0 (any): The arg0.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -502,13 +503,13 @@ func (mr *MockManagerInterfaceMockRecorder) OnListChanged(arg0 any) *gomock.Call
 // Summary: Executes RemoveResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (string): The uri.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -534,13 +535,13 @@ func (m *MockManagerInterface) RemoveResource(uri string) {
 // Summary: Executes RemoveResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - uri (any): The uri.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *gomock.Call: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

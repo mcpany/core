@@ -39,13 +39,14 @@ type Bus[T any] struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (*bus.NatsBus): The config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Bus[T]: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -106,13 +107,15 @@ func (b *Bus[T]) Close() {
 // Summary: Executes Publish operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - topic (string): The topic.
+//   - msg (T): The msg.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -139,13 +142,15 @@ func (b *Bus[T]) Publish(_ context.Context, topic string, msg T) error {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - topic (string): The topic.
+//   - handler (func(T)): The handler.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(): The unsubscribe.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -177,13 +182,15 @@ func (b *Bus[T]) Subscribe(_ context.Context, topic string, handler func(T)) (un
 // Summary: Executes SubscribeOnce operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
+//   - topic (string): The topic.
+//   - handler (func(T)): The handler.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(): The unsubscribe.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -30,13 +30,14 @@ import (
 // Summary: Executes ConvertMCPToolToProto operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - tool (*mcp.Tool): The tool.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *pb.Tool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -133,13 +134,14 @@ func convertJSONSchemaToStruct(schema any) (*structpb.Struct, error) {
 // Summary: Executes ConvertMcpFieldsToInputSchemaProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - fields ([]*protobufparser.McpField): The fields.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -181,13 +183,16 @@ func ConvertMcpFieldsToInputSchemaProperties(fields []*protobufparser.McpField) 
 // Summary: Executes ConvertToolDefinitionToProto operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - toolDef (*configv1.ToolDefinition): The tool def.
+//   - inputSchema (*structpb.Struct): The input schema.
+//   - outputSchema (*structpb.Struct): The output schema.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *pb.Tool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -245,13 +250,15 @@ func ConvertToolDefinitionToProto(toolDef *configv1.ToolDefinition, inputSchema,
 // Summary: Retrieves GetJSONSchemaForScalarType operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - scalarType (string): The scalar type.
+//   - description (string): The description.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *jsonschema.Schema: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -293,13 +300,14 @@ func GetJSONSchemaForScalarType(scalarType, description string) (*jsonschema.Sch
 // Summary: Executes ConvertProtoToMCPTool operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - pbTool (*pb.Tool): The pb tool.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Tool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

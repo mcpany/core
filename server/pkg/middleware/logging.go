@@ -33,13 +33,13 @@ import (
 // Summary: Executes LoggingMiddleware operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - log (*slog.Logger): The log.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Middleware: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

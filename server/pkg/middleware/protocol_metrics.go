@@ -81,13 +81,13 @@ var (
 // Summary: Executes PrometheusMetricsMiddleware operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (tokenizer.Tokenizer): The t.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - mcp.Middleware: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -248,13 +248,14 @@ func estimateResultTokens(t tokenizer.Tokenizer, res mcp.Result) int {
 // Summary: Executes CalculateToolResultTokens operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (tokenizer.Tokenizer): The t.
+//   - result (any): The result.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

@@ -48,13 +48,13 @@ type Worker struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - config (Config): The config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Worker: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -87,13 +87,13 @@ func New(config Config) *Worker {
 // Summary: Executes Start operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

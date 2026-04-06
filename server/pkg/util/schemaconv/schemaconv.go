@@ -54,13 +54,14 @@ const MaxRecursionDepth = 10
 // Summary: Executes MethodDescriptorToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - methodDesc (protoreflect.MethodDescriptor): The method desc.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -82,13 +83,14 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // Summary: Executes MethodOutputDescriptorToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - methodDesc (protoreflect.MethodDescriptor): The method desc.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -238,13 +240,15 @@ type McpFieldParameter interface {
 // Summary: Executes ConfigSchemaToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params ([]T): The params.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - []string: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -297,13 +301,14 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // Summary: Executes McpFieldsToProtoProperties operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params ([]T): The params.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *structpb.Struct: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

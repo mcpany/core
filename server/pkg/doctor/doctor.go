@@ -79,13 +79,14 @@ type CheckResult struct {
 // Summary: Executes RunChecks operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - config (*configv1.McpAnyServerConfig): The config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []CheckResult: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -131,13 +132,14 @@ func RunChecks(ctx context.Context, config *configv1.McpAnyServerConfig) []Check
 // Summary: Executes CheckService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - service (*configv1.UpstreamServiceConfig): The service.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - CheckResult: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.

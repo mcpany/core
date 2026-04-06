@@ -37,13 +37,15 @@ type OAuth2Authenticator struct {
 // Summary: Initializes NewOAuth2Authenticator operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - config (*OAuth2Config): The config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *OAuth2Authenticator: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +92,15 @@ func NewOAuth2Authenticator(ctx context.Context, config *OAuth2Config) (*OAuth2A
 // Summary: Executes Authenticate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - r (*http.Request): The r.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - context.Context: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

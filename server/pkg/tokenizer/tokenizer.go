@@ -49,13 +49,13 @@ type SimpleTokenizer struct{}
 // Summary: Initializes NewSimpleTokenizer operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SimpleTokenizer: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -81,13 +81,14 @@ func NewSimpleTokenizer() *SimpleTokenizer {
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - text (string): The text.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -127,13 +128,13 @@ type WordTokenizer struct {
 // Summary: Initializes NewWordTokenizer operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *WordTokenizer: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -159,13 +160,14 @@ func NewWordTokenizer() *WordTokenizer {
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - text (string): The text.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -264,13 +266,15 @@ func countWords(text string) int {
 // Summary: Executes CountTokensInValue operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - t (Tokenizer): The t.
+//   - v (interface{}): The v.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -320,13 +324,14 @@ type rawWordCounter struct{}
 // Summary: Executes CountTokens operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - text (string): The text.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - int: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

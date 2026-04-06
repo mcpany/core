@@ -55,13 +55,14 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rootDir (string): The root dir.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Manager: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -92,13 +93,14 @@ func NewManager(rootDir string) (*Manager, error) {
 // Summary: Executes ListSkills operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*Skill: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -160,13 +162,14 @@ func (m *Manager) ListSkills() ([]*Skill, error) {
 // Summary: Retrieves GetSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Skill: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -193,13 +196,13 @@ func (m *Manager) GetSkill(name string) (*Skill, error) {
 // Summary: Initializes CreateSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skill (*Skill): The skill.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -249,13 +252,14 @@ func (m *Manager) CreateSkill(skill *Skill) error {
 // Summary: Executes UpdateSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - originalName (string): The original name.
+//   - skill (*Skill): The skill.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -307,13 +311,13 @@ func (m *Manager) UpdateSkill(originalName string, skill *Skill) error {
 // Summary: Executes DeleteSkill operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -352,13 +356,15 @@ func (m *Manager) DeleteSkill(name string) error {
 // Summary: Executes SaveAsset operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - skillName (string): The skill name.
+//   - relPath (string): The rel path.
+//   - content ([]byte): The content.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

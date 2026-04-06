@@ -44,13 +44,15 @@ type HTTPClientWrapper struct {
 // Summary: Initializes NewHTTPClientWrapper operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - client (*http.Client): The client.
+//   - config (*configv1.UpstreamServiceConfig): The config.
+//   - checker (health.Checker): The checker.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *HTTPClientWrapper: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -83,13 +85,13 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 // Summary: Checks IsHealthy operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -117,13 +119,13 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

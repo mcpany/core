@@ -51,13 +51,18 @@ const (
 // Summary: Executes InitTelemetry operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - serviceName (string): The service name.
+//   - version (string): The version.
+//   - cfg (*config_v1.TelemetryConfig): The cfg.
+//   - writer (io.Writer): The writer.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - func(context.Context) error: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

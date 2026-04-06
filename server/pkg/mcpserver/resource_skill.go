@@ -55,13 +55,13 @@ var _ resource.Resource = &SkillResource{}
 // Summary: Initializes NewSkillResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (*skill.Skill): The s.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SkillResource: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -88,13 +88,14 @@ func NewSkillResource(s *skill.Skill) *SkillResource {
 // Summary: Initializes NewSkillAssetResource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - s (*skill.Skill): The s.
+//   - assetPath (string): The asset path.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *SkillResource: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -116,13 +117,13 @@ func NewSkillAssetResource(s *skill.Skill, assetPath string) *SkillResource {
 // Summary: Executes URI operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -144,13 +145,13 @@ func (r *SkillResource) URI() string {
 // Summary: Executes Name operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -172,13 +173,13 @@ func (r *SkillResource) Name() string {
 // Summary: Executes Service operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -197,13 +198,13 @@ func (r *SkillResource) Service() string {
 // Summary: Executes Resource operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.Resource: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -292,13 +293,14 @@ func (r *SkillResource) resolvePath() (string, error) {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *mcp.ReadResourceResult: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -401,13 +403,13 @@ func isTextMime(mimeType string) bool {
 // Summary: Executes Subscribe operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -434,13 +436,14 @@ func (r *SkillResource) Subscribe(_ context.Context) error {
 // Summary: Executes RegisterSkillResources operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - rm (resource.ManagerInterface): The rm.
+//   - sm (*skill.Manager): The sm.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

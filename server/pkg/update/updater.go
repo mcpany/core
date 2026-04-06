@@ -40,13 +40,14 @@ type Updater struct {
 // Summary: Initializes NewUpdater operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - httpClient (*http.Client): The http client.
+//   - githubAPIURL (string): The github apiurl.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *Updater: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -85,13 +86,18 @@ func NewUpdater(httpClient *http.Client, githubAPIURL string) *Updater {
 // Summary: Executes CheckForUpdate operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - owner (string): The owner.
+//   - repo (string): The repo.
+//   - currentVersion (string): The current version.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *github.RepositoryRelease: The result.
+//   - bool: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -130,13 +136,18 @@ func (u *Updater) CheckForUpdate(ctx context.Context, owner, repo, currentVersio
 // Summary: Executes UpdateTo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - fs (afero.Fs): The fs.
+//   - executablePath (string): The executable path.
+//   - release (*github.RepositoryRelease): The release.
+//   - assetName (string): The asset name.
+//   - checksumsAssetName (string): The checksums asset name.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

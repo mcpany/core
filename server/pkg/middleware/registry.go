@@ -51,13 +51,14 @@ var (
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name.
+//   - factory (Factory): The factory.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -76,13 +77,14 @@ func Register(name string, factory Factory) {
 // Summary: Executes RegisterMCP operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - name (string): The name.
+//   - factory (MCPFactory): The factory.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -103,13 +105,13 @@ func RegisterMCP(name string, factory MCPFactory) {
 // Summary: Retrieves GetHTTPMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - configs ([]*configv1.Middleware): The configs.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []func(http.Handler) http.Handler: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -147,13 +149,13 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 // Summary: Retrieves GetMCPMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - configs ([]*configv1.Middleware): The configs.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []func(mcp.MethodHandler) mcp.MethodHandler: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -217,13 +219,24 @@ type StandardMiddlewares struct {
 // Summary: Executes InitStandardMiddlewares operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - authManager (*auth.Manager): The auth manager.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - auditConfig (*configv1.AuditConfig): The audit config.
+//   - cachingMiddleware (*CachingMiddleware): The caching middleware.
+//   - globalRateLimitConfig (*configv1.RateLimitConfig): The global rate limit config.
+//   - dlpConfig (*configv1.DLPConfig): The dlp config.
+//   - contextOptimizerConfig (*configv1.ContextOptimizerConfig): The context optimizer config.
+//   - debuggerConfig (*configv1.DebuggerConfig): The debugger config.
+//   - smartRecoveryConfig (*configv1.SmartRecoveryConfig): The smart recovery config.
+//   - cfiaConfig (*CFIAConfig): The cfia config.
+//   - discoverySandboxConfig (*DiscoverySandboxConfig): The discovery sandbox config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *StandardMiddlewares: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.

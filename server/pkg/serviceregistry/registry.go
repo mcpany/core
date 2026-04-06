@@ -139,13 +139,17 @@ type ServiceRegistry struct {
 // Summary: Initializes New operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - factory (factory.Factory): The factory.
+//   - toolManager (tool.ManagerInterface): The tool manager.
+//   - promptManager (prompt.ManagerInterface): The prompt manager.
+//   - resourceManager (resource.ManagerInterface): The resource manager.
+//   - authManager (*auth.Manager): The auth manager.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *ServiceRegistry: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -197,13 +201,17 @@ func New(factory factory.Factory, toolManager tool.ManagerInterface, promptManag
 // Summary: Executes RegisterService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - serviceConfig (*config.UpstreamServiceConfig): The service config.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
+//   - []*config.ToolDefinition: The result.
+//   - []*config.ResourceDefinition: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -346,13 +354,14 @@ func (r *ServiceRegistry) RegisterService(ctx context.Context, serviceConfig *co
 // Summary: Executes AddServiceInfo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The service id.
+//   - info (*tool.ServiceInfo): The info.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -377,13 +386,14 @@ func (r *ServiceRegistry) AddServiceInfo(serviceID string, info *tool.ServiceInf
 // Summary: Retrieves GetServiceInfo operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *tool.ServiceInfo: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -421,13 +431,14 @@ func (r *ServiceRegistry) GetServiceInfo(serviceID string) (*tool.ServiceInfo, b
 // Summary: Retrieves GetServiceConfig operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - *config.UpstreamServiceConfig: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -465,13 +476,14 @@ func (r *ServiceRegistry) GetServiceConfig(serviceID string) (*config.UpstreamSe
 // Summary: Executes UnregisterService operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - serviceName (string): The service name.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -523,13 +535,14 @@ func (r *ServiceRegistry) UnregisterService(ctx context.Context, serviceName str
 // Summary: Retrieves GetServiceError operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - serviceID (string): The service id.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - string: The result.
+//   - bool: The result.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -555,13 +568,14 @@ func (r *ServiceRegistry) GetServiceError(serviceID string) (string, bool) {
 // Summary: Executes StartHealthChecks operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
+//   - interval (time.Duration): The interval.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - None.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -655,13 +669,13 @@ func (r *ServiceRegistry) checkAllHealth(ctx context.Context) {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - ctx (context.Context): The request context.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
@@ -694,13 +708,14 @@ func (r *ServiceRegistry) Close(ctx context.Context) error {
 // Summary: Retrieves GetAllServices operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - []*config.UpstreamServiceConfig: The result.
+//   - error: An error if the operation fails.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
 //   - None.
