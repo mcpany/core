@@ -3,19 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, request } from '@playwright/test';
 
-import { apiClient } from '../../src/lib/client';
+const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
+const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
+const HEADERS = { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' };
 
 test.describe('Credentials Management', () => {
 
   test.beforeEach(async () => {
-    // Ensure clean state before test
+    // Ensure clean state before test using playwright request context
+    const context = await request.newContext({ baseURL: BASE_URL });
     try {
-        const credentials = await apiClient.listCredentials();
-        for (const cred of credentials) {
-            if (cred.name.includes('Test API Key') || cred.name.includes('Updated API Key')) {
-                 await apiClient.deleteCredential(cred.id);
+        const res = await context.get('/api/v1/credentials', { headers: HEADERS });
+        if (res.ok()) {
+            const data = await res.json();
+            const credentials = Array.isArray(data) ? data : (data.credentials || []);
+            for (const cred of credentials) {
+                if (cred.name.includes('Test API Key') || cred.name.includes('Updated API Key')) {
+                     await context.delete(`/api/v1/credentials/${cred.id}`, { headers: HEADERS });
+                }
             }
         }
     } catch (e) {
