@@ -143,7 +143,7 @@ test.describe('MCP Any UI E2E Tests', () => {
     await page.click('div.group:has-text("get_users")');
 
     // Wait for the tool runner to appear
-    await expect(page.locator('h3:has-text("get_users")')).toBeVisible();
+    await expect(page.locator('h2:has-text("get_users")')).toBeVisible();
 
     // The tool has no required arguments, so we can just execute it
     // If it has arguments, we could provide them, but get_users has empty args in the seed schema
