@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Integrating Remote Control Session Handoffs.
+    * **Context:** Claude Code's "Remote Control" stability shift requires that AMT Brokers support intent-bound steering instructions.
+    * **Architecture Adjustment:**
+        * Added `amt.SteerRemote(tunnelID, signedIntent)` to support HSM-mediated agent steering.
+        * Mandated "Recursive Mission-Root Attestation" for all steering handoffs crossing the tunnel.
+    * **Security Impact:** Ensures that remote agents can only be steered by authorized mission-root owners, even across distributed mesh nodes.

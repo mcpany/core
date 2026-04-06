@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Headless Session Manager (HSM)**: (P0) Authoritative host for remote agent steering, providing infrastructure to monitor and control headless Claude Code-style sessions.
+- **ContextEngine Skills Adapter**: (P0) Pluggable middleware for OpenClaw-compatible memory and context management plugins, ensuring cross-framework state alignment.
+- **Remote-Control Lineage Validator**: (P0) Security service mandating hardware-attested lineage for steering instructions crossing multi-node mesh boundaries.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **HSM-compliant** remote-control handoffs.
+- **Project-Local Snapshot (PLSS) Sync**: (Re-affirmed P0) Designated as the primary recovery mechanism for **ContextEngine-mediated** state rollbacks.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
