@@ -9,7 +9,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
-import { SmartTable } from "../../tools/smart-table";
+import { SmartTable } from "./smart-table";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 /**
@@ -144,7 +144,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     }, [userViewMode, tableData, mcpContent]);
 
     const renderRaw = () => (
-        <JsonView data={result} maxHeight={400} smartTable={false} />
+        <JsonView data={result} maxHeight={400} />
     );
 
     const renderRich = () => {
@@ -161,7 +161,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                                         if (item.text) {
                                             const parsed = JSON.parse(item.text);
                                             if (typeof parsed === 'object' && parsed !== null) {
-                                                return <JsonView data={parsed} maxHeight={400} smartTable={false} />;
+                                                return <JsonView data={parsed} maxHeight={400} />;
                                             }
                                         }
                                     } catch (e) {}

@@ -8,12 +8,11 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
+import { Code, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { JsonTree } from "./json-tree";
-import { SmartTable } from "@/components/tools/smart-table";
 
 // ⚡ BOLT: Lazy load SyntaxHighlighter to reduce initial bundle size.
 // Randomized Selection from Top 5 High-Impact Targets (Assets/Bundle)
@@ -26,7 +25,6 @@ interface JsonViewProps {
     /**
      * If true, attempts to render array of objects as a table.
      */
-    smartTable?: boolean;
     /**
      * Max height in pixels before collapsing. Default: 400.
      * Set to 0 or negative to disable collapsing.
@@ -51,68 +49,6 @@ const tryParse = (data: unknown) => {
 };
 
 // Helper to determine table data
-const getTableData = (data: unknown, smartTable: boolean) => {
-    if (!smartTable) return null;
-    const content = tryParse(data);
-
-    if (Array.isArray(content) && content.length > 0) {
-        const isListOfObjects = content.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
-        if (isListOfObjects) {
-            return content;
-        }
-        const isListOfPrimitives = content.every(item => typeof item !== 'object' || item === null);
-        if (isListOfPrimitives) {
-            return content.map((item, index) => ({ index, value: item }));
-        }
-    }
-
-    if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
-        let largestArray: any[] | null = null;
-        Object.values(content).forEach(val => {
-            if (Array.isArray(val) && val.length > 0) {
-                const isListOfObjects = val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
-                if (isListOfObjects) {
-                    if (!largestArray || val.length > largestArray.length) {
-                        largestArray = val;
-                    }
-                } else {
-                    const isListOfPrimitives = val.every(item => typeof item !== 'object' || item === null);
-                    if (isListOfPrimitives) {
-                        const mapped = val.map((item, index) => ({ index, value: item }));
-                        if (!largestArray || mapped.length > largestArray.length) {
-                            largestArray = mapped;
-                        }
-                    }
-                }
-            } else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
-                Object.values(val).forEach(nestedVal => {
-                    if (Array.isArray(nestedVal) && nestedVal.length > 0) {
-                        const isListOfObjects = nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
-                        if (isListOfObjects) {
-                            if (!largestArray || nestedVal.length > largestArray.length) {
-                                largestArray = nestedVal;
-                            }
-                        } else {
-                            const isListOfPrimitives = nestedVal.every(item => typeof item !== 'object' || item === null);
-                            if (isListOfPrimitives) {
-                                const mapped = nestedVal.map((item, index) => ({ index, value: item }));
-                                if (!largestArray || mapped.length > largestArray.length) {
-                                    largestArray = mapped;
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-        if (largestArray) {
-            return largestArray;
-        }
-    }
-
-    return null;
-};
-
 /**
  * Intent: Document JsonView
  *
@@ -134,11 +70,10 @@ const getTableData = (data: unknown, smartTable: boolean) => {
  * @param props - The component props.
  * @param props.data - The data to display.
  * @param props.className - The className.
- * @param props.smartTable - Whether to attempt smart table rendering.
  * @param props.maxHeight - Max height before collapsing (only applies to Raw/Table views, Tree handles its own).
  * @returns The rendered component.
  */
-export function JsonView({ data, className, smartTable = true, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
+export function JsonView({ data, className, maxHeight = 400, defaultExpandedLevel = 1 }: JsonViewProps) {
     // Calculate initial state lazily
     const [viewMode, setViewMode] = useState<"smart" | "tree" | "raw" | "image">(() => {
         const parsed = tryParse(data);
@@ -146,8 +81,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         // Check for image
         if (typeof parsed === 'string' && parsed.startsWith('data:image/')) return "image";
 
-        const tableData = getTableData(data, smartTable);
-        if (tableData) return "smart";
+
 
         const isObj = typeof parsed === 'object' && parsed !== null;
         if (isObj) return "tree";
@@ -158,11 +92,9 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const { toast } = useToast();
-
-    const tableData = useMemo(() => getTableData(data, smartTable), [data, smartTable]);
     const parsedData = useMemo(() => tryParse(data), [data]);
 
-    const hasSmartView = tableData !== null;
+    const hasSmartView = false;
     const isObject = typeof parsedData === 'object' && parsedData !== null;
     const isImage = typeof parsedData === 'string' && parsedData.startsWith('data:image/');
 
@@ -309,42 +241,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         );
     }
 
-    const renderSmart = () => {
-        if (!tableData) return renderRaw();
-
-        return (
-            <div className={cn("rounded-md border overflow-hidden bg-card", className)}>
-                <div
-                    className={cn(showCollapse && !isExpanded ? "relative" : "")}
-                    style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
-                >
-                    <div className="h-full min-h-[300px]" style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : '400px' }}>
-                        <SmartTable data={tableData} />
-                    </div>
-
-                    {showCollapse && !isExpanded && (
-                        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent pointer-events-none" />
-                    )}
-                </div>
-
-                {showCollapse && (
-                    <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t flex justify-between items-center">
-                        <span />
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-4 p-0 text-[10px] text-primary"
-                            onClick={() => setIsExpanded(!isExpanded)}
-                        >
-                            {isExpanded ? "Collapse" : "Expand"}
-                        </Button>
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    if (data === undefined || data === null) {
+        if (data === undefined || data === null) {
         return <span className="text-muted-foreground italic text-xs">null</span>;
     }
 

@@ -6,6 +6,7 @@
 
 
 import { JsonView } from "@/components/ui/json-view";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 interface JsonViewerProps {
   data: unknown;
@@ -35,6 +36,6 @@ interface JsonViewerProps {
  */
 export default function JsonViewer({ data }: JsonViewerProps) {
   return (
-    <JsonView data={data} smartTable={true} />
+    <RichResultViewer result={data} />
   );
 }

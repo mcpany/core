@@ -15,6 +15,7 @@ import { apiClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
 import { JsonView } from "@/components/ui/json-view";
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
@@ -220,7 +221,7 @@ export function RecentActivityWidget() {
                                                         <Code2 className="h-3 w-3" /> Request
                                                     </div>
                                                     <div className="bg-muted/50 rounded-md border border-border/50 overflow-hidden">
-                                                        <JsonView data={safeParsePayload(trace.rootSpan.input)} maxHeight={400} smartTable={true} />
+                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.input)} />
                                                     </div>
                                                 </div>
                                             )}
@@ -246,7 +247,7 @@ export function RecentActivityWidget() {
                                                         <CheckCircle2 className="h-3 w-3" /> Response
                                                     </div>
                                                     <div className="bg-emerald-500/5 rounded-md border border-emerald-500/20 overflow-hidden">
-                                                        <JsonView data={safeParsePayload(trace.rootSpan.output)} maxHeight={400} smartTable={true} />
+                                                        <RichResultViewer result={safeParsePayload(trace.rootSpan.output)} />
                                                     </div>
                                                 </div>
                                             )}

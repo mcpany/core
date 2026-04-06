@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { useState, useEffect, lazy, Suspense } from "react";
-import { SmartResultRenderer } from "./smart-result-renderer";
+import { SmartResultRenderer } from "@/components/tools/smart-result-renderer";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";

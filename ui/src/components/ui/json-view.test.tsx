@@ -54,62 +54,10 @@ describe('JsonView', () => {
     expect(mockWriteText).toHaveBeenCalledWith(JSON.stringify(data, null, 2));
   });
 
-  it('supports smart table view', async () => {
-    const data = [
-        { id: 1, name: 'Alice' },
-        { id: 2, name: 'Bob' }
-    ];
-    render(<JsonView data={data} smartTable={true} />);
-
-    // Should render table button
-    expect(screen.getByText('Table')).toBeInTheDocument();
-
-    // Default mode is Smart (Table)
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('Bob')).toBeInTheDocument();
-
-    // Switch to JSON (Raw) - use act to handle the Suspense boundary of the
-    // lazily-loaded SyntaxHighlighter component
-    const jsonBtn = screen.getByText('Raw');
-    await act(async () => {
-      fireEvent.click(jsonBtn);
-    });
-    // ⚡ BOLT: Wait for lazy-loaded SyntaxHighlighter
-    expect(await screen.findByText(/"Alice"/)).toBeInTheDocument();
-  });
-
   it('collapses long content', () => {
-      // We can't easily test visual height in jsdom, but we can check if the collapse button renders
-      // and toggles state.
       const data = { key: 'very long content' };
-      // maxHeight defaults to 400.
-
       render(<JsonView data={data} maxHeight={100} />);
-
-      // The button "Show More" should be present if we force it?
-      // Wait, render logic says:
-      // const showCollapse = maxHeight > 0;
-      // ... {showCollapse && ( ... button ... )}
-
-      // So the button is ALWAYS rendered if maxHeight > 0?
-      // Yes, my implementation:
-      /*
-        {showCollapse && (
-            <div className="...">
-                <Button ...>
-                    {isExpanded ? ... : ...}
-                </Button>
-            </div>
-        )}
-      */
-      // Wait, checking my implementation:
-      // It renders the button unconditionally if showCollapse is true?
-      // Yes. It doesn't check if the content *actually* exceeds maxHeight.
-      // This is a known limitation I accepted in comments:
-      // "Calculate approximate lines to guess if we need expand button without rendering? Hard to do accurately."
-
       expect(screen.getByText('Show More')).toBeInTheDocument();
-
       fireEvent.click(screen.getByText('Show More'));
       expect(screen.getByText('Show Less')).toBeInTheDocument();
   });

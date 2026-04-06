@@ -27,6 +27,7 @@ const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.V
  * @returns The rendered component.
  */
 const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ default: m.JsonView })));
+import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
 /**
  * Intent: Document LogLevel
@@ -251,7 +252,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
                 {isExpanded && isPotentialJson && (
                   <div className="w-full max-w-full overflow-x-auto text-xs bg-[#1e1e1e] dark:bg-black/40 rounded-lg border border-border/40 p-4 shadow-inner">
                     {jsonContent ? (
-                      <Suspense fallback={<div className="animate-pulse h-8 bg-muted/20 rounded" />}><JsonView data={jsonContent} smartTable={true} maxHeight={400} /></Suspense>
+                      <Suspense fallback={<div className="animate-pulse h-8 bg-muted/20 rounded" />}><RichResultViewer result={jsonContent} /></Suspense>
                     ) : (
                       <div className="p-3 bg-red-500/10 text-red-400 rounded-md border border-red-500/20 italic text-sm">
                         Failed to parse JSON payload
