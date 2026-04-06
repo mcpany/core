@@ -67,3 +67,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 * **Multi-Signature Requirement**: Transitioning from single-provider signing to MSSA. Dynamic skill grafting now requires cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor.
 * **Auditor Sidecars**: Introducing "Auditor Sidecars" in the analysis engine that provide real-time, independent behavioral monitoring for high-risk tools.
 **Security Impact:** Mitigates the risk of "Rug-Pull" supply chain attacks by ensuring no single entity can authorize high-risk tool execution.
+
+### Update: 2026-04-05 - Automated Behavioral Profiling (ABP) Integration
+**Context:** Today's market sync revealed that hundreds of malicious skills have been detected in the ClawHub registry, some distributing persistent malware.
+**Architecture Adjustment:**
+* **Mandatory Burn-In**: Every community-sourced skill must undergo a mandatory 24-hour (simulated) "Burn-In" in an instrumented sandbox.
+* **Network/FS Sentinel**: MCP Any will now monitor and log all raw syscalls during the profiling phase to identify unauthorized exfiltration paths.
+**Security Impact:** Prevents the propagation of supply-chain malware by identifying anomalous behavior before a skill is promoted to the "Trusted" tier.

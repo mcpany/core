@@ -451,6 +451,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Optimistic Execution Gate**: Speculative context loading for tools, synchronized with background discovery quorums. (Added: 2026-04-05)
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
 
+#### Upcoming (2026-04-05 Iteration 2)
+*   **[P1] Exposed Instance Scanner (EIS)**: Automated security service to detect unauthenticated agent gateways (CVE-2026-25253 defense). (Added: 2026-04-05)
+*   **[P0] Skill Sandbox Isolation**: Mandatory resource-level isolation for all connected tools to prevent host pivots. (Added: 2026-04-05)
+
 #### Upcoming (2026-04-06 Evolution)
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context poisoning instructions in tool schemas. (Added: 2026-04-06)
 *   **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)

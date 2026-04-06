@@ -202,6 +202,8 @@
 - [ ] **[P0] Local Trust Verification Dashboard**: (2026-04-05) UI for reviewing and signing local MCP server identity claims.
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
+- [ ] **[P1] Exposed Instance Security Map**: (2026-04-05) Visual dashboard for monitoring EIS-detected vulnerabilities and blocked token thefts.
+- [ ] **[P0] Skill Sandbox Resource Monitor**: (2026-04-05) Real-time tracker for per-skill resource isolation and boundary violations.
 
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)

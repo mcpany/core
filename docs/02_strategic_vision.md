@@ -873,6 +873,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Attested Discovery Authority**: Following Claude Code's mandate for Trust Verification, MCP Any will act as the "Certificate Authority" for local MCP servers. We will provide cryptographic proof of a tool's provenance before it is exposed to the agent runtime.
 - **Normalized Optimistic Execution**: We are standardizing the "Optimistic Load" pattern from the Gemini ecosystem. MCP Any will allow agents to speculatively prepare tool contexts while discovery quorums perform background attestation, minimizing the "Security Latency" tax.
 
+## Strategic Evolution: [2026-04-05] (Iteration 2)
+### Focus: Mesh-Wide Vulnerability Remediation & Skill Provenance Hardening
+**Context**: The disclosure of mass remote exposure in OpenClaw (220k+ instances) and the weaponization of the ClawHub registry for malware distribution confirm that the "Universal Agent Bus" must move beyond simple bridging. We must now act as the primary immunity layer for the mesh, proactively scanning for exposure and enforcing cryptographic provenance for all executable skills.
+**Strategic Pivot**:
+- **Exposed Instance Scanner (EIS)**: MCP Any will integrate an automated scanner to detect and alert users of unauthenticated or publicly accessible agent gateways. We will implement "Safe-by-Default" loopback enforcement to neutralize CVE-2026-25253.
+- **Automated Behavioral Profiling (ABP)**: To counter malicious skills in community registries, MCP Any will mandate ABP for all dynamic tool grafting. Skills will be executed in a deeply instrumented "Burn-In Sandbox" to profile network and filesystem activity before being promoted to the "Trusted" tier.
+- **Action-Chain Sovereignty Monitor (ACSM)**: Neutralizing the "Confused Deputy" problem, we are introducing the ACSM. This service will validate the complete sequence of agent tool calls against a signed mission-root manifest, blocking "Grafted" logic that attempts to hijack supervisor intent.
+- **Skill Sandbox Isolation**: We are mandating per-skill resource isolation. Every connected tool will operate in its own restricted execution context, ensuring that a compromised specialist agent cannot "pivot" to sensitive local files or sibling tool state.
+
 ---
 
 ## Strategic Evolution: [2026-04-06]

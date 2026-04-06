@@ -1295,6 +1295,14 @@
 - **Attested Discovery Authority**: (P0) Cryptographic identity broker for local MCP servers, providing the "Trust Verification" required by Claude Code.
 - **Optimistic Execution Gate**: (P0) Implementation of speculative context loading for tools, synchronized with background discovery quorums.
 
+## Evolution: [2026-04-05] (Iteration 2) Updates
+
+### Proposed Additions
+- **Exposed Instance Scanner (EIS)**: (P1) Automated security service that detects unauthenticated or publicly accessible agent gateways to prevent token theft.
+- **Skill Sandbox Isolation**: (P0) Mandatory resource-level isolation for all connected tools, ensuring specialist agents cannot access unauthorized host files.
+- **Automated Behavioral Profiling (ABP)**: (P0) Instrumented "Burn-In" sandbox for community skills to detect malicious filesystem or network activity before trust is granted.
+- **Action-Chain Sovereignty Monitor (ACSM)**: (P0) Real-time monitor validating agent tool-call sequences against hardware-attested mission manifests.
+
 ### Priority Shifts
 - **Unified RL Feedback Telemetry Bridge**: (Re-affirmed P1) Now a core strategic requirement to support OpenClaw-RL v1.
 - **Provenance-First Discovery**: (Promoted to P0) Critical for satisfying the new Claude Code trust verification requirements.
