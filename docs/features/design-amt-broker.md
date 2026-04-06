@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating Tunneling Overhead
+**Context:** Market sync from 2026-07-24 revealed that mandatory P2P tunnels in OpenClaw (SNT) are impacting sub-millisecond execution.
+**Architecture Adjustment:**
+*   Integrating with the **Fast-Path Identity Resumption (FPIR)** provider in Section 4.
+*   Implementing "Lightweight Mesh Handshakes" using session-bound trust tickets to bypass full TPM signatures for resumed tunnels.
+**Security Impact:** Maintains origin-locked sovereignty while reducing coordination tax for high-frequency remote tool calls.
