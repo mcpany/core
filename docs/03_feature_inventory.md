@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Progressive Discovery Broker (PDB)**: (P0) Authoritative discovery service implementing metadata-first tool loading to prevent context-window saturation in high-density swarms.
+- **Mesh-Resident Teammate Messaging (MRTM)**: (P0) Peer-to-peer messaging tier for horizontal meshes allowing teammates to bypass orchestrator bottlenecks for mailbox synchronization.
+- **Multi-Platform Messenger Adapter (MPMA)**: (P1) Integration bridge for OpenClaw-style P2P coordination across WhatsApp, Slack, and Discord with mission-root persistence.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Elevated with mandatory **Progressive Disclosure** patterns to neutralize pre-flight shadow mapping.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated as the primary transport for the new **MRTM** sharded mailbox fragments.

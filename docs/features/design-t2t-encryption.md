@@ -85,3 +85,11 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-teamm
 *   The Mailbox Integrity Middleware now performs semantic fragment scanning *before* re-composition.
 *   Shards now mandate a "Fragment Proof" (SMI-bound signature) for every message segment.
 **Security Impact:** Prevents "State Splicing" attacks by ensuring every fragment in the teammate coordination loop is semantically validated against the Mission Root.
+
+### Update: 2026-07-25 - Supporting Mesh-Resident Teammate Messaging
+**Context:** Maturation of Claude Code "Agent Teams" revealed that routing all inter-teammate coordination through a central orchestrator creates a 100ms+ "Cognitive Stall" in high-density meshes.
+**Architecture Adjustment:**
+- Introducing **MRTM (Mesh-Resident Teammate Messaging)** extension to the T2T Bridge.
+- Support for **Direct Shard Multicasting** where teammates can broadcast mailbox fragments to multiple peers simultaneously using hardware-attested mesh keys.
+- Shifting from sequential lock-based sync to **Conflict-Free Replicated Data Types (CRDTs)** for the shared task list, hosted within the sharded T2T bus.
+**Security Impact:** Reduces attack surface of the central orchestrator by decentralizing message state while maintaining Zero-Trust boundaries via per-teammate hardware attestation.
