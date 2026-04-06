@@ -9,7 +9,18 @@ import sys
 from fastmcp import start_mcp_server
 
 def get_local_time_json(args):
-    """A simple tool that returns the current time as JSON."""
+    """
+    Summary: A simple tool that returns the current time as JSON.
+
+    Parameters:
+      - args: The arguments for the tool (ignored).
+
+    Returns:
+      - dict: A dictionary containing the current time and timezone.
+
+    Throws/Errors:
+      - None.
+    """
     now = datetime.now().astimezone()
     time_str = now.strftime("%Y-%m-%d %H:%M:%S")
     timezone_str = now.tzname()
@@ -20,7 +31,16 @@ def get_local_time_json(args):
 
 def main():
     """
-    Main entry point for the time server.
+    Summary: Main entry point for the time server.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
     """
     start_mcp_server(
         service_name="time-server",

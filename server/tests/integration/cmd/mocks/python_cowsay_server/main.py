@@ -12,11 +12,31 @@ mcp = FastMCP("e2e-cowsay-server")
 
 def main():
     """
-    Main entry point for the cowsay server.
+    Summary: Main entry point for the cowsay server.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
     """
     @mcp.tool()
     def say(message: str) -> str:
-        """Says a message using cowsay."""
+        """
+        Summary: Says a message using cowsay.
+
+        Parameters:
+          - message (str): The message to say.
+
+        Returns:
+          - str: The ASCII art string from cowsay.
+
+        Throws/Errors:
+          - None.
+        """
         return cowsay.get_output_string("cow", message)
 
     mcp.run(transport='stdio', show_banner=False)

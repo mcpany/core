@@ -11,13 +11,16 @@ in TypeScript (.tsx) files. It attempts to infer prop descriptions based on name
 
 def get_prop_desc(name):
     """
-    Generates a description for a prop based on its name.
+    Summary: Generates a description for a prop based on its name.
 
-    Args:
-        name: The name of the prop.
+    Parameters:
+      - name (str): The name of the prop.
 
     Returns:
-        A description string.
+      - str: A description string.
+
+    Throws/Errors:
+      - None.
     """
     name_lower = name.lower()
     if name_lower == 'id': return "The unique identifier."
@@ -44,10 +47,16 @@ def get_prop_desc(name):
 
 def process_file(filepath):
     """
-    Scans a file for React components and adds/updates docstrings.
+    Summary: Scans a file for React components and adds or updates docstrings.
 
-    Args:
-        filepath: The path to the file to process.
+    Parameters:
+      - filepath (str): The path to the file to process.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
     """
     with open(filepath, 'r') as f:
         content = f.read()
@@ -205,7 +214,16 @@ def process_file(filepath):
 
 def main():
     """
-    Main function to walk the directory and process all .tsx files.
+    Summary: Main function to walk the directory and process all .tsx files.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
     """
     root_dir = 'ui/src'
     for dirpath, dirnames, filenames in os.walk(root_dir):

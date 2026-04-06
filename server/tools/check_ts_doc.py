@@ -11,13 +11,16 @@ import sys
 
 def check_file(filepath):
     """
-    Checks a single file for missing documentation on exported symbols.
+    Summary: Checks a single file for missing documentation on exported symbols.
 
-    Args:
-        filepath: The path to the file to check.
+    Parameters:
+      - filepath (str): The path to the file to check.
 
     Returns:
-        A list of tuples containing (line_number, symbol_name) for missing docs.
+      - list: A list of tuples containing (line_number, symbol_name) for missing docs.
+
+    Throws/Errors:
+      - None.
     """
     with open(filepath, 'r') as f:
         content = f.read()
@@ -65,8 +68,16 @@ def check_file(filepath):
 
 def main():
     """
-    Main function to walk the directory and check all applicable files.
-    Exits with status code 1 if any missing documentation is found.
+    Summary: Main function to walk the directory and check all applicable files.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - SystemExit: Exits with status code 1 if any missing documentation is found.
     """
     root_dir = 'ui/src'
     has_errors = False
