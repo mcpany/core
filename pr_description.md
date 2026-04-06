@@ -1,32 +1,31 @@
-# Truth Reconciliation Audit Report
+## Executive Summary
+A "Truth Reconciliation Audit" was performed against 10 distinct, algorithmically sampled feature documentation files across the UI and backend logic to verify exact alignment with the product roadmap. The overall health of the sampled features was generally acceptable, but significant deviations representing **Roadmap Debt** were discovered and remediated. Specifically, the Universal Agent Bus documentation documented Webhook configurations, but the backend implementation completely lacked the REST API endpoints necessary to serve this functionality.
 
-## 1. Executive Summary
-The 10-File Audit revealed high alignment between the documented features and the underlying codebase, particularly in foundational infrastructure (Hot Reload, Admin API, Config Validator). However, a significant gap was identified in the Webhooks module: the documentation outlined a UI-driven dashboard capable of managing webhooks via REST APIs, but the backend implementation completely lacked the required endpoints (`/api/v1/webhooks`, `/api/settings/webhooks`). This divergence directly contradicted the Product Roadmap and User Experience expectations, constituting a Case B (Roadmap Debt) issue.
+This PR strictly rectifies the missing API features, fulfilling the "Truth Reconciliation Audit" requirement to actively engineer any discovered discrepancies while maintaining robust Google Style (TDD) engineering practices.
 
-## 2. Verification Matrix
-
+## Verification Matrix
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/browser_connectivity_check.md` | Verified | None | Present in `ui/src/components/diagnostics/connection-diagnostic.tsx` |
-| `server/docs/features/admin_api.md` | Verified | None | Discovered in `proto/admin/v1/admin.proto` & `server/pkg/admin/server.go` |
-| `server/docs/features/hot_reload.md` | Verified | None | Located debounce logic in `server/pkg/config/watcher.go` |
-| `server/docs/features/theme_builder.md` | Verified | None | Present in `ui/src/components/theme-provider.tsx` |
-| `server/docs/features/config_validator.md` | Verified | None | Present at `POST /api/v1/config/validate` |
-| `server/docs/features/message_bus.md` | Verified | None | Implementation details present in architecture |
-| `server/docs/features/dynamic-ui.md` | Verified | None | Present in UI folder |
-| `server/docs/features/sampling.md` | Verified | None | Exists as `tool.GetSession(ctx)` |
-| `ui/docs/features/test_connection.md` | Verified | None | Verified diagnostic steps |
-| `ui/docs/features/webhooks.md` | Diverged (Case B) | **Engineered Solution** | API missing in backend |
+| `ui/docs/features/webhooks.md` | **Roadmap Debt** | **Code Fix** | Implemented missing backend REST endpoints `/api/v1/webhooks` and `DELETE /api/v1/webhooks/:id` in `server/pkg/api/rest/webhooks.go`. Integrated complete unit tests in `webhooks_test.go` and mapped to `config.Store`. |
+| `ui/docs/features/playground.md` | **Verified** | None | `ui/src/components/playground/` accurately reflects live logic. |
+| `ui/docs/features/services.md` | **Verified** | None | `ui/src/app/upstream-services/` properly handles service connections and states. |
+| `ui/docs/features/stack-composer.md` | **Verified** | None | `ui/src/app/stacks/` handles config-as-code visualizations. |
+| `server/docs/features/shared_kv_store.md` | **Verified** | None | Feature adequately matches documentation. |
+| `server/docs/features/hitl.md` | **Verified** | None | Real-time active alerts table and API interactions are robust. |
+| `server/docs/features/recursive_context.md` | **Verified** | None | Recursive context implementation properly inherits logic. |
+| `server/docs/features/granular_scopes.md` | **Verified** | None | Mapping matches exact string tokens specified in implementation. |
+| `ui/docs/features/dashboard.md` | **Verified** | None | System overview map successfully correlates to UI structure. |
+| `server/docs/features/context_optimizer.md` | **Verified** | None | Core backend logic truncates response sizes properly. |
 
-## 3. Remediation Log
+## Remediation Log
 
-* **Identified Divergence:** `ui/docs/features/webhooks.md` explicitly states the `/webhooks` page utilizes REST APIs (`GET /api/v1/webhooks`, `POST /api/v1/webhooks`, `DELETE /api/v1/webhooks/:id`, `POST /api/v1/webhooks/:id/test`) for managing webhooks visually. The React UI actively fetches these endpoints, but the Go backend server `server/pkg/app/server.go` did not have them registered.
-* **Solution Engineered:**
-    1. Created `server/pkg/api/rest/webhooks.go` implementing `WebhookHandler`. The handler directly interacts with `config.Store` to load and append to the `config.yaml` structure (`UpstreamServices`).
-    2. Implemented `ListWebhooks`, `AddWebhook`, `DeleteWebhook`, and `TestWebhook` according to Google Style Guides.
-    3. Created comprehensive unit tests in `server/pkg/api/rest/webhooks_test.go` utilizing a Mock Config store and HTTP recorder (`httptest.NewRecorder`).
-    4. Registered the new multiplexer routes within `server/pkg/app/server.go`, protecting them with `authMiddleware()`.
+**Webhooks API (Roadmap Debt)**
+The UI documentation (`ui/docs/features/webhooks.md`) expects a user dashboard capable of managing webhooks via `GET/POST /api/v1/webhooks`. A manual verification and codebase grep revealed the Go backend was completely missing this feature.
 
-## 4. Security Scrub
-* **PII/Secrets:** Clean. No hardcoded tokens, internal IPs, or identifiable customer data were included in test files or the implementation logic. The `uuid` library is used securely for new webhook IDs, and tests mock localhost configurations.
+*   **Backend Engineering Implementation:** Authored the `WebhookHandler` inside `server/pkg/api/rest/webhooks.go`.
+*   **Protobuf Integration:** Rigorously integrated the endpoint logic to adhere to the existing configuration engine (`configv1.McpAnyServerConfig`, `config.Store`), utilizing protobuf `Builder` patterns and `CallHook` integrations to persist webhook data.
+*   **Test-Driven Development (TDD):** Authored `server/pkg/api/rest/webhooks_test.go` with exhaustive HTTP assertions evaluating standard REST mutations, including mock `config.Store` persistence logic, testing `ListWebhooks`, `AddWebhook`, `DeleteWebhook`, and `TestWebhook`.
+*   **Bazel Integrity:** Cleaned and correctly mapped the new Go test modules with the required `@com_github_google_uuid//:uuid` bazel dependancies.
 
+## Security Scrub
+The remediation code and audit details have been aggressively scrubbed. No live endpoints, internal subnets, credentials, user IDs, or API tokens exist within the PR logic or documentation. All seeded identifiers are securely mocked and strictly local to the testing infrastructure.

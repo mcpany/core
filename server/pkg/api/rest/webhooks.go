@@ -4,6 +4,7 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -103,19 +104,17 @@ func (wh *WebhookHandler) AddWebhook(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Cannot add webhook if no services exist in the current configuration model,
 		// but let's assume one exists or we return an error.
-		http.Error(w, "No upstream services configured to attach webhook to", http.StatusFailedPrecondition)
+		http.Error(w, "No upstream services configured to attach webhook to", http.StatusBadRequest)
 		return
 	}
 
 	hookName := "webhook-" + uuid.New().String()[:8]
-	newHook := &configv1.Hook{
-		Name: hookName,
-		HookType: &configv1.Hook_Webhook{
-			Webhook: &configv1.WebhookConfig{
-				Url: req.URL,
-			},
-		},
-	}
+	newHook := configv1.CallHook_builder{
+		Name: &hookName,
+	}.Build()
+	newHook.SetWebhook(configv1.WebhookConfig_builder{
+		Url: req.URL,
+	}.Build())
 
 	// Default to pre_call if events not specified or contains "all" or "pre_call"
 	isPostCall := false
@@ -126,9 +125,9 @@ func (wh *WebhookHandler) AddWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if isPostCall {
-		targetService.PostCallHooks = append(targetService.PostCallHooks, newHook)
+		targetService.SetPostCallHooks(append(targetService.GetPostCallHooks(), newHook))
 	} else {
-		targetService.PreCallHooks = append(targetService.PreCallHooks, newHook)
+		targetService.SetPreCallHooks(append(targetService.GetPreCallHooks(), newHook))
 	}
 
 	// Use type assertion to check if store supports SaveService
@@ -167,7 +166,7 @@ func (wh *WebhookHandler) DeleteWebhook(w http.ResponseWriter, r *http.Request) 
 	var found bool
 
 	for _, svc := range cfg.GetUpstreamServices() {
-		var newPre []*configv1.Hook
+		var newPre []*configv1.CallHook
 		for _, hook := range svc.GetPreCallHooks() {
 			if hook.GetName() == id {
 				found = true
@@ -177,7 +176,7 @@ func (wh *WebhookHandler) DeleteWebhook(w http.ResponseWriter, r *http.Request) 
 			}
 		}
 
-		var newPost []*configv1.Hook
+		var newPost []*configv1.CallHook
 		for _, hook := range svc.GetPostCallHooks() {
 			if hook.GetName() == id {
 				found = true
@@ -188,8 +187,8 @@ func (wh *WebhookHandler) DeleteWebhook(w http.ResponseWriter, r *http.Request) 
 		}
 
 		if found {
-			targetService.PreCallHooks = newPre
-			targetService.PostCallHooks = newPost
+			targetService.SetPreCallHooks(newPre)
+			targetService.SetPostCallHooks(newPost)
 			break
 		}
 	}

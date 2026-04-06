@@ -9,6 +9,7 @@ go_library(
         "catalog.go",
         "handler.go",
         "model.go",
+        "webhooks.go",
     ],
     importpath = "github.com/mcpany/core/server/pkg/api/rest",
     visibility = ["//visibility:public"],
@@ -17,6 +18,7 @@ go_library(
         "//proto/config/v1:config",
         "//server/pkg/catalog",
         "//server/pkg/config",
+        "@com_github_google_uuid//:uuid",
         "@in_gopkg_yaml_v3//:yaml_v3",
     ],
 )
@@ -30,6 +32,7 @@ go_test(
         "handler_extra_test.go",
         "handler_filesystem_leak_repro_test.go",
         "handler_repro_leak_test.go",
+        "webhooks_test.go",
         "handler_security_test.go",
         "handler_test.go",
         "sentinel_handler_test.go",
@@ -37,8 +40,11 @@ go_test(
     embed = [":rest"],
     deps = [
         "//proto/api/v1:api",
+        "//proto/config/v1:config",
         "//server/pkg/catalog",
+        "//server/pkg/config",
         "@com_github_spf13_afero//:afero",
         "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
     ],
 )

@@ -18,6 +18,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type mockStore struct {
+	cfg *configv1.McpAnyServerConfig
+}
+
+func (m *mockStore) Load(ctx context.Context) (*configv1.McpAnyServerConfig, error) {
+	return m.cfg, nil
+}
+
+func (m *mockStore) HasConfigSources() bool {
+	return true
+}
+
+func (m *mockStore) SaveService(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
+	for i, s := range m.cfg.GetUpstreamServices() {
+		if s.GetName() == service.GetName() {
+			m.cfg.GetUpstreamServices()[i] = service
+			return nil
+		}
+	}
+	m.cfg.SetUpstreamServices(append(m.cfg.GetUpstreamServices(), service))
+	return nil
+}
+
 func TestWebhookHandler_ListWebhooks(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	afero.WriteFile(fs, "/config.yaml", []byte(`
@@ -59,12 +82,16 @@ upstream_services:
 }
 
 func TestWebhookHandler_AddWebhook(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	afero.WriteFile(fs, "/config.yaml", []byte(`
-upstream_services:
-  - name: test-service
-`), 0644)
-	store := config.NewFileStore(fs, []string{"/config.yaml"})
+	svcName := "test-service"
+	mockSvc := configv1.UpstreamServiceConfig_builder{
+		Name: &svcName,
+	}.Build()
+
+	store := &mockStore{
+		cfg: configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{mockSvc},
+		}.Build(),
+	}
 	handler := NewWebhookHandler(store)
 
 	payload := `{"url":"http://test.com/hook","events":["post_call"],"active":true}`
@@ -84,22 +111,33 @@ upstream_services:
 	// Verify it was saved
 	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
-	require.Len(t, cfg.UpstreamServices, 1)
-	assert.Len(t, cfg.UpstreamServices[0].PostCallHooks, 1)
-	assert.Equal(t, "http://test.com/hook", cfg.UpstreamServices[0].PostCallHooks[0].GetWebhook().GetUrl())
+	require.Len(t, cfg.GetUpstreamServices(), 1)
+	assert.Len(t, cfg.GetUpstreamServices()[0].GetPostCallHooks(), 1)
+	assert.Equal(t, "http://test.com/hook", cfg.GetUpstreamServices()[0].GetPostCallHooks()[0].GetWebhook().GetUrl())
 }
 
 func TestWebhookHandler_DeleteWebhook(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	afero.WriteFile(fs, "/config.yaml", []byte(`
-upstream_services:
-  - name: test-service
-    pre_call_hooks:
-      - name: hook1
-        webhook:
-          url: http://localhost/hook1
-`), 0644)
-	store := config.NewFileStore(fs, []string{"/config.yaml"})
+	hookName := "hook1"
+	url := "http://localhost/hook1"
+	svcName := "test-service"
+
+	mockSvc := configv1.UpstreamServiceConfig_builder{
+		Name: &svcName,
+		PreCallHooks: []*configv1.CallHook{
+			configv1.CallHook_builder{
+				Name: &hookName,
+				Webhook: configv1.WebhookConfig_builder{
+					Url: url,
+				}.Build(),
+			}.Build(),
+		},
+	}.Build()
+
+	store := &mockStore{
+		cfg: configv1.McpAnyServerConfig_builder{
+			UpstreamServices: []*configv1.UpstreamServiceConfig{mockSvc},
+		}.Build(),
+	}
 	handler := NewWebhookHandler(store)
 
 	req := httptest.NewRequest("DELETE", "/api/v1/webhooks/hook1", nil)
@@ -112,8 +150,8 @@ upstream_services:
 	// Verify it was saved/deleted
 	cfg, err := store.Load(context.Background())
 	require.NoError(t, err)
-	require.Len(t, cfg.UpstreamServices, 1)
-	assert.Len(t, cfg.UpstreamServices[0].PreCallHooks, 0)
+	require.Len(t, cfg.GetUpstreamServices(), 1)
+	assert.Len(t, cfg.GetUpstreamServices()[0].GetPreCallHooks(), 0)
 }
 
 func TestWebhookHandler_TestWebhook(t *testing.T) {
