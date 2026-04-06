@@ -1,5 +1,14 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Universal Error Mapping Middleware**: (P0) Authoritative translation service intercepting arbitrary upstream errors (HTTP, gRPC, CLI) and normalizing them into standardized semantic schemas to reduce hallucination and retry loops.
+- **Global Agent Activity Map**: (P0) Premium "Apple-level" visual telemetry component for the dashboard providing real-time, geolocated visualization of distributed agent mesh activity.
+
+### Priority Shifts
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Elevated to kernel-level priority to support OpenClaw MACR-compliant state arbitration.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

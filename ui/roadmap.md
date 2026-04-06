@@ -843,6 +843,10 @@
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
 - [ ] **[P0] Environment-Aware Provenance Tracker**: (2026-07-23) Forensic UI for visualizing reasoning traces bound to specific execution environments.
 
+#### Upcoming (2026-11-02 Evolution)
+- [ ] **[P0] Global Agent Activity Map**: (2026-11-02) Premium visual telemetry component providing geolocated situational awareness for agent meshes.
+- [ ] **[P0] Universal Error Dashboard**: (2026-11-02) Visual interface for reviewing semantic error mappings and upstream failure trends.
+
 #### Upcoming (2026-07-22 Evolution)
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.
