@@ -198,20 +198,20 @@ export function CredentialList() {
                           </TableCell>
                           <TableCell className="text-muted-foreground text-sm">
                               <div className="flex items-center gap-2">
-                                {(cred.authentication?.apiKey || (cred.authentication as any)?.api_key) && (
+                                {(cred.authentication?.apiKey || (cred.authentication as any | undefined)?.api_key) && (
                                     <>
                                         <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-                                            {cred.authentication.apiKey?.paramName || (cred.authentication as any)?.api_key?.param_name}
+                                            {cred.authentication?.apiKey?.paramName || (cred.authentication as any | undefined)?.api_key?.param_name}
                                         </code>
                                         <span className="text-xs opacity-70">
-                                            ({(cred.authentication.apiKey?.in || (cred.authentication as any)?.api_key?.in) === 0 ? "Header" : "Query"})
+                                            ({(cred.authentication?.apiKey?.in || (cred.authentication as any | undefined)?.api_key?.in) === 0 ? "Header" : "Query"})
                                         </span>
                                     </>
                                 )}
-                                {(cred.authentication?.bearerToken || (cred.authentication as any)?.bearer_token) && <span>Bearer Auth</span>}
-                                {(cred.authentication?.basicAuth || (cred.authentication as any)?.basic_auth) && (
+                                {(cred.authentication?.bearerToken || (cred.authentication as any | undefined)?.bearer_token) && <span>Bearer Auth</span>}
+                                {(cred.authentication?.basicAuth || (cred.authentication as any | undefined)?.basic_auth) && (
                                     <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-                                        {cred.authentication.basicAuth?.username || (cred.authentication as any)?.basic_auth?.username}
+                                        {cred.authentication?.basicAuth?.username || (cred.authentication as any | undefined)?.basic_auth?.username}
                                     </code>
                                 )}
                                 {cred.authentication?.oauth2 && (
