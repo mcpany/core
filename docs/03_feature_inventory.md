@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Synthetic Guardrail Generator (SGG)**: (P0) Active security synthesis service that generates dynamic unit tests and security contracts based on the agent's reasoning path to neutralize the DryRun Security Gap.
+- **Mesh-Bound Context Hydration (MBCH) Provider**: (P1) Performance optimization service that pre-fetches and re-hydrates intent-pinned memory shards during AMT node transitions.
+- **Mirroring-Resistant Stylometry (MRS) Validator**: (P0) Upgrade for the SIV provider utilizing hardware-attested entropy variations to detect subagent "Mirroring" attempts.
+
+### Priority Shifts
+- **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Elevated with the requirement for mandatory **SGG-compliant** test synthesis before commit.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for **MBCH-compliant** context hydration.
