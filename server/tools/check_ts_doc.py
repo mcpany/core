@@ -24,12 +24,12 @@ def check_file(filepath):
 
     lines = content.split('\n')
 
-    # Regex for exported functions/classes/interfaces/types/consts
+    # Regex for exported functions/classes/interfaces/types/const|enums
     # export function Name
     # export class Name
     # export interface Name
     # export type Name
-    # export const Name
+    # export const|enum Name
 
     # We want to catch:
     # export default function ...
