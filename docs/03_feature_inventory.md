@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Headless Handoff Attestation (HHA)**: (P0) Authoritative security protocol for transferring agent sessions between controllers (e.g., local terminal to remote GUI).
+- **Registry-Bound Skill Attestation (RBSA) Provider**: (P0) Security middleware mandating that all discovered tools are verified against a trusted third-party MCP Registry.
+- **Background Dispatch Sandbox (BDS)**: (P1) Isolated, low-overhead execution environment for agents running as background workers (Dispatch pattern).
+
+### Priority Shifts
+- **Universal Gateway Persistence**: (P0) Elevated to P0 to support mission continuity across transient controller disconnects in headless swarms.
+- **Active Subagent Reaper**: (Re-affirmed P0) Now elevated with the requirement for **BDS-compliant** resource reclamation.

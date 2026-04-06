@@ -1550,3 +1550,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Headless Session Sovereignty & Registry-Bound Trust
+**Context**: The emergence of "Remote Control" and "Dispatch" patterns in Claude Code, alongside the stabilization of the MCP 2025-11-25 Registry model, confirms that the "Universal Agent Bus" must now move beyond linear sessions. We must now protect the **sovereignty of the session handover** and the **integrity of the tool registry**. As agents move to headless background workers, infrastructure must provide **Persistent Gateway Sovereignty** and **Registry-Level Skill Attestation**.
+**Strategic Pivot**:
+- **Headless Session Sovereignty (HSS)**: MCP Any will evolve to act as the authoritative "Session Broker." We will implement HSS, providing hardware-attested, time-bound session handover tokens that allow agents to transition between disparate controllers (local terminal, remote GUI, CI worker) without exposing root credentials or context.
+- **Registry-Bound Skill Attestation (RBSA)**: To neutralize "Capability Squatting" in centralized registries, we are mandating RBSA. Tool discovery will require a cryptographically signed "Registry Proof," ensuring that every tool schema is anchored to a verified, third-party entry in the MCP Registry.
+- **Background Dispatch Sandbox (BDS)**: Supporting the "Dispatch" background worker pattern, MCP Any will implement BDS. This service will provide isolated, low-overhead execution environments for background agents, with integrated reasoning-drift monitors and automated resource-reclamation policies.
+- **Universal Gateway Persistence**: Leveraging the OpenClaw Gateway pattern, MCP Any will move toward a "Persistence-First" model. Session state, channel connections, and agent monologues will be managed by a long-lived, kernel-bound process, ensuring mission continuity across transient controller disconnects.
