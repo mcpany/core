@@ -112,6 +112,10 @@ export default defineConfig({
         target: process.env.BACKEND_URL || "http://localhost:50050",
         changeOrigin: true,
       },
+      "/context/session": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
     },
   },
   // preview.proxy mirrors server.proxy so that `vite preview` (used by
@@ -160,6 +164,10 @@ export default defineConfig({
         changeOrigin: true,
       },
       "/mcp/": {
+        target: process.env.BACKEND_URL || "http://localhost:50050",
+        changeOrigin: true,
+      },
+      "/context/session": {
         target: process.env.BACKEND_URL || "http://localhost:50050",
         changeOrigin: true,
       },
