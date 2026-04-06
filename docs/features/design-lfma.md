@@ -59,3 +59,11 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Evolution to Lock-Free Teammate Mesh (LFTM)
+**Context:** Maturation of OpenClaw Teams and the shift toward heterogeneous horizontal meshes require a move beyond simple arbitration to active mesh management.
+**Architecture Adjustment:**
+*   Renaming LFMA to **Lock-Free Teammate Mesh (LFTM) Hub**.
+*   Introducing cross-framework CRDT sharding to support Claude Code "Git-Mailbox" and OpenClaw "Teams-Inbox" concurrently.
+*   Implementing "Hardware-Attested durable task claiming" to prevent task loss during system restarts.
+**Security Impact:** Neutralizes "Teammate Ghosting" and ensures non-repudiable task ownership across disparate frameworks.

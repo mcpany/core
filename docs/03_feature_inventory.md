@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Lock-Free Teammate Mesh (LFTM) Hub**: (P0) Authoritative coordination service implementing CRDT-based task list synchronization for heterogeneous Agent Teams (Claude, OpenClaw, AutoGen).
+- **Attention-Locked Mission Root (ALMR) Provider**: (P0) Cognitive security middleware utilizing hardware-bound attention-locking headers to protect mission-root anchors from eviction.
+- **Hardware-Attested Durable Continuity Manager**: (P0) Evolution of the MRCP providing TPM-signed mission snapshots for cross-reboot state recovery.
+- **Zero-Trust Local Handshake Proxy**: (P0) Security middleware mandating origin-bound, hardware-attested handshakes for all local WebSocket/API listeners to neutralize bridge attacks.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into the **LFTM Hub** for comprehensive teammate mesh coordination.
+- **Hardware-Attested Attention Locking (HAAL)**: (Re-affirmed P0) Elevated with mandatory **ALMR** support to counter context-window flooding.

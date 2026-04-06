@@ -65,3 +65,11 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 * Extending HAAL to support **Context-File Integrity Attestation (CFIA)**.
 * Mandating hardware-bound attention locking for any fragment ingested from a project-local configuration or context file.
 **Security Impact:** Ensures that only user-verified, hardware-attested context can influence high-priority attention heads, neutralizing deceptive natural language injections.
+
+### Update: 2026-07-25 - Evolution to Attention-Locked Mission Root (ALMR)
+**Context:** Discovery of CVE-2026-0628 and the rise of "Attention-Density" attacks (CWF) demand a higher level of cognitive protection.
+**Architecture Adjustment:**
+*   Upgrading HAAL to the **ALMR Provider**.
+*   Implementing "Immutable Mission-Root Guardrails" that are cryptographically pinned at the hardware level during session initiation.
+*   Introducing "Noise-Floor Filtering" which uses hardware-attested attention masks to automatically prune low-entropy noise before LLM ingestion.
+**Security Impact:** Neutralizes Context-Window Flooding (CWF) and ensures that core mission instructions are physically impossible to evict.
