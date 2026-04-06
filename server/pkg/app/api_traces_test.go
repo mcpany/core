@@ -6,6 +6,7 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -229,10 +230,8 @@ func TestHandleTracesWS_DisabledAudit(t *testing.T) {
 }
 
 func TestHandleDeleteTraces(t *testing.T) {
-	app, cleanup := setupTestAppWithAudit(t)
-	defer cleanup()
+	app, auditMw := setupTracesTestApp(t)
 
-	auditMw := app.GetAuditMiddleware()
 	if auditMw == nil {
 		t.Fatal("expected audit middleware")
 	}
@@ -278,8 +277,7 @@ func TestHandleDeleteTraces(t *testing.T) {
 }
 
 func TestHandleClearTraces(t *testing.T) {
-	app, cleanup := setupTestAppWithAudit(t)
-	defer cleanup()
+	app, _ := setupTracesTestApp(t)
 
 	app.handleDebugSeedTraces()(httptest.NewRecorder(), httptest.NewRequest("POST", "/api/v1/debug/traces", nil))
 
