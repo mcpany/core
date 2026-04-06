@@ -65,3 +65,11 @@ Hardware-Attested Attention Locking (HAAL) provides a cryptographic defense agai
 * Extending HAAL to support **Context-File Integrity Attestation (CFIA)**.
 * Mandating hardware-bound attention locking for any fragment ingested from a project-local configuration or context file.
 **Security Impact:** Ensures that only user-verified, hardware-attested context can influence high-priority attention heads, neutralizing deceptive natural language injections.
+
+### Update: 2026-07-25 - Evolution to Active Attention Enforcer (AAE)
+**Context:** Today's market sync revealed the emergence of "Context-Window Budgeting" (CWB) in Gemini CLI, a hardware-enforced limit on how much context a specialist subagent can "consume" or "evict" from the primary mission-root window.
+**Architecture Adjustment:**
+* Upgrading HAAL to the **Active Attention Enforcer (AAE)**.
+* Implementing mandatory, hardware-locked context-window budgets for all subagents.
+* Introducing real-time entropy analysis of coordination messages to prevent "Attention-Density" DoS attacks.
+**Security Impact:** Prevents "Attention Hijacking" by ensuring that noisy specialist agents cannot push core mission-root behavioral guardrails out of the attention window, even with high-entropy valid reasoning.
