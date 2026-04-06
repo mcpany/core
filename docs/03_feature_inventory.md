@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Role-Attested Teammate (RAT) Provider**: (P0) Authoritative functional identity service issuing hardware-attested role tokens (e.g., Auditor, Architect) to restrict mailbox shard access.
+- **Context-Affinity Sharding (CAS) Middleware**: (P0) Scaling middleware performing real-time semantic analysis to prioritize state synchronization between semantically related task branches.
+- **Reasoning-Path Watermark (RPW) Hub**: (P0) Provenance service for embedding hardware-attested watermarks into reasoning fragments to ensure non-repudiable lineage across ZK-proofs.
+- **Phantom Reflection Guard**: (P0) Security middleware mandating "Handshake-First Discovery" to prevent unauthorized tool discovery via unauthenticated gRPC reflection.
+
+### Priority Shifts
+- **Lock-Free Mesh Coordination**: (Re-affirmed P0) Elevated with the requirement for mandatory **CAS-compliant** shard prioritization.
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with the requirement for **RPW-compliant** watermark verification.
