@@ -72,6 +72,68 @@ test.describe('Agent Skills', () => {
     await expect(page.getByRole('button', { name: 'Create Skill' }).first()).toBeVisible();
   });
 
+  test('should support bulk deletion of skills', async ({ page }) => {
+    const timestamp = Date.now();
+    const skill1 = `bulk-delete-1-${timestamp}`;
+    const skill2 = `bulk-delete-2-${timestamp}`;
+
+    // Create skill 1
+    await page.getByRole('button', { name: 'Create Skill' }).first().click();
+    await page.fill('input#name', skill1);
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await page.fill('textarea', '# Instructions 1');
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+
+    let createPromise = page.waitForResponse(response =>
+        response.url().includes('/api/v1/skills') &&
+        response.request().method() === 'POST' &&
+        (response.status() === 200 || response.status() === 201),
+        { timeout: 30000 }
+    );
+    await page.locator('main').locator('button:has-text("Create Skill")').click();
+    await createPromise;
+    await expect(page).toHaveURL(/\/skills\/?$/);
+
+    // Create skill 2
+    await page.getByRole('button', { name: 'Create Skill' }).first().click();
+    await page.fill('input#name', skill2);
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await page.fill('textarea', '# Instructions 2');
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+
+    createPromise = page.waitForResponse(response =>
+        response.url().includes('/api/v1/skills') &&
+        response.request().method() === 'POST' &&
+        (response.status() === 200 || response.status() === 201),
+        { timeout: 30000 }
+    );
+    await page.locator('main').locator('button:has-text("Create Skill")').click();
+    await createPromise;
+    await expect(page).toHaveURL(/\/skills\/?$/);
+
+    // Switch to list view (which has the checkboxes exposed directly or grid view which also now has them)
+    // We expect both skills to be visible
+    await expect(page.getByText(skill1)).toBeVisible();
+    await expect(page.getByText(skill2)).toBeVisible();
+
+    // Check both skills via their row/card checkboxes using aria-label
+    await page.getByRole('checkbox', { name: `Select ${skill1}` }).click();
+    await page.getByRole('checkbox', { name: `Select ${skill2}` }).click();
+
+    // Verify "2 selected" is visible
+    await expect(page.getByText('2 selected')).toBeVisible();
+
+    // Accept the confirm dialog
+    page.once('dialog', dialog => dialog.accept());
+
+    // Click Bulk Delete
+    await page.getByRole('button', { name: 'Bulk Delete' }).click();
+
+    // Verify both are removed
+    await expect(page.getByText(skill1)).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(skill2)).not.toBeVisible();
+  });
+
   test('should view skill details', async ({ page }) => {
     const skillName = `view-test-skill-${Date.now()}`;
 
