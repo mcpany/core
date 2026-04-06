@@ -1931,6 +1931,18 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-04-06] (Iteration 2) Updates
+
+### Proposed Additions
+- **Authoritative Namespace Broker (ANB)**: (P0) Authorship and validation service for tool registries, ensuring high-trust tools cannot be shadowed by unauthorized subagent injections.
+- **Hardware-Attested Intent Lineage (HAIL) Provider**: (P0) Identity middleware providing hardware-signed proofs of instruction parentage across infinite delegation hops.
+- **Echo-Resistant Sync Middleware**: (P1) Security service utilizing hardware-bound monotonic timers to normalize state-update micro-timing and neutralize "Context Echoing" side-channels.
+- **Just-in-Time (JIT) Capability Unmasking Proxy**: (P1) Advanced discovery gate that keeps tool schemas cryptographically invisible until a mission-bound handshake is completed.
+
+### Priority Shifts
+- **PNTD Discovery Provider**: (Re-affirmed P0) Elevated with mandatory **ANB-compliant** namespace protection.
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HAIL-compliant** hardware lineage.
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
