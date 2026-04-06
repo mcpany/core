@@ -62,3 +62,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25: Distributed Lease Synchronization.**
+    * **Context:** Market sync revealed "Lease Lag" in multi-node Agent Teams.
+    * **Architecture Adjustment:** Integrating the **Mission-Bound Lease Propagator** as a sub-service of the AMT Broker.
+    * **Impact:** Pre-emptive synchronization of HLML leases over the tunnel eliminates the 200ms+ activation delay for remote subagents.

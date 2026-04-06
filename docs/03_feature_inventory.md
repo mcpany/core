@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mission-Bound Lease Propagator**: (P0) Extension for AMT Broker and HLML to pre-emptively synchronize task-specific leases across distributed nodes, neutralizing "Lease Lag."
+- **Zero-Knowledge Reasoning Auditor**: (P1) Privacy-preserving auditing service implementing the ZKRP standard for verifiable reasoning integrity across heterogeneous swarms.
+- **Atomic Coordination Anchor Provider**: (P0) Security middleware mandating hardware-attested, GC-immune anchors for critical task-claiming logic in shared teammate mailboxes.
+
+### Priority Shifts
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P0) Evolving into the **Zero-Knowledge Reasoning Auditor** to support the ZKRP standard.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with mandatory support for **Distributed State Resumption** across multi-node meshes.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
