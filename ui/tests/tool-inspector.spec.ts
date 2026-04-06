@@ -16,7 +16,7 @@ test.describe('Tool Inspector', () => {
     // Try to trigger the row expansion.
     const expandAccordion = await page.locator('.lucide-chevron-down').first();
     if (await expandAccordion.isVisible()) {
-       await expandAccordion.click();
+       await expandAccordion.dispatchEvent('click');
     }
 
     // Use { force: true } because HTML overlay intercepts pointer events in Chromium headless mode sometimes
@@ -24,7 +24,7 @@ test.describe('Tool Inspector', () => {
     await expect(inspectBtn).toBeVisible({ timeout: 10000 });
 
     // Evaluate click directly to bypass pointer interception
-    await inspectBtn.evaluate(b => b.click());
+    await inspectBtn.evaluate(b => (b as HTMLElement).click());
 
     // Wait for dialog
     await page.waitForTimeout(1000);

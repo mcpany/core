@@ -5,7 +5,7 @@
 
 
 
-import { useState, useMemo, useEffect, lazy, Suspense } from "react";
+import { useState, useMemo, useEffect, lazy, Suspense, useRef, useLayoutEffect } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Copy, Check, ChevronDown, ChevronUp, ListTree, Image as ImageIcon } from "lucide-react";
@@ -157,6 +157,8 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
 
     const [copied, setCopied] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [needsCollapse, setNeedsCollapse] = useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
 
     const tableData = useMemo(() => getTableData(data, smartTable), [data, smartTable]);
@@ -179,6 +181,14 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         }
     }, [hasSmartView, isObject, isImage]);
 
+    useLayoutEffect(() => {
+        if (contentRef.current && maxHeight > 0) {
+            setNeedsCollapse(contentRef.current.scrollHeight > maxHeight);
+        } else {
+            setNeedsCollapse(false);
+        }
+    }, [data, viewMode, maxHeight]);
+
     const handleCopy = () => {
         const text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -192,7 +202,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const showCollapse = maxHeight > 0;
+    const showCollapse = maxHeight > 0 && needsCollapse;
 
     const renderCollapseButton = () => (
         <div className="flex justify-center p-1 border-t border-white/10 bg-[#1e1e1e] rounded-b-md">
@@ -214,6 +224,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
     const renderRaw = () => (
         <div className={cn("relative group/code rounded-md bg-[#1e1e1e]", className)}>
             <div
+                ref={contentRef}
                 className={cn(
                     "overflow-hidden transition-all",
                     showCollapse && !isExpanded ? "relative" : ""
@@ -282,6 +293,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         return (
             <div className={cn("rounded-md border bg-[#1e1e1e]", className)}>
                 <div
+                    ref={contentRef}
                     className="p-4 overflow-auto transition-all"
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
                 >
@@ -315,6 +327,7 @@ export function JsonView({ data, className, smartTable = true, maxHeight = 400, 
         return (
             <div className={cn("rounded-md border overflow-hidden bg-card", className)}>
                 <div
+                    ref={contentRef}
                     className={cn(showCollapse && !isExpanded ? "relative" : "")}
                     style={{ maxHeight: showCollapse && !isExpanded ? `${maxHeight}px` : undefined }}
                 >

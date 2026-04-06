@@ -7,13 +7,13 @@ import React, { useState, useMemo, useRef, useCallback, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, ChevronsUpDown, Maximize2, MoreHorizontal, Copy, Check } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronsUpDown, Eye, Expand, Copy, Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { JsonView } from "@/components/ui/json-view";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SmartTableProps {
@@ -174,7 +174,11 @@ export function SmartTable({ data }: SmartTableProps) {
     const cellId = `${rowIndex}-${colKey}`;
 
     if (value === null || value === undefined) {
-      return <span className="text-muted-foreground/50 italic text-xs">null</span>;
+      return (
+        <span className="inline-flex items-center text-muted-foreground/40 italic text-xs px-1.5 py-0.5 rounded-md bg-muted/20 border border-muted/30">
+          null
+        </span>
+      );
     }
     if (typeof value === 'boolean') {
       return (
@@ -188,12 +192,12 @@ export function SmartTable({ data }: SmartTableProps) {
     }
     if (typeof value === 'object') {
         const isArray = Array.isArray(value);
-        const label = isArray ? `Array(${value.length})` : `Object {${Object.keys(value).length}}`;
+        const label = isArray ? `[ ] Array(${value.length})` : `{ } Object`;
         return (
             <Dialog>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs font-mono bg-muted/30 hover:bg-muted/60 text-muted-foreground border border-transparent hover:border-border">
-                        <Maximize2 className="mr-1.5 h-3 w-3" />
+                    <Button variant="outline" size="sm" className="h-6 px-2.5 text-[11px] font-mono rounded-full bg-muted/20 hover:bg-muted/50 text-muted-foreground hover:text-foreground border-dashed transition-all group">
+                        <Eye className="mr-1.5 h-3 w-3 opacity-50 group-hover:opacity-100" />
                         {label}
                     </Button>
                 </DialogTrigger>
@@ -201,7 +205,7 @@ export function SmartTable({ data }: SmartTableProps) {
                     <DialogHeader className="px-4 py-3 border-b bg-muted/10">
                         <DialogTitle className="font-mono text-sm">{colKey}</DialogTitle>
                     </DialogHeader>
-                    <ScrollArea className="flex-1 p-4">
+                    <ScrollArea className="flex-1 p-4 bg-black/5">
                         <JsonView data={value} />
                     </ScrollArea>
                 </DialogContent>
@@ -220,28 +224,30 @@ export function SmartTable({ data }: SmartTableProps) {
 
     if (strValue.length > 50) {
         return (
-            <div className="flex items-center gap-2 group min-w-0">
+            <div className="flex items-center gap-2 group min-w-0 relative">
                 <span className="text-sm truncate flex-1 min-w-0" title={strValue}>
                     {strValue}
                 </span>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                            <MoreHorizontal className="h-3 w-3" />
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 bg-background/80 backdrop-blur-sm border shadow-sm">
+                            <Expand className="h-3 w-3 text-muted-foreground" />
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[300px] p-0">
-                        <div className="flex items-center justify-between p-2 border-b bg-muted/20">
-                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{colKey}</span>
-                            <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => copyToClipboard(strValue, cellId)}>
-                                {copiedCell === cellId ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-[400px] p-0 overflow-hidden shadow-xl border-muted/60 bg-background/95 backdrop-blur-xl">
+                        <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30 backdrop-blur-md">
+                            <span className="text-xs font-medium text-muted-foreground font-mono">{colKey}</span>
+                            <Button size="icon" variant="ghost" className="h-6 w-6 hover:bg-background/80" onClick={() => copyToClipboard(strValue, cellId)}>
+                                {copiedCell === cellId ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
                             </Button>
                         </div>
-                        <div className="p-3 text-sm max-h-[300px] overflow-y-auto whitespace-pre-wrap break-words font-mono">
-                            {strValue}
-                        </div>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        <ScrollArea className="max-h-[300px] w-full">
+                            <div className="p-4 text-sm whitespace-pre-wrap break-words font-mono leading-relaxed bg-black/5 dark:bg-white/5">
+                                {strValue}
+                            </div>
+                        </ScrollArea>
+                    </PopoverContent>
+                </Popover>
             </div>
         );
     }
@@ -298,8 +304,13 @@ export function SmartTable({ data }: SmartTableProps) {
                     <TableBody>
                         {paginatedData.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                                    No data available.
+                                <TableCell colSpan={columns.length} className="h-48 text-center">
+                                    <div className="flex flex-col items-center justify-center text-muted-foreground space-y-3">
+                                        <div className="p-3 bg-muted/20 rounded-full border border-dashed border-muted">
+                                            <Database className="h-6 w-6 opacity-50" />
+                                        </div>
+                                        <p className="text-sm">No data available.</p>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ) : (
