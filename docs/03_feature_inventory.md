@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Swarm Survivability Certification (SSC) Provider**: (P0) Authoritative auditing service performing hardware-attested "Stress Tests" on subagent reasoning paths to provide cryptographically signed "Survivability Certificates."
+- **Atomic Lease Isolation (ALI) Hub**: (P0) Kernel-level security service ensuring that every hardware lease is physically isolated to a specific sub-process and task ID, neutralizing lateral movement.
+- **Attestation-Aware Context Pruner**: (P1) Cognitive optimization middleware ensuring only "Attested-as-Safe" fragments can be summarized, protecting mission-root anchors from eviction.
+- **Distributed Mission Resumption (DMR) Provider**: (P0) Advanced coordination service facilitating atomic migration of hardware-locked mission state across distributed nodes.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to support **DMR-compliant** distributed state migration.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Now elevated with mandatory **ALI-compliant** isolation.

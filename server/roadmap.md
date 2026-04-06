@@ -218,6 +218,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Swarm Survivability Certification (SSC) Provider**: Authoritative auditing service performing hardware-attested "Stress Tests" on subagent reasoning paths. (Added: 2026-07-25)
+*   **[P0] Atomic Lease Isolation (ALI) Hub**: Kernel-level security service ensuring that every hardware lease is physically isolated to a specific sub-process and task ID. (Added: 2026-07-25)
+*   **[P1] Attestation-Aware Context Pruner**: Cognitive optimization middleware ensuring only "Attested-as-Safe" fragments can be summarized. (Added: 2026-07-25)
+*   **[P0] Distributed Mission Resumption (DMR) Provider**: Advanced coordination service facilitating atomic migration of hardware-locked mission state across nodes. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

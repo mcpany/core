@@ -681,6 +681,12 @@
 - [ ] **[P0] Auditor Attestation Portal**: Interactive workspace for third-party security auditors to review and sign dynamic skill grafts. (Added: 2026-06-27)
 - [ ] **[P1] Reasoning Path Integrity Viewer**: Visual debugger for hardware-signed RPI fragments and semantic hash-chain integrity. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Survivability Audit Dashboard**: Visual workspace for reviewing SSC stress-test results and attention maps. (Added: 2026-07-25)
+- [ ] **[P0] Lease Isolation Monitor**: Real-time visualization of hardware leases isolated to sub-process and task IDs. (Added: 2026-07-25)
+- [ ] **[P1] Context Pruning Debugger**: Visualizer for "Attested-as-Safe" context fragments and mission-root anchor protection. (Added: 2026-07-25)
+- [ ] **[P0] Distributed Resumption Hub**: UI for monitoring and triggering atomic mission state migration across distributed nodes. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-28 Evolution)
 - [ ] **[P0] HLCA Configuration Anchor Manager**: UI for reviewing and hardware-signing project-local settings files. (Added: 2026-06-28)
 - [ ] **[P0] Multi-Tenant Context Isolation Dashboard**: Visualize state boundaries and isolation status for sharded missions. (Added: 2026-06-28)
