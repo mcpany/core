@@ -23,8 +23,10 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { CredentialForm } from "./credential-form"
-import { Plus, Trash, Key, Lock, Globe, ExternalLink } from "lucide-react"
+import { Plus, Trash, Key, Lock, Globe, ExternalLink, KeyRound } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
 /**
  * Intent: Document CredentialList
@@ -142,57 +144,104 @@ export function CredentialList() {
         </Dialog>
       </div>
 
-      <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Details</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-4">Loading...</TableCell></TableRow>
-            ) : credentials.length === 0 ? (
-                <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">No credentials found</TableCell></TableRow>
-            ) : (
-                credentials.map((cred) => (
-                    <TableRow key={cred.id}>
-                        <TableCell className="font-medium flex items-center gap-2">
-                            <Key className="h-4 w-4 text-muted-foreground" />
-                            {cred.name}
-                        </TableCell>
-                        <TableCell>
-                            {cred.authentication?.apiKey ? "API Key" :
-                             cred.authentication?.bearerToken ? "Bearer Token" :
-                             cred.authentication?.basicAuth ? "Basic Auth" :
-                             cred.authentication?.oauth2 ? "OAuth 2.0" : "Unknown"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-sm">
-                            {cred.authentication?.apiKey && (
-                                <span>{cred.authentication.apiKey.paramName} ({cred.authentication.apiKey.in === 0 ? "Header" : "Query"})</span>
-                            )}
-                            {cred.authentication?.bearerToken && <span>Bearer</span>}
-                            {cred.authentication?.basicAuth && <span>{cred.authentication.basicAuth.username}</span>}
-                        </TableCell>
-                        <TableCell className="text-right flex items-center justify-end gap-1">
-                             {cred.authentication?.oauth2 && (
-                                 <Button variant="outline" size="sm" onClick={() => handleConnect(cred)}>
-                                     <ExternalLink className="mr-2 h-3.5 w-3.5" />
-                                     {cred.token?.accessToken ? "Reconnect" : "Authorize"}
-                                 </Button>
-                             )}
-                             <Button variant="ghost" size="sm" onClick={() => handleEdit(cred)}>Edit</Button>
-                             <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDelete(cred.id)} aria-label="Delete"><Trash className="h-4 w-4" /></Button>
-                        </TableCell>
-                    </TableRow>
-                ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <Card className="border shadow-sm">
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-[30%]">Name</TableHead>
+                <TableHead className="w-[20%]">Type</TableHead>
+                <TableHead className="w-[30%]">Details</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                  <TableRow><TableCell colSpan={4} className="text-center h-24 text-muted-foreground">Loading credentials...</TableCell></TableRow>
+              ) : credentials.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-64 text-center">
+                      <div className="flex flex-col items-center justify-center space-y-3">
+                        <div className="rounded-full bg-muted p-4">
+                          <KeyRound className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="text-lg font-medium">No credentials found</h3>
+                          <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                            Add credentials to authenticate your MCP Any instance with external services.
+                          </p>
+                        </div>
+                        <Button onClick={handleCreate} variant="outline" className="mt-4">
+                          <Plus className="mr-2 h-4 w-4" /> Create First Credential
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+              ) : (
+                  credentials.map((cred) => (
+                      <TableRow key={cred.id} className="group hover:bg-muted/50 transition-colors">
+                          <TableCell className="font-medium">
+                              <div className="flex items-center gap-3">
+                                  <div className="rounded-md bg-primary/10 p-2">
+                                      <Key className="h-4 w-4 text-primary" />
+                                  </div>
+                                  <span className="truncate">{cred.name}</span>
+                              </div>
+                          </TableCell>
+                          <TableCell>
+                              <Badge variant="secondary" className="font-normal">
+                                {cred.authentication?.apiKey ? "API Key" :
+                                cred.authentication?.bearerToken ? "Bearer Token" :
+                                cred.authentication?.basicAuth ? "Basic Auth" :
+                                cred.authentication?.oauth2 ? "OAuth 2.0" : "Unknown"}
+                              </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-sm">
+                              <div className="flex items-center gap-2">
+                                {cred.authentication?.apiKey && (
+                                    <>
+                                        <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                                            {cred.authentication.apiKey.paramName}
+                                        </code>
+                                        <span className="text-xs opacity-70">
+                                            ({cred.authentication.apiKey.in === 0 ? "Header" : "Query"})
+                                        </span>
+                                    </>
+                                )}
+                                {cred.authentication?.bearerToken && <span>Bearer Auth</span>}
+                                {cred.authentication?.basicAuth && (
+                                    <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                                        {cred.authentication.basicAuth.username}
+                                    </code>
+                                )}
+                                {cred.authentication?.oauth2 && (
+                                    <Badge variant={cred.token?.accessToken ? "default" : "outline"} className="text-[10px] uppercase tracking-wider h-5">
+                                        {cred.token?.accessToken ? "Authorized" : "Not Authorized"}
+                                    </Badge>
+                                )}
+                              </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                               <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                   {cred.authentication?.oauth2 && (
+                                       <Button variant="outline" size="sm" onClick={() => handleConnect(cred)}>
+                                           <ExternalLink className="mr-2 h-3 w-3" />
+                                           {cred.token?.accessToken ? "Reconnect" : "Authorize"}
+                                       </Button>
+                                   )}
+                                   <Button variant="ghost" size="sm" onClick={() => handleEdit(cred)}>Edit</Button>
+                                   <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(cred.id)} aria-label="Delete">
+                                       <Trash className="h-4 w-4" />
+                                   </Button>
+                               </div>
+                          </TableCell>
+                      </TableRow>
+                  ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }

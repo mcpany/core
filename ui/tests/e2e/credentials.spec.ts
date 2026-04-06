@@ -5,64 +5,63 @@
 
 import { test, expect } from '@playwright/test';
 
-test.describe.skip('Credentials Management', () => {
+import { apiClient } from '../../src/lib/client';
 
+test.describe('Credentials Management', () => {
 
+  test.beforeEach(async () => {
+    // Ensure clean state before test
+    try {
+        const credentials = await apiClient.listCredentials();
+        for (const cred of credentials) {
+            if (cred.name.includes('Test API Key') || cred.name.includes('Updated API Key')) {
+                 await apiClient.deleteCredential(cred.id);
+            }
+        }
+    } catch (e) {
+        console.warn('Cleanup failed:', e);
+    }
+  });
 
-  test.skip('should list, create, update and delete credentials', async ({ page }) => {
+  test('should list, create, update and delete credentials with polished UI', async ({ page }) => {
     // 1. Initial List (Empty)
-
     await page.goto('/credentials');
+
+    // Verify Polished Empty State
     await expect(page.getByText('No credentials found')).toBeVisible();
+    await expect(page.getByText('Add credentials to authenticate your MCP Any instance with external services.')).toBeVisible();
 
-    // 2. Create Credential
-    const newCred = {
-      id: 'cred-1',
-      name: 'Test API Key',
-      authentication: { apiKey: { paramName: 'Authorization', in: 0, value: { plainText: 'secret-key' } } }
-    };
-
-    let created = false;
-
-    await page.getByRole('button', { name: 'New Credential' }).click();
+    // Use the Empty State CTA to open dialog
+    await page.getByRole('button', { name: 'Create First Credential' }).click();
     await expect(page.getByText('Create Credential')).toBeVisible();
 
+    // 2. Create Credential via UI
     await page.getByPlaceholder('My Credential').fill('Test API Key');
     // Default format is API Key, so just fill details
     await page.getByPlaceholder('X-API-Key').fill('Authorization');
     await page.getByPlaceholder('...secret key...').fill('secret-key');
 
-    await page.waitForTimeout(500);
-    await page.getByRole('button', { name: 'Save' }).click({ force: true });
+    await page.getByRole('button', { name: 'Save' }).click();
 
-    // Verify it appears in list
+    // Verify it appears in list with polished UI elements (Badges, etc)
     await expect(page.getByText('Test API Key')).toBeVisible({ timeout: 10000 });
+    // Verify the Badge is rendered
     await expect(page.locator('tbody').getByText('API Key', { exact: true })).toBeVisible();
 
     // 3. Update Credential
-
-    // Refresh mock for list to return updated name
-
-    await page.getByRole('button', { name: 'Edit' }).click();
+    await page.getByRole('button', { name: 'Edit' }).first().click();
     await page.getByPlaceholder('My Credential').fill('Updated API Key');
     await page.getByRole('button', { name: 'Save' }).click();
 
-    await expect(page.getByText('Updated API Key')).toBeVisible();
+    await expect(page.getByText('Updated API Key')).toBeVisible({ timeout: 10000 });
 
     // 4. Delete Credential
-
-    // Refresh mock for list to return empty
-
     // Accept delete confirmation
-    page.on('dialog', dialog => dialog.accept());
+    page.once('dialog', dialog => dialog.accept());
 
-    await page.getByRole('button', { name: 'Delete' }).click();
-    // In our UI, we might use a custom dialog instead of window.confirm
-    // If it's a Radix alert dialog:
-    if (await page.getByText('Are you sure?').isVisible()) {
-         await page.getByRole('button', { name: 'Delete' }).last().click();
-    }
+    await page.getByRole('button', { name: 'Delete' }).first().click();
 
-    await expect(page.getByText('No credentials found')).toBeVisible();
+    // Should return to empty state
+    await expect(page.getByText('No credentials found')).toBeVisible({ timeout: 10000 });
   });
 });
