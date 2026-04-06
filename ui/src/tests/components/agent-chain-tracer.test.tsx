@@ -28,6 +28,7 @@ describe("AgentChainTracer Component", () => {
       isPaused: false,
       setIsPaused: vi.fn(),
       clearTraces: vi.fn(),
+      deleteTraces: vi.fn(),
       refresh: vi.fn(),
     });
 
@@ -78,6 +79,7 @@ describe("AgentChainTracer Component", () => {
       isPaused: false,
       setIsPaused: vi.fn(),
       clearTraces: vi.fn(),
+      deleteTraces: vi.fn(),
       refresh: vi.fn(),
     });
 
