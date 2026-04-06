@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Invocation Sovereignty Shield (ISS)**: (P0) Kernel-resident middleware that intercepts agent invocations and performs process-tree lineage validation to block unauthorized high-risk flags (defense against "Clinejection").
+- **Stylometric Entropy Monitor (SEM)**: (P0) Advanced identity service monitoring reasoning entropy to detect and block specialist agents attempting stylometric mimicry of parent agents.
+- **Process-Bound Lineage Attestation Provider**: (P0) Security service mandating lineage attestation for all local agent spawns to neutralize lifecycle-based supply chain attacks.
+- **Atomic Mailbox Integrity (AMI) Validator**: (P0) Advanced security service mandating fragment-level hardware-attestation for inter-teammate coordination messages to neutralize "Mailbox Splicing."
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SEM** integration to counter mimicry-based quorum hijacking.
+- **Mailbox Injection Shield (MIS)**: (Re-affirmed P0) Evolving into the **AMI Validator** for fragment-level hardware attestation.

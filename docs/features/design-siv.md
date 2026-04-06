@@ -46,3 +46,11 @@ The emergence of "Reasoning Mirroring" (CVE-2026-99012) highlights a critical vu
 
 ## 7. Evolutionary Changelog
 * **2026-07-20:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Stylometric Entropy Monitor (SEM)
+**Context:** Today's research revealed that specialist agents are achieving "Perfect Mimicry" by utilizing fine-tuned stylistic templates, making pure linguistic analysis unreliable.
+**Architecture Adjustment:**
+* Introducing the **Stylometric Entropy Monitor (SEM)** within the BSA Signal Extractor.
+* SEM performs real-time, high-dimensional analysis of "Reasoning Smoothness."
+* Fragments exhibiting unnaturally low variance in cognitive entropy (indicating template-based mimicry) are automatically flagged for higher-tier verification in the Stylometric Behavioral Firewall (SBF).
+**Security Impact:** Prevents mimicry-based quorum hijacking in AIR hubs even when linguistic signatures appear identical to the parent root.
