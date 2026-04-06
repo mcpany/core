@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { TraceDetail } from "@/components/traces/trace-detail";
 import { CheckCircle2, AlertCircle, Clock, Terminal, Globe, Database, ChevronRight, ChevronDown, Cpu, MessageSquare } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { TableVirtuoso } from "react-virtuoso";
@@ -37,6 +38,18 @@ interface InspectorTableProps {
    * Whether the table is currently loading data.
    */
   loading?: boolean;
+  /**
+   * Set of selected trace IDs.
+   */
+  selectedIds?: Set<string>;
+  /**
+   * Callback when a trace is selected or deselected.
+   */
+  onSelectTrace?: (id: string, selected: boolean) => void;
+  /**
+   * Callback when "select all" is toggled.
+   */
+  onSelectAll?: (selected: boolean) => void;
 }
 
 /**
@@ -103,7 +116,7 @@ interface VisibleRow {
  * @param props.loading - Whether the data is loading.
  * @returns The rendered table component.
  */
-export function InspectorTable({ traces, loading }: InspectorTableProps) {
+export function InspectorTable({ traces, loading, selectedIds = new Set(), onSelectTrace, onSelectAll }: InspectorTableProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(new Set());
 
@@ -155,7 +168,7 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
             <TableVirtuoso
                 style={{ height: '100%', width: '100%' }}
                 data={visibleRows}
-                context={{ onClick: setSelectedTrace }}
+                context={{ onClick: setSelectedTrace, selectedIds, onSelectTrace }}
                 components={{
                     // Use shadcn/ui Table components where possible.
                     // Table: The root table element. shadcn Table is a wrapper. We need the table element.
@@ -165,11 +178,20 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                     TableHead: TableHeader,
                     TableBody: TableBody,
                     TableRow: ({ item, context, ...props }: any) => (
-                        <TableRow {...props} className="cursor-pointer hover:bg-muted/50" onClick={() => context.onClick(item.trace)} />
+                        <TableRow {...props} className={cn("cursor-pointer hover:bg-muted/50", context.selectedIds.has(item.trace.id) ? "bg-muted/30" : "")} onClick={() => context.onClick(item.trace)} />
                     ),
                 }}
                 fixedHeaderContent={() => (
                     <TableRow>
+                    {onSelectAll && (
+                        <TableHead className="w-[40px] bg-card z-10">
+                            <Checkbox
+                                checked={traces.length > 0 && selectedIds.size === traces.length}
+                                onCheckedChange={(checked) => onSelectAll(!!checked)}
+                                aria-label="Select all"
+                            />
+                        </TableHead>
+                    )}
                     <TableHead className="w-[180px] bg-card z-10">Timestamp</TableHead>
                     <TableHead className="w-[50px] bg-card z-10">Type</TableHead>
                     <TableHead className="bg-card z-10">Method / Name</TableHead>
@@ -179,6 +201,15 @@ export function InspectorTable({ traces, loading }: InspectorTableProps) {
                 )}
                 itemContent={(index, row: VisibleRow) => (
                     <>
+                    {onSelectTrace && (
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                            <Checkbox
+                                checked={selectedIds.has(row.trace.id)}
+                                onCheckedChange={(checked) => onSelectTrace(row.trace.id, !!checked)}
+                                aria-label={`Select trace ${row.trace.id}`}
+                            />
+                        </TableCell>
+                    )}
                     <TableCell className="font-mono text-xs text-muted-foreground">
                         {row.depth === 0 ? (
                             <>

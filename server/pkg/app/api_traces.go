@@ -186,6 +186,40 @@ func (a *Application) handleClearTraces() http.HandlerFunc {
 	}
 }
 
+func (a *Application) handleDeleteTraces() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var payload struct {
+			TraceIDs []string `json:"traceIds"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if len(payload.TraceIDs) == 0 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		auditMiddleware := a.GetAuditMiddleware()
+		if auditMiddleware != nil {
+			auditMiddleware.DeleteTraces(payload.TraceIDs)
+			logging.GetLogger().Info("Deleted traces via API", "count", len(payload.TraceIDs))
+		} else {
+			logging.GetLogger().Warn("Failed to delete traces, audit middleware not found")
+			http.Error(w, "Audit middleware not configured", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func (a *Application) handleTracesWS() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

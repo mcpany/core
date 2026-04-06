@@ -48,7 +48,8 @@ export default function InspectorPage() {
       isPaused,
       setIsPaused,
       clearTraces,
-      refresh
+      refresh,
+      deleteTraces
   } = useTraces();
   const { toast } = useToast();
   const [seeding, setSeeding] = useState(false);
@@ -57,6 +58,39 @@ export default function InspectorPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleSelectTrace = (id: string, selected: boolean) => {
+      setSelectedIds(prev => {
+          const next = new Set(prev);
+          if (selected) next.add(id);
+          else next.delete(id);
+          return next;
+      });
+  };
+
+  const handleSelectAll = (selected: boolean) => {
+      if (selected) {
+          setSelectedIds(new Set(filteredTraces.map(t => t.id)));
+      } else {
+          setSelectedIds(new Set());
+      }
+  };
+
+  const handleBulkDelete = async () => {
+      if (selectedIds.size === 0) return;
+      setIsDeleting(true);
+      try {
+          await deleteTraces(Array.from(selectedIds));
+          toast({ title: "Traces Deleted", description: `Removed ${selectedIds.size} traces.` });
+          setSelectedIds(new Set());
+      } catch (e) {
+          toast({ title: "Delete Failed", variant: "destructive", description: String(e) });
+      } finally {
+          setIsDeleting(false);
+      }
+  };
 
   const handleSeedTrace = async () => {
       setSeeding(true);
@@ -122,6 +156,17 @@ export default function InspectorPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap md:flex-nowrap justify-end">
+             {selectedIds.size > 0 && (
+                 <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleBulkDelete}
+                    disabled={isDeleting}
+                 >
+                    {isDeleting ? <RefreshCcw className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                    Delete ({selectedIds.size})
+                 </Button>
+             )}
              <Button
                 variant="outline"
                 size="sm"
@@ -139,7 +184,7 @@ export default function InspectorPage() {
                 {isPaused ? <><Play className="mr-2 h-4 w-4" /> Resume</> : <><Pause className="mr-2 h-4 w-4" /> Pause</>}
             </Button>
              <Button variant="outline" size="sm" onClick={clearTraces}>
-                <Trash2 className="mr-2 h-4 w-4" /> Clear
+                <Trash2 className="mr-2 h-4 w-4" /> Clear All
             </Button>
             <Button variant="outline" size="sm" onClick={refresh} disabled={loading && !isConnected}>
             <RefreshCcw className={`mr-2 h-4 w-4 ${loading && !isConnected ? 'animate-spin' : ''}`} />
@@ -193,7 +238,13 @@ export default function InspectorPage() {
       </div>
 
       <div className="flex-1 min-h-0">
-        <InspectorTable traces={filteredTraces} loading={loading && traces.length === 0} />
+        <InspectorTable
+            traces={filteredTraces}
+            loading={loading && traces.length === 0}
+            selectedIds={selectedIds}
+            onSelectTrace={handleSelectTrace}
+            onSelectAll={handleSelectAll}
+        />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ package logging
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -106,5 +107,43 @@ func TestBroadcaster_Hydrate(t *testing.T) {
 	}
 	if history[4].(string) != "h6" {
 		t.Errorf("Expected h6, got %s", history[4].(string))
+	}
+}
+
+func TestBroadcaster_DeleteIf(t *testing.T) {
+	b := NewBroadcaster()
+	b.limit = 5
+
+	// Add items
+	for i := 0; i < 5; i++ {
+		b.Broadcast(map[string]any{"id": i, "trace_id": "trace-" + strconv.Itoa(i)})
+	}
+
+	// Delete even IDs
+	b.DeleteIf(func(item any) bool {
+		m, ok := item.(map[string]any)
+		if !ok {
+			return false
+		}
+		id, ok := m["id"].(int)
+		return ok && id%2 == 0
+	})
+
+	history := b.GetHistory()
+	if len(history) != 2 {
+		t.Fatalf("expected history length 2, got %d", len(history))
+	}
+
+	m1 := history[0].(map[string]any)
+	m2 := history[1].(map[string]any)
+	if m1["id"] != 1 || m2["id"] != 3 {
+		t.Errorf("unexpected items remaining in history: %v", history)
+	}
+
+	// Verify we can still push normally after delete
+	b.Broadcast(map[string]any{"id": 5, "trace_id": "trace-5"})
+	history2 := b.GetHistory()
+	if len(history2) != 3 {
+		t.Fatalf("expected history length 3, got %d", len(history2))
 	}
 }

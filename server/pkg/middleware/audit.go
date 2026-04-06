@@ -319,6 +319,31 @@ func (m *AuditMiddleware) ClearHistory() {
 	}
 }
 
+// DeleteTraces deletes traces matching the specified IDs from the broadcaster history.
+func (m *AuditMiddleware) DeleteTraces(traceIDs []string) {
+	if m.broadcaster != nil {
+		idMap := make(map[string]bool)
+		for _, id := range traceIDs {
+			idMap[id] = true
+		}
+
+		m.broadcaster.DeleteIf(func(item any) bool {
+			if entry, ok := item.(audit.Entry); ok {
+				return idMap[entry.TraceID]
+			}
+			// Let's also check if it's passed as a map
+			if m, ok := item.(map[string]any); ok {
+				if id, exists := m["trace_id"]; exists {
+					if strID, ok := id.(string); ok {
+						return idMap[strID]
+					}
+				}
+			}
+			return false
+		})
+	}
+}
+
 // Broadcast manually broadcasts an audit entry, used primarily for test seeding.
 //
 // Summary: Broadcasts an audit entry.

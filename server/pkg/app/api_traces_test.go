@@ -227,3 +227,82 @@ func TestHandleTracesWS_DisabledAudit(t *testing.T) {
 		t.Errorf("Expected connection closure, got a message")
 	}
 }
+
+func TestHandleDeleteTraces(t *testing.T) {
+	app, _, _, err := setupTestApp()
+	if err != nil {
+		t.Fatalf("failed to setup app: %v", err)
+	}
+
+	auditMw := app.GetAuditMiddleware()
+	if auditMw == nil {
+		t.Fatal("expected audit middleware")
+	}
+
+	// Seed some traces
+	app.handleDebugSeedTraces()(httptest.NewRecorder(), httptest.NewRequest("POST", "/api/v1/debug/traces", nil))
+
+	// Get initial traces
+	req := httptest.NewRequest("GET", "/api/v1/traces", nil)
+	rr := httptest.NewRecorder()
+	app.handleTraces()(rr, req)
+
+	var traces []Trace
+	json.NewDecoder(rr.Body).Decode(&traces)
+	if len(traces) == 0 {
+		t.Fatal("expected some traces")
+	}
+
+	traceIDToDelete := traces[0].ID
+
+	// Delete trace
+	delPayload := fmt.Sprintf(`{"traceIds": ["%s"]}`, traceIDToDelete)
+	delReq := httptest.NewRequest("DELETE", "/api/v1/traces/bulk", strings.NewReader(delPayload))
+	delRr := httptest.NewRecorder()
+	app.handleDeleteTraces()(delRr, delReq)
+
+	if delRr.Code != http.StatusNoContent {
+		t.Errorf("expected status NoContent, got %d", delRr.Code)
+	}
+
+	// Verify it was deleted
+	req2 := httptest.NewRequest("GET", "/api/v1/traces", nil)
+	rr2 := httptest.NewRecorder()
+	app.handleTraces()(rr2, req2)
+
+	var tracesAfter []Trace
+	json.NewDecoder(rr2.Body).Decode(&tracesAfter)
+	for _, trace := range tracesAfter {
+		if trace.ID == traceIDToDelete {
+			t.Errorf("expected trace %s to be deleted, but it is still present", traceIDToDelete)
+		}
+	}
+}
+
+func TestHandleClearTraces(t *testing.T) {
+	app, _, _, err := setupTestApp()
+	if err != nil {
+		t.Fatalf("failed to setup app: %v", err)
+	}
+
+	app.handleDebugSeedTraces()(httptest.NewRecorder(), httptest.NewRequest("POST", "/api/v1/debug/traces", nil))
+
+	req := httptest.NewRequest("DELETE", "/api/v1/traces", nil)
+	rr := httptest.NewRecorder()
+	app.handleClearTraces()(rr, req)
+
+	if rr.Code != http.StatusNoContent {
+		t.Errorf("expected status NoContent, got %d", rr.Code)
+	}
+
+	// Verify empty
+	req2 := httptest.NewRequest("GET", "/api/v1/traces", nil)
+	rr2 := httptest.NewRecorder()
+	app.handleTraces()(rr2, req2)
+
+	var tracesAfter []Trace
+	json.NewDecoder(rr2.Body).Decode(&tracesAfter)
+	if len(tracesAfter) != 0 {
+		t.Errorf("expected 0 traces, got %d", len(tracesAfter))
+	}
+}

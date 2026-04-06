@@ -368,6 +368,56 @@ func (b *Broadcaster) ClearHistory() {
 	b.full = false
 }
 
+// DeleteIf removes items from the history that match the given condition.
+func (b *Broadcaster) DeleteIf(predicate func(any) bool) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	if b.limit == 0 {
+		return
+	}
+
+	var currentHistory []any
+	if b.full {
+		currentHistory = append(b.history[b.head:], b.history[:b.head]...)
+	} else {
+		currentHistory = b.history[:b.head]
+	}
+
+	var retained []any
+	for _, item := range currentHistory {
+		if !predicate(item) {
+			retained = append(retained, item)
+		}
+	}
+
+	// Rebuild the history buffer
+	b.history = make([]any, b.limit)
+	b.head = 0
+	b.full = false
+
+	for _, item := range retained {
+		b.history[b.head] = item
+		b.head = (b.head + 1) % b.limit
+		if b.head == 0 && len(retained) >= b.limit {
+			b.full = true
+		}
+	}
+
+	if len(retained) == b.limit {
+		b.full = true
+	} else if len(retained) > b.limit {
+		// If retained > limit, it shouldn't happen, but just in case, only keep the latest
+		b.full = true
+		start := len(retained) - b.limit
+		b.head = 0
+		for i := 0; i < b.limit; i++ {
+			b.history[i] = retained[start+i]
+		}
+	}
+}
+
+
 // GetHistory returns the current log history.
 //
 // Parameters:
