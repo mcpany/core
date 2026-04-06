@@ -1934,3 +1934,10 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **Structural Metadata Sanitizer Middleware**: (P0) A security service that treats tool descriptions and schemas as untrusted input, scanning them for imperative instructions or "Context Poisoning" patterns.
+- **Hardware-Linked Inode Pinning**: (P0) Extends path validation to include hardware-bound Inode checks, preventing TOCTOU races in project-local configurations.
+- **Speculative Auction Broker (SAB)**: (P1) High-speed negotiation bus for SAB-native "Intent Probability" bidding in agent swarms.
