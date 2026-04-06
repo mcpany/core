@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Epistemic Uncertainty Gate (EUG)**: (P0) High-speed safety middleware that monitors specialist agent confidence scores and triggers automated supervisor escalations (defense against "Hallucinatory Escalation").
+- **Hardware-Locked Lease Refresh (HLLR)**: (P0) Authoritative security service for HLML-compliant leases mandating process-namespace anchoring and periodic hardware re-attestation.
+- **Mesh-Local Offloading (MLO) Broker**: (P0) Authoritative tunnel manager facilitating encrypted P2P compute sharing between mesh nodes to neutralize cloud-inference costs.
+- **Kernel-Resident Shard Persistence Manager**: (P1) Optimization service using `memfd_create` for zero-copy state handoffs during mesh-local offloading.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Elevated with mandatory **EUG** integration to support autonomous safety escalations.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Now elevated with the requirement for **HLLR-compliant** process anchoring.

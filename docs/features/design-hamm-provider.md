@@ -59,3 +59,10 @@ The HAMM Provider solves this by introducing a cryptographically bound mission m
 
 ## 7. Evolutionary Changelog
 * **2026-03-20:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Recursive Lease Delegation (RLD)
+**Context:** Today's market sync revealed a new exploit pattern in Claude Code where subagents could "chain-delegate" TPM-signed leases to unauthorized background processes.
+**Architecture Adjustment:**
+- **Hardware-Locked Lease Refresh (HLLR)**: Introducing mandatory, sub-minute re-attestation for all high-privilege leases.
+- **Process-Bound Anchoring**: Leases are now cryptographically bound to the specific PID and process-namespace (UTS/IPC) of the authorized agent.
+**Security Impact:** Mitigates the risk of lease spoofing and prevents rogue background processes from inheriting parent-agent capabilities.
