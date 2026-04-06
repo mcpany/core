@@ -15,8 +15,9 @@ import (
 )
 
 func TestHITLApprovalMFA(t *testing.T) {
+	busProvider, _ := bus.NewProvider(nil)
 	app := &Application{
-		busProvider: bus.NewProvider(), // Provides memory bus for tests
+		busProvider: busProvider, // Provides memory bus for tests
 	}
 	mux := http.NewServeMux()
 	app.mountHITL(mux)

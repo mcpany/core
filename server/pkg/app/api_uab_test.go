@@ -4,21 +4,19 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	configv1 "github.com/mcpany/core/proto/config/v1"
-	"github.com/mcpany/core/server/pkg/storage/memory"
+	"github.com/mcpany/core/server/pkg/storage/sqlite"
 )
 
 func TestUABMetricsEndpoint(t *testing.T) {
 	app := &Application{}
 	mux := http.NewServeMux()
-	store := memory.NewMemoryStorage()
-	_ = store.SaveService(context.Background(), &configv1.UpstreamServiceConfig{Name: "s1"})
+	db, _ := sqlite.NewDB(":memory:")
+	store := sqlite.NewStore(db)
 
 	app.mountUAB(mux, store)
 
