@@ -11,6 +11,8 @@ import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-r
 import { JsonView } from "@/components/ui/json-view";
 import { SmartTable } from "./smart-table";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 /**
  * Props for the SmartResultRenderer component.
@@ -128,6 +130,34 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
              if (isTable) return unwrappedContent;
         }
 
+        // Deep scanning: Object containing an array of objects. We aggressively scan the top 2 levels.
+        if (unwrappedContent && typeof unwrappedContent === 'object' && !Array.isArray(unwrappedContent) && unwrappedContent !== null) {
+            let largestArray: any[] = [];
+
+            // Level 1 scan
+            Object.values(unwrappedContent).forEach(val => {
+                 if (Array.isArray(val) && val.length > 0 && val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                     if (val.length > largestArray.length) {
+                         largestArray = val;
+                     }
+                 }
+                 // Level 2 scan
+                 else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
+                      Object.values(val).forEach(nestedVal => {
+                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                               if (nestedVal.length > largestArray.length) {
+                                   largestArray = nestedVal;
+                               }
+                           }
+                      });
+                 }
+            });
+
+            if (largestArray.length > 0) {
+                 return largestArray;
+            }
+        }
+
         return null;
     }, [fullyUnwrapped, unwrappedContent, mcpContent]);
 
@@ -155,17 +185,27 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                 {mcpContent.map((item, idx) => (
                     <div key={idx} className="flex flex-col gap-2">
                         {item.type === 'text' && (
-                            <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
+                            <div>
                                 {(() => {
                                     try {
                                         if (item.text) {
                                             const parsed = JSON.parse(item.text);
                                             if (typeof parsed === 'object' && parsed !== null) {
-                                                return <JsonView data={parsed} maxHeight={400} smartTable={false} />;
+                                                return (
+                                                    <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
+                                                        <JsonView data={parsed} maxHeight={400} smartTable={false} />
+                                                    </div>
+                                                );
                                             }
                                         }
                                     } catch (e) {}
-                                    return item.text;
+                                    return (
+                                        <div className="prose prose-sm dark:prose-invert max-w-none break-words bg-muted/30 p-4 rounded-md border border-white/5">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {item.text || ''}
+                                            </ReactMarkdown>
+                                        </div>
+                                    );
                                 })()}
                             </div>
                         )}
