@@ -1934,3 +1934,11 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Audit Sovereignty Hub (ASH)**: (P0) Authoritative local log issuer providing hardware-attested, high-fidelity audit logs to neutralizing vendor "Audit Log Tax."
+- **NHI Lifecycle Monitor (NLM)**: (P0) Authoritative monitoring service that tracks and revokes orphaned or overprivileged Non-Human Identity tokens.
+- **Hardware-Attested Provenance Logging**: (P0) Core security standard mandating TPM-bound signatures for all agent-driven audit events.
+- **NHI Privilege Pruner**: (P1) Resource-aware security middleware that dynamically restricts agent capabilities based on real-time task lifecycle.

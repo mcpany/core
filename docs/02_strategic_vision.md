@@ -1550,3 +1550,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Audit Sovereignty & NHI Lifecycle Hardening
+**Context**: The transition of OpenClaw v2026.3.22 to autonomous action-oriented systems and the emergence of the "Audit Log Tax" in the SaaS ecosystem confirm that **Visibility** must be local and **Identity** must be finite. As agents become the "New Insider Threat," infrastructure must move beyond passive logging to hardware-attested **Audit Sovereignty** and active **NHI Lifecycle Governance**.
+**Strategic Pivot**:
+- **Audit Sovereignty Hub (ASH)**: MCP Any will evolve to act as the authoritative "Local Log Mint" for all agent activities. We will implement ASH, providing hardware-attested, high-fidelity audit logs locally to neutralize the "Audit Log Tax" imposed by SaaS vendors. This ensures that security teams have absolute visibility without escalating costs.
+- **NHI Lifecycle Monitor (NLM)**: To neutralize the threat of orphaned and overprivileged Non-Human Identities (NHIs), MCP Any will implement NLM. This service will perform real-time monitoring of inter-agent tokens, automatically revoking access for abandoned or stale agent sessions based on mission-root termination signals.
+- **Hardware-Attested Provenance Logging**: Supporting the "Audit Sovereignty" pillar, we are mandating hardware-attested provenance for every log entry. Each action taken by an agent will be cryptographically bound to the hardware enclave (TPM), providing a tamper-proof audit trail that satisfies SSDF and enterprise compliance requirements.
+- **NHI Privilege Pruning**: MCP Any will dynamically prune agent privileges based on real-time task necessity. As an agent's mission nears completion, its capability set will be automatically restricted to the absolute minimum required for finalization, reducing the blast radius of potential NHI "Insider Threats."
