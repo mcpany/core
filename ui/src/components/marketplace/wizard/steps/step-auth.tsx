@@ -82,7 +82,7 @@ export function StepAuth() {
           const res = await apiClient.testAuth({
               credential_id: selectedCredId,
               service_type: getServiceType(config),
-              ...config
+              service_config: config
            });
           setTestResult({
               success: res.success,

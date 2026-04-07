@@ -1,7 +1,7 @@
 # Truth Reconciliation Audit
 
 ## Executive Summary
-This PR aligns the documentation, codebase, and roadmap by removing the deprecated `service_config` wrapper syntax across all upstream service configurations, fixing a critical divergence between the code (which rejects it) and the documentation/frontend config (which incorrectly used it). The 10 sampled documentation files were successfully audited against codebase reality and roadmap expectations.
+This PR aligns the documentation, codebase, and roadmap by removing the deprecated `service_config` wrapper syntax from the `UpstreamService` documentation, fixing a divergence between the code (which rejects the wrapper natively) and the documentation (which incorrectly documented it). The 10 sampled documentation files were successfully audited against codebase reality and roadmap expectations.
 
 ## Verification Matrix
 | Document Name | Status | Action Taken | Evidence |
@@ -15,10 +15,9 @@ This PR aligns the documentation, codebase, and roadmap by removing the deprecat
 | `server/docs/features/rate-limiting/README.md` | Verified | None | Token-based cost metric logic checks out |
 | `server/docs/features/webhooks/README.md` | Verified | None | CloudEvents integration functional in `server/cmd/webhooks` sidecar |
 | `server/docs/features/granular_scopes.md` | Verified | None | Scope bindings to roles enforce zero-trust intents |
-| `server/docs/reference/configuration.md` | Drift | Removed `service_config` | Updated YAML wrapper specs in Markdown |
+| `server/docs/reference/configuration.md` | Drift | Removed `service_config` | Updated YAML wrapper specs in Markdown to show direct definition without wrapper |
 
 ## Remediation Log
-- **Case A (Documentation Drift):** The roadmap stated the `service_config` wrapper for upstream configurations was fixed and deprecated. However, `server/docs/reference/configuration.md` still contained it in its tables. This PR removes it.
-- **Case A (Code Drift):** The frontend UI configurations (`ui/src/lib/client.ts`, `ui/components/marketplace/wizard/steps/step-auth.tsx`, `ui/tests/...`) were injecting the deprecated `service_config` wrapper into backend payloads. The UI has been refactored to flatten these structures.
+- **Case A (Documentation Drift):** The roadmap stated the `service_config` wrapper for upstream configurations was fixed and deprecated. However, `server/docs/reference/configuration.md` still contained it in its tables and examples. This PR removes it from the documentation to match the codebase behavior (which intentionally throws a user-friendly error if it is used).
 
 All existing tests were run to ensure these updates do not cause regressions.

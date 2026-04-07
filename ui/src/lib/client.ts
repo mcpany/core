@@ -1361,7 +1361,7 @@ export const apiClient = {
         const list = Array.isArray(data) ? data : [];
 
         return list.map((t: any) => {
-            const sc = t || {};
+            const sc = t.service_config || {};
             const auth = sc.upstream_auth;
             let authType = 'none';
             if (auth?.oauth2) authType = 'oauth2';
