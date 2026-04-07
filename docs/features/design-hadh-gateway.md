@@ -45,3 +45,10 @@ With the maturation of Gemini CLI's A2A auth and the shift toward horizontal "Ag
 
 ## 7. Evolutionary Changelog
 * **2026-05-30:** Initial Document Creation.
+
+### Update: 2026-04-07 - Authenticated A2A Discovery Mandate
+**Context:** Gemini CLI v0.33.0 revealed that unauthenticated local capability broadcasts allow "Shadow Mapping" by malicious subagents.
+**Architecture Adjustment:**
+* Transitioning from unauthenticated broadcasts to mandatory HADH-mediated handshakes.
+* Integrating Federated Swarm Identity (FSI) patterns for hardware-attested identity proof.
+**Security Impact:** Prevents rogue agents from probing and identifying sensitive tool schemas without a verified mission-bound handshake.

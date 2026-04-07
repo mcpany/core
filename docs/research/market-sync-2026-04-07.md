@@ -15,3 +15,13 @@
 - MCP Any must pivot to an "Attested-First" model for all tool discovery.
 - Mandatory Origin enforcement (SOP) is now a non-negotiable requirement for local listeners.
 - We need to implement specific guardrails for Agent-to-Agent (A2A) social interactions to prevent cross-agent context leakage.
+
+## Strategic Evolution: 2026-04-07 - Ecosystem Shift
+**Objective**: To address newly identified threats in tool discovery and agent collaboration meshes.
+**Findings**:
+- **OpenClaw "ClawHavoc" Post-Mortem**: Confirms 12% of community skills were weaponized with markdown-based Reasoning Injection. Designates unverified registries as a primary supply-chain risk.
+- **CVE-2026-25253 (OpenClaw)**: Critical loopback WebSocket hijacking patched. Confirms that `localhost` is not a security boundary without Origin enforcement.
+- **Gemini CLI v0.33.0 Update**: Mandates hardware-bound identity verification for A2A "Agent Card" discovery, neutralizing unauthenticated shadow mapping.
+- **Claude Code 2.0.65+ Patch**: Emergency response to "Ghost-Execution" via project-local config hooks in `.claude/settings.json`.
+
+**Implications**: MCP Any must evolve from a connectivity gateway to an active **Sovereign Discovery Hub** and **Federated Reputation Broker**.

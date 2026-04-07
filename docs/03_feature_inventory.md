@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-07] Updates
+
+### Proposed Additions
+- **Isolated Discovery Sandbox (IDS) Middleware**: (P0) Authoritative coherence service performing ephemeral, zero-trust execution of discovery commands.
+- **Federated Skill Reputation (FSR) Provider**: (P1) Decentralized security middleware for sharing and validating tool safety scores across the UAB.
+- **Hardware-Attested Discovery Handshake (HADH) Gateway**: (P0) Advanced discovery service mandating hardware-bound handshakes before revealing agent cards.
+- **Deterministic Absence Proof (DAP) Provider**: (P0) Security service generating signed proofs of non-existence for restricted project-local paths.
+
+### Priority Shifts
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Elevated with mandatory IDS integration to counter discovery-phase RCE.
+- **A2A Authenticated Handshake Provider**: (Re-affirmed P0) Elevated to support HADH-compliant mission-root attestation.

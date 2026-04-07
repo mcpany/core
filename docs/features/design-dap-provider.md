@@ -47,6 +47,13 @@ The Deterministic Absence Proof (DAP) Provider in MCP Any will generate cryptogr
 
 ## 7. Evolutionary Changelog
 * **2026-04-22:** Initial Document Creation.
+
+### Update: 2026-04-07 - Formalizing DAP-v2 for Ghost-Execution Defense
+**Context:** Claude Code 2.0.65+ patch highlights "Ghost-Execution" where malicious hooks are injected into missing files.
+**Architecture Adjustment:**
+* Implementing mandatory DAP-v2 standard for pre-flight sandbox validation.
+* Generating signed "Non-Existence Manifests" for restricted paths during Deterministic Boot.
+**Security Impact:** Prevents RCE and configuration-injection escapes by proving the absolute absence of un-attested project hooks.
 * **2026-04-26:** Update: Hardening against Ambient Context Pollution.
     * **Context:** Market sync identified that subagents in shared swarms are prone to "Ambient Pollution" from unrelated config files.
     * **Architecture Adjustment:** DAP Generator now supports "Scope-Pinning," where a DAP manifest can be cryptographically bound to a specific Mission Intent, preventing its reuse for unrelated agent boots.
