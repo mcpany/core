@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-07 Evolution)
+*   **[P0] Discovery-Phase Authentication (DPA) Provider**: Mandatory session-bound authentication service for all tool discovery requests to prevent pre-flight shadow mapping. (Added: 2026-04-07)
+*   **[P0] Isolated SSH Tool Enclaves**: High-security tool execution adapter that dispatches calls to ephemeral, network-isolated SSH containers. (Added: 2026-04-07)
+*   **[P1] Marketplace Attestation Token (MAT) Validator**: Security middleware that verifies third-party skills against behavioral signature databases (e.g., ClawHub). (Added: 2026-04-07)
+*   **[P1] Multi-Sandbox Teammate Orchestrator**: Coordination layer providing isolated, sovereign sandboxes for each agent in a horizontal team. (Added: 2026-04-07)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)

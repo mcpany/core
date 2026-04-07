@@ -387,6 +387,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cannot be used for parent context reconstruction.
 - **Deterministic Attestation Gateway**: Moving toward a "Zero-Trust Discovery" model where no tool is exposed unless its structural metadata and Inode lineage are signed by an attested hardware authority.
 
+## Strategic Evolution: [2026-04-07] (Iteration 2)
+### Focus: Mandatory Discovery Authentication & Isolated SSH Enclaves
+**Context**: Today's analysis of OpenClaw v2026.3.22 and Gemini CLI's recent A2A updates confirms that "Discovery Sovereignty" is now the primary defense against swarm shadow-mapping. Simultaneously, the persistent RCE threats in local environments demand a move toward containerized, remote-execution-style sandboxing even for "local" tools.
+**Strategic Pivot**:
+- **Discovery-Phase Authentication (DPA)**: MCP Any will evolve to mandate session-bound authentication for all "Tool Search" and "Agent Card" requests. This prevents malicious peers from mapping our capabilities before a trust-bond is established.
+- **Isolated SSH Tool Enclaves**: Following OpenClaw's move to SSH sandboxing, we will implement "Remote Execution Adapters" that allow MCP Any to dispatch tool calls to ephemeral, network-isolated SSH containers instead of the local host OS.
+- **Attested Skill Provenance**: Transitioning to the "ClawHub" model, we will prioritize tools that carry a "Marketplace Attestation Token," ensuring that third-party skills have been behaviorally profiled and signed by a trusted authority before they enter the discovery bus.
+
 ---
 
 ## Strategic Evolution: [2026-03-14]

@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-07 Evolution)
+- [ ] **[P0] Discovery Handshake Debugger**: Forensic UI for visualizing the DPA identity-proof sequence and blocked shadow-mapping attempts. (Added: 2026-04-07)
+- [ ] **[P0] Enclave Lifecycle Monitor**: Real-time visualization of ephemeral SSH container provisioning, tool execution logs, and automated wipes. (Added: 2026-04-07)
+- [ ] **[P1] Marketplace Skill Profile Viewer**: Security dashboard for reviewing MAT behavioral signatures and Marketplace reputation scores. (Added: 2026-04-07)
+- [ ] **[P1] Multi-Sandbox Mesh Topology**: Visual map showing isolated sandboxes for each agent in a horizontal teammate mesh. (Added: 2026-04-07)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)
