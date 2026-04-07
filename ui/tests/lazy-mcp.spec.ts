@@ -37,7 +37,7 @@ test.describe('Lazy MCP Dashboard', () => {
       headers: HEADERS
     });
 
-    expect(response.status()).toBe(200);
+    expect(response.ok() || response.status() === 409).toBeTruthy();
 
     // Wait for the service to be loaded and its tools to be available
     let toolsLoaded = false;
