@@ -476,6 +476,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Attestation Gateway**: Extension of the Pre-Flight Validator to provide signed environment manifests for deterministic agent boot. (Added: 2026-04-10)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-10)
 
+#### Upcoming (2026-04-07 Evolution)
+*   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with skill attestation to mitigate ClawHavoc-style attacks. (Added: 2026-04-07)
+*   **[P0] Deterministic Inode-to-Origin Binding**: Middleware for neutralizing discovery-phase TOCTOU attacks via O_PATH pinning. (Added: 2026-04-07)
+*   **[P1] Social-Agent Privacy Sandbox**: Guardrails for A2A interactions in shared social spaces to prevent context leakage. (Added: 2026-04-07)
+
 #### Upcoming (2026-04-09 Evolution)
 *   **[P0] Pre-Flight Sandbox Validator**: Core security service for environment-manifest generation and config-injection defense (CVE-2026-25725). (Added: 2026-04-09)
 *   **[P0] Origin-Locked Session Bridge**: Hardened session manager binding agent tokens to cryptographically verified browser/CLI origins. (Added: 2026-04-09)

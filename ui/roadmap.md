@@ -215,6 +215,11 @@
 - [ ] **[P0] Cache Integrity Auditor**: (2026-07-08) Visual workspace for verifying cryptographic signatures of CI/CD build caches.
 - [ ] **[P0] Action-Chain Sovereignty Monitor**: (2026-07-08) Real-time visualization of automated workflow sequences and interdiction events.
 
+#### Upcoming (2026-04-07 Evolution)
+- [ ] **[P0] Inode Racing Violation Monitor**: (2026-04-07) Real-time visualization of blocked filesystem racing attempts and origin mismatches.
+- [ ] **[P0] Verified Skill Auction Monitor**: (2026-04-07) Real-time visualization of VSA bids and attestation status.
+- [ ] **[P1] Social Context Leak Detector**: (2026-04-07) Visualizer for monitoring A2A social interaction privacy scores.
+
 #### Upcoming (2026-07-07 Evolution)
 - [ ] **[P1] Automated Remediation Tracer**: (2026-07-07) Verifiable audit trail viewer for AI-powered fix suggestions and SSDF compliance.
 

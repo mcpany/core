@@ -785,6 +785,7 @@
 - **Verified Skill Auction (VSA)**: (P0) Integrating the DCA Auction Broker with skill attestation to ensure only verified agents can bid on sensitive tasks.
 - **Social-Agent Privacy Sandbox**: (P1) Middleware to prevent parent-context reconstruction during interactions on multi-agent social platforms (e.g., Moltbook).
 - **Federated Reputation Quorum Node**: (P1) Peer-to-peer node for collective tool safety attestation, mitigating "ClawHavoc" style registry attacks.
+- **Deterministic Inode-to-Origin Binding**: (P0) Authoritative security service cryptographically binding tool Inodes to their initiating origin to neutralize discovery-phase racing attacks.
 
 ### Priority Shifts
 - **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new VSA protocol and mitigate negotiation exhaustion.
