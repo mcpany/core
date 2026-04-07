@@ -1,8 +1,8 @@
 #!/bin/bash
-make build || true
-# wait, how to start the backend?
-cd server && go build -o mcpany ./cmd/mcpany && ./mcpany start &
+bazelisk run //server/cmd/mcpany -- -config server/config.minimal.yaml &
 PID=$!
 sleep 5
-cd ../ui && npx playwright test tests/network-widget.spec.ts
+cd ui
+export PATH="$PATH:$HOME/.npm-global/bin"
+TEST_PORT=9002 playwright test $1
 kill $PID

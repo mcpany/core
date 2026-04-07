@@ -768,6 +768,15 @@ func (a *Application) handleTools() http.HandlerFunc {
 			for _, t := range tools {
 				toolList = append(toolList, t.MCPTool())
 			}
+
+			intent := r.URL.Query().Get("intent")
+			if intent != "" {
+				filterCfg := middleware.LazyMCPConfig{Enabled: true, Threshold: 0.85}
+				lazyMid := middleware.NewLazyMCPMiddleware(filterCfg)
+				filteredRes := lazyMid.FilterTools(&mcp.ListToolsResult{Tools: toolList}, intent)
+				toolList = filteredRes.Tools
+			}
+
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(toolList)
 		case http.MethodPut:

@@ -1145,13 +1145,20 @@ export const apiClient = {
      *
      * Summary: Lists available tools.
      *
+     * @param serviceId - Optional service ID to filter tools.
+     * @param intent - Optional intent string for LazyMCP filtering.
      * @returns A promise that resolves to a list of tools.
      * @throws {Error} If the request fails.
      *
      * Side Effects: Makes a GET request to /api/v1/tools.
      */
-    listTools: async () => {
-        const res = await fetchWithAuth('/api/v1/tools');
+    listTools: async (serviceId?: string, intent?: string) => {
+        const params = new URLSearchParams();
+        if (serviceId) params.append('service_id', serviceId);
+        if (intent) params.append('intent', intent);
+
+        const url = params.toString() ? `/api/v1/tools?${params.toString()}` : '/api/v1/tools';
+        const res = await fetchWithAuth(url);
         if (!res.ok) throw new Error('Failed to fetch tools');
         const data = await res.json();
         const list = Array.isArray(data) ? data : (data.tools || []);
