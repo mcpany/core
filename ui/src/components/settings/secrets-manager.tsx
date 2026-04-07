@@ -5,7 +5,7 @@
 
 
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
     Plus,
     Trash2,
@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Dialog,
     DialogContent,
@@ -41,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
+import { cn } from "@/lib/utils";
 
 /**
  * Intent: Document SecretsManager
@@ -65,6 +67,7 @@ export function SecretsManager() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+    const [selected, setSelected] = useState<Set<string>>(new Set());
     const { toast } = useToast();
 
     // Form state
@@ -76,6 +79,54 @@ export function SecretsManager() {
     useEffect(() => {
         loadSecrets();
     }, []);
+
+    // Reset selection when secrets list changes
+    useEffect(() => {
+        setSelected(new Set());
+    }, [secrets]);
+
+    const handleSelectAll = useCallback((checked: boolean, filteredSecretsList: SecretDefinition[]) => {
+        if (checked) {
+            setSelected(new Set(filteredSecretsList.map(s => s.id)));
+        } else {
+            setSelected(new Set());
+        }
+    }, []);
+
+    const handleSelectOne = useCallback((id: string, checked: boolean) => {
+        setSelected(prev => {
+            const newSelected = new Set(prev);
+            if (checked) {
+                newSelected.add(id);
+            } else {
+                newSelected.delete(id);
+            }
+            return newSelected;
+        });
+    }, []);
+
+    const handleBulkDelete = async () => {
+        const selectedIds = Array.from(selected);
+        if (!confirm(`Are you sure you want to delete ${selectedIds.length} secrets?`)) return;
+
+        try {
+            await Promise.all(selectedIds.map(id => apiClient.deleteSecret(id)));
+            toast({
+                title: "Secrets Deleted",
+                description: `${selectedIds.length} secrets have been removed.`
+            });
+            setSelected(new Set());
+            loadSecrets();
+        } catch (e) {
+            console.error("Failed to delete secrets", e);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to delete some secrets."
+            });
+            loadSecrets();
+        }
+    };
 
     const loadSecrets = async () => {
         setLoading(true);
@@ -172,8 +223,20 @@ export function SecretsManager() {
         );
     }, [safeSecrets, searchQuery]);
 
+    const isAllSelected = filteredSecrets.length > 0 && selected.size === filteredSecrets.length;
+
     return (
         <div className="space-y-4 h-full flex flex-col">
+            {selected.size > 0 && (
+                <div className="flex items-center gap-2 p-2 bg-muted/40 rounded-md animate-in fade-in slide-in-from-top-1 duration-200 sticky top-0 z-10 backdrop-blur-md border">
+                    <span className="text-sm text-muted-foreground mr-2 font-medium px-2">{selected.size} selected</span>
+                    <div className="h-4 w-px bg-border mx-1" />
+                    <Button size="sm" variant="ghost" onClick={handleBulkDelete} className="h-8 text-red-600 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/20">
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete Selected
+                    </Button>
+                </div>
+            )}
+
             <div className="flex items-center justify-between">
                 <div>
                     <h3 className="text-lg font-medium">API Keys & Secrets</h3>
@@ -248,15 +311,28 @@ export function SecretsManager() {
             </div>
 
             <Card className="flex-1 flex flex-col overflow-hidden bg-background/50 backdrop-blur-sm border-muted/50">
-                <CardHeader className="p-4 border-b bg-muted/20">
-                     <div className="relative">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search secrets..."
-                            className="pl-8 bg-background max-w-sm"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                <CardHeader className="p-4 border-b bg-muted/20 flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-4 w-full">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="select-all"
+                                checked={isAllSelected}
+                                onCheckedChange={(checked) => handleSelectAll(!!checked, filteredSecrets)}
+                                aria-label="Select all"
+                            />
+                            <Label htmlFor="select-all" className="text-sm font-medium cursor-pointer">
+                                Select All
+                            </Label>
+                        </div>
+                        <div className="relative flex-1 max-w-sm">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search secrets..."
+                                className="pl-8 bg-background"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0 flex-1 overflow-hidden">
@@ -273,7 +349,13 @@ export function SecretsManager() {
                         ) : (
                             <div className="divide-y">
                                 {filteredSecrets.map((secret) => (
-                                    <SecretItem key={secret.id} secret={secret} onDelete={handleDeleteSecret} />
+                                    <SecretItem
+                                        key={secret.id}
+                                        secret={secret}
+                                        onDelete={handleDeleteSecret}
+                                        isSelected={selected.has(secret.id)}
+                                        onSelect={(checked) => handleSelectOne(secret.id, checked)}
+                                    />
                                 ))}
                             </div>
                         )}
@@ -289,9 +371,11 @@ export function SecretsManager() {
  * @param props - The component props.
  * @param props.secret - The secret property.
  * @param props.onDelete - The onDelete property.
+ * @param props.isSelected - Whether the item is selected.
+ * @param props.onSelect - Callback when selection changes.
  * @returns The rendered component.
  */
-function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: (id: string) => void }) {
+function SecretItem({ secret, onDelete, isSelected, onSelect }: { secret: SecretDefinition; onDelete: (id: string) => void; isSelected: boolean; onSelect: (checked: boolean) => void }) {
     const [revealedValue, setRevealedValue] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { toast } = useToast();
@@ -340,8 +424,13 @@ function SecretItem({ secret, onDelete }: { secret: SecretDefinition; onDelete: 
     };
 
     return (
-        <div className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group">
+        <div className={cn("flex items-center justify-between p-4 hover:bg-muted/30 transition-colors group", isSelected && "bg-muted/50")}>
             <div className="flex items-center gap-4">
+                <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) => onSelect(!!checked)}
+                    aria-label={`Select ${secret.name}`}
+                />
                 <div className="bg-primary/10 p-2 rounded-full text-primary">
                     <Key className="h-4 w-4" />
                 </div>

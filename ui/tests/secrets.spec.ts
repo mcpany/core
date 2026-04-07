@@ -56,4 +56,56 @@ test.describe('Secrets Manager', () => {
     // Verify it's gone
     await expect(page.getByText(secretName)).not.toBeVisible();
   });
+
+  test('should allow bulk deleting secrets', async ({ page }) => {
+    const timestamp = Date.now();
+    const secretsToCreate = 3;
+    const baseName = `e2e-bulk-secret-${timestamp}`;
+
+    await page.goto('/secrets');
+    await expect(page.getByRole('heading', { name: 'API Keys & Secrets' })).toBeVisible();
+
+    // Create multiple secrets manually through the UI (acts as both test and setup)
+    for (let i = 0; i < secretsToCreate; i++) {
+        await page.getByRole('button', { name: 'Add Secret' }).click();
+        await expect(page.getByRole('dialog')).toBeVisible();
+
+        await page.fill('#name', `${baseName}-${i}`);
+        await page.fill('#key', `KEY_${i}_${timestamp}`);
+        await page.fill('#value', `val-${i}-${timestamp}`);
+        await page.getByRole('button', { name: 'Save Secret' }).click();
+        await expect(page.getByRole('dialog')).toBeHidden({ timeout: 15000 });
+        await expect(page.getByText(`${baseName}-${i}`)).toBeVisible({ timeout: 15000 });
+    }
+
+    // Select the first two secrets
+    const row0 = page.locator('.group').filter({ hasText: `${baseName}-0` }).first();
+    const row1 = page.locator('.group').filter({ hasText: `${baseName}-1` }).first();
+    const row2 = page.locator('.group').filter({ hasText: `${baseName}-2` }).first();
+
+    await row0.getByRole('checkbox').check();
+    await row1.getByRole('checkbox').check();
+
+    // Verify the bulk action bar appears
+    await expect(page.getByText('2 selected')).toBeVisible();
+
+    // Setup dialog handler to automatically accept the confirmation alert
+    page.once('dialog', dialog => dialog.accept());
+
+    // Click the "Delete Selected" button in the bulk action bar
+    await page.getByRole('button', { name: 'Delete Selected' }).click();
+
+    // Verify the deleted secrets are gone
+    await expect(page.getByText(`${baseName}-0`)).not.toBeVisible({ timeout: 15000 });
+    await expect(page.getByText(`${baseName}-1`)).not.toBeVisible();
+
+    // Verify the unselected secret is still there
+    await expect(page.getByText(`${baseName}-2`)).toBeVisible();
+
+    // Clean up the last one
+    await row2.getByRole('checkbox').check();
+    page.once('dialog', dialog => dialog.accept());
+    await page.getByRole('button', { name: 'Delete Selected' }).click();
+    await expect(page.getByText(`${baseName}-2`)).not.toBeVisible({ timeout: 15000 });
+  });
 });
