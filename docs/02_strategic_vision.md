@@ -387,6 +387,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cannot be used for parent context reconstruction.
 - **Deterministic Attestation Gateway**: Moving toward a "Zero-Trust Discovery" model where no tool is exposed unless its structural metadata and Inode lineage are signed by an attested hardware authority.
 
+## Strategic Evolution: [2026-04-07] (Iteration 2)
+### Focus: Internal MessageBus Sovereignty & Supply Chain Source Integrity
+**Context**: The emergence of "Mandatory MessageBus Injection" in Gemini CLI and the catastrophic "Internal Source Exposure" in Claude Code confirm that the Universal Agent Bus must move from external tool proxying to **Active Internal Communication Governance**. As agents move from linear sessions to structured subagent meshes, the internal "MessageBus" becomes the new critical security frontier. Simultaneously, the supply chain risk has moved from "Malicious Skills" to "Leaked Foundation Code," requiring active source provenance.
+**Strategic Pivot**:
+- **Hardened Internal MessageBus (HIMB)**: MCP Any will evolve to act as the authoritative "Message Broker" for all internal agent communications. We will implement HIMB, providing a cryptographically signed and audited transport for inter-agent routing, ensuring that subagent messages are subject to the same Zero-Trust policies as external tool calls.
+- **Automated Source Provenance Guard (ASPG)**: To neutralize the risk of "Blueprint Attacks" from Foundation code leaks, we are introducing ASPG. This layer will mandate hardware-attested provenance for all agent-ingested source code, providing a cryptographic guarantee that tools are executing against verified, non-leaked baselines.
+- **MessageBus-Linked Identity Injection**: Supporting the Gemini CLI Phase 3 shift, MCP Any will implement "Identity Injection" at the MessageBus layer. Every internal message will be cryptographically bound to the hardware-attested agent identity, preventing subagent spoofing within the internal mesh.
+- **Governance-as-a-Control-Plane (GaCP)**: We are adopting the GaCP model for all high-risk operations. MCP Any will act as the "Governance Gateway," enforcing mandatory human checkpoints and hash-chained audit trails for any agentic action that could compromise the mission-root intent.
+
 ---
 
 ## Strategic Evolution: [2026-03-14]

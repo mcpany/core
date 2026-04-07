@@ -209,6 +209,11 @@
 - [ ] **[P0] Environment-Aware Trace Inspector**: Forensic UI for verifying reasoning traces bound to specific execution environments. (Added: 2026-04-01)
 - [ ] **[P0] Blackboard Conflict Manager**: Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions. (Added: 2026-04-01)
 
+#### Upcoming (2026-04-07 Evolution - Iteration 2)
+- [ ] **[P0] Internal MessageBus Visualizer**: Real-time tracker for inter-agent messages and internal routing paths. (Added: 2026-04-07)
+- [ ] **[P0] Source Provenance Audit Log**: Visual indicator for source code integrity and foundation-leak alerts. (Added: 2026-04-07)
+- [ ] **[P0] MessageBus Identity Badges**: Status widget for hardware-attested identities injected into the internal bus. (Added: 2026-04-07)
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.

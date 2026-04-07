@@ -45,3 +45,7 @@ Recent vulnerabilities in OpenClaw (CVE-2026-32000, CVE-2026-22169) have shown t
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+* **2026-04-07:** (Iteration 2) - Integration with Hardened Internal MessageBus.
+    * Context: Gemini CLI Phase 3 confirms that command parsing is now a multi-agent concern.
+    * Architecture Adjustment: Mandating structural validation for all command arguments crossing the internal MessageBus.
+    * Security Impact: Prevents "Command-Splicing" where subagents attempt to inject unauthorized flags into sibling reasoning traces.

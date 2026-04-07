@@ -790,6 +790,17 @@
 - **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new VSA protocol and mitigate negotiation exhaustion.
 - **Attested Discovery Authority**: (Re-affirmed P0) Promoted as the mandatory gate for all Marketplace
 
+## Evolution: [2026-04-07] (Iteration 2) Updates
+
+### Proposed Additions
+- **Hardened Internal MessageBus (HIMB)**: (P0) Authoritative "Message Broker" for internal agent communications, providing signed and audited inter-agent routing.
+- **Automated Source Provenance Guard (ASPG)**: (P1) Middleware mandating hardware-attested provenance for all agent-ingested source code to prevent Foundation-leak blueprinting.
+- **MessageBus Identity Injection Provider**: (P0) Security service cryptographically binding every internal MessageBus message to hardware-attested agent identities.
+
+### Priority Shifts
+- **Supply Chain Integrity Guard**: (Re-affirmed P0) Elevated with mandatory **Source-Level Provenance** requirements to counter Foundation code leaks.
+- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary integration point for the **Hardened Internal MessageBus**.
+
 ![Marketplace](screenshots/marketplace.png)
 -sourced skills.
 

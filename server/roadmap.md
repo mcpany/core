@@ -380,6 +380,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Environment-Aware Provenance (EAP)**: Cryptographic binding of reasoning traces to hardware-attested environment IDs. (Added: 2026-04-01)
 *   **[P0] Mission-Root Conflict Resolver (MRCR)**: Kernel-level arbiter for the Blackboard to resolve parallel state mutation collisions. (Added: 2026-04-01)
 
+#### Upcoming (2026-04-07 Evolution - Iteration 2)
+*   **[P0] Hardened Internal MessageBus (HIMB)**: Autoritative "Message Broker" implementation for signed and audited inter-agent communication. (Added: 2026-04-07)
+*   **[P1] Automated Source Provenance Guard (ASPG)**: Hardware-attested source verification for all agent-ingested foundations and tools. (Added: 2026-04-07)
+*   **[P0] MessageBus Identity Injection**: Cryptographic binding of internal messages to sender hardware fingerprints. (Added: 2026-04-07)
+
 #### Upcoming (2026-03-18 Evolution)
 *   **[P0] Local Listener Origin Enforcement**: Mandatory validation of Origin/Sec-Fetch-Site headers for local listeners. (Added: 2026-03-18)
 *   **[P0] Recursive Depth-Limit Middleware**: Real-time call-graph monitor to detect and block recursive agent loops. (Added: 2026-03-18)
