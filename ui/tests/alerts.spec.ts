@@ -6,7 +6,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
-  test.beforeAll(async ({ request }) => {
+  test.beforeEach(async ({ request, page }) => {
+    // Reset state for each test if necessary or navigate
+    await request.delete('/api/v1/alerts/AL-1024').catch(() => {});
+    await request.delete('/api/v1/alerts/AL-1023').catch(() => {});
+    await request.delete('/api/v1/alerts/AL-1022').catch(() => {});
+    await request.delete('/api/v1/alerts/rules/rule-1').catch(() => {});
+
     // Seed real alerts since the backend is empty
     await request.post('/api/v1/alerts', {
       data: {
@@ -58,15 +64,11 @@ test.describe('Alerts Page', () => {
     });
   });
 
-  test.afterAll(async ({ request }) => {
+  test.afterEach(async ({ request }) => {
     await request.delete('/api/v1/alerts/AL-1024').catch(() => {});
     await request.delete('/api/v1/alerts/AL-1023').catch(() => {});
     await request.delete('/api/v1/alerts/AL-1022').catch(() => {});
     await request.delete('/api/v1/alerts/rules/rule-1').catch(() => {});
-  });
-
-  test.beforeEach(async ({ page }) => {
-     // Reset state for each test if necessary or navigate
   });
 
   test('should load alerts page and display key elements', async ({ page }) => {
