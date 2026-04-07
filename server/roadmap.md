@@ -452,6 +452,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] RL Telemetry Provider**: Standardized middleware for exporting performance/feedback metrics to OpenClaw-RL training loops. (Added: 2026-04-05)
 
 #### Upcoming (2026-04-06 Evolution)
+*   **[P0] SSRF Interception Middleware**: High-performance security interceptor for the Egress Gateway performing real-time semantic analysis of outbound tool requests. (Added: 2026-04-06)
+*   **[P0] O_PATH Pinning Provider**: Mandatory use of O_PATH file descriptors and hardware-bound Inode pinning for all project-local tool calls. (Added: 2026-04-06)
 *   **[P0] Structural Metadata Sanitizer**: Middleware to detect and block context poisoning instructions in tool schemas. (Added: 2026-04-06)
 *   **[P0] Hardware-Linked Inode Pinning**: Native filesystem security layer to prevent TOCTOU symlink races in project configs. (Added: 2026-04-06)
 *   **[P1] Speculative Auction Broker (SAB)**: High-speed broker for "Intent Probability" bidding in speculative agent swarms. (Added: 2026-04-06)

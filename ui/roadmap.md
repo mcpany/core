@@ -229,6 +229,8 @@
 - [ ] **[P0] Origin-Bound Session Manager**: (2026-03-17) UI for managing and reviewing session-to-origin bindings. (Added: 2026-03-17)
 
 #### Upcoming (2026-04-06 Evolution)
+- [ ] **[P0] Egress Boundary Monitor**: (2026-04-06) Real-time visualization of outbound tool requests, highlighted by SSRF interception status and blocked internal ranges.
+- [ ] **[P0] O_PATH Boundary Inspector**: (2026-04-06) Visual debugger for hardware-pinned Inodes and O_PATH resolution traces across project-local subtrees.
 - [ ] **[P0] Metadata Poisoning Guard Dashboard**: UI for reviewing sanitized tool definitions and blocked instruction fragments. (Added: 2026-04-06)
 - [ ] **[P0] Inode Security Monitor**: Real-time visualization of pinned Inodes and alerts for unauthorized filesystem swaps. (Added: 2026-04-06)
 - [ ] **[P1] Speculative Auction Viewer**: Visual tracker for SAB-native "Intent Probability" bidding swarms. (Added: 2026-04-06)

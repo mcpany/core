@@ -54,3 +54,10 @@ Recent vulnerabilities in agentic IDEs (e.g., Claude Code CVE-2026-34812) have d
 * Implementing **Mandatory Inode Pinning** for all configuration-as-code files.
 * Once a configuration block (e.g., `.mcpany/hooks.json`) is validated, the gateway locks the file handle to the hardware Inode for the duration of the agent session.
 **Security Impact:** Renders symlink-swapping attacks ineffective, as the gateway will refuse to read from a new Inode even if the path remains the same.
+
+### Update: 2026-04-06 - Mitigation of Path-Traversal Racing (CVE-2026-26329)
+**Context:** Discovery of CVE-2026-26329 reveals that subagents can exploit path-traversal racing to access sensitive files outside the project root.
+**Architecture Adjustment:**
+* Mandating the use of `O_PATH` file descriptors for initial path resolution and validation.
+* Implementing hardware-bound Inode pinning for all tool-accessible filesystem handles.
+**Security Impact:** Prevents path-traversal escapes by ensuring that even if a path is swapped mid-call, the operation remains locked to the validated Inode.

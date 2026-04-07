@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-06] Updates
+
+### Proposed Additions
+- **SSRF Interception Middleware**: (P0) High-performance security interceptor for the Egress Gateway performing real-time semantic analysis of outbound tool requests to neutralize internal network probing (CVE-2026-26322 defense).
+- **O_PATH Pinning Provider**: (P0) Filesystem security service mandating the use of `O_PATH` file descriptors and hardware-bound Inode pinning for all project-local tool calls to neutralize TOCTOU racing (CVE-2026-26329 defense).
+
+### Priority Shifts
+- **Project Configuration Security Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **O_PATH Pinning** and hardware-attested Inode validation.
+- **Exfiltration-Resistant Transport Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **SSRF Interception** logic.
