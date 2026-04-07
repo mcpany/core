@@ -85,7 +85,7 @@ func (a *OpenClawAdapter) Name() string {
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:
-//   - None.
+//   - Increments the internal reasoning epoch state.
 func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("OpenClaw does not support capability: %s", task.Intent)
@@ -180,6 +180,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:
+//   - Increments the internal reasoning epoch state.
 //   - Spawns a goroutine to send chunks.
 func (a *OpenClawAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {

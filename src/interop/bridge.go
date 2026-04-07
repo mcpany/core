@@ -239,7 +239,7 @@ func NewAdapterHub() *AdapterHub {
 //   - None.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the internal adapters map.
 func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
 }

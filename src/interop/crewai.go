@@ -85,7 +85,7 @@ func (a *CrewAIAdapter) Name() string {
 //   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
 //
 // Side Effects:
-//   - None.
+//   - Modifies the internal RoleRegistry by storing an authentication token for the delegated role.
 func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("CrewAI does not support capability: %s", task.Intent)

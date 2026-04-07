@@ -85,7 +85,7 @@ func (a *AutoGenAdapter) Name() string {
 //   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
 //
 // Side Effects:
-//   - None.
+//   - Mutates the ChatHistory by appending a new simulated stateful checkpoint.
 func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	if !a.SupportsCapability(task.Intent) {
 		return nil, fmt.Errorf("AutoGen does not support capability: %s", task.Intent)
@@ -153,7 +153,7 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
-//   - None.
+//   - Mutates the ChatHistory by appending the received shard information.
 func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard) error {
 	if shard.Signature == "" {
 		return fmt.Errorf("invalid memory shard: signature required for ingestion")
