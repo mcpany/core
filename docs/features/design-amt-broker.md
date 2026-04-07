@@ -62,3 +62,6 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25: Latency-Aware Fast-Path Tunneling**
+    **Context:** Today's market sync revealed that mandatory P2P tunnels introduce a significant MTTC tax (50ms+), impacting high-frequency Agent Teams.
+    **Architecture Adjustment:** Introducing "Mesh Tickets" for session-bound resumption and hardware-accelerated tunnel setup to reduce coordination latency to <5ms.

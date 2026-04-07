@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cognitive Integrity Scrubber (CIS)**: (P0) Authoritative semantic validation service for long-term memory (Blackboard/Vector) to detect and block "Belief Injection" payloads.
+- **Semantic Retrieval Guard (SRG)**: (P0) Real-time, intent-aware scanning middleware for retrieved context to prevent "Uncontrolled Retrieval" of sensitive PII/IP.
+- **Shadow AI Interdiction Hub**: (P0) Visibility and governance service mandating comprehensive logging and hardware-attested identity for all connected agent sessions.
+- **Hardware-Locked Identity Minter**: (P0) Security service transitioning agent credentials from shared API keys to mandatory TPM-bound identity tokens.
+
+### Priority Shifts
+- **Memory Integrity Scrubber (MIS)**: (Evolved to CIS) Now elevated to include structural validation against memory-injection "sleeper agent" attacks.
+- **Zero-Knowledge State Attestation (ZKSA)**: (Re-affirmed P0) Designated as a critical dependency for the new **Semantic Retrieval Guard** privacy proofs.
