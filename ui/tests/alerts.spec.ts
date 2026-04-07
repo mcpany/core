@@ -6,10 +6,11 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
-  test.beforeEach(async ({ request }) => {
+  test.beforeAll(async ({ request }) => {
     // Seed real alerts since the backend is empty
     await request.post('/api/v1/alerts', {
       data: {
+        id: "AL-1024",
         title: "High CPU Usage",
         message: "CPU usage > 90% for 5m",
         severity: "critical",
@@ -21,6 +22,7 @@ test.describe('Alerts Page', () => {
 
     await request.post('/api/v1/alerts', {
       data: {
+        id: "AL-1023",
         title: "API Latency Spike",
         message: "P99 Latency > 2000ms",
         severity: "warning",
@@ -32,6 +34,7 @@ test.describe('Alerts Page', () => {
 
     await request.post('/api/v1/alerts', {
       data: {
+        id: "AL-1022",
         title: "Disk Space Low",
         message: "Volume /data at 85%",
         severity: "warning",
@@ -43,6 +46,7 @@ test.describe('Alerts Page', () => {
 
     await request.post('/api/v1/alerts/rules', {
       data: {
+        id: "rule-1",
         name: "High CPU",
         metric: "cpu_usage",
         operator: ">",
@@ -52,6 +56,17 @@ test.describe('Alerts Page', () => {
         enabled: true
       }
     });
+  });
+
+  test.afterAll(async ({ request }) => {
+    await request.delete('/api/v1/alerts/AL-1024').catch(() => {});
+    await request.delete('/api/v1/alerts/AL-1023').catch(() => {});
+    await request.delete('/api/v1/alerts/AL-1022').catch(() => {});
+    await request.delete('/api/v1/alerts/rules/rule-1').catch(() => {});
+  });
+
+  test.beforeEach(async ({ page }) => {
+     // Reset state for each test if necessary or navigate
   });
 
   test('should load alerts page and display key elements', async ({ page }) => {
