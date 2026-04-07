@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cross-Mesh Intent Teleportation (CMIT) Broker**: (P0) Authoritative coordination service for distributed TPM-bound mission migration between physical nodes to neutralize "Handshake Fatigue."
+- **Steganographic Reasoning Detector (SRD)**: (P0) Advanced security service performing high-entropy analysis of attention-noise fragments to block hidden instruction collusion.
+- **Recursive Mission-Bound Identity (RMBI) Provider**: (P0) Identity middleware cryptographically binding agents to specific recursive sub-task intents, preventing headless intent hijacking.
+- **Autonomous Infrastructure Attestation (AIA) Hub**: (P0) Pre-flight security service requiring hardware-attested manifests of self-provisioned agent environments (ASI-compliant).
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Elevated with mandatory support for **CMIT-compliant** intent fragment migration across node boundaries.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: (Re-affirmed P0) Elevated with the requirement for **Distributed Entropy Pools** to counter CVE-2026-10293 entropy collision exploits.
