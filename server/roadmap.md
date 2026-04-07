@@ -482,9 +482,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-09)
 
 #### Upcoming (2026-04-07 Evolution)
-*   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with real-time skill attestation to mitigate ClawHavoc-style attacks. (Added: 2026-04-07)
+*   **[P0] Moving Target Reasoning (MTR) Engine**: Authoritative security middleware injecting randomized anchors and salt to prevent Blueprint-based poisoning. (Added: 2026-04-07)
+*   **[P0] Federated Reputation Quorum (FRQ) Node**: P2P node for collective, real-time attestation of skill safety and mesh-wide revocation. (Added: 2026-04-07)
+*   **[P0] Intent-Fragment Handoff Protocol**: Privacy-preserving A2A protocol enforcing "Minimal Context Exposure" for specialist agents. (Added: 2026-04-07)
+*   **[P0] Autonomous Defensive Quorum (ADQ) Hub**: High-speed multi-agent security voting service to neutralize machine-speed offensive agents. (Added: 2026-04-07)
+*   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with real-time FRQ-based skill attestation. (Added: 2026-04-07)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)
-*   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)
 
 #### Upcoming (2026-04-14 Evolution)
 *   **[P0] Delegation Attestation Layer (DAL)**: Core security service for evaluating A2A task proposals and generating "Safety Proofs." (Added: 2026-04-14)

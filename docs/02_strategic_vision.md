@@ -380,12 +380,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Deterministic Attestation Gateway**: Moving toward a "Full-State Manifest" model where MCP Any verifies the integrity of the entire project-local environment (including proof-of-non-existence for sensitive files) before any agent execution begins.
 
 ## Strategic Evolution: [2026-04-07]
-### Focus: Collective Skill Defense & Social-Aware Security Boundaries
-**Context**: The "ClawHavoc" registry compromise and the Moltbook data breach prove that individual agent security is insufficient. We are entering the era of "Agentic Social Engineering," where malicious skills and peer agents can coerce information or actions from legitimate swarms via high-trust discovery and communication channels.
+### Focus: Collective Skill Defense & Moving Target Reasoning
+**Context**: The "ClawHavoc" skill crisis and the Claude Code source leak confirm that static sandboxes and individual tool validation are no longer sufficient. Attackers are now "Blueprinting" agent internals to craft high-fidelity "Coaxing" attacks. We must transition to **Collective Reputation** and **Moving Target Defense** for reasoning to neutralize machine-speed offensive agents like "shannon."
+
 **Strategic Pivot**:
-- **Collective Skill Defense**: MCP Any will transition from "Individual Tool Validation" to "Collective Reputation." We will implement a Federated Quorum model where tool safety is determined by the consensus of multiple independent security nodes.
-- **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cannot be used for parent context reconstruction.
-- **Deterministic Attestation Gateway**: Moving toward a "Zero-Trust Discovery" model where no tool is exposed unless its structural metadata and Inode lineage are signed by an attested hardware authority.
+- **Federated Reputation Quorum (FRQ)**: MCP Any will move beyond static allowlists to a decentralized "Skill Trust Mesh." Tool safety will be determined by real-time, cross-node consensus, where a single node's discovery of a malicious `SKILL.md` payload triggers an immediate mesh-wide capability revocation.
+- **Moving Target Reasoning (MTR)**: To neutralize "Blueprint-based" context poisoning (as seen in the Claude Code leak), we are implementing MTR. The gateway will dynamically inject randomized "Reasoning Salt" and shuffle attention anchors, ensuring that an attacker cannot predict the agent's cognitive path even if they possess the source code.
+- **Agentic Social Engineering Shield**: We are mandating "Privacy-Preserving A2A Handoffs." Specialist agents will only receive the minimal "Intent Fragment" required for their task, preventing them from reconstructing the mission-root context and "coaxing" supervisors into unauthorized state mutations.
+- **Machine-Speed Defensive Quorum**: To counter autonomous hackers, MCP Any will facilitate automated, multi-agent security votes for high-risk actions, removing the human-in-the-loop latency for 90% of validated operations while maintaining a "Zero-Trust" audit trail.
 
 ---
 

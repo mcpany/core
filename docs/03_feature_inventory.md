@@ -782,12 +782,14 @@
 ## Evolution: [2026-04-07] Updates
 
 ### Proposed Additions
-- **Verified Skill Auction (VSA)**: (P0) Integrating the DCA Auction Broker with skill attestation to ensure only verified agents can bid on sensitive tasks.
-- **Social-Agent Privacy Sandbox**: (P1) Middleware to prevent parent-context reconstruction during interactions on multi-agent social platforms (e.g., Moltbook).
-- **Federated Reputation Quorum Node**: (P1) Peer-to-peer node for collective tool safety attestation, mitigating "ClawHavoc" style registry attacks.
+- **Moving Target Reasoning (MTR) Engine**: (P0) Authoritative security middleware that dynamically injects randomized reasoning anchors and "Reasoning Salt" to prevent Blueprint-based context poisoning (Claude Code leak defense).
+- **Federated Reputation Quorum (FRQ) Node**: (P0) Peer-to-peer node for real-time, collective attestation of skill safety. Enables sub-millisecond mesh-wide capability revocation upon discovery of malicious SKILL.md payloads.
+- **Intent-Fragment Handoff Protocol**: (P0) Privacy-preserving A2A protocol that enforces "Minimal Context Exposure," preventing specialist subagents from reconstructing the mission-root via social engineering.
+- **Autonomous Defensive Quorum (ADQ) Hub**: (P0) High-speed coordination service for multi-agent security votes, neutralizing machine-speed offensive agents like "shannon" by removing human-in-the-loop latency for validated operations.
 
 ### Priority Shifts
-- **DCA Negotiation Guard**: (Re-affirmed P0) Expanded to support the new VSA protocol and mitigate negotiation exhaustion.
+- **Verified Skill Auction (VSA)**: (Re-affirmed P0) Now elevated with mandatory **FRQ-integration** for real-time bid disqualification based on collective reputation.
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Mandated as a hard-gate for all `SKILL.md` and `GEMINI.md` ingestion to counter natural-language instruction injection.
 - **Attested Discovery Authority**: (Re-affirmed P0) Promoted as the mandatory gate for all Marketplace
 
 ![Marketplace](screenshots/marketplace.png)
