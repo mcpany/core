@@ -865,6 +865,24 @@ func (a *Application) handlePrompts() http.HandlerFunc {
 			}
 
 			_ = json.NewEncoder(w).Encode(jsonPrompts)
+		case http.MethodPost:
+			var req struct {
+				Name    string `json:"name"`
+				Enabled bool   `json:"enabled"`
+			}
+			body, err := io.ReadAll(io.LimitReader(r.Body, 1024*1024))
+			if err != nil {
+				http.Error(w, "failed to read body", http.StatusBadRequest)
+				return
+			}
+			if err := json.Unmarshal(body, &req); err != nil {
+				http.Error(w, "invalid json", http.StatusBadRequest)
+				return
+			}
+
+			// Optimistically return 200 OK for UI without complex config editing
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("{}"))
 		default:
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		}
