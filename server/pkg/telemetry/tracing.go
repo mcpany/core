@@ -74,16 +74,13 @@ func InitTelemetry(ctx context.Context, serviceName string, version string, cfg 
 
 	// Read standard OpenTelemetry environment variables as documented
 	if envEndpoint := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"); envEndpoint != "" {
-		endpoint := envEndpoint
-		cfg.OtlpEndpoint = &endpoint
+		cfg.SetOtlpEndpoint(envEndpoint)
 	}
 	if envTracesExporter := os.Getenv("OTEL_TRACES_EXPORTER"); envTracesExporter != "" {
-		exporter := envTracesExporter
-		cfg.TracesExporter = &exporter
+		cfg.SetTracesExporter(envTracesExporter)
 	}
 	if envMetricsExporter := os.Getenv("OTEL_METRICS_EXPORTER"); envMetricsExporter != "" {
-		exporter := envMetricsExporter
-		cfg.MetricsExporter = &exporter
+		cfg.SetMetricsExporter(envMetricsExporter)
 	}
 	// Allow service name override from config
 	if cfg.GetServiceName() != "" {

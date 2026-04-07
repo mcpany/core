@@ -4,7 +4,6 @@
 package telemetry
 
 import (
-	"os"
 	"bytes"
 	"context"
 	"testing"
@@ -141,13 +140,13 @@ func TestInitTelemetry_EnvironmentVariables(t *testing.T) {
 		_ = shutdown(context.Background())
 	}
 
-	if cfg.OtlpEndpoint == nil || *cfg.OtlpEndpoint != "http://test.endpoint:4318" {
+	if cfg.GetOtlpEndpoint() != "http://test.endpoint:4318" {
 		t.Errorf("Expected OtlpEndpoint to be set from environment")
 	}
-	if cfg.TracesExporter == nil || *cfg.TracesExporter != "otlp" {
+	if cfg.GetTracesExporter() != "otlp" {
 		t.Errorf("Expected TracesExporter to be set from environment")
 	}
-	if cfg.MetricsExporter == nil || *cfg.MetricsExporter != "otlp" {
+	if cfg.GetMetricsExporter() != "otlp" {
 		t.Errorf("Expected MetricsExporter to be set from environment")
 	}
 }
