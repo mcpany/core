@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Wait-Free Coordination Core**: (P0) High-performance coordination engine evolving the LFMA to use wait-free synchronization primitives for the Shared Task List, neutralizing cognitive stalls.
+- **Stylometric Signature Pinning (SSP) Provider**: (P0) Advanced security service cryptographically binding behavioral signatures to hardware fragments to neutralize attention-splicing.
+- **Migration-Aware Attestation (MAA) Hub**: (P0) Authoritative coordination service for "teleporting" attestation state and context shards between physical mesh nodes.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving into the **Wait-Free Coordination Core** to eliminate tail-latency bottlenecks.
+- **Atomic Mission-Resumption (AMR) Gateway**: (Re-affirmed P0) Elevated with the requirement for mandatory **Zero-Stall Migration Ticket** support.
