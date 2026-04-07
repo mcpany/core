@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Identity Shard Relay (ISR)**: (P0) Authoritative coordination service utilizing hardware-attested multi-node handshakes to re-compose sharded agent identities.
+- **Peer-Review Quorum Provider**: (P0) Distributed attestation service allowing teammates to perform cross-validation of reasoning confidence to enable fast-pathing.
+- **Partition-Resilient Task Persistence**: (P1) Stability middleware for the MRCP providing signed task-root fragments for isolated reasoning during network instability.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated to critical status to address "Attestation Exhaustion" in multi-hop mesh delegations.
+- **Quorum-Bound Summarization (QBS)**: (Re-affirmed P0) Designated as the primary defense against "Mission Root Erasure" in deep swarms.

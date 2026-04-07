@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Distributed Identity Sharding (MNIS)
+**Context:** Today's market sync revealed that single-node identity compromise is a rising threat in multi-device agent meshes.
+**Architecture Adjustment:**
+* Implementing Multi-Node Identity Sharding (MNIS) within the AMT Broker.
+* Identity fragments are distributed across physical nodes; a quorum of shards is required to re-compose the authority token.
+* Introducing the Identity Shard Relay (ISR) to broker multi-node handshakes.
+**Security Impact:** Prevents a single device compromise from leaking the full mission-root identity, as the root token is never fully resident on a single node during transport.
