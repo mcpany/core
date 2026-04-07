@@ -9,6 +9,9 @@ test.describe('Prompt Studio Bulk Actions', () => {
   const serviceName = 'E2E Test Bulk Service';
 
   test.beforeAll(async ({ request }) => {
+    // Delete if exists
+    await request.delete(`/api/v1/services/e2e-test-bulk-service`).catch(() => {});
+
     // Seed a service for the test to ensure we have a place to save prompts
     const response = await request.post('/api/v1/services', {
       data: {
@@ -16,7 +19,21 @@ test.describe('Prompt Studio Bulk Actions', () => {
         name: serviceName,
         command_line_service: {
           command: 'echo',
-          working_directory: '/tmp'
+          working_directory: '/tmp',
+          prompts: [
+            {
+              name: 'test_prompt_bulk_1',
+              title: 'Test Prompt 1',
+              description: 'Test Bulk 1',
+              disable: false
+            },
+            {
+              name: 'test_prompt_bulk_2',
+              title: 'Test Prompt 2',
+              description: 'Test Bulk 2',
+              disable: false
+            }
+          ]
         },
         disable: false
       }
@@ -37,48 +54,11 @@ test.describe('Prompt Studio Bulk Actions', () => {
   });
 
   test('should support bulk enabling and disabling of prompts', async ({ page }) => {
-    // 1. Create first prompt
-    let createBtn = page.getByRole('button', { name: /Create.*Prompt|New Prompt/ }).first();
-    await createBtn.click();
-    await page.getByLabel('Name').fill('test_prompt_bulk_1');
-    await page.getByLabel('Description').fill('Test Bulk 1');
-    await page.getByRole('combobox', { name: 'Service' }).click();
-    await page.getByRole('option', { name: serviceName }).click();
-    await page.getByPlaceholder('Enter prompt text').fill('Hello {{name}}');
-
-    let savePromise = page.waitForResponse(response =>
-      response.url().includes('/api/v1/services/') &&
-      response.request().method() === 'PUT' &&
-      response.status() === 200,
-    );
-    await page.getByRole('button', { name: 'Save Prompt' }).click();
-    await savePromise;
-    await expect(page).toHaveURL(/\/prompts\/?$/);
-    await expect(page.getByText('test_prompt_bulk_1').first()).toBeVisible();
-
-    // 2. Create second prompt
-    createBtn = page.getByRole('button', { name: /Create.*Prompt|New Prompt/ }).first();
-    await createBtn.click();
-    await page.getByLabel('Name').fill('test_prompt_bulk_2');
-    await page.getByLabel('Description').fill('Test Bulk 2');
-    await page.getByRole('combobox', { name: 'Service' }).click();
-    await page.getByRole('option', { name: serviceName }).click();
-    await page.getByPlaceholder('Enter prompt text').fill('Hello {{name}}');
-
-    savePromise = page.waitForResponse(response =>
-      response.url().includes('/api/v1/services/') &&
-      response.request().method() === 'PUT' &&
-      response.status() === 200,
-    );
-    await page.getByRole('button', { name: 'Save Prompt' }).click();
-    await savePromise;
-    await expect(page).toHaveURL(/\/prompts\/?$/);
-
-    // Wait for the prompts to appear in the list
+    // Wait for the seeded prompts to appear in the list
     await expect(page.getByText('test_prompt_bulk_1').first()).toBeVisible();
     await expect(page.getByText('test_prompt_bulk_2').first()).toBeVisible();
 
-    // 3. Select both prompts using their respective checkboxes
+    // Select both prompts using their respective checkboxes
     // The checkbox is adjacent to the button containing the prompt name.
     // We can locate the checkbox by looking at the parent group.
     await page.locator('.group').filter({ hasText: 'test_prompt_bulk_1' }).getByRole('checkbox').click();
