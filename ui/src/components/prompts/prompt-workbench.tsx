@@ -33,6 +33,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { PromptEditor } from "./prompt-editor";
 import { RichResultViewer } from "@/components/tools/rich-result-viewer";
 
@@ -73,6 +74,7 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
   // Editor State
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingPrompt, setEditingPrompt] = useState<PromptDefinition | null>(null);
+  const [selectedPrompts, setSelectedPrompts] = useState<Set<string>>(new Set());
 
   const router = useRouter();
   const { toast } = useToast();
@@ -230,6 +232,32 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
       }
   };
 
+  const handleBulkEnable = async () => {
+      const names = Array.from(selectedPrompts);
+      setPrompts(prompts.map(p => names.includes(p.name) ? { ...p, disable: false } : p));
+      try {
+          await Promise.all(names.map(name => apiClient.setPromptStatus(name, true)));
+          toast({ title: "Prompts Enabled", description: `${names.length} prompts have been enabled.` });
+      } catch (e) {
+          console.error("Failed to bulk enable prompts", e);
+          loadPrompts();
+          toast({ variant: "destructive", title: "Error", description: "Failed to enable some prompts." });
+      }
+  };
+
+  const handleBulkDisable = async () => {
+      const names = Array.from(selectedPrompts);
+      setPrompts(prompts.map(p => names.includes(p.name) ? { ...p, disable: true } : p));
+      try {
+          await Promise.all(names.map(name => apiClient.setPromptStatus(name, false)));
+          toast({ title: "Prompts Disabled", description: `${names.length} prompts have been disabled.` });
+      } catch (e) {
+          console.error("Failed to bulk disable prompts", e);
+          loadPrompts();
+          toast({ variant: "destructive", title: "Error", description: "Failed to disable some prompts." });
+      }
+  };
+
   const togglePromptStatus = async (prompt: PromptDefinition) => {
       const newDisable = !prompt.disable;
       // Optimistic update
@@ -290,38 +318,60 @@ export function PromptWorkbench({ initialPrompts = [] }: PromptWorkbenchProps) {
                     className="pl-8 h-9 text-sm"
                 />
             </div>
+            {selectedPrompts.size > 0 && (
+                <div className="mt-3 flex items-center justify-between bg-muted/50 p-2 rounded-md border text-sm">
+                    <span className="font-medium text-xs ml-1">{selectedPrompts.size} selected</span>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={handleBulkEnable}>Enable</Button>
+                        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={handleBulkDisable}>Disable</Button>
+                    </div>
+                </div>
+            )}
         </div>
         <ScrollArea className="flex-1">
             <div className="flex flex-col p-2 gap-1">
                 {filteredPrompts.map((prompt) => (
-                    <button
-                        key={prompt.name}
-                        onClick={() => handleSelectPrompt(prompt)}
-                        className={cn(
-                            "flex flex-col items-start gap-1 p-3 rounded-md text-left transition-colors hover:bg-accent hover:text-accent-foreground",
-                            selectedPrompt?.name === prompt.name ? "bg-accent text-accent-foreground shadow-sm" : ""
-                        )}
-                    >
-                        <div className="flex items-center justify-between w-full">
-                            <span className="font-medium text-sm truncate">{prompt.name}</span>
-                            {selectedPrompt?.name === prompt.name && <ChevronRight className="h-3 w-3 opacity-50" />}
+                    <div key={prompt.name} className="relative group flex items-start">
+                        <div className="absolute left-3 top-4 z-10">
+                            <Checkbox
+                                checked={selectedPrompts.has(prompt.name)}
+                                onCheckedChange={(checked) => {
+                                    const newSelection = new Set(selectedPrompts);
+                                    if (checked) newSelection.add(prompt.name);
+                                    else newSelection.delete(prompt.name);
+                                    setSelectedPrompts(newSelection);
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            />
                         </div>
-                        {prompt.description && (
-                            <p className="text-xs text-muted-foreground line-clamp-2">
-                                {prompt.description}
-                            </p>
-                        )}
-                        <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
-                                {(prompt as any).serviceId || "System"}
-                            </Badge>
-                             {(getArguments(prompt).length || 0) > 0 && (
-                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                                    <Terminal className="h-3 w-3" /> {getArguments(prompt).length} args
-                                </span>
-                             )}
-                        </div>
-                    </button>
+                        <button
+                            onClick={() => handleSelectPrompt(prompt)}
+                            className={cn(
+                                "flex-1 flex flex-col items-start gap-1 p-3 pl-10 rounded-md text-left transition-colors hover:bg-accent hover:text-accent-foreground",
+                                selectedPrompt?.name === prompt.name ? "bg-accent text-accent-foreground shadow-sm" : ""
+                            )}
+                        >
+                            <div className="flex items-center justify-between w-full">
+                                <span className={cn("font-medium text-sm truncate", prompt.disable && "opacity-50 line-through")}>{prompt.name}</span>
+                                {selectedPrompt?.name === prompt.name && <ChevronRight className="h-3 w-3 opacity-50" />}
+                            </div>
+                            {prompt.description && (
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                    {prompt.description}
+                                </p>
+                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-[10px] h-4 px-1">
+                                    {(prompt as any).serviceId || "System"}
+                                </Badge>
+                                 {(getArguments(prompt).length || 0) > 0 && (
+                                    <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                        <Terminal className="h-3 w-3" /> {getArguments(prompt).length} args
+                                    </span>
+                                 )}
+                            </div>
+                        </button>
+                    </div>
                 ))}
                 {filteredPrompts.length === 0 && (
                     <div className="p-8 text-center text-sm text-muted-foreground flex flex-col items-center gap-2">
