@@ -26,4 +26,5 @@ This section details the capabilities of the MCP Any Server.
 - [Recursive Context Protocol](features/recursive_context.md) - Subagent inheritance.
 - [Shared Key-Value Store](features/shared_kv_store.md) - Embedded Blackboard.
 - [Granular Scopes](features/granular_scopes.md) - Capability-based tokens.
+- [Policy Firewall](features/policy_firewall.md) - Zero Trust tool execution firewall.
 - [Message Bus](features/message_bus.md) - Event-driven integrations.
