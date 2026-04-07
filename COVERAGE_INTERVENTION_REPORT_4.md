@@ -1,0 +1,6 @@
+# Coverage Intervention Report
+
+* **Target:** `server/pkg/tool/types.go` (`stripInterpreterComments` and `checkUnquotedKeywords`)
+* **Risk Profile:** This code deals directly with parsing and interpreting executable commands from potentially untrusted inputs. Ensuring robust interpretation and handling of string quotes, comments, backslashes, and command keywords is critical to maintaining a strong security posture against injections. The functions exhibited high cyclomatic complexity with low test coverage.
+* **New Coverage:** Added table-driven tests (`server/pkg/tool/types_parser_test.go`) covering all core branching paths of comment handling across various scripting languages (python, js, java, bash, etc.). Edge cases covered include embedded comments in different quotes, backslash escapes, block comments, and single-line comments. Added table-driven tests covering unquoted keyword detection for command injection prevention, including keywords wrapped in various types of quotes, strings containing keywords as substrings, and spaces/pipes preceding keywords.
+* **Verification:** Run `bazelisk run //:lint` and `bazelisk test //server/pkg/tool/...` indicating that all the new tests passed cleanly and regressions were avoided.

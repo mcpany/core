@@ -1,18 +1,4 @@
-I will improve test coverage in the `src/interop` package.
-Specifically, I will:
-
-1. In `src/interop/placeholder_test.go`:
-   - Add a test for `NewPlaceholderAdapter` when passing `nil` capabilities.
-   - Add a test for `StreamTask` method to ensure it returns the correct error ("placeholder method: not implemented").
-   - Add a test for `RegisterPlaceholders` to ensure it registers all the adapters in the `AdapterHub`.
-
-2. In `src/interop/autogen_test.go` (new file or in `swarm_test.go`):
-   - Add a test for `HandleTask` where streaming is requested.
-   - Add a test for `StreamTask` to check if it behaves correctly.
-
-3. In `src/interop/crewai_test.go` (new file or in `swarm_test.go`):
-   - Add a test for `HandleTask` where streaming is requested.
-   - Add a test for `StreamTask` for successful streaming and unsupported intents.
-
-4. In `src/interop/openclaw_test.go` (new file or in `swarm_test.go`):
-   - Add a test for `StreamTask` to verify it behaves properly for supported and unsupported intents.
+1. **Target:** `server/pkg/tool/types.go` specifically functions like `stripInterpreterComments` and `checkUnquotedKeywords` which have high cyclomatic complexity but lack tests.
+2. **Risk Profile:** The code executes and parses code tools, which can include shell scripts and various scripting languages. There is risk of parsing issues if quotes, comments or backslashes are not properly handled.
+3. **New Coverage:** Write table-driven tests for `stripInterpreterComments` and `checkUnquotedKeywords` in `server/pkg/tool/types_parser_test.go` to test their edge cases like comments inside strings, backslashes before comments, block comments, hash comments etc.
+4. **Verification:** I will check the tests run locally cleanly and generate an Impact Report in Markdown format as requested.
