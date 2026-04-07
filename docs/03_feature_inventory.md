@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Registry Integrity Guard (RIG)**: (P0) Authoritative discovery firewall performing real-time semantic attestation of tool schemas to block dynamic tool injection.
+- **Hardware-Attested Shard Resumption (HASR) Provider**: (P0) Performance-optimizing service issuing TPM-bound "Context Tickets" for sub-50ms cross-device mission recovery.
+- **Discovery-Storm Circuit Breaker**: (P1) Coordination middleware that dynamically throttles redundant discovery queries to dynamic registries.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ZKD-masked** capability cards.
+- **Speculative Zero-Knowledge Discovery (SZKD) Engine**: (Re-affirmed P0) Designated as the primary caching layer for the Discovery-Storm Circuit Breaker.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

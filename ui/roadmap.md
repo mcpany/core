@@ -838,6 +838,11 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Registry Integrity Monitor**: (2026-07-25) Visual debugger for shadowed tool schemas, blocked dynamic injections, and attestation failures.
+- [ ] **[P0] Shard Resumption Status**: (2026-07-25) Widget for monitoring cross-device context tickets, handoff latency, and HASR attestation health.
+- [ ] **[P1] Discovery Storm Visualizer**: (2026-07-25) Real-time tracker for throttled discovery queries and SZKD cache hit rates.
+
 #### Upcoming (2026-07-23 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
