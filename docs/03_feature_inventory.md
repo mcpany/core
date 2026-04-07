@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Remote Control Security Proxy (RCSP)**: (P0) Authoritative gateway for headless session steering, mandating hardware-attested identity signatures for all remote steering signals.
+- **GNAP Coordination Adapter**: (P1) Interoperability bridge for the Git-Native Agent Protocol, mirroring server-side state into git-resident `.gnap` manifests.
+- **Headless Handoff Continuity (HHC) Hub**: (P0) Lifecycle extension for the AMRA Hub brokering hardware-locked context snapshots between local and remote session controllers.
+
+### Priority Shifts
+- **Autonomous Mission Resumption (AMRA) Hub**: (Re-affirmed P0) Elevated with mandatory **HHC-compliant** context snapshot brokering.
+- **Ghost Shell Hook Profiler**: (Re-affirmed P0) Elevated with mandatory **Pre-Execution Hook Hardening** for remote-controlled sessions.

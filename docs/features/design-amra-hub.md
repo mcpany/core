@@ -44,3 +44,10 @@ As AI agent swarms evolve toward "Long-Haul Agency," missions frequently exceed 
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
+
+### Update: 2026-07-25 - Remote Control Continuity
+**Context:** The emergence of "Remote Control" features in Claude Code allows sessions to be steered by disparate environments. This introduces the risk of "Cognitive Stall" when a session is handed off without its associated hardware-attested context.
+**Architecture Adjustment:**
+*   Integrating the **Headless Handoff Continuity (HHC)** Hub into the AMRA workflow.
+*   Enabling "Context Snapshot Brokering" where the Hub securely transfers hardware-locked BSH fragments from the primary session controller to a verified remote "Steerer".
+**Security Impact:** Prevents rogue controllers from hijacking a session without proving cryptographic parentage of the mission-root.
