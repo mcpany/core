@@ -12,8 +12,6 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-type contextKey string
-
 const (
 	AgentAwareKey  contextKey = "agent_aware"
 	IntentScopeKey contextKey = "intent_scope"
