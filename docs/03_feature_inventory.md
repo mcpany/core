@@ -1924,6 +1924,18 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Multi-Hop Provenance Attestation (MHPA)**: (P0) Authoritative security service ensuring that hardware-attested mission-root integrity survives across infinite P2P node hops.
+- **Active Teammate Reflection (ATR) Arbiter**: (P0) Coordination service mandating hardware-attested "Reasoning Justification" fragments before teammate task-claiming.
+- **Dynamic Reasoning Resource Broker (DRRB)**: (P1) Resource management middleware dynamically adjusting hardware quotas based on real-time Reasoning Intensity signals.
+- **Shadow-Node Interdiction (SNI) Middleware**: (P0) Transport security service cross-verifying P2P state fragments against mission-root manifests at every node.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving to act as the primary backend for the **ATR Arbiter** multi-agent justifications.
+- **Reasoning-Responsive Resource Allocation (RRRA)**: (Re-affirmed P1) Designated as the primary enforcement requirement for the **DRRB**.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

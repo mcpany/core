@@ -675,6 +675,12 @@
 - [ ] **[P0] Handshake Lineage Inspector**: Forensic UI for visualizing the cryptographically bound lineage of mission-initiation signals. (Added: 2026-06-26)
 - [ ] **[P0] Differential Reasoning Debugger**: Workspace for reviewing cross-framework state handoffs and DRV-redacted payloads. (Added: 2026-06-26)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Multi-Hop Lineage Visualizer**: (2026-07-25) Interactive graph for visualizing hardware-attested mission provenance across infinite P2P node hops.
+- [ ] **[P0] Teammate Reflection Console**: (2026-07-25) Workspace for reviewing peer-attested reasoning justifications and cognitive consensus status.
+- [ ] **[P1] Reasoning Resource Dashboard**: (2026-07-25) Real-time visualization of DRRB-managed hardware quotas and intensity signals.
+- [ ] **[P0] Shadow-Node Alert Center**: (2026-07-25) Forensic UI for inspecting state fragments blocked by SNI cross-verification.
+
 #### Upcoming (2026-06-27 Evolution)
 - [ ] **[P0] ZK-Discovery Workspace**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-06-27)
 - [ ] **[P0] CRDT Shard Monitor**: Real-time visualization of lock-free mailbox synchronization and hardware-attested conflict resolution. (Added: 2026-06-27)
