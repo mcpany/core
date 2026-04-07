@@ -15,19 +15,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Summary: Version is a global constant or variable.
+// Version is the version of the mcpctl CLI.
+// It is set at build time via -ldflags.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents Version.
 var Version = "dev"
 
 // main is the entry point for the mcpctl CLI.

@@ -16,19 +16,9 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Summary: SftpProvider represents a data structure.
+// SftpProvider provides access to files via SFTP.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a SftpProvider.
 type SftpProvider struct {
 	fs     afero.Fs
 	client *sftp.Client

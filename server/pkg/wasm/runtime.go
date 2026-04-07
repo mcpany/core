@@ -9,19 +9,9 @@ import (
 	"fmt"
 )
 
-// Summary: Runtime represents a data structure.
+// Runtime defines the interface for a WASM plugin runtime.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Runtime.
 type Runtime interface {
 	// LoadPlugin loads a WASM plugin from bytecode.
 	//
@@ -43,19 +33,7 @@ type Runtime interface {
 
 // Plugin defines an instantiated WASM plugin.
 //
-// Summary: Plugin represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Plugin.
 type Plugin interface {
 	// Execute runs a function exported by the WASM module
 	//
@@ -78,19 +56,7 @@ type Plugin interface {
 
 // MockRuntime is a placeholder implementation.
 //
-// Summary: MockRuntime represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a MockRuntime.
 type MockRuntime struct{}
 
 // NewMockRuntime creates a new MockRuntime.
@@ -169,19 +135,7 @@ func (m *MockRuntime) Close() error {
 
 // MockPlugin is a mock plugin.
 //
-// Summary: MockPlugin represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a MockPlugin.
 type MockPlugin struct{}
 
 // Execute executes a function.

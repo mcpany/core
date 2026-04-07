@@ -14,19 +14,18 @@ import (
 
 const trueVal = "true"
 
-// Summary: IsSafeIP is a global constant or variable.
+// IsSafeIP checks if the IP address string is safe to connect to,
+// respecting the allowed network resources policy.
+//
+// Summary: Validates an IP address string against security policies.
 //
 // Parameters:
-//   - None
+//   - ipStr: string. The IP address to check.
 //
 // Returns:
-//   - None
+//   - error: An error if the IP is invalid or forbidden.
 //
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// IsSafeIP is a variable to allow mocking in tests.
 var IsSafeIP = func(ipStr string) error {
 	// Bypass if explicitly allowed (for testing/development)
 	if os.Getenv("MCPANY_DANGEROUS_ALLOW_LOCAL_IPS") == trueVal {
@@ -148,22 +147,6 @@ var IsSafeURL = func(urlStr string) error {
 //
 // Returns:
 //   - error: An error if the IP matches a forbidden range.
-// Summary: ValidateIP executes the operation.
-//
-// Parameters:
-//   - ip net.IP: Input parameter.
-//   - allowLoopback: Input parameter.
-//   - allowPrivate bool: Input parameter.
-//
-// Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func ValidateIP(ip net.IP, allowLoopback, allowPrivate bool) error {
 	if !allowLoopback && (ip.IsLoopback() || IsNAT64Loopback(ip) || (IsIPv4Compatible(ip) && ip[12] == 127)) {
 		return fmt.Errorf("loopback address is not allowed")

@@ -23,19 +23,10 @@ import (
 	"github.com/mcpany/core/server/pkg/upstream/websocket"
 )
 
-// Summary: Factory represents a data structure.
+// Factory defines the interface for a factory that creates upstream service
+// instances.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Interface for creating upstream services.
 type Factory interface {
 	// NewUpstream creates a new upstream service instance based on the provided
 	// configuration.
@@ -54,19 +45,8 @@ type Factory interface {
 // UpstreamServiceFactory is a concrete implementation of the Factory interface.
 // It creates different types of upstream services based on the service
 // configuration.
-// Summary: UpstreamServiceFactory represents a data structure.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Concrete factory for creating upstream services.
 type UpstreamServiceFactory struct {
 	poolManager    *pool.Manager
 	globalSettings *configv1.GlobalSettings
@@ -76,21 +56,13 @@ type UpstreamServiceFactory struct {
 //
 // Summary: Creates a new UpstreamServiceFactory.
 //
-// Summary: NewUpstreamServiceFactory executes the operation.
-//
 // Parameters:
-//   - poolManager *pool.Manager: Input parameter.
-//   - globalSettings *configv1.GlobalSettings: Input parameter.
+//   - poolManager (*pool.Manager): The connection pool manager used by upstreams that require
+//     connection pooling (e.g., gRPC, HTTP, WebSocket).
+//   - globalSettings (*configv1.GlobalSettings): The global configuration settings.
 //
 // Returns:
-//   - Factory {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - Factory: A new Factory instance.
 func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *configv1.GlobalSettings) Factory {
 	return &UpstreamServiceFactory{
 		poolManager:    poolManager,
@@ -108,19 +80,7 @@ func NewUpstreamServiceFactory(poolManager *pool.Manager, globalSettings *config
 //
 // Returns:
 //   - upstream.Upstream: A new upstream service instance.
-// Summary: NewUpstream executes the operation.
-//
-// Parameters:
-//   - config *configv1.UpstreamServiceConfig: Input parameter.
-//
-// Returns:
-//   - (upstream.Upstream, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - error: An error if the service type is unknown.
 func (f *UpstreamServiceFactory) NewUpstream(config *configv1.UpstreamServiceConfig) (upstream.Upstream, error) {
 	if config == nil {
 		return nil, fmt.Errorf("upstream service config cannot be nil")

@@ -17,19 +17,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Summary: SmartRecoveryMiddleware represents a data structure.
+// SmartRecoveryMiddleware handles automatic error recovery using LLM.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a SmartRecoveryMiddleware.
 type SmartRecoveryMiddleware struct {
 	config      *configv1.SmartRecoveryConfig
 	llmClient   llm.Client

@@ -13,19 +13,19 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
-// Summary: Signal represents a data structure.
+// Signal represents a WebRTC signal.
+// Signal represents a WebRTC signaling message.
+//
+// Summary: Defines the structure for signaling messages in WebRTC setup.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Throws/Errors:
+//   - None.
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

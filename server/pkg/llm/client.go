@@ -14,19 +14,9 @@ import (
 	"time"
 )
 
-// Summary: Client represents a data structure.
+// Client is the interface for an LLM client.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Client.
 type Client interface {
 	// ChatCompletion sends a chat request to the LLM and returns the response.
 	//
@@ -51,19 +41,7 @@ type Client interface {
 
 // ChatRequest represents a chat completion request.
 //
-// Summary: ChatRequest represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ChatRequest.
 type ChatRequest struct {
 	Model    string    `json:"model"`
 	Messages []Message `json:"messages"`
@@ -71,19 +49,7 @@ type ChatRequest struct {
 
 // Message represents a chat message.
 //
-// Summary: Message represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Message.
 type Message struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
@@ -91,38 +57,14 @@ type Message struct {
 
 // ChatResponse represents a chat completion response.
 //
-// Summary: ChatResponse represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ChatResponse.
 type ChatResponse struct {
 	Content string `json:"content"`
 }
 
 // OpenAIClient implements Client for OpenAI.
 //
-// Summary: OpenAIClient represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a OpenAIClient.
 type OpenAIClient struct {
 	apiKey  string
 	baseURL string

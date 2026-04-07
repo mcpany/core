@@ -10,17 +10,9 @@ const (
 	Name = "mcpany"
 )
 
-// Summary: Version is a global constant or variable.
+// Version is the version of the MCP Any server. This is a variable so it can be
+// set at build time using ldflags. The default value is "dev", which is used
+// for local development builds.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Version.
 var Version = "dev"

@@ -13,19 +13,20 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: MetadataSanitizationGateway represents a data structure.
+// MetadataSanitizationGateway implements the MSG specification for scrubbing
+// malicious instructions from agent-ingested external metadata.
+// MetadataSanitizationGateway scrubs sensitive metadata from tool requests and responses.
+//
+// Summary: Protects sensitive system metadata from leaking to downstream components.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Throws/Errors:
+//   - None.
 type MetadataSanitizationGateway struct {
 	config *configv1.MetadataSanitizationConfig
 	// Pre-compiled regular expressions for speed
@@ -44,20 +45,6 @@ type MetadataSanitizationGateway struct {
 //
 // Throws/Errors:
 //   - None.
-// Summary: NewMetadataSanitizationGateway executes the operation.
-//
-// Parameters:
-//   - cfg *configv1.MetadataSanitizationConfig: Input parameter.
-//
-// Returns:
-//   - *MetadataSanitizationGateway {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *MetadataSanitizationGateway {
 	if cfg == nil {
 		cfg = &configv1.MetadataSanitizationConfig{}
@@ -107,19 +94,6 @@ func NewMetadataSanitizationGateway(cfg *configv1.MetadataSanitizationConfig) *M
 //
 // Throws/Errors:
 //   - None.
-// Summary: Middleware executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - func(mcp.MethodHandler): Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *MetadataSanitizationGateway) Middleware() func(mcp.MethodHandler) mcp.MethodHandler {
 	if !m.config.Enabled {
 		return noOpMiddleware

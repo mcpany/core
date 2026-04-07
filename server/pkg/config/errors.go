@@ -8,19 +8,13 @@ import (
 	"fmt"
 )
 
-// Summary: ActionableError represents a data structure.
+// ActionableError is an error that includes a suggestion for fixing the issue.
 //
-// Parameters:
-//   - None
+// Summary: An error type that pairs an underlying error with a user-facing suggestion.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Fields:
+//   - Err: error. The original error that occurred.
+//   - Suggestion: string. A human-readable suggestion on how to resolve the error.
 type ActionableError struct {
 	Err        error
 	Suggestion string
@@ -94,21 +88,16 @@ func (e *ActionableError) Unwrap() error {
 //
 // If the cause is an ActionableError, it returns a new ActionableError with the context added to the error message.
 // Otherwise, it returns a standard wrapped error.
-// Summary: WrapActionableError executes the operation.
 //
 // Parameters:
-//   - context string: Input parameter.
-//   - err error: Input parameter.
+//   - context (string): The context message to prefix to the error.
+//   - err (error): The error to wrap.
 //
 // Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - error: The wrapped error.
 //
 // Side Effects:
-//   - None
+//   - None.
 func WrapActionableError(context string, err error) error {
 	if err == nil {
 		return nil

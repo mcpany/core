@@ -15,21 +15,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Summary: LoadServices executes the operation.
+// LoadServices loads, validates, and processes the MCP Any server configuration from a given store.
+//
+// Summary: Loads and validates the server configuration.
 //
 // Parameters:
-//   - ctx context.Context: Input parameter.
-//   - store Store: Input parameter.
-//   - binaryType string: Input parameter.
+//   - ctx: context.Context. The context for the operation.
+//   - store: Store. The configuration store from which to load the configuration.
+//   - binaryType: string. The type of binary running the code (e.g., "server", "worker").
 //
 // Returns:
-//   - (*configv1.McpAnyServerConfig, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - *configv1.McpAnyServerConfig: A validated configuration object.
+//   - error: An error if loading or validation fails.
 func LoadServices(ctx context.Context, store Store, binaryType string) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 
@@ -116,20 +113,6 @@ func LoadServices(ctx context.Context, store Store, binaryType string) (*configv
 // Returns:
 //   - *configv1.McpAnyServerConfig: The resolved configuration.
 //   - error: An error if loading fails.
-// Summary: LoadResolvedConfig executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - store Store: Input parameter.
-//
-// Returns:
-//   - (*configv1.McpAnyServerConfig, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func LoadResolvedConfig(ctx context.Context, store Store) (*configv1.McpAnyServerConfig, error) {
 	log := logging.GetLogger().With("component", "configLoader")
 

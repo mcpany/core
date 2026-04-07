@@ -8,19 +8,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Summary: BuiltinServiceCollections is a global constant or variable.
+// BuiltinServiceCollections contains the official service collections.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a BuiltinServiceCollections.
 var BuiltinServiceCollections []*configv1.Collection
 
 func init() {

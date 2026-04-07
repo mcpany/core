@@ -11,19 +11,12 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Summary: TemporaryToolManager represents a data structure.
+// TemporaryToolManager is a tool manager that stores service info and tools temporarily.
 //
-// Parameters:
-//   - None
+// It is intended for use in ValidateService where we need to store service info
+// and discovered tools for the duration of the validation request but discard them afterwards.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a TemporaryToolManager.
 type TemporaryToolManager struct {
 	NoOpToolManager
 	mu          sync.RWMutex

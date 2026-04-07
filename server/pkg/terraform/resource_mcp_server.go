@@ -4,19 +4,10 @@
 // Package terraform provides a Terraform provider skeleton.
 package terraform
 
-// Summary: ResourceMCPServer represents a data structure.
+// ResourceMCPServer represents the configuration schema for an MCP Server resource
+// This would map to hashicorp/terraform-plugin-sdk in a real provider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ResourceMCPServer.
 type ResourceMCPServer struct {
 	Name    string
 	Port    int

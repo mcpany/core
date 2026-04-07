@@ -8,19 +8,10 @@ import (
 	"sync"
 )
 
-// Summary: Handler represents a data structure.
+// Handler defines the interface for handling webhook requests.
+// Implementations of this interface process incoming webhook events.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Interface for webhook handlers.
 type Handler interface {
 	// Handle processes the webhook request.
 	//
@@ -40,19 +31,7 @@ type Handler interface {
 // Registry manages the registration and retrieval of system webhooks.
 // It provides a thread-safe mechanism to store and lookup handlers by name.
 //
-// Summary: Registry represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Thread-safe registry for webhook handlers.
 type Registry struct {
 	mu    sync.RWMutex
 	hooks map[string]Handler
@@ -61,20 +40,15 @@ type Registry struct {
 // NewRegistry creates and initializes a new Registry instance.
 //
 // Summary: Creates a new webhook registry.
-// Summary: NewRegistry executes the operation.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - *Registry {
-: Result of the operation.
-//
-// Errors:
-//   - None
+//   - *Registry: A pointer to a new, empty Registry.
 //
 // Side Effects:
-//   - None
+//   - Allocates memory for the registry map.
 func NewRegistry() *Registry {
 	return &Registry{
 		hooks: make(map[string]Handler),
@@ -92,21 +66,10 @@ func NewRegistry() *Registry {
 //
 // Returns:
 //
-// Summary: Register executes the operation.
-//
-// Parameters:
-//   - name string: Input parameter.
-//   - handler Handler: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
+//	None.
 //
 // Side Effects:
-//   - None
+//   - Updates the registry map.
 func (r *Registry) Register(name string, handler Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -126,19 +89,6 @@ func (r *Registry) Register(name string, handler Handler) {
 //
 // Side Effects:
 //   - None.
-// Summary: Get executes the operation.
-//
-// Parameters:
-//   - name string: Input parameter.
-//
-// Returns:
-//   - (Handler, bool): Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (r *Registry) Get(name string) (Handler, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

@@ -13,19 +13,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Summary: LocalProvider represents a data structure.
+// LocalProvider provides access to the local filesystem.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a LocalProvider.
 type LocalProvider struct {
 	fs           afero.Fs
 	rootPaths    map[string]string

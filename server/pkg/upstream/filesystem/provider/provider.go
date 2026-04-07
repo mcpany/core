@@ -9,19 +9,9 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Summary: Provider represents a data structure.
+// Provider defines the interface for a filesystem provider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Provider.
 type Provider interface {
 	io.Closer
 

@@ -14,19 +14,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: Config represents a data structure.
+// Config defines the configuration for the GC Worker.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Config.
 type Config struct {
 	Enabled  bool
 	Interval time.Duration
@@ -36,19 +26,7 @@ type Config struct {
 
 // Worker implements a background worker for garbage collection.
 //
-// Summary: Worker represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Worker.
 type Worker struct {
 	config Config
 }

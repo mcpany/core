@@ -10,19 +10,9 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Summary: GraphQLProvider represents a data structure.
+// GraphQLProvider discovers services via GraphQL introspection.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a GraphQLProvider.
 type GraphQLProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/graphql"
 }

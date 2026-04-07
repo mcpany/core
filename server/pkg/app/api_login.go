@@ -12,19 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/util/passhash"
 )
 
-// Summary: LoginRequest represents a data structure.
+// LoginRequest is the request body for login.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a LoginRequest.
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -32,19 +22,7 @@ type LoginRequest struct {
 
 // LoginResponse is the response body for login.
 //
-// Summary: LoginResponse represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a LoginResponse.
 type LoginResponse struct {
 	Token string `json:"token"`
 }

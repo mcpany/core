@@ -14,19 +14,11 @@ import (
 	"github.com/mcpany/core/server/pkg/config"
 )
 
-// Summary: Severity represents a data structure.
+// Severity indicates the importance of a linting result.
 //
-// Parameters:
-//   - None
+// It is used to categorize findings based on their impact and urgency.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Severity.
 type Severity int
 
 const (
@@ -78,19 +70,7 @@ func (s Severity) String() string {
 //
 // It encapsulates all details about a detected issue, including its severity, location, and description.
 //
-// Summary: Result represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Result.
 type Result struct {
 	// Severity indicates how critical the finding is (Error, Warning, Info).
 	Severity Severity
@@ -138,19 +118,7 @@ func (r Result) String() string {
 //
 // It holds the configuration to be analyzed and provides methods to execute various checks.
 //
-// Summary: Linter represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Linter.
 type Linter struct {
 	cfg *configv1.McpAnyServerConfig
 }

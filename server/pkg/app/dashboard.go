@@ -10,19 +10,11 @@ import (
 	"time"
 )
 
-// Summary: Metric represents a data structure.
+// Metric represents a single dashboard metric to be displayed in the UI.
 //
-// Parameters:
-//   - None
+// Summary: Data structure for dashboard metrics.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// It contains the label, value, trend direction, and other visual metadata.
 type Metric struct {
 	// Label is the primary text description of the metric (e.g., "Total Requests").
 	Label string `json:"label"`

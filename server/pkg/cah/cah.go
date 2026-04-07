@@ -9,19 +9,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: MonitorAgent represents a data structure.
+// MonitorAgent represents a security/policy validator in the quorum.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Evaluates a request and returns a cryptographically bound signature.
 type MonitorAgent interface {
 	// ValidateRequest evaluates a request and returns a cryptographically bound
 	// signature if approved, or an error if rejected.
@@ -32,19 +22,7 @@ type MonitorAgent interface {
 
 // CAHAdapter acts as the central arbiter for verifying agent interactions.
 //
-// Summary: CAHAdapter represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Manages a decentralized quorum of MonitorAgents to collect approvals.
 type CAHAdapter struct {
 	monitors        []MonitorAgent
 	quorumThreshold int

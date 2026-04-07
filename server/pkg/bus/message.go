@@ -10,19 +10,11 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Summary: Message represents a data structure.
+// Message defines the interface that all messages exchanged on the event bus must
+// implement. It provides a standard way to manage correlation IDs for tracking
+// requests and their corresponding responses.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Message.
 type Message interface {
 	// CorrelationID returns the unique identifier used to correlate messages.
 	//
@@ -38,19 +30,7 @@ type Message interface {
 // includes a correlation ID field (`CID`) and can be embedded in other message
 // structs to provide a common mechanism for message tracking.
 //
-// Summary: BaseMessage represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a BaseMessage.
 type BaseMessage struct {
 	CID string `json:"cid"`
 }
@@ -121,19 +101,7 @@ func (m *BaseMessage) SetCorrelationID(id string) {
 // registration of a new upstream service. It contains the service's
 // configuration and the context for the request.
 //
-// Summary: ServiceRegistrationRequest represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ServiceRegistrationRequest.
 type ServiceRegistrationRequest struct {
 	BaseMessage
 	Context context.Context
@@ -144,19 +112,8 @@ type ServiceRegistrationRequest struct {
 // ServiceRegistrationRequest. It contains the outcome of the registration
 // process, including the generated service key, a list of any tools that were
 // discovered, or an error if the registration failed.
-// Summary: ServiceRegistrationResult represents a data structure.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ServiceRegistrationResult.
 type ServiceRegistrationResult struct {
 	BaseMessage
 	ServiceKey          string
@@ -170,19 +127,6 @@ type ServiceRegistrationResult struct {
 // its inputs in raw JSON format.
 //
 // Summary: Represents a ToolExecutionRequest.
-// Summary: ToolExecutionRequest represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 type ToolExecutionRequest struct {
 	BaseMessage
 	Context    context.Context
@@ -194,19 +138,7 @@ type ToolExecutionRequest struct {
 // ToolExecutionRequest. It contains the result of the tool execution, in raw
 // JSON format, or an error if the execution failed.
 //
-// Summary: ToolExecutionResult represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ToolExecutionResult.
 type ToolExecutionResult struct {
 	BaseMessage
 	Result json.RawMessage
@@ -217,19 +149,6 @@ type ToolExecutionResult struct {
 // registered services.
 //
 // Summary: Represents a ServiceListRequest.
-// Summary: ServiceListRequest represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 type ServiceListRequest struct {
 	BaseMessage
 }
@@ -237,19 +156,7 @@ type ServiceListRequest struct {
 // ServiceListResult is a message published in response to a
 // ServiceListRequest. It contains a list of all registered services.
 //
-// Summary: ServiceListResult represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ServiceListResult.
 type ServiceListResult struct {
 	BaseMessage
 	Services []*configv1.UpstreamServiceConfig
@@ -259,19 +166,6 @@ type ServiceListResult struct {
 // ServiceGetRequest is a message sent to the bus to request a specific service.
 //
 // Summary: Represents a ServiceGetRequest.
-// Summary: ServiceGetRequest represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 type ServiceGetRequest struct {
 	BaseMessage
 	ServiceName string
@@ -279,19 +173,7 @@ type ServiceGetRequest struct {
 
 // ServiceGetResult is a message published in response to a ServiceGetRequest.
 //
-// Summary: ServiceGetResult represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ServiceGetResult.
 type ServiceGetResult struct {
 	BaseMessage
 	Service *configv1.UpstreamServiceConfig

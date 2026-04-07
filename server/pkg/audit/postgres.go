@@ -14,19 +14,9 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// Summary: PostgresAuditStore represents a data structure.
+// PostgresAuditStore writes audit logs to a PostgreSQL database.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Stores audit log entries in a PostgreSQL database with tamper-evident hashing.
 type PostgresAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -201,20 +191,15 @@ func (s *PostgresAuditStore) Write(ctx context.Context, entry Entry) error {
 
 // Read implements the Store interface.
 //
-// Summary: Read executes the operation.
+// Summary: Reads audit entries (Not implemented).
 //
 // Parameters:
-//   - _ context.Context: Input parameter.
-//   - _ Filter: Input parameter.
+//   - _: context.Context. Unused.
+//   - _: Filter. Unused.
 //
 // Returns:
-//   - ([]Entry, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - []Entry: Nil.
+//   - error: Always returns "not implemented".
 func (s *PostgresAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for postgres audit store")
 }
@@ -308,20 +293,6 @@ func (s *PostgresAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
-// Summary: Close executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func (s *PostgresAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

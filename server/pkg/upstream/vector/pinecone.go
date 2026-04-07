@@ -17,19 +17,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Summary: PineconeClient represents a data structure.
+// PineconeClient implements VectorClient for Pinecone.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a PineconeClient.
 type PineconeClient struct {
 	config  *configv1.PineconeVectorDB
 	client  *http.Client

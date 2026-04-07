@@ -10,19 +10,10 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: SessionRegistry represents a data structure.
+// SessionRegistry manages the mapping between upstream MCP sessions and downstream tool sessions.
+// This allows requests from upstream (like sampling) to be routed to the correct downstream client.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a SessionRegistry.
 type SessionRegistry struct {
 	mu       sync.RWMutex
 	sessions map[mcp.Session]tool.Session

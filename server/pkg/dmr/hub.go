@@ -11,19 +11,19 @@ import (
 	"time"
 )
 
-// Summary: NodeState represents a data structure.
+// NodeState represents the health and attestation state of a mesh node.
+// NodeState tracks the state of an agent node in the mesh.
+//
+// Summary: Defines the structure holding metrics and state for dynamic mesh resilience.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Throws/Errors:
+//   - None.
 type NodeState struct {
 	ID             string
 	LastHeartbeat  time.Time
@@ -34,19 +34,6 @@ type NodeState struct {
 // Hub manages the active nodes in the mesh and triggers state migration on failure.
 //
 // Summary: The authoritative coordinator for mesh resilience and state migration.
-// Summary: Hub represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 type Hub interface {
 	// RegisterNode adds a new node to the mesh or updates its state.
 	//

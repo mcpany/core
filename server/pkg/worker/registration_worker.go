@@ -19,19 +19,12 @@ import (
 	"github.com/mcpany/core/server/pkg/util"
 )
 
-// Summary: ServiceRegistrationWorker represents a data structure.
+// ServiceRegistrationWorker is a background worker responsible for handling
+// service registration requests. It listens for ServiceRegistrationRequest
+// messages on the event bus, processes them using the service registry, and
+// publishes the results as ServiceRegistrationResult messages.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ServiceRegistrationWorker.
 type ServiceRegistrationWorker struct {
 	bus             *bus.Provider
 	serviceRegistry serviceregistry.ServiceRegistryInterface

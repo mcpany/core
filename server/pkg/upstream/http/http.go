@@ -53,19 +53,13 @@ func httpMethodToString(method configv1.HttpCallDefinition_HttpMethod) (string, 
 	}
 }
 
-// Summary: Upstream represents a data structure.
+// Upstream implements the upstream.Upstream interface for services that are
+// exposed via standard HTTP endpoints.
 //
-// Parameters:
-//   - None
+// It handles the registration of tools defined in the service configuration
+// and manages connection pooling for HTTP requests.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Upstream.
 type Upstream struct {
 	poolManager *pool.Manager
 	serviceID   string

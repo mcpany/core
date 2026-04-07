@@ -15,19 +15,10 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: StaticResource represents a data structure.
+// StaticResource implements the Resource interface for resources that are
+// defined statically in the configuration (e.g. pointing to a URL).
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a StaticResource.
 type StaticResource struct {
 	resource      *mcp.Resource
 	serviceID     string
@@ -38,21 +29,13 @@ type StaticResource struct {
 // NewStaticResource creates a new instance of StaticResource.
 //
 // Summary: Initializes a static resource.
-// Summary: NewStaticResource executes the operation.
 //
 // Parameters:
-//   - def *configv1.ResourceDefinition: Input parameter.
-//   - serviceID string: Input parameter.
+//   - def: *configv1.ResourceDefinition. The resource definition.
+//   - serviceID: string. The ID of the service owning the resource.
 //
 // Returns:
-//   - *StaticResource {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *StaticResource: The initialized static resource.
 func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *StaticResource {
 	return &StaticResource{
 		resource: &mcp.Resource{
@@ -74,20 +57,6 @@ func NewStaticResource(def *configv1.ResourceDefinition, serviceID string) *Stat
 //
 // Returns:
 //   - *mcp.Resource: The MCP resource definition.
-// Summary: Resource executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Resource {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (r *StaticResource) Resource() *mcp.Resource {
 	return r.resource
 }
@@ -98,20 +67,6 @@ func (r *StaticResource) Resource() *mcp.Resource {
 //
 // Returns:
 //   - string: The service ID.
-// Summary: Service executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - string {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (r *StaticResource) Service() string {
 	return r.serviceID
 }
@@ -123,19 +78,12 @@ func (r *StaticResource) Service() string {
 // Parameters:
 //   - ctx: context.Context. The context for the request.
 //
-// Summary: Read executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//
 // Returns:
-//   - (*mcp.ReadResourceResult, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *mcp.ReadResourceResult: The resource content.
+//   - error: An error if fetching fails.
 //
 // Side Effects:
-//   - None
+//   - Performs an HTTP GET request to the resource URI (if not inline content).
 func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, error) {
 	if r.staticContent != nil {
 		var blob []byte
@@ -226,20 +174,6 @@ func (r *StaticResource) Read(ctx context.Context) (*mcp.ReadResourceResult, err
 //
 // Returns:
 //   - error: Always returns an error indicating not implemented.
-// Summary: Subscribe executes the operation.
-//
-// Parameters:
-//   - _ context.Context: Input parameter.
-//
-// Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func (r *StaticResource) Subscribe(_ context.Context) error {
 	return fmt.Errorf("subscribing to static resources is not yet implemented")
 }

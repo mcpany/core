@@ -22,19 +22,10 @@ const (
 	methodGet  = "GET"
 )
 
-// Summary: ParsedOpenAPIData represents a data structure.
+// ParsedOpenAPIData holds the high-level information extracted from an OpenAPI
+// specification, such as metadata, server details, and the defined paths.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ParsedOpenAPIData.
 type ParsedOpenAPIData struct {
 	Info    openapi3.Info
 	Servers openapi3.Servers
@@ -44,19 +35,7 @@ type ParsedOpenAPIData struct {
 // PathItem represents a single path within an OpenAPI specification and holds a
 // reference to its corresponding openapi3.PathItem.
 //
-// Summary: PathItem represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a PathItem.
 type PathItem struct {
 	PathRef *openapi3.PathItem
 }
@@ -64,19 +43,8 @@ type PathItem struct {
 // McpOperation provides a simplified, MCP-centric representation of an OpenAPI
 // operation. It contains the essential details needed to convert an API
 // endpoint into an executable tool.
-// Summary: McpOperation represents a data structure.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a McpOperation.
 type McpOperation struct {
 	OperationID string
 	Summary     string

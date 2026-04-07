@@ -10,19 +10,9 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Summary: RolesContextKey is a global constant or variable.
+// RolesContextKey is the context key for the user roles.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a RolesContextKey.
 const RolesContextKey authContextKey = "user_roles"
 
 // ContextWithRoles returns a new context with the user roles. ctx is the context for the request. roles is the roles. Returns the result.
@@ -92,19 +82,7 @@ func RolesFromContext(ctx context.Context) ([]string, bool) {
 
 // RBACEnforcer handles Role-Based Access Control checks.
 //
-// Summary: RBACEnforcer represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a RBACEnforcer.
 type RBACEnforcer struct {
 }
 

@@ -13,19 +13,10 @@ import (
 	"google.golang.org/grpc/connectivity"
 )
 
-// Summary: Conn represents a data structure.
+// Conn is an interface that represents a gRPC client connection.
+// It is used to allow for mocking of the gRPC client in tests.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Conn.
 type Conn interface {
 	grpc.ClientConnInterface
 	// Close closes the connection to the server.
@@ -41,19 +32,8 @@ type Conn interface {
 // GrpcClientWrapper wraps a `Conn` to adapt it to the
 // `pool.ClosableClient` interface. This allows gRPC clients to be managed by a
 // connection pool, which can improve performance by reusing connections.
-// Summary: GrpcClientWrapper represents a data structure.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a GrpcClientWrapper.
 type GrpcClientWrapper struct {
 	Conn
 	config *configv1.UpstreamServiceConfig

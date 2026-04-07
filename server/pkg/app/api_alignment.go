@@ -12,19 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: SubagentStatus represents a data structure.
+// SubagentStatus defines the structure for AIA heartbeat responses.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Defines the structure for Active Intent Alignment heartbeat responses.
 type SubagentStatus struct {
 	ID            string  `json:"id"`
 	Name          string  `json:"name"`

@@ -16,19 +16,9 @@ import (
 	"github.com/PaesslerAG/jsonpath"
 )
 
-// Summary: HTTPEmbeddingProvider represents a data structure.
+// HTTPEmbeddingProvider implements a generic HTTP EmbeddingProvider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: A generic provider that fetches embeddings from an arbitrary HTTP endpoint.
 type HTTPEmbeddingProvider struct {
 	url              string
 	headers          map[string]string

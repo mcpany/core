@@ -24,19 +24,9 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Summary: BinaryType represents a data structure.
+// BinaryType defines the type of the binary being validated.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Enumeration of binary types for validation context.
 type BinaryType int
 
 const (
@@ -58,19 +48,7 @@ const (
 
 // AuthValidationContext defines the context for authentication validation.
 //
-// Summary: AuthValidationContext represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Enumeration of authentication validation contexts.
 type AuthValidationContext int
 
 const (
@@ -103,19 +81,7 @@ var (
 
 // ValidationError encapsulates a validation error for a specific service.
 //
-// Summary: ValidationError represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a configuration validation error.
 type ValidationError struct {
 	ServiceName string
 	Err         error
@@ -154,22 +120,15 @@ func (e *ValidationError) Error() string {
 
 // Validate inspects the given McpAnyServerConfig for correctness and consistency.
 //
-// Summary: Validate executes the operation.
+// Summary: Validates the entire server configuration.
 //
 // Parameters:
-//   - ctx context.Context: Input parameter.
-//   - config *configv1.McpAnyServerConfig: Input parameter.
-//   - binaryType BinaryType: Input parameter.
+//   - ctx (context.Context): The context for the validation (used for secret resolution).
+//   - config (*configv1.McpAnyServerConfig): The server configuration to be validated.
+//   - binaryType (BinaryType): The type of binary (server, worker) which might affect validation rules.
 //
 // Returns:
-//   - []ValidationError {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - ([]ValidationError): A slice of ValidationErrors, which will be empty if the configuration is valid.
 func Validate(ctx context.Context, config *configv1.McpAnyServerConfig, binaryType BinaryType) []ValidationError {
 	var validationErrors []ValidationError
 	serviceNames := make(map[string]bool)
@@ -576,21 +535,6 @@ func validateGlobalSettings(ctx context.Context, gs *configv1.GlobalSettings, bi
 //
 // Returns:
 //   - (error): An error if validation fails.
-// Summary: ValidateOrError executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - service *configv1.UpstreamServiceConfig: Input parameter.
-//
-// Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func ValidateOrError(ctx context.Context, service *configv1.UpstreamServiceConfig) error {
 	return validateUpstreamService(ctx, service)
 }

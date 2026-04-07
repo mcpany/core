@@ -25,19 +25,9 @@ import (
 	go_cache "github.com/patrickmn/go-cache"
 )
 
-// Summary: ProviderFactory represents a data structure.
+// ProviderFactory is a function that creates an EmbeddingProvider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ProviderFactory.
 type ProviderFactory func(config *configv1.SemanticCacheConfig, apiKey string) (EmbeddingProvider, error)
 
 // CachingMiddleware is a tool execution middleware that provides caching
@@ -51,19 +41,7 @@ var (
 
 // CachingMiddleware handles caching of tool execution results.
 //
-// Summary: CachingMiddleware represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a CachingMiddleware.
 type CachingMiddleware struct {
 	cache           *cache.Cache[any]
 	toolManager     tool.ManagerInterface

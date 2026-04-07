@@ -7,20 +7,12 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// Summary: StripSecretsFromService executes the operation.
+// StripSecretsFromService removes sensitive information from the service configuration.
+//
+// Summary: Removes sensitive information from service configuration.
 //
 // Parameters:
-//   - svc *configv1.UpstreamServiceConfig: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to strip secrets from.
 func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 	if svc == nil {
 		return
@@ -74,20 +66,7 @@ func StripSecretsFromService(svc *configv1.UpstreamServiceConfig) {
 // Summary: Removes sensitive information from profile definition.
 //
 // Parameters:
-// Summary: StripSecretsFromProfile executes the operation.
-//
-// Parameters:
-//   - profile *configv1.ProfileDefinition: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - profile (*configv1.ProfileDefinition): The profile definition to strip secrets from.
 func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 	if profile == nil {
 		return
@@ -102,20 +81,7 @@ func StripSecretsFromProfile(profile *configv1.ProfileDefinition) {
 // Summary: Removes sensitive information from service collection.
 //
 // Parameters:
-// Summary: StripSecretsFromCollection executes the operation.
-//
-// Parameters:
-//   - collection *configv1.Collection: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - collection (*configv1.Collection): The service collection to strip secrets from.
 func StripSecretsFromCollection(collection *configv1.Collection) {
 	if collection == nil {
 		return
@@ -130,20 +96,7 @@ func StripSecretsFromCollection(collection *configv1.Collection) {
 // Summary: Removes sensitive values from authentication config.
 //
 // Parameters:
-// Summary: StripSecretsFromAuth executes the operation.
-//
-// Parameters:
-//   - auth *configv1.Authentication: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - auth (*configv1.Authentication): The authentication configuration to strip secrets from.
 func StripSecretsFromAuth(auth *configv1.Authentication) {
 	if auth == nil {
 		return
@@ -360,21 +313,8 @@ func scrubSecretValue(sv *configv1.SecretValue) {
 // Summary: Populates service configuration with resolved secret values.
 //
 // Parameters:
-// Summary: HydrateSecretsInService executes the operation.
-//
-// Parameters:
-//   - svc *configv1.UpstreamServiceConfig: Input parameter.
-//   - secrets map[string]*configv1.SecretValue: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - svc (*configv1.UpstreamServiceConfig): The upstream service configuration to hydrate secrets into.
+//   - secrets (map[string]*configv1.SecretValue): A map of resolved secret values.
 func HydrateSecretsInService(svc *configv1.UpstreamServiceConfig, secrets map[string]*configv1.SecretValue) {
 	if svc == nil || len(secrets) == 0 {
 		return

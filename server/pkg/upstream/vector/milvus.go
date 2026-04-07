@@ -14,19 +14,9 @@ import (
 	"github.com/milvus-io/milvus-sdk-go/v2/entity"
 )
 
-// Summary: MilvusClient represents a data structure.
+// MilvusClient implements VectorClient for Milvus.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a MilvusClient.
 type MilvusClient struct {
 	config *configv1.MilvusVectorDB
 	client client.Client

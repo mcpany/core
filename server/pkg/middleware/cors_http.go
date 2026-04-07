@@ -10,19 +10,10 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: HTTPCORSMiddleware represents a data structure.
+// HTTPCORSMiddleware handles CORS for HTTP endpoints.
+// It is thread-safe and supports dynamic updates.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a HTTPCORSMiddleware.
 type HTTPCORSMiddleware struct {
 	mu              sync.RWMutex
 	allowedOrigins  map[string]struct{}
@@ -32,20 +23,15 @@ type HTTPCORSMiddleware struct {
 // NewHTTPCORSMiddleware creates a new HTTPCORSMiddleware.
 //
 // Summary: Initializes HTTP CORS middleware.
-// Summary: NewHTTPCORSMiddleware executes the operation.
+//
+// If allowedOrigins is empty, it defaults to allowing nothing (or behaving like standard Same-Origin).
+// To allow all, pass []string{"*"}.
 //
 // Parameters:
-//   - allowedOrigins []string: Input parameter.
+//   - allowedOrigins ([]string): The allowed origins.
 //
 // Returns:
-//   - *HTTPCORSMiddleware {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - (*HTTPCORSMiddleware): The initialized middleware.
 func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 	m := &HTTPCORSMiddleware{}
 	m.updateInternal(allowedOrigins)
@@ -58,20 +44,6 @@ func NewHTTPCORSMiddleware(allowedOrigins []string) *HTTPCORSMiddleware {
 //
 // Parameters:
 //   - allowedOrigins ([]string): The new list of allowed origins.
-// Summary: Update executes the operation.
-//
-// Parameters:
-//   - allowedOrigins []string: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *HTTPCORSMiddleware) Update(allowedOrigins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -102,20 +74,6 @@ func (m *HTTPCORSMiddleware) updateInternal(origins []string) {
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
-// Summary: Handler executes the operation.
-//
-// Parameters:
-//   - next http.Handler: Input parameter.
-//
-// Returns:
-//   - http.Handler {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (m *HTTPCORSMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")

@@ -11,19 +11,19 @@ import (
 	"os"
 )
 
-// Summary: Request represents a data structure.
+// Request represents a tool request.
+// Request represents an incoming tool request.
+//
+// Summary: Defines the JSON structure of requests sent to the tool.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - None
+//   - None.
 //
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Throws/Errors:
+//   - None.
 type Request struct {
 	Name string `json:"name"`
 }
@@ -40,19 +40,7 @@ type Request struct {
 //   - None.
 //
 // Throws/Errors:
-// Summary: Response represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - None.
 type Response struct {
 	Message string `json:"message"`
 }

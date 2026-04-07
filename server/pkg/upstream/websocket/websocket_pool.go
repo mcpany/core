@@ -13,19 +13,10 @@ import (
 	"github.com/mcpany/core/server/pkg/pool"
 )
 
-// Summary: Pool represents a data structure.
+// Pool is a type alias for a pool of WebSocket client connections.
+// It simplifies the type signature for WebSocket connection pools.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Pool.
 type Pool = pool.Pool[*client.WebsocketClientWrapper]
 
 // NewPool creates a new connection pool for WebSocket clients. It

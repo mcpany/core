@@ -21,19 +21,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: WebsocketTool represents a data structure.
+// WebsocketTool implements the Tool interface for a tool exposed via a WebSocket
+// connection. It handles sending and receiving messages over a persistent
+// WebSocket connection managed by a connection pool.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: A tool implementation for WebSocket services.
 type WebsocketTool struct {
 	tool              *v1.Tool
 	mcpTool           *mcp.Tool
@@ -83,20 +75,8 @@ func NewWebsocketTool(
 //
 // Summary: Retrieves the underlying tool definition.
 //
-// Summary: Tool executes the operation.
-//
-// Parameters:
-//   - None
-//
 // Returns:
-//   - *v1.Tool {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *v1.Tool: The tool definition.
 func (t *WebsocketTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -106,20 +86,7 @@ func (t *WebsocketTool) Tool() *v1.Tool {
 // Summary: Retrieves the MCP-compatible tool definition.
 //
 // Returns:
-// Summary: MCPTool executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *mcp.Tool: The MCP tool definition.
 func (t *WebsocketTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -136,20 +103,7 @@ func (t *WebsocketTool) MCPTool() *mcp.Tool {
 // Summary: Retrieves the cache configuration.
 //
 // Returns:
-// Summary: GetCacheConfig executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *configv1.CacheConfig {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *configv1.CacheConfig: The cache configuration.
 func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 	return t.cache
 }
@@ -159,20 +113,22 @@ func (t *WebsocketTool) GetCacheConfig() *configv1.CacheConfig {
 // Summary: Executes the tool over WebSocket.
 //
 // It retrieves a connection from the pool, sends the tool inputs as a message,
-// Summary: IsStreaming executes the operation.
+// and waits for a single response message, which it then processes and returns.
 //
 // Parameters:
-//   - None
+//   - ctx: context.Context. The execution context.
+//   - req: *ExecutionRequest. The request containing input arguments.
 //
 // Returns:
-//   - bool {
-: Result of the operation.
+//   - any: The execution result.
+//   - error: An error if execution fails.
 //
-// Errors:
-//   - None
+// IsStreaming returns true if the tool supports streaming.
 //
-// Side Effects:
-//   - None
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
 func (t *WebsocketTool) IsStreaming() bool {
 	return false
 }
@@ -188,20 +144,6 @@ func (t *WebsocketTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-// Summary: StreamExecute executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - req *ExecutionRequest: Input parameter.
-//
-// Returns:
-//   - (<-chan any, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func (t *WebsocketTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

@@ -14,19 +14,9 @@ import (
 	v1 "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
-// Summary: DockerClient represents a data structure.
+// DockerClient interface matching the subset of docker client methods used.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a DockerClient.
 type DockerClient interface {
 	// ImagePull requests the docker host to pull an image from a remote registry.
 	//

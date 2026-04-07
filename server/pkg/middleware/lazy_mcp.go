@@ -9,19 +9,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: LazyMCPConfig represents a data structure.
+// LazyMCPConfig defines the configuration for On-Demand Discovery filtering.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents the configuration for the LazyMCP middleware.
 type LazyMCPConfig struct {
 	Enabled   bool    `json:"enabled"`
 	Threshold float64 `json:"threshold"`
@@ -30,19 +20,7 @@ type LazyMCPConfig struct {
 
 // LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
 //
-// Summary: LazyMCPMiddleware represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents the middleware for filtering tools based on intent.
 type LazyMCPMiddleware struct {
 	config LazyMCPConfig
 }

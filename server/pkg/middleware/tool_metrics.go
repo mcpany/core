@@ -82,39 +82,26 @@ var (
 	)
 )
 
-// Summary: ToolMetricsMiddleware represents a data structure.
+// ToolMetricsMiddleware provides detailed metrics for tool executions.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Middleware that records Prometheus metrics for tool execution calls.
 type ToolMetricsMiddleware struct {
 	tokenizer tokenizer.Tokenizer
 }
 
 // NewToolMetricsMiddleware creates a new ToolMetricsMiddleware.
 //
-// Summary: NewToolMetricsMiddleware executes the operation.
+// Summary: Initializes the tool metrics middleware and registers metrics if not already registered.
 //
 // Parameters:
-//   - t tokenizer.Tokenizer: Input parameter.
+//   - t: tokenizer.Tokenizer. The tokenizer used to count tokens in tool inputs and outputs.
+//     If nil, a simple default tokenizer is used.
 //
 // Returns:
-//   - *ToolMetricsMiddleware {
-: Result of the operation.
-//
-// Errors:
-//   - None
+//   - *ToolMetricsMiddleware: A new instance of ToolMetricsMiddleware with metrics registered.
 //
 // Side Effects:
-//   - None
+//   - Registers Prometheus metrics (globally, once).
 func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 	registerMetricsOnce.Do(func() {
 		// Register metrics with the default registry (which server/pkg/metrics also uses/exposes)
@@ -145,21 +132,10 @@ func NewToolMetricsMiddleware(t tokenizer.Tokenizer) *ToolMetricsMiddleware {
 // Returns:
 //   - any: The result of the tool execution.
 //   - error: An error if the execution fails.
-// Summary: Execute executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - req *tool.ExecutionRequest: Input parameter.
-//   - next tool.ExecutionFunc: Input parameter.
-//
-// Returns:
-//   - (any, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - Updates Prometheus counters, histograms, and gauges.
+//   - Measures execution duration.
 func (m *ToolMetricsMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	// Get Service ID if possible (from context or tool)
 	var serviceID string

@@ -14,19 +14,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Summary: OIDCConfig represents a data structure.
+// OIDCConfig holds the configuration for the OIDC provider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a OIDCConfig.
 type OIDCConfig struct {
 	Issuer       string
 	ClientID     string
@@ -36,19 +26,7 @@ type OIDCConfig struct {
 
 // OIDCProvider handles OIDC authentication flow.
 //
-// Summary: OIDCProvider represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a OIDCProvider.
 type OIDCProvider struct {
 	config       OIDCConfig
 	provider     *oidc.Provider

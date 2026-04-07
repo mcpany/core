@@ -14,39 +14,22 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-// Summary: ContextOptimizer represents a data structure.
+// ContextOptimizer optimises the context size of responses.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Middleware that truncates excessively long string values in JSON responses to fit within a context window.
 type ContextOptimizer struct {
 	MaxChars int
 }
 
 // NewContextOptimizer creates a new ContextOptimizer.
 //
-// Summary: NewContextOptimizer executes the operation.
+// Summary: Initializes a new ContextOptimizer with a maximum character limit.
 //
 // Parameters:
-//   - maxChars int: Input parameter.
+//   - maxChars: int. The maximum allowed number of characters for string values in the JSON response.
 //
 // Returns:
-//   - *ContextOptimizer {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *ContextOptimizer: The initialized optimizer.
 func NewContextOptimizer(maxChars int) *ContextOptimizer {
 	return &ContextOptimizer{
 		MaxChars: maxChars,
@@ -69,20 +52,12 @@ var bufferPool = sync.Pool{
 //   - next: http.Handler. The next handler in the chain.
 //
 // Returns:
-// Summary: Handler executes the operation.
-//
-// Parameters:
-//   - next http.Handler: Input parameter.
-//
-// Returns:
-//   - http.Handler {
-: Result of the operation.
-//
-// Errors:
-//   - None
+//   - http.Handler: The wrapped handler.
 //
 // Side Effects:
-//   - None
+//   - Buffers the entire response body.
+//   - Modifies the response body if it contains JSON strings exceeding MaxChars.
+//   - Updates the Content-Length header.
 func (co *ContextOptimizer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wb := bufferPool.Get().(*responseBuffer)
@@ -227,19 +202,7 @@ func (w *responseBuffer) checkBuffer() {
 //
 // Side Effects:
 //   - Appends to the body buffer if buffering is enabled.
-// Summary: Write executes the operation.
-//
-// Parameters:
-//   - b []byte: Input parameter.
-//
-// Returns:
-//   - (int, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - Writes to the underlying ResponseWriter otherwise.
 func (w *responseBuffer) Write(b []byte) (int, error) {
 	w.checkBuffer()
 
@@ -263,20 +226,6 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - Checks content-type headers to determine if buffering is needed.
-// Summary: WriteHeader executes the operation.
-//
-// Parameters:
-//   - statusCode int: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

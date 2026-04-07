@@ -12,19 +12,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: ProviderStatus represents a data structure.
+// ProviderStatus represents the status of a discovery provider.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ProviderStatus.
 type ProviderStatus struct {
 	Name            string
 	Status          string // "OK", "ERROR"
@@ -35,19 +25,7 @@ type ProviderStatus struct {
 
 // Manager manages auto-discovery providers.
 //
-// Summary: Manager represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Manager.
 type Manager struct {
 	providers []Provider
 	mu        sync.RWMutex

@@ -9,39 +9,22 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Summary: Timeout represents a data structure.
+// Timeout implements a timeout policy for operations.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Enforces a maximum duration for operations.
 type Timeout struct {
 	duration *durationpb.Duration
 }
 
 // NewTimeout creates a new Timeout instance with the given duration.
 //
-// Summary: NewTimeout executes the operation.
+// Summary: Initializes a new Timeout policy.
 //
 // Parameters:
-//   - duration *durationpb.Duration: Input parameter.
+//   - duration: *durationpb.Duration. The timeout duration.
 //
 // Returns:
-//   - *Timeout {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *Timeout: The initialized timeout policy.
 func NewTimeout(duration *durationpb.Duration) *Timeout {
 	return &Timeout{
 		duration: duration,

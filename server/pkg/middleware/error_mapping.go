@@ -13,37 +13,23 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: ErrorMappingMiddleware represents a data structure.
+// ErrorMappingMiddleware normalizes diverse upstream errors into standard MCP errors.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Normalizes arbitrary tool execution errors.
 type ErrorMappingMiddleware struct{}
 
 // NewErrorMappingMiddleware creates a new error mapping middleware.
 //
-// Summary: NewErrorMappingMiddleware executes the operation.
+// Summary: Initializes the middleware responsible for translating internal errors into safe external responses.
 //
 // Parameters:
-//   - None
+//   - None.
 //
 // Returns:
-//   - *ErrorMappingMiddleware {
-: Result of the operation.
+//   - mcp.Middleware: The initialized error mapping middleware.
 //
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Throws/Errors:
+//   - None.
 func NewErrorMappingMiddleware() *ErrorMappingMiddleware {
 	return &ErrorMappingMiddleware{}
 }
@@ -59,21 +45,7 @@ func NewErrorMappingMiddleware() *ErrorMappingMiddleware {
 //
 // Returns:
 //   - any: The result of the execution.
-// Summary: Execute executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - req *tool.ExecutionRequest: Input parameter.
-//   - next tool.ExecutionFunc: Input parameter.
-//
-// Returns:
-//   - (any, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - error: An error if execution fails.
 func (m *ErrorMappingMiddleware) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	res, err := next(ctx, req)
 	if err != nil {

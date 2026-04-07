@@ -17,19 +17,11 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Summary: Manager represents a data structure.
+// Manager handles the loading and listing of catalog services.
 //
-// Parameters:
-//   - None
+// Summary: Manages the service catalog.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// It scans a specified directory for service configurations and provides access to them.
 type Manager struct {
 	mu          sync.RWMutex
 	fs          afero.Fs
@@ -41,21 +33,12 @@ type Manager struct {
 //
 // Summary: Initializes a new Catalog Manager.
 //
-// Summary: NewManager executes the operation.
-//
 // Parameters:
-//   - fs afero.Fs: Input parameter.
-//   - catalogPath string: Input parameter.
+//   - fs: afero.Fs. The filesystem to scan.
+//   - catalogPath: string. The path to the catalog directory.
 //
 // Returns:
-//   - *Manager {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *Manager: The initialized manager.
 func NewManager(fs afero.Fs, catalogPath string) *Manager {
 	return &Manager{
 		fs:          fs,
@@ -72,20 +55,10 @@ func NewManager(fs afero.Fs, catalogPath string) *Manager {
 //
 // Returns:
 //   - error: An error if the directory walk fails (individual config load errors are logged but do not abort).
-// Summary: Load executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//
-// Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - None
+//   - Updates the internal list of services.
+//   - Reads files from the filesystem.
 func (m *Manager) Load(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -164,19 +137,6 @@ func (m *Manager) Load(ctx context.Context) error {
 // Returns:
 //   - []*configv1.UpstreamServiceConfig: A slice of service configurations.
 //   - error: Always nil.
-// Summary: ListServices executes the operation.
-//
-// Parameters:
-//   - _ context.Context: Input parameter.
-//
-// Returns:
-//   - ([]*configv1.UpstreamServiceConfig, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func (m *Manager) ListServices(_ context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

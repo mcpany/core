@@ -13,39 +13,26 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
-// Summary: Retry represents a data structure.
+// Retry implements a retry policy for failed operations.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Retry.
 type Retry struct {
 	config *configv1.RetryConfig
 }
 
 // NewRetry creates a new Retry instance with the given configuration.
 // It sets default values for base and max backoff if they are not provided.
-// Summary: NewRetry executes the operation.
+//
+// Summary: Creates a new retry policy.
 //
 // Parameters:
-//   - config *configv1.RetryConfig: Input parameter.
+//   - config (*configv1.RetryConfig): The configuration for the retry policy.
 //
 // Returns:
-//   - *Retry {
-: Result of the operation.
-//
-// Errors:
-//   - None
+//   - *Retry: A new Retry instance.
 //
 // Side Effects:
-//   - None
+//   - None.
 func NewRetry(config *configv1.RetryConfig) *Retry {
 	if config == nil {
 		config = &configv1.RetryConfig{}
@@ -73,20 +60,8 @@ func NewRetry(config *configv1.RetryConfig) *Retry {
 // Returns:
 //   - error: An error if all retries fail.
 //
-// Summary: Execute executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - work func(context.Context: Input parameter.
-//
-// Returns:
-//   - error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
 // Side Effects:
-//   - None
+//   - Executes the provided function multiple times.
 func (r *Retry) Execute(ctx context.Context, work func(context.Context) error) error {
 	var err error
 	// Use int64 for attempts to match usage, though retries count is usually small.

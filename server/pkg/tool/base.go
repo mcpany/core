@@ -35,20 +35,12 @@ func newBaseTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.Upstr
 	}, nil
 }
 
-// Summary: Tool executes the operation.
+// Tool returns the protobuf definition of the tool.
 //
-// Parameters:
-//   - None
+// Summary: Retrieves the protobuf definition.
 //
 // Returns:
-//   - *v1.Tool {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *v1.Tool: The protobuf tool definition.
 func (t *baseTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -58,20 +50,10 @@ func (t *baseTool) Tool() *v1.Tool {
 // Summary: Retrieves the MCP-compliant tool definition.
 //
 // Returns:
-// Summary: MCPTool executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - *mcp.Tool {
-: Result of the operation.
-//
-// Errors:
-//   - None
+//   - *mcp.Tool: The MCP tool definition.
 //
 // Side Effects:
-//   - None
+//   - Lazily converts the proto definition to MCP format on first call.
 func (t *baseTool) MCPTool() *mcp.Tool {
 	t.mcpToolOnce.Do(func() {
 		var err error
@@ -91,20 +73,11 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //   - *configv1.CacheConfig: Always returns nil.
 //
 // IsStreaming returns true if the tool supports streaming execution.
-// Summary: IsStreaming executes the operation.
 //
-// Parameters:
-//   - None
+// Summary: Checks if the tool supports streaming execution.
 //
 // Returns:
-//   - bool {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - bool: True if streaming is supported.
 func (t *baseTool) IsStreaming() bool {
 	return false
 }
@@ -120,20 +93,6 @@ func (t *baseTool) IsStreaming() bool {
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
-// Summary: StreamExecute executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//   - req *ExecutionRequest: Input parameter.
-//
-// Returns:
-//   - (<-chan any, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	return nil, nil // Should be implemented by embedding struct if supported
 }

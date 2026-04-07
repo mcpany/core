@@ -14,19 +14,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: SessionState represents a data structure.
+// SessionState represents the shared state for a recursive context session.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a SessionState.
 type SessionState struct {
 	ID        string                 `json:"id"`
 	Data      map[string]interface{} `json:"data"`
@@ -36,19 +26,7 @@ type SessionState struct {
 
 // RecursiveContextManager manages the shared context sessions (Blackboard).
 //
-// Summary: RecursiveContextManager represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a RecursiveContextManager.
 type RecursiveContextManager struct {
 	mu       sync.RWMutex
 	sessions map[string]*SessionState
@@ -268,19 +246,7 @@ func (m *RecursiveContextManager) APIHandler() http.HandlerFunc {
 
 // RecursiveContextKeyType is a custom type for context keys to avoid collisions.
 //
-// Summary: RecursiveContextKeyType represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a RecursiveContextKeyType.
 type RecursiveContextKeyType string
 
 const (

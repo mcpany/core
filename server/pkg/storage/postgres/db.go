@@ -13,38 +13,26 @@ import (
 	_ "github.com/lib/pq" // Register postgres driver
 )
 
-// Summary: DB represents a data structure.
+// DB wraps the sql.DB connection.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a DB.
 type DB struct {
 	*sql.DB
 }
 
 // NewDB opens a PostgreSQL database connection.
 //
-// Summary: NewDB executes the operation.
+// Summary: Initializes a PostgreSQL database connection.
 //
 // Parameters:
-//   - dsn string: Input parameter.
+//   - dsn (string): The data source name (connection string).
 //
 // Returns:
-//   - (*DB, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
+//   - *DB: The database connection.
+//   - error: An error if the connection fails.
 //
 // Side Effects:
-//   - None
+//   - Opens a network connection to the database.
 func NewDB(dsn string) (*DB, error) {
 	return NewDBWithDriver("postgres", dsn)
 }
@@ -61,20 +49,9 @@ func NewDB(dsn string) (*DB, error) {
 //   - *DB: The database connection.
 //   - error: An error if the connection fails.
 //
-// Summary: NewDBWithDriver executes the operation.
-//
-// Parameters:
-//   - driver: Input parameter.
-//   - dsn string: Input parameter.
-//
-// Returns:
-//   - (*DB, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
 // Side Effects:
-//   - None
+//   - Opens a network connection to the database.
+//   - Initializes the schema.
 func NewDBWithDriver(driver, dsn string) (*DB, error) {
 	db, err := sql.Open(driver, dsn)
 	if err != nil {
@@ -115,19 +92,6 @@ func NewDBWithDriver(driver, dsn string) (*DB, error) {
 // Side Effects:
 //   - Pings the database.
 //   - Initializes the schema.
-// Summary: NewDBFromSQLDB executes the operation.
-//
-// Parameters:
-//   - db *sql.DB: Input parameter.
-//
-// Returns:
-//   - (*DB, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
 func NewDBFromSQLDB(db *sql.DB) (*DB, error) {
 	if err := db.PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("failed to ping db: %w", err)

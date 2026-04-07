@@ -7,19 +7,9 @@ import (
 	"sync"
 )
 
-// Summary: Broadcaster represents a data structure.
+// Broadcaster manages a set of subscribers and broadcasts messages to them.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Broadcaster.
 type Broadcaster struct {
 	mu          sync.RWMutex
 	subscribers map[chan any]struct{}

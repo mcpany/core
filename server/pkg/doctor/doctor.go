@@ -23,19 +23,11 @@ import (
 	_ "modernc.org/sqlite" // Register SQLite driver
 )
 
-// Summary: Status represents a data structure.
+// Status represents the status of a check.
 //
-// Parameters:
-//   - None
+// It is an enumerated string type used to indicate the outcome of a health or connectivity check.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Status.
 type Status string
 
 const (
@@ -57,19 +49,7 @@ const (
 //
 // It aggregates the status, any message, and potential error encountered during the check.
 //
-// Summary: CheckResult represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a CheckResult.
 type CheckResult struct {
 	// ServiceName is the name of the service being checked.
 	ServiceName string

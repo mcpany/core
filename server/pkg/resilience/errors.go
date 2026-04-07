@@ -3,39 +3,19 @@
 
 package resilience
 
-// Summary: PermanentError represents a data structure.
+// PermanentError is an error that should not be retried.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Wrapper error indicating that an operation failed permanently and should not be retried.
 type PermanentError struct {
 	Err error
 }
 
 // Error returns the error message.
 //
-// Summary: Error executes the operation.
-//
-// Parameters:
-//   - None
+// Summary: Returns the string representation of the error.
 //
 // Returns:
-//   - string {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - string: The error message.
 func (e *PermanentError) Error() string {
 	if e.Err == nil {
 		return "permanent error"
@@ -48,20 +28,7 @@ func (e *PermanentError) Error() string {
 // Summary: Unwraps the underlying error.
 //
 // Returns:
-// Summary: Unwrap executes the operation.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - error {
-: Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - error: The original error.
 func (e *PermanentError) Unwrap() error {
 	return e.Err
 }

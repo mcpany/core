@@ -22,19 +22,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// Summary: Tool represents a data structure.
+// Tool implements the Tool interface for a tool that executes a SQL query.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Tool.
 type Tool struct {
 	tool        *v1.Tool
 	mcpTool     *mcp.Tool
@@ -216,20 +206,15 @@ func (t *Tool) IsStreaming() bool {
 
 // StreamExecute executes the tool in streaming mode.
 //
-// Summary: StreamExecute executes the operation.
+// Summary: Executes the tool in streaming mode.
 //
 // Parameters:
-//   - ctx context.Context: Input parameter.
-//   - req *tool.ExecutionRequest: Input parameter.
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request object containing parameters.
 //
 // Returns:
-//   - (<-chan any, error): Result of the operation.
-//
-// Errors:
-//   - Returns an error if the operation fails.
-//
-// Side Effects:
-//   - None
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
 func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<-chan any, error) {
 	ch := make(chan any, 1)
 	go func() {

@@ -18,19 +18,11 @@ import (
 	"github.com/spf13/afero"
 )
 
-// Summary: Updater represents a data structure.
+// Updater handles the self-update process.
 //
-// Parameters:
-//   - None
+// It manages checking for updates on GitHub and applying them to the local executable.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Updater.
 type Updater struct {
 	client     *github.Client
 	httpClient *http.Client

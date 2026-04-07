@@ -13,19 +13,9 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// Summary: AIABrokerConfig represents a data structure.
+// AIABrokerConfig defines the configuration for the Active Intent Alignment Broker.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Configuration for Active Intent Alignment Broker.
 type AIABrokerConfig struct {
 	// Enabled determines if the AIA Broker is active.
 	Enabled bool `json:"enabled"`
@@ -36,19 +26,9 @@ type AIABrokerConfig struct {
 
 // AIABroker implements the Active Intent Alignment Broker middleware.
 // It verifies that specialist agent reasoning traces remain semantically
-// Summary: AIABroker represents a data structure.
+// aligned with the mission-root intent.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents the AIA Broker middleware.
 type AIABroker struct {
 	config AIABrokerConfig
 }

@@ -5,17 +5,7 @@ package tool
 
 import "errors"
 
-// Summary: ErrToolNotFound is a global constant or variable.
+// ErrToolNotFound is returned when a requested tool cannot be found.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a ErrToolNotFound.
 var ErrToolNotFound = errors.New("unknown tool")

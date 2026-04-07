@@ -13,19 +13,9 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// Summary: ProjectConfigGuardConfig represents a data structure.
+// ProjectConfigGuardConfig defines the configuration for the Project Configuration Security Guard.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Configuration for the Project Configuration Security Guard middleware.
 type ProjectConfigGuardConfig struct {
 	// Enabled determines if the guard is active.
 	Enabled bool `json:"enabled"`
@@ -49,19 +39,7 @@ type ProjectConfigGuardConfig struct {
 
 // ProjectConfigGuardMiddleware implements the Project Configuration Security Guard.
 //
-// Summary: ProjectConfigGuardMiddleware represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents the Project Config Guard Middleware.
 type ProjectConfigGuardMiddleware struct {
 	config ProjectConfigGuardConfig
 }

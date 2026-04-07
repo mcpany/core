@@ -26,19 +26,13 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Summary: Upstream represents a data structure.
+// Upstream implements the upstream.Upstream interface for services that
+// are exposed as command-line tools.
 //
-// Parameters:
-//   - None
+// It discovers and registers tools based on a list of commands defined in the
+// service configuration.
 //
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Represents a Upstream.
 type Upstream struct {
 	mu      sync.Mutex
 	checker health.Checker

@@ -13,19 +13,9 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// Summary: Config represents a data structure.
+// Config holds the configuration for the worker.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Configuration for worker pool.
 type Config struct {
 	MaxWorkers   int
 	MaxQueueSize int
@@ -33,19 +23,7 @@ type Config struct {
 
 // Worker is responsible for processing jobs from the bus.
 //
-// Summary: Worker represents a data structure.
-//
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Processes background jobs.
 type Worker struct {
 	busProvider *bus.Provider
 	pond        pond.Pool
@@ -56,21 +34,14 @@ type Worker struct {
 
 // New creates a new Worker.
 //
-// Summary: New executes the operation.
+// Summary: Initializes a new Worker.
 //
 // Parameters:
-//   - busProvider *bus.Provider: Input parameter.
-//   - cfg *Config: Input parameter.
+//   - busProvider: *bus.Provider. The bus provider.
+//   - cfg: *Config. The worker configuration.
 //
 // Returns:
-//   - *Worker {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - *Worker: The initialized worker.
 func New(busProvider *bus.Provider, cfg *Config) *Worker {
 	return &Worker{
 		busProvider: busProvider,
@@ -87,20 +58,6 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
-// Summary: Start executes the operation.
-//
-// Parameters:
-//   - ctx context.Context: Input parameter.
-//
-// Returns:
-//   - {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

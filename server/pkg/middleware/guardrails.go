@@ -12,39 +12,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Summary: GuardrailsConfig represents a data structure.
+// GuardrailsConfig defines patterns to block.
 //
-// Parameters:
-//   - None
-//
-// Returns:
-//   - None
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+// Summary: Configuration for the guardrails middleware.
 type GuardrailsConfig struct {
 	BlockedPhrases []string
 }
 
 // NewGuardrailsMiddleware creates a new Guardrails middleware.
 //
-// Summary: NewGuardrailsMiddleware executes the operation.
+// Summary: Initializes the guardrails middleware for blocking malicious prompts.
 //
 // Parameters:
-//   - config GuardrailsConfig: Input parameter.
+//   - config: GuardrailsConfig. The configuration for blocking patterns.
 //
 // Returns:
-//   - gin.HandlerFunc {
-: Result of the operation.
-//
-// Errors:
-//   - None
-//
-// Side Effects:
-//   - None
+//   - gin.HandlerFunc: The Gin middleware handler.
 func NewGuardrailsMiddleware(config GuardrailsConfig) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Only check POST requests (likely prompt submissions)
