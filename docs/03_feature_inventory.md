@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reactive Shard Migration (RSM) Hub**: (P0) Authoritative coordination service evolving the DMR Hub to dynamically migrate context shards to nodes with the lowest MTTC.
+- **Attention-Splicing Firewall (ASF) v2**: (P0) Advanced security layer performing instruction-density analysis to neutralize "Shard-Shadowing" exploits (CVE-2026-94002).
+- **Instruction Heartbeat Provider**: (P0) Sentinel service injecting hardware-attested heartbeats into the attention layer to ensure GC-Immune mission-root anchoring.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Evolving to support **RSM-compliant** proactive state relocation.
+- **Atomic Shard Lock-Manager (ASLM)**: (Re-affirmed P0) Elevated with mandatory enforcement for **Rapid Intent Shifts** during shard migration.

@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Reactive Shard Migration (RSM) Hub**: Dynamic relocation of context shards to minimize coordination latency (MTTC). (Added: 2026-07-25)
+*   **[P0] Attention-Splicing Firewall (ASF) v2**: Instruction-density analysis to neutralize Shard-Shadowing exploits (CVE-2026-94002). (Added: 2026-07-25)
+*   **[P0] Instruction Heartbeat Provider**: Sentinel service for programmatic reinforcement of mission-root anchors against GC eviction. (Added: 2026-07-25)

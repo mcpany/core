@@ -62,3 +62,11 @@ The **Attention-Density Firewall (ADF)** is a cognitive security middleware for 
 *   Integrating the **Attention-Splicing Firewall (ASF)** submodule into Section 4.
 *   Introducing "Stylistic Confidence Weighting" to detect mimicry-based instruction injection following noise bursts.
 **Security Impact:** Prevents sophisticated subagents from evicting parent instructions while simultaneously spoofing high-trust reasoning signatures.
+
+### Update: [2026-07-25] - Neutralizing Shard-Shadowing
+**Context:** Today's market sync revealed the "Shard-Shadowing" exploit (CVE-2026-94002), where malicious metadata is used to overwrite parent context priorities.
+**Architecture Adjustment:**
+*   Upgrading the ASF submodule to version 2.0.
+*   Implementing "Instruction-Density Throttling" at the mailbox shard level.
+*   Mandating Monotonic Workspace Anchoring (MWA) for all high-entropy state mutations.
+**Security Impact:** Neutralizes attempts to bypass logical isolation via metadata flooding, ensuring that Mission-Root priorities remain immutable against subagent shadowing.

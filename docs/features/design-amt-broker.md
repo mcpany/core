@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: [2026-07-25] - Optimizing Mesh Latency via RSM
+**Context:** Today's market sync revealed that mandatory mesh tunneling is introducing significant coordination latency, leading to "Tunneling Overhead."
+**Architecture Adjustment:**
+*   Integrating with the **Reactive Shard Migration (RSM) Hub** to proactively relocate shards and minimize tunnel traversal.
+*   Enabling "Speculative Mesh Handshakes" where nodes can pre-attest to optimal peers based on predicted mission paths.
+**Security Impact:** Reduces the surface area of long-lived tunnels while maintaining absolute hardware-attested sovereignty through sub-millisecond resumption.
