@@ -46,3 +46,10 @@ The emergence of "Reasoning Mirroring" (CVE-2026-99012) highlights a critical vu
 
 ## 7. Evolutionary Changelog
 * **2026-07-20:** Initial Document Creation.
+
+### Update: 2026-04-07 - Neutralizing Reasoning-Path Forgery (RPF)
+**Context**: Today's market sync revealed a new exploit pattern where malicious tool outputs "inject" fake reasoning steps into the agent's internal monologue, bypassing static hardware provenance.
+**Architecture Adjustment**:
+*   **Forgery-Resistant Reasoning Provenance (FRRP)**: Upgrading the SIV detection engine to perform continuous, real-time stylometric verification of the internal monologue.
+*   **Instruction-Path Entropy Monitoring**: Integrating FRRP signals directly into the provenance validator to block fragments that exhibit stylistic mimicry inconsistent with the mission root's fingerprint.
+**Security Impact**: Prevents "Reasoning Hijacking" where an agent is coerced into unauthorized actions via forged cognitive steps that appear hardware-attested.

@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-07] (Iteration 2) Updates
+
+### Proposed Additions
+- **Multi-Tenant Cognitive Shard (MTCS) Isolation**: (P0) Authoritative hypervisor service for agent tenants, providing cryptographically isolated cognitive regions to prevent context smearing.
+- **Forgery-Resistant Reasoning Provenance (FRRP) Provider**: (P0) Advanced identity middleware binding reasoning fragments to real-time behavioral fingerprints to neutralize Reasoning-Path Forgery.
+- **Intent-Schema Discovery (ISD) Broker**: (P0) Privacy-preserving discovery service allowing "Intent Capability" querying without full schema exposure (ZKD v2.0 compliance).
+
+### Priority Shifts
+- **Priority-Aware Mailbox Sharding (PAMS)**: (Re-affirmed P0) Elevated with mandatory "Task-Card Shadowing" detection and mission-root priority enforcement.
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Designated as the primary detection engine for the **FRRP Provider**.
