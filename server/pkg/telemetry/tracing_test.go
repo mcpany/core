@@ -4,6 +4,7 @@
 package telemetry
 
 import (
+	"os"
 	"bytes"
 	"context"
 	"testing"
@@ -123,5 +124,30 @@ func TestInitTelemetry_MetricsOTLP(t *testing.T) {
 		t.Logf("InitTelemetry with OTLP metrics failed: %v", err)
 	} else {
 		_ = shutdown(context.Background())
+	}
+}
+
+func TestInitTelemetry_EnvironmentVariables(t *testing.T) {
+	t.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://test.endpoint:4318")
+	t.Setenv("OTEL_TRACES_EXPORTER", "otlp")
+	t.Setenv("OTEL_METRICS_EXPORTER", "otlp")
+
+	cfg := &config_v1.TelemetryConfig{}
+
+	shutdown, err := InitTelemetry(context.Background(), "test-service", "v0.0.1", cfg, nil)
+	if err != nil {
+		t.Logf("InitTelemetry failed: %v", err)
+	} else {
+		_ = shutdown(context.Background())
+	}
+
+	if cfg.OtlpEndpoint == nil || *cfg.OtlpEndpoint != "http://test.endpoint:4318" {
+		t.Errorf("Expected OtlpEndpoint to be set from environment")
+	}
+	if cfg.TracesExporter == nil || *cfg.TracesExporter != "otlp" {
+		t.Errorf("Expected TracesExporter to be set from environment")
+	}
+	if cfg.MetricsExporter == nil || *cfg.MetricsExporter != "otlp" {
+		t.Errorf("Expected MetricsExporter to be set from environment")
 	}
 }

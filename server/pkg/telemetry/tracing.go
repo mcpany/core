@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp"
@@ -69,6 +70,20 @@ func InitTelemetry(ctx context.Context, serviceName string, version string, cfg 
 
 	if cfg == nil {
 		cfg = &config_v1.TelemetryConfig{}
+	}
+
+	// Read standard OpenTelemetry environment variables as documented
+	if envEndpoint := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"); envEndpoint != "" {
+		endpoint := envEndpoint
+		cfg.OtlpEndpoint = &endpoint
+	}
+	if envTracesExporter := os.Getenv("OTEL_TRACES_EXPORTER"); envTracesExporter != "" {
+		exporter := envTracesExporter
+		cfg.TracesExporter = &exporter
+	}
+	if envMetricsExporter := os.Getenv("OTEL_METRICS_EXPORTER"); envMetricsExporter != "" {
+		exporter := envMetricsExporter
+		cfg.MetricsExporter = &exporter
 	}
 	// Allow service name override from config
 	if cfg.GetServiceName() != "" {
