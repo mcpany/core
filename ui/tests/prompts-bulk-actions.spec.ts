@@ -53,6 +53,8 @@ test.describe('Prompt Studio Bulk Actions', () => {
     );
     await page.getByRole('button', { name: 'Save Prompt' }).click();
     await savePromise;
+    await expect(page).toHaveURL(/\/prompts\/?$/);
+    await expect(page.getByText('test_prompt_bulk_1').first()).toBeVisible();
 
     // 2. Create second prompt
     createBtn = page.getByRole('button', { name: /Create.*Prompt|New Prompt/ }).first();
@@ -70,6 +72,7 @@ test.describe('Prompt Studio Bulk Actions', () => {
     );
     await page.getByRole('button', { name: 'Save Prompt' }).click();
     await savePromise;
+    await expect(page).toHaveURL(/\/prompts\/?$/);
 
     // Wait for the prompts to appear in the list
     await expect(page.getByText('test_prompt_bulk_1').first()).toBeVisible();
