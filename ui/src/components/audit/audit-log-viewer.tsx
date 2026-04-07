@@ -277,7 +277,20 @@ export function AuditLogViewer() {
                                     </TableCell>
                                     <TableCell className="font-medium">{log.toolName}</TableCell>
                                     <TableCell>{log.userId || "-"}</TableCell>
-                                    <TableCell>{log.duration}</TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant="outline"
+                                            className={
+                                                log.durationMs < 500
+                                                    ? "text-green-500 border-green-500/50"
+                                                    : log.durationMs <= 2000
+                                                        ? "text-yellow-500 border-yellow-500/50"
+                                                        : "text-red-500 border-red-500/50"
+                                            }
+                                        >
+                                            {log.duration}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell>
                                         {log.error ? (
                                             <Badge variant="destructive" className="gap-1">
