@@ -407,4 +407,60 @@ func TestWebsocketTool_Execute(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "this is not json", result)
 	})
+
+	t.Run("secret_resolution_error", func(t *testing.T) {
+		pm := pool.NewManager()
+		mockPool := &mockWebsocketPool{
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
+				return &client.WebsocketClientWrapper{}, nil
+			},
+		}
+		serviceID := "ws-secret-error"
+		pm.Register(serviceID, mockPool)
+
+		toolProto := v1.Tool_builder{}.Build()
+		callDef := &configv1.WebsocketCallDefinition{}
+		param := &configv1.WebsocketParameterMapping{}
+
+		schema := &configv1.ParameterSchema{}
+		schema.SetName("my_secret")
+		param.SetSchema(schema)
+
+		secret := &configv1.SecretValue{}
+		secret.SetEnvironmentVariable("UNSET_SECRET_ENV_VAR_FOR_TEST_123")
+		param.SetSecret(secret)
+
+		callDef.SetParameters([]*configv1.WebsocketParameterMapping{param})
+
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
+		req := &ExecutionRequest{ToolInputs: json.RawMessage(`{"other": "val"}`)}
+		_, err := wsTool.Execute(context.Background(), req)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to resolve secret for parameter")
+	})
+
+	t.Run("input_transformer_render_error", func(t *testing.T) {
+		pm := pool.NewManager()
+		mockPool := &mockWebsocketPool{
+			getFunc: func(_ context.Context) (*client.WebsocketClientWrapper, error) {
+				return &client.WebsocketClientWrapper{}, nil
+			},
+		}
+		serviceID := "ws-render-error"
+		pm.Register(serviceID, mockPool)
+
+		toolProto := v1.Tool_builder{}.Build()
+		callDef := &configv1.WebsocketCallDefinition{}
+
+		it := &configv1.InputTransformer{}
+		// This is valid template syntax, but will fail at render time because non_existent_function does not exist.
+		it.SetTemplate(`{{ non_existent_function }}`)
+		callDef.SetInputTransformer(it)
+
+		wsTool := NewWebsocketTool(toolProto, pm, serviceID, nil, callDef)
+		req := &ExecutionRequest{ToolInputs: json.RawMessage(`{"other": "val"}`)}
+		_, err := wsTool.Execute(context.Background(), req)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to render input template")
+	})
 }

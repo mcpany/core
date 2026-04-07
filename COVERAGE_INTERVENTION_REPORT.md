@@ -1,29 +1,25 @@
 # Coverage Intervention Report
 
-* **Target:** `server/pkg/tokenizer/tokenizer.go`
-* **Risk Profile:** This file contains highly complex and recursive reflection logic for tokenizing arbitrarily structured generic JSON data. Methods like `countTokensInValueRecursive`, `countTokensReflectMap`, and `countTokensReflectStruct` lacked test coverage on deep fallback and error paths (e.g. cycle detection, reflection panics on unsupported types). Since this code parses unknown structured input payloads to calculate token limits for LLM interactions, unhandled errors or panics in this file represent a severe security/reliability risk (e.g., recursive exhaustion, crashing the MCP server on a bad user payload).
-* **New Coverage:** The following logic paths are now guarded by comprehensive tests:
-  - Error paths and recursion cycle detection in generic types (`reflectSlice`, `reflectMap`, `reflectStruct`, `countSliceInterfaceSimple`).
-  - Fallback behaviors for `countTokensInValueRecursive` handling unsupported payload types.
-  - Edge cases for fast-path primitive tokenization (e.g. `simpleTokenizeInt64` with large negative numbers and zero values).
-* **Verification:** `make test` successfully tests the new components alongside all existing legacy tests. The overall file coverage has increased significantly, reaching >97% statement coverage with the new regression safety nets in place. Assertions are strictly based on the specific expected behaviour (token counts).
+## Phase 1: Risk-Based Discovery (Top 10 Most Critical Untested Components)
 
----
+Based on cyclomatic complexity and absence of test coverage, the following 10 components were identified as the highest risk "Dark Matter" areas:
 
-* **Target:** `server/pkg/tool/webrtc.go`
-* **Risk Profile:** This file establishes WebRTC peer connections allowing LLMs to communicate directly with streaming endpoints, which is core business logic for real-time interactions. It utilizes custom unmarshalling and connection pools. If untested, failures in pooling logic or unmarshalling JSON parameters lead to silent drop of connections or panics.
-* **New Coverage:** The tests added cover logic paths handling stream execution error cases (verifying that `StreamExecute` appropriately handles execution errors without crashing), executing without pool instances and checking JSON unmarshalling. It explicitly asserts the behaviors and returned errors on bad inputs instead of just hitting the coverage.
-* **Verification:** `bazelisk test //...` verified cleanly with all legacy tests running and green. The style mimics Google Table-Driven tests inside the `stretchr/testify` framework constraints in place.
+1. `server/pkg/storage/interface.go` (Complexity: 119) - Interface definition, no logical paths to test directly.
+2. `server/pkg/tool/websocket.go` (Complexity: 49) - Core network communication and transformation logic.
+3. `server/tools/license/remove.go` (Complexity: 47) - Tooling script.
+4. `server/tools/check_doc.go` (Complexity: 36) - Tooling script.
+5. `server/examples/upstream_service_demo/webrtc/server/main.go` (Complexity: 33) - Example code.
+6. `server/examples/upstream_service_demo/webrtc/client/main.go` (Complexity: 30) - Example code.
+7. `server/pkg/mcpserver/noop_managers.go` (Complexity: 30) - Trivial logic returning nils.
+8. `server/pkg/serviceregistry/mock_registry.go` (Complexity: 26) - Mock logic.
+9. `server/pkg/tool/mock_tool.go` (Complexity: 23) - Mock logic.
+10. `server/pkg/tool/base.go` (Complexity: 22) - Core utility functions for tools.
 
-### Top 10 Most Critical Untested Components
-Based on cyclomatic complexity and risk (e.g. data transformation, tool injection safety checks, execution endpoints), the top 10 most critical untested logic components are:
-1. `server/pkg/tool/types.go`
-2. `server/pkg/app/server.go`
-3. `server/pkg/config/store.go`
-4. `server/pkg/upstream/mcp/streamable_http.go`
-5. `server/pkg/mcpserver/server.go`
-6. `server/pkg/config/validator.go`
-7. `server/pkg/storage/postgres/store.go`
-8. `server/pkg/storage/sqlite/store.go`
-9. `server/pkg/app/api.go`
-10. `server/pkg/upstream/filesystem/provider/gcs.go`
+## Phase 4: Impact Report
+
+* **Target:** `server/pkg/tool/websocket.go`
+* **Risk Profile:** This file was selected because it is high risk. It ranks second overall in complexity among untested paths (Complexity: 49) and handles core execution logic, data transformation, authorization checks, and network flows for WebSocket connections.
+* **New Coverage:** Added hermetic, table-driven tests mimicking the existing testing style in `server/pkg/tool/websocket_tool_test.go`. The new paths guarded include:
+  * **Secret Resolution Failure:** Verified that if a parameter relies on a secret (e.g., an unset environment variable), the tool immediately traps the error during execution and bubbles it up securely (`secret_resolution_error`).
+  * **Input Transformation Render Error:** Verified that invalid template variables during rendering (e.g. referencing an unknown function) securely halt the execution without crashing the application (`input_transformer_render_error`).
+* **Verification:** Confirmed that `./bazelisk test //...` and `make lint` passed cleanly, ensuring no regressions and adherence to quality standards.
