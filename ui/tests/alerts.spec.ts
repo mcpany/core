@@ -8,13 +8,19 @@ import { test, expect } from '@playwright/test';
 test.describe('Alerts Page', () => {
   test.beforeEach(async ({ request, page }) => {
     // Reset state for each test if necessary or navigate
-    await request.delete('/api/v1/alerts/AL-1024').catch(() => {});
-    await request.delete('/api/v1/alerts/AL-1023').catch(() => {});
-    await request.delete('/api/v1/alerts/AL-1022').catch(() => {});
-    await request.delete('/api/v1/alerts/rules/rule-1').catch(() => {});
+    const reqOptions = {
+        headers: {
+            'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+        }
+    };
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/AL-1024', reqOptions).catch(() => {});
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/AL-1023', reqOptions).catch(() => {});
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/AL-1022', reqOptions).catch(() => {});
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/rules/rule-1', reqOptions).catch(() => {});
 
     // Seed real alerts since the backend is empty
-    await request.post('/api/v1/alerts', {
+    await request.post(process.env.BACKEND_URL + '/api/v1/alerts', {
+      ...reqOptions,
       data: {
         id: "AL-1024",
         title: "High CPU Usage",
@@ -26,7 +32,10 @@ test.describe('Alerts Page', () => {
       }
     });
 
-    await request.post('/api/v1/alerts', {
+    await request.post(process.env.BACKEND_URL + '/api/v1/alerts', {
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+      },
       data: {
         id: "AL-1023",
         title: "API Latency Spike",
@@ -38,7 +47,10 @@ test.describe('Alerts Page', () => {
       }
     });
 
-    await request.post('/api/v1/alerts', {
+    await request.post(process.env.BACKEND_URL + '/api/v1/alerts', {
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+      },
       data: {
         id: "AL-1022",
         title: "Disk Space Low",
@@ -50,7 +62,10 @@ test.describe('Alerts Page', () => {
       }
     });
 
-    await request.post('/api/v1/alerts/rules', {
+    await request.post(process.env.BACKEND_URL + '/api/v1/alerts/rules', {
+      headers: {
+        'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+      },
       data: {
         id: "rule-1",
         name: "High CPU",
@@ -65,10 +80,15 @@ test.describe('Alerts Page', () => {
   });
 
   test.afterEach(async ({ request }) => {
-    await request.delete('/api/v1/alerts/AL-1024').catch(() => {});
-    await request.delete('/api/v1/alerts/AL-1023').catch(() => {});
-    await request.delete('/api/v1/alerts/AL-1022').catch(() => {});
-    await request.delete('/api/v1/alerts/rules/rule-1').catch(() => {});
+    const reqOptions = {
+        headers: {
+            'X-API-Key': process.env.MCPANY_API_KEY || 'test-token',
+        }
+    };
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/AL-1024', reqOptions).catch(() => {});
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/AL-1023', reqOptions).catch(() => {});
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/AL-1022', reqOptions).catch(() => {});
+    await request.delete(process.env.BACKEND_URL + '/api/v1/alerts/rules/rule-1', reqOptions).catch(() => {});
   });
 
   test('should load alerts page and display key elements', async ({ page }) => {
