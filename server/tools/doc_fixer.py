@@ -175,7 +175,7 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
         else:
             lines.append("//\n")
             lines.append("// Parameters:\n")
-            lines.append("//   None.\n")
+            lines.append("//   - None.\n")
 
         if returns:
             lines.append("//\n")
@@ -187,11 +187,14 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
         else:
              lines.append("//\n")
              lines.append("// Returns:\n")
-             lines.append("//   None.\n")
-    else:
-        # For Types, we don't add Params/Returns
-        # Maybe "Fields" if we parsed them, but regex doesn't
-        pass
+             lines.append("//   - None.\n")
+
+        lines.append("//\n")
+        lines.append("// Throws/Errors:\n")
+        lines.append("//   - None.\n")
+        lines.append("//\n")
+        lines.append("// Side Effects:\n")
+        lines.append("//   - None.\n")
 
     return lines
 

@@ -8,6 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Summary: Renders the Lazy-MCP Tool Search Dashboard.
+ *
+ * Parameters: None.
+ *
+ * Returns: A React component that provides a search interface for the tool index.
+ *
+ * Throws/Errors: No known errors.
+ *
+ * Side Effects: Updates local component state based on user input and simulated search results.
+ */
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<{name: string, score: number}[]>([]);

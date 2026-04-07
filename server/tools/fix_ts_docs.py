@@ -138,14 +138,25 @@ def process_file(filepath):
                     # Construct new docstring
                     new_doc = [
                         '/**',
-                        f' * {comp_name} component.',
-                        ' * @param props - The component props.'
+                        f' * Summary: {comp_name} component.',
+                        ' *',
+                        ' * Parameters:',
                     ]
-                    for p in params:
-                        desc = get_prop_desc(p)
-                        new_doc.append(f' * @param props.{p} - {desc}')
-                    new_doc.append(' * @returns The rendered component.')
-                    new_doc.append(' */')
+                    if not params:
+                        new_doc.append(' *   - None.')
+                    else:
+                        for p in params:
+                            desc = get_prop_desc(p)
+                            new_doc.append(f' *   - {p}: {desc}')
+                    new_doc.extend([
+                        ' *',
+                        ' * Returns: The rendered component.',
+                        ' *',
+                        ' * Throws/Errors: None.',
+                        ' *',
+                        ' * Side Effects: None.',
+                        ' */'
+                    ])
 
                     if has_doc and is_generic:
                          # Remove old docstring from new_lines

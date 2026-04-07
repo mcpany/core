@@ -10,25 +10,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Password hashes a password using bcrypt.
+// Password password password.
+//
+// Summary: Password password.
 //
 // Parameters:
-//   - password: The password to hash.
+//   - password (string): The password.
 //
 // Returns:
-//   - string: The hashed password.
-//   - error: An error if the hashing fails.
+//   - string: The result.
+//   - error: An error if the operation fails.
 //
-// Summary: Executes Password operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -42,25 +36,19 @@ func Password(password string) (string, error) {
 	return string(bytes), nil
 }
 
-// CheckPassword checks if a password matches a hash.
+// CheckPassword checkPassword check password.
+//
+// Summary: CheckPassword check password.
 //
 // Parameters:
-//   - password: The password to check.
-//   - hash: The hash to compare against.
+//   - password (unknown): The password.
+//   - hash (string): The hash.
 //
 // Returns:
-//   - bool: True if the password matches the hash, false otherwise.
+//   - bool: The result.
 //
-// Summary: Executes CheckPassword operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

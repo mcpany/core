@@ -42,7 +42,9 @@ type Upstream struct {
 	mu                sync.RWMutex
 }
 
-// CheckHealth performs a health check on the upstream service.
+// CheckHealth checkHealth check health.
+//
+// Summary: CheckHealth check health.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -50,22 +52,8 @@ type Upstream struct {
 // Returns:
 //   - error: An error if the operation fails.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
+// Throws/Errors:
 //   - None.
-//
-// Summary: Executes CheckHealth operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -84,31 +72,18 @@ func (u *Upstream) CheckHealth(ctx context.Context) error {
 	return nil
 }
 
-// Shutdown is a no-op for the WebRTC upstream, as connections are transient
-// and not managed by a persistent pool.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - _ (context.Context): The parameter.
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
 //   - error: An error if the operation fails.
 //
-// Errors:
-//   - Returns an error if ...
-//
-// Side Effects:
+// Throws/Errors:
 //   - None.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.
@@ -123,27 +98,18 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 	return nil
 }
 
-// NewUpstream creates a new instance of WebrtcUpstream.
+// NewUpstream creates a new upstream.
+//
+// Summary: Creates a new upstream.
 //
 // Parameters:
-//   - poolManager (*pool.Manager): The parameter.
+//   - poolManager (*pool.Manager): The pool manager.
 //
 // Returns:
 //   - upstream.Upstream: The result.
 //
-// Side Effects:
+// Throws/Errors:
 //   - None.
-//
-// Summary: Initializes NewUpstream operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
 //
 // Side Effects:
 //   - None.

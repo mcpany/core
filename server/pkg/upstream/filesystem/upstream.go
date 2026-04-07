@@ -41,24 +41,18 @@ type Upstream struct {
 	checker health.Checker
 }
 
-// NewUpstream creates a new instance of FilesystemUpstream.
+// NewUpstream creates a new upstream.
 //
-// Returns:
-//   - upstream.Upstream: A new instance of the filesystem upstream.
-//
-// Side Effects:
-//   - None.
-//
-// Summary: Initializes NewUpstream operation.
+// Summary: Creates a new upstream.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - None.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - upstream.Upstream: The result.
 //
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -68,28 +62,18 @@ func NewUpstream() upstream.Upstream {
 	}
 }
 
-// Shutdown implements the upstream.Upstream interface.
+// Shutdown shutdown shutdown.
+//
+// Summary: Shutdown shutdown.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the shutdown operation (currently unused).
+//   - _ (context.Context): Unused parameter.
 //
 // Returns:
-//   - error: Always returns nil.
+//   - error: An error if the operation fails.
 //
-// Side Effects:
-//   - Stops the health checker.
-//   - Closes all registered filesystem providers.
-//
-// Summary: Executes Shutdown operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

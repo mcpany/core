@@ -30,7 +30,9 @@ type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }
 
-// Seed walks the examples directory and saves service templates.
+// Seed seed seed.
+//
+// Summary: Seed seed.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -38,22 +40,8 @@ type ConfigFile struct {
 // Returns:
 //   - error: An error if the operation fails.
 //
-// Errors:
-//   - Returns an error if the operation fails or is invalid.
-//
-// Side Effects:
-//   - None
-//
-// Summary: Executes Seed operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

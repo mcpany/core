@@ -20,7 +20,9 @@ type BundleLocalTransport struct {
 	WorkingDir string
 }
 
-// Connect establishes a connection to the local process.
+// Connect connect connect.
+//
+// Summary: Connect connect.
 //
 // Parameters:
 //   - ctx (context.Context): The context for the request.
@@ -29,22 +31,8 @@ type BundleLocalTransport struct {
 //   - mcp.Connection: The result.
 //   - error: An error if the operation fails.
 //
-// Errors:
-//   - Returns an error if the command fails to start.
-//
-// Side Effects:
-//   - Starts a local process.
-//
-// Summary: Executes Connect operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
