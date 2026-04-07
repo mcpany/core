@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hybrid Dispatch Broker (HDB)**: (P0) Authoritative "Dispatch Router" utilizing hardware-attested "Task Tickets" for cross-boundary task routing (Local, Private Cloud, Public Cloud).
+- **Predictive Channel Preparation (PCP) Middleware**: (P0) High-speed coordination service speculatively attesting inter-agent "Channels" based on real-time intent analysis to reduce MTTC.
+- **Cross-Cloud Discovery Normalizer (CCDN)**: (P0) Security aggregator for hybrid registries that cryptographically masks cloud discovery signals to prevent shadow mapping.
+- **Structured Channel Sovereignty (SCS) Standard**: (P0) Identity standard binding coordination channels to hardware-attested mission roles and sub-intents.
+
+### Priority Shifts
+- **Universal Multimodal Memory Bus (UMMB)**: (Re-affirmed P0) Now elevated with mandatory **SCS-compliant** channel isolation.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for **CCDN-shielded** cloud signals.

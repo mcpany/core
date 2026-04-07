@@ -218,6 +218,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Hybrid Dispatch Broker (HDB)**: Authoritative "Dispatch Router" utilizing hardware-attested "Task Tickets" for cross-boundary task routing. (Added: 2026-07-25)
+*   **[P0] Predictive Channel Preparation (PCP)**: Speculative coordination middleware to reduce MTTC via real-time intent analysis. (Added: 2026-07-25)
+*   **[P0] Cross-Cloud Discovery Normalizer (CCDN)**: Security aggregator for hybrid registries that cryptographically masks cloud discovery signals. (Added: 2026-07-25)
+*   **[P0] Structured Channel Sovereignty (SCS)**: Identity standard binding coordination channels to hardware-attested mission roles. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
