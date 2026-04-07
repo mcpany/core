@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Recursive Shard Integrity (RSI) Hub**: Authoritative lineage service for sharded state, mandating hash-chained signatures. (Added: 2026-07-25)
+*   **[P0] Hardware-Attested Monologue (HAM) Provider**: Enclave-bound certified reasoning to neutralize prompt-path shadowing. (Added: 2026-07-25)
+*   **[P0] Mesh-Bound Workspace Isolation (MBWI) Adapter**: Local filesystem "Team Space" isolation for horizontal Agent Teams. (Added: 2026-07-25)
+*   **[P0] Fast-Path Identity Resumption (FPIR) v2**: Sub-50ms trust tickets for performance-optimized mission resumption. (Added: 2026-07-25)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.

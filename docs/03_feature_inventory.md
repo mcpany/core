@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Shard Integrity (RSI) Hub**: (P0) Authoritative lineage service for sharded state, mandating hardware-attested, hash-chained signatures across deep meshes.
+- **Hardware-Attested Monologue (HAM) Provider**: (P0) Advanced security service utilizing hardware enclaves (TPM/SEP) to provide cryptographically certified internal reasoning.
+- **Mesh-Bound Workspace Isolation (MBWI) Adapter**: (P0) Security middleware facilitating cryptographically isolated local filesystem "Team Spaces."
+- **Fast-Path Identity Resumption (FPIR) v2**: (P0) Performance-optimized trust broker providing sub-50ms "Trust Tickets" for mission-root context resumption.
+
+### Priority Shifts
+- **Recursive Integrity Verification (RIV) Provider**: (Re-affirmed P0) Elevated with mandatory support for **RSI-compliant** shard signatures.
+- **Signed Reasoning Monologue (SRM) Provider**: (Re-affirmed P0) Elevated to support the new **Hardware-Attested Monologue (HAM)** patterns.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

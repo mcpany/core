@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] RSI Lineage Monitor**: (2026-07-25) Visual tracker for hash-chained shard integrity and mid-mesh poisoning alerts.
+- [ ] **[P0] Team Space Isolation Manager**: (2026-07-25) UI for managing MBWI-locked workspaces and mesh-resident identity access.
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
