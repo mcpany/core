@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Swarm Transaction (AST) Manager**: (P0) Authoritative coordination service implementing 2-phase commit protocols for memory enclave transitions to neutralize cognitive split-brain.
+- **Instruction-Origin Watermarking (IOW) Provider**: (P0) Advanced security service cryptographically watermarking Blackboard writes with full subagent lineage and environment IDs.
+- **Recursive Logic-Bomb Scanner (RLBS)**: (P0) Forensic service performing isolated behavioral burn-in for imported specialist libraries to detect dormant instruction-injection logic.
+- **Temporal Remote Sovereignty (TRS) Provider**: (P0) Identity middleware brokering hardware-bound "Presence Heartbeats" for remote sessions to neutralize persistence risks.
+
+### Priority Shifts
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Elevated with mandatory **IOW** integration for cascading failure attribution.
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Now elevated with mandatory **TRS** integration for remote-control security.

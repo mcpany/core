@@ -42,3 +42,11 @@ Autonomous agents operate at speeds that exceed human intervention capabilities.
 
 ## 7. Evolutionary Changelog
 * **2026-07-08:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Retry-Logic Cascade Injections
+**Context:** Today's market sync revealed a new exploit pattern where malicious actions are masked as "Retry Logic" within valid intent branches to bypass action-chain sequence validation.
+**Architecture Adjustment:**
+*   Implementing "Strict Retry Signatures" in Section 4.
+*   Mandating that any "Retry" action must match the cryptographically signed hash of the original failed action.
+*   Introducing "Linearity Enforcement" where non-identical retries trigger immediate chain revocation.
+**Security Impact:** Mitigates "Cascade Injection" where compromised subagents use the retry mechanism to smuggle unauthorized state mutations into a trusted mission root.
