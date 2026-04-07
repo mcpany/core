@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] AI System Inventory Auditor (ASIA)**: Core compliance service for real-time, hardware-attested inventory registry of agentic assets. (Added: 2026-07-25)
+*   **[P0] Plugin Provenance Verifier (PPV)**: Mandatory security middleware for validating cryptographic provenance chains of dynamic plugin upgrades. (Added: 2026-07-25)
+*   **[P1] Audit-Aware Metadata Provider**: Extension for AMT/A2A providers to propagate hardware-attested compliance metadata. (Added: 2026-07-25)
+*   **[P0] Automated Risk-Classifier Middleware**: Real-time compliance gatekeeper dynamically applying restrictive policies based on ASIA risk scores. (Added: 2026-07-25)

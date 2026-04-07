@@ -62,3 +62,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25: Compliance Metadata Propagation**
+    * **Context:** Today's research on the EU AI Act highlights the need for end-to-end inventory tracking.
+    * **Architecture Adjustment:** Evolving the `amt.EstablishTunnel` and `amt.InvokeRemote` APIs to include mandatory `complianceMetadata` headers.
+    * **Impact:** Ensures that remote tool calls carry the necessary regulatory provenance to satisfy mesh-wide ASIA auditing requirements.

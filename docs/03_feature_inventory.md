@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **AI System Inventory Auditor (ASIA)**: (P0) Authoritative compliance service providing a hardware-attested, real-time inventory of models, plugins, and servers to satisfy the EU AI Act.
+- **Plugin Provenance Verifier (PPV)**: (P0) Security middleware mandating cryptographically signed provenance chains for all dynamic skill and plugin upgrades.
+- **Audit-Aware Metadata Provider**: (P1) Identity extension for AMT/A2A providers that propagates hardware-attested compliance metadata across the mesh.
+- **Automated Risk-Classifier Middleware**: (P0) Real-time compliance service dynamically applying security policies based on regulatory risk classification.
+
+### Priority Shifts
+- **Plugin Market Ingestion Adapter**: (Re-affirmed P0) Now elevated with mandatory **PPV** integration to counter "Plugin-as-Update" exploits.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P0) Designated as the primary interface for exporting **ASIA-compliant** compliance reports.
