@@ -33,20 +33,7 @@ type ActionableError struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Error operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (e *ActionableError) Error() string {
 	return fmt.Sprintf("%v\n\t-> Fix: %s", e.Err, e.Suggestion)
 }
@@ -64,20 +51,7 @@ func (e *ActionableError) Error() string {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Unwrap operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (e *ActionableError) Unwrap() error {
 	return e.Err
 }

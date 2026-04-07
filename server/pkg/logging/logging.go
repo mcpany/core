@@ -30,20 +30,7 @@ var (
 //
 // Side Effects:
 //   - Updates the global log level atomic variable.
-//
-// Summary: Updates SetLevel operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func SetLevel(level slog.Level) {
 	programLevel.Set(level)
 }
@@ -61,20 +48,7 @@ func SetLevel(level slog.Level) {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes ForTestsOnlyResetLogger operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func ForTestsOnlyResetLogger() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -98,20 +72,7 @@ func ForTestsOnlyResetLogger() {
 // Side Effects:
 //   - Sets the global logger instance.
 //   - May open a file for writing.
-//
-// Summary: Executes Init operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func Init(level slog.Level, output io.Writer, logFilePath string, format ...string) {
 	mu.Lock()
 	defer mu.Unlock()
@@ -188,20 +149,7 @@ func Init(level slog.Level, output io.Writer, logFilePath string, format ...stri
 //
 // Side Effects:
 //   - May initialize the default logger if not already set.
-//
-// Summary: Retrieves GetLogger operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func GetLogger() *slog.Logger {
 	// ⚡ Bolt Optimization: Fast path to avoid lock contention on every log call.
 	// Atomic load is much cheaper than mutex lock.
@@ -231,20 +179,7 @@ func GetLogger() *slog.Logger {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes ToSlogLevel operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func ToSlogLevel(level configv1.GlobalSettings_LogLevel) slog.Level {
 	switch level {
 	case configv1.GlobalSettings_LOG_LEVEL_DEBUG:

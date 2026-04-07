@@ -48,20 +48,7 @@ type BaseMessage struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes CorrelationID operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (m *BaseMessage) CorrelationID() string {
 	return m.CID
 }
@@ -79,20 +66,7 @@ func (m *BaseMessage) CorrelationID() string {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Updates SetCorrelationID operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (m *BaseMessage) SetCorrelationID(id string) {
 	m.CID = id
 }

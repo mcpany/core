@@ -47,20 +47,7 @@ var (
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (Factory): The factory.
-//
-// Summary: Executes Register operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func Register(name string, factory Factory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -72,20 +59,7 @@ func Register(name string, factory Factory) {
 // Parameters:
 //   - name (string): The name of the resource.
 //   - factory (MCPFactory): The factory.
-//
-// Summary: Executes RegisterMCP operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func RegisterMCP(name string, factory MCPFactory) {
 	globalRegistry.mu.Lock()
 	defer globalRegistry.mu.Unlock()
@@ -99,20 +73,7 @@ func RegisterMCP(name string, factory MCPFactory) {
 //
 // Returns:
 //   - ([]func(http.Handler) http.Handler): The result.
-//
-// Summary: Retrieves GetHTTPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) http.Handler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -143,20 +104,7 @@ func GetHTTPMiddlewares(configs []*configv1.Middleware) []func(http.Handler) htt
 //
 // Returns:
 //   - ([]func(mcp.MethodHandler) mcp.MethodHandler): The result.
-//
-// Summary: Retrieves GetMCPMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func GetMCPMiddlewares(configs []*configv1.Middleware) []func(mcp.MethodHandler) mcp.MethodHandler {
 	globalRegistry.mu.RLock()
 	defer globalRegistry.mu.RUnlock()
@@ -213,20 +161,7 @@ type StandardMiddlewares struct {
 // Returns:
 //   - (*StandardMiddlewares): The result.
 //   - (error): An error if the operation fails.
-//
-// Summary: Executes InitStandardMiddlewares operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func InitStandardMiddlewares(
 	authManager *auth.Manager,
 	toolManager tool.ManagerInterface,

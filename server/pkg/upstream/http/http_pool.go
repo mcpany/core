@@ -33,20 +33,7 @@ type httpPool struct {
 //
 // Side Effects:
 //   - Closes idle network connections.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (p *httpPool) Close() error {
 	if err := p.Pool.Close(); err != nil {
 		return err

@@ -31,20 +31,7 @@ type WebsocketClientWrapper struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 	// Send a ping to check the connection.
 	// A short deadline is used to prevent blocking.
@@ -65,20 +52,7 @@ func (w *WebsocketClientWrapper) IsHealthy(_ context.Context) bool {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (w *WebsocketClientWrapper) Close() error {
 	return w.Conn.Close()
 }

@@ -18,20 +18,7 @@ type MockWatcher struct {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Initializes NewMockWatcher operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func NewMockWatcher() *MockWatcher {
 	return &MockWatcher{}
 }
@@ -50,20 +37,7 @@ func NewMockWatcher() *MockWatcher {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Watch operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 	if m.WatchFunc != nil {
 		m.WatchFunc(paths, reloadFunc)
@@ -78,20 +52,7 @@ func (m *MockWatcher) Watch(paths []string, reloadFunc func()) error {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (m *MockWatcher) Close() {
 	if m.CloseFunc != nil {
 		m.CloseFunc()

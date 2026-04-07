@@ -94,20 +94,7 @@ var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 //
 //	*Provider: The created Provider.
 //	error: An error if creation fails.
-//
-// Summary: Initializes NewProvider operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 	if NewProviderHook != nil {
 		return NewProviderHook(messageBus)
@@ -162,20 +149,7 @@ var GetBusHook func(p *Provider, topic string) (any, error)
 //
 //	Bus[T]: The requested Bus instance.
 //	error: An error if retrieval or creation fails.
-//
-// Summary: Retrieves GetBus operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func GetBus[T any](p *Provider, topic string) (Bus[T], error) {
 	if GetBusHook != nil {
 		bus, err := GetBusHook(p, topic)

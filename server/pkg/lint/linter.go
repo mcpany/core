@@ -39,20 +39,7 @@ const (
 //
 // Returns:
 //   - string: The string representation of the severity.
-//
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (s Severity) String() string {
 	switch s {
 	case Error:
@@ -88,20 +75,7 @@ type Result struct {
 //
 // Returns:
 //   - string: A formatted string containing severity, service, path, and message.
-//
-// Summary: Executes String operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (r Result) String() string {
 	pathStr := ""
 	if r.Path != "" {
@@ -130,20 +104,7 @@ type Linter struct {
 //
 // Returns:
 //   - *Linter: A new Linter instance initialized with the provided configuration.
-//
-// Summary: Initializes NewLinter operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 	return &Linter{cfg: cfg}
 }
@@ -159,20 +120,7 @@ func NewLinter(cfg *configv1.McpAnyServerConfig) *Linter {
 // Returns:
 //   - []Result: A list of linting findings.
 //   - error: An error if the linting process encounters a fatal issue (currently always nil).
-//
-// Summary: Executes Run operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (l *Linter) Run(ctx context.Context) ([]Result, error) {
 	// Pre-allocate to avoid performance warnings, though initial size is a guess.
 	results := make([]Result, 0, 10)

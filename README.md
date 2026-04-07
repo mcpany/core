@@ -2,7 +2,7 @@
 
 ## Elevator Pitch
 **What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. This serves as the ultimate universal bridge, eliminating the need to write custom boilerplate adapters, and acting as the backbone of interoperable autonomous systems.
 
 ## Architecture
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
@@ -69,3 +69,4 @@ MCP Any uses environment variables and secrets to configure the runtime environm
 - `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
 - `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
 - `MCPANY_LOG_LEVEL`: Adjust the verbosity of application logging. Options: `debug`, `info`, `warn`, `error`. (Default: `info`)
+- `MCPANY_SECRETS_KEY`: Required secret key for encrypting and decrypting upstream credentials.

@@ -74,3 +74,6 @@ oauth_env.sh
 AUDIT_REPORT.md
 package.json
 .github/scripts/check-results-and-comment.sh
+ui/node_modules/
+fix_godoc.py
+test_empty_calorie.sh

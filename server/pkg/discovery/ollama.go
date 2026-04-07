@@ -50,20 +50,7 @@ type OllamaProvider struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Name operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (p *OllamaProvider) Name() string {
 	return "ollama"
 }
@@ -82,20 +69,7 @@ func (p *OllamaProvider) Name() string {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Discover operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (p *OllamaProvider) Discover(ctx context.Context) ([]*configv1.UpstreamServiceConfig, error) {
 	// ⚡ BOLT: Reuse http.Client to avoid socket exhaustion.
 	// Randomized Selection from Top 5 High-Impact Targets

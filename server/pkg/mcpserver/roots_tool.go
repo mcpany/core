@@ -33,20 +33,7 @@ type RootsTool struct {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Initializes NewRootsTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func NewRootsTool() *RootsTool {
 	inputSchema := &structpb.Struct{
 		Fields: map[string]*structpb.Value{
@@ -75,20 +62,7 @@ func NewRootsTool() *RootsTool {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes Tool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (t *RootsTool) Tool() *v1.Tool {
 	return t.tool
 }
@@ -100,20 +74,7 @@ func (t *RootsTool) Tool() *v1.Tool {
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Executes MCPTool operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (t *RootsTool) MCPTool() *mcp.Tool {
 	return t.mcpTool
 }
@@ -133,20 +94,7 @@ func (t *RootsTool) MCPTool() *mcp.Tool {
 //
 // Side Effects:
 //   - Sends a "roots/list" request to the client.
-//
-// Summary: Executes Execute operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 
 // IsStreaming indicates whether this tool supports streaming execution.
 //
@@ -227,20 +175,7 @@ func (t *RootsTool) Execute(ctx context.Context, _ *tool.ExecutionRequest) (any,
 //
 // Side Effects:
 //   - None.
-//
-// Summary: Retrieves GetCacheConfig operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (t *RootsTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

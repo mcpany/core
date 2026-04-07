@@ -40,20 +40,7 @@ type HTTPClientWrapper struct {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Initializes NewHTTPClientWrapper operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceConfig, checker health.Checker) *HTTPClientWrapper {
 	// If no checker is provided, create a new one (backward compatibility or standalone usage).
 	if checker == nil {
@@ -79,20 +66,7 @@ func NewHTTPClientWrapper(client *http.Client, config *configv1.UpstreamServiceC
 //
 // Side Effects:
 //   - None
-//
-// Summary: Checks IsHealthy operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 	if w.checker == nil {
 		return true // No health check configured, assume healthy.
@@ -113,20 +87,7 @@ func (w *HTTPClientWrapper) IsHealthy(ctx context.Context) bool {
 //
 // Side Effects:
 //   - None
-//
-// Summary: Executes Close operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
-//
-// Side Effects:
-//   - None.
+
 func (w *HTTPClientWrapper) Close() error {
 	return nil
 }
