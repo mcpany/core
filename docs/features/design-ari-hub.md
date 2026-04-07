@@ -87,3 +87,11 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - Neutralizing SNT-Spoofing (CVE-2026-44001)
+**Context:** Today's market sync confirmed a critical device ID spoofing vulnerability in OpenClaw SNT handshakes.
+**Architecture Adjustment:**
+*   Integrating the **Hardware-Locked Mesh Handshake (HLMH)** into the Hash-Chain Validator in Section 4.
+*   The ARI Hub will now mandate TPM-attested device metadata for all coordination fragments crossing P2P tunnel boundaries.
+*   Implementing **Echo-Immune Mission-Phase Binding**, requiring fragments to include a monotonic phase-root signature to prevent replay of coordination fragments from stale mission states.
+**Security Impact:** Ensures that every reasoning fragment is cryptographically bound to a verified hardware origin and the current mission phase.

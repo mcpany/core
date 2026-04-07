@@ -1931,6 +1931,15 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Locked Mesh Handshake (HLMH)**: (P0) Security middleware mandating TPM-attested metadata signatures for all P2P tunnel handshakes to neutralize device spoofing (CVE-2026-44001).
+- **Speculative Collision Arbiter (SCA)**: (P0) Authoritative coordination service for optimistic meshes that interdicts redundant or conflicting speculative task claims.
+- **ZK-Proof Alignment Bridge**: (P1) Standardized validation service for Gemini-compliant `x-gemini-pprp` reasoning proofs, enabling multi-framework audit quorums.
+
 ### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with mandatory **SCA** integration to support optimistic teammate coordination.
+- **Echo-Immune Coordination Fragments**: (Re-affirmed P0) Designated as a mandatory requirement for all P2P mission-phase coordination.
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
