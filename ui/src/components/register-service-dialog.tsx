@@ -27,6 +27,7 @@ import { ServiceTemplateSelector } from "./services/service-template-selector";
 import { ServiceConfigDiff } from "./services/service-config-diff";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 import { cn } from "@/lib/utils";
+import { JsonView } from "@/components/ui/json-view";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -597,11 +598,9 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                     <div className="space-y-2">
                         <h3 className="text-sm font-medium">Current Configuration</h3>
                         {form.watch("upstreamAuth") ? (
-                            <div className="text-sm border p-2 rounded">
-                                <pre className="whitespace-pre-wrap break-all">
-                                    {JSON.stringify(form.watch("upstreamAuth"), null, 2)}
-                                </pre>
-                                <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
+                            <div className="text-sm border p-2 rounded overflow-hidden">
+                                <JsonView data={form.watch("upstreamAuth")} />
+                                <Button type="button" variant="outline" size="sm" className="mt-2 ml-2 mb-2" onClick={() => form.setValue("upstreamAuth", undefined)}>Clear Authentication</Button>
                             </div>
                         ) : (
                             <div className="text-sm text-muted-foreground italic">No authentication configured.</div>

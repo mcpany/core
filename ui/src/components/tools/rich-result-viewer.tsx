@@ -149,28 +149,49 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     const { isTableEligible, tableData } = useMemo(() => {
         if (mcpContent) return { isTableEligible: false, tableData: [] };
 
-        // 1. Array of objects
-        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
-            return { isTableEligible: true, tableData: content };
+        // 1. Array of objects or primitives
+        if (Array.isArray(content) && content.length > 0) {
+            const isListOfObjects = content.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+            if (isListOfObjects) {
+                return { isTableEligible: true, tableData: content };
+            }
+            const isListOfPrimitives = content.every(item => typeof item !== 'object' || item === null);
+            if (isListOfPrimitives) {
+                return { isTableEligible: true, tableData: content.map((item, index) => ({ index, value: item })) };
+            }
         }
 
-        // 2. Object containing an array of objects. We aggressively scan the top 2 levels.
+        // 2. Object containing an array of objects or primitives. We aggressively scan the top 2 levels.
         if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
             let largestArray: any[] = [];
 
             // Level 1 scan
             Object.values(content).forEach(val => {
-                 if (Array.isArray(val) && val.length > 0 && val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
-                     if (val.length > largestArray.length) {
-                         largestArray = val;
+                 if (Array.isArray(val) && val.length > 0) {
+                     const isListOfObjects = val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+                     if (isListOfObjects) {
+                         if (val.length > largestArray.length) largestArray = val;
+                     } else {
+                         const isListOfPrimitives = val.every(item => typeof item !== 'object' || item === null);
+                         if (isListOfPrimitives) {
+                             const mapped = val.map((item, index) => ({ index, value: item }));
+                             if (mapped.length > largestArray.length) largestArray = mapped;
+                         }
                      }
                  }
                  // Level 2 scan
                  else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
                       Object.values(val).forEach(nestedVal => {
-                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
-                               if (nestedVal.length > largestArray.length) {
-                                   largestArray = nestedVal;
+                           if (Array.isArray(nestedVal) && nestedVal.length > 0) {
+                               const isListOfObjects = nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+                               if (isListOfObjects) {
+                                   if (nestedVal.length > largestArray.length) largestArray = nestedVal;
+                               } else {
+                                   const isListOfPrimitives = nestedVal.every(item => typeof item !== 'object' || item === null);
+                                   if (isListOfPrimitives) {
+                                       const mapped = nestedVal.map((item, index) => ({ index, value: item }));
+                                       if (mapped.length > largestArray.length) largestArray = mapped;
+                                   }
                                }
                            }
                       });
