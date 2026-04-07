@@ -380,12 +380,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Deterministic Attestation Gateway**: Moving toward a "Full-State Manifest" model where MCP Any verifies the integrity of the entire project-local environment (including proof-of-non-existence for sensitive files) before any agent execution begins.
 
 ## Strategic Evolution: [2026-04-07]
-### Focus: Collective Skill Defense & Social-Aware Security Boundaries
-**Context**: The "ClawHavoc" registry compromise and the Moltbook data breach prove that individual agent security is insufficient. We are entering the era of "Agentic Social Engineering," where malicious skills and peer agents can coerce information or actions from legitimate swarms via high-trust discovery and communication channels.
+### Focus: Remote-Control Sovereignty & Collective Reputation
+**Context**: The maturation of Claude Code's "Remote Control" and "Dispatch" features, combined with the "ClawHavoc" registry compromise and Moltbook breach, confirms that the security frontier has moved to **Headless Authority** and **Collective Reputation**. We must now protect both the remote steering path and the collective integrity of discovered skills.
 **Strategic Pivot**:
-- **Collective Skill Defense**: MCP Any will transition from "Individual Tool Validation" to "Collective Reputation." We will implement a Federated Quorum model where tool safety is determined by the consensus of multiple independent security nodes.
-- **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cannot be used for parent context reconstruction.
-- **Deterministic Attestation Gateway**: Moving toward a "Zero-Trust Discovery" model where no tool is exposed unless its structural metadata and Inode lineage are signed by an attested hardware authority.
+- **Remote-Control Sovereignty Broker**: MCP Any will evolve to act as the authoritative proxy for remote agent sessions. We will implement hardware-attested handoff protocols, ensuring that any remote observer or controller is cryptographically verified before authority is transferred.
+- **Collective Skill Defense**: We are transitioning from "Individual Tool Validation" to "Collective Reputation," implementing a Federated Quorum model where tool safety is determined by the consensus of multiple independent security nodes.
+- **Dispatch-Queue Integrity Guard (DQIG)**: To neutralize rogue task injections in background worker workflows, we are introducing DQIG. This middleware will perform real-time, signature-based validation of all task proposals entering the dispatch queue.
+- **Social-Aware Security Boundaries**: To mitigate risks in shared spaces (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs," ensuring agents only exchange cryptographically minimized state.
+- **Headless Handoff Continuity (HHC)**: Supporting the stability of remote-controlled swarms, HHC facilitates secure context and state synchronization during session handoffs between disparate execution environments.
+- **Deterministic Attestation Gateway**: Moving toward a "Full-State Manifest" model where MCP Any verifies the integrity of the entire project-local environment (including proof-of-non-existence for sensitive files) before any agent execution begins.
 
 ---
 

@@ -482,6 +482,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-09)
 
 #### Upcoming (2026-04-07 Evolution)
+*   **[P0] Remote-Control Sovereignty Broker**: Authoritative proxy for secure remote session management and hardware-attested handoffs. (Added: 2026-04-07)
+*   **[P0] Dispatch-Queue Integrity Guard (DQIG)**: Middleware for real-time, signature-based validation of background worker task proposals. (Added: 2026-04-07)
 *   **[P0] Verified Skill Auction (VSA)**: Integration of DCA Auction Broker with real-time skill attestation to mitigate ClawHavoc-style attacks. (Added: 2026-04-07)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-07)
 *   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)

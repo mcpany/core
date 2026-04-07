@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-07] (v2) Updates
+
+### Proposed Additions
+- **Remote-Control Sovereignty Broker**: (P0) Authoritative proxy for secure remote session management and hardware-attested handoffs.
+- **Dispatch-Queue Integrity Guard (DQIG)**: (P0) Middleware for real-time, signature-based validation of background worker task proposals.
+- **Headless Handoff Continuity (HHC) Provider**: (P1) Optimization service for synchronizing context and state across disparate remote environments.
+
+### Priority Shifts
+- **Unified Remote-Steering Bridge**: (Re-affirmed P0) Now designated as the primary interface for managing heterogeneous headless agent swarms.
