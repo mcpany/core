@@ -30,10 +30,12 @@ func TestManager_CreateAndGet(t *testing.T) {
 
 func TestManager_List(t *testing.T) {
 	m := NewManager()
-	// Should have seeded data (5 items)
+
+	m.CreateAlert(&Alert{Title: "Test", Status: StatusActive})
+
 	list := m.ListAlerts()
-	if len(list) < 5 {
-		t.Errorf("expected at least 5 seeded alerts, got %d", len(list))
+	if len(list) != 1 {
+		t.Errorf("expected 1 alert, got %d", len(list))
 	}
 }
 
@@ -86,6 +88,10 @@ func TestManager_DeleteAlert(t *testing.T) {
 
 func TestManager_GetAlertStats(t *testing.T) {
 	m := NewManager()
+
+	m.CreateAlert(&Alert{Title: "Test Critical", Status: StatusActive, Severity: SeverityCritical})
+	m.CreateAlert(&Alert{Title: "Test Warning", Status: StatusActive, Severity: SeverityWarning})
+
 	stats := m.GetAlertStats()
 	if stats == nil {
 		t.Error("expected non-nil stats")

@@ -6,6 +6,54 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Alerts Page', () => {
+  test.beforeEach(async ({ request }) => {
+    // Seed real alerts since the backend is empty
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: "High CPU Usage",
+        message: "CPU usage > 90% for 5m",
+        severity: "critical",
+        status: "active",
+        service: "weather-service",
+        source: "System Monitor",
+      }
+    });
+
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: "API Latency Spike",
+        message: "P99 Latency > 2000ms",
+        severity: "warning",
+        status: "active",
+        service: "api-gateway",
+        source: "Latency Watchdog",
+      }
+    });
+
+    await request.post('/api/v1/alerts', {
+      data: {
+        title: "Disk Space Low",
+        message: "Volume /data at 85%",
+        severity: "warning",
+        status: "acknowledged",
+        service: "database-primary",
+        source: "Disk Monitor",
+      }
+    });
+
+    await request.post('/api/v1/alerts/rules', {
+      data: {
+        name: "High CPU",
+        metric: "cpu_usage",
+        operator: ">",
+        threshold: 90,
+        duration: "5m",
+        severity: "critical",
+        enabled: true
+      }
+    });
+  });
+
   test('should load alerts page and display key elements', async ({ page }) => {
     // Navigate to alerts page
     await page.goto('/alerts');
