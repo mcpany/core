@@ -25,12 +25,12 @@ test.describe('Lazy MCP Dashboard', () => {
         command_line_service: {
             command: 'echo',
             tools: [
-                { name: 'read_file', description: 'Read a file' },
-                { name: 'list_directory', description: 'List a directory' }
+                { name: 'read_file', call_id: 'call1', description: 'Read a file' },
+                { name: 'list_directory', call_id: 'call2', description: 'List a directory' }
             ],
             calls: {
-                'read_file': { args: ["test"] },
-                'list_directory': { args: ["test"] }
+                'call1': { args: ["test"] },
+                'call2': { args: ["test"] }
             }
         }
       },
