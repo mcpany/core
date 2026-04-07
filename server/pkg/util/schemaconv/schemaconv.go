@@ -16,51 +16,135 @@ import (
 // JSON schema types.
 const (
 	// TypeNumber represents a JSON number type.
-	// Summary: Defines TypeNumber.
+	//
+	// Summary: Defines the string constant used to represent a JSON number type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	TypeNumber = "number"
 	// TypeInteger represents a JSON integer type.
-	// Summary: Defines TypeInteger.
+	//
+	// Summary: Defines the string constant used to represent a JSON integer type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	TypeInteger = "integer"
 	// TypeBoolean represents a JSON boolean type.
-	// Summary: Defines TypeBoolean.
+	//
+	// Summary: Defines the string constant used to represent a JSON boolean type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	TypeBoolean = "boolean"
 	// TypeObject represents a JSON object type.
-	// Summary: Defines TypeObject.
+	//
+	// Summary: Defines the string constant used to represent a JSON object type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	TypeObject = "object"
 	// TypeArray represents a JSON array type.
-	// Summary: Defines TypeArray.
+	//
+	// Summary: Defines the string constant used to represent a JSON array type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	TypeArray = "array"
 	// TypeString represents a JSON string type.
-	// Summary: Defines TypeString.
+	//
+	// Summary: Defines the string constant used to represent a JSON string type.
+	//
+	// Parameters:
+	//   - None.
+	//
+	// Returns:
+	//   - None.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	TypeString = "string"
 )
 
 // MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
 //
-// Summary: Represents a MaxRecursionDepth.
+// Summary: Defines the maximum depth to which nested messages will be traversed.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
 // message into a `structpb.Struct` for use as the `properties` field in a tool
 // input schema.
 //
+// Summary: Converts a gRPC method input descriptor into a protobuf Struct matching JSON schema properties.
+//
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
+//   - methodDesc (protoreflect.MethodDescriptor): The method descriptor containing the input fields to convert.
 //
 // Returns:
 //   - *structpb.Struct: The properties structure for the input schema.
 //   - error: An error if the conversion fails.
 //
-// Summary: Executes MethodDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - Returns an error if maximum recursion depth is exceeded or structpb conversions fail.
 //
 // Side Effects:
 //   - None.
@@ -72,23 +156,17 @@ func MethodDescriptorToProtoProperties(methodDesc protoreflect.MethodDescriptor)
 // output message into a `structpb.Struct` for use as the `properties` field in
 // a tool output schema.
 //
+// Summary: Converts a gRPC method output descriptor into a protobuf Struct matching JSON schema properties.
+//
 // Parameters:
-//   - methodDesc: The method descriptor to convert.
+//   - methodDesc (protoreflect.MethodDescriptor): The method descriptor containing the output fields to convert.
 //
 // Returns:
 //   - *structpb.Struct: The properties structure for the output schema.
 //   - error: An error if the conversion fails.
 //
-// Summary: Executes MethodOutputDescriptorToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - Returns an error if maximum recursion depth is exceeded or structpb conversions fail.
 //
 // Side Effects:
 //   - None.
@@ -188,38 +266,117 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 
 // ConfigParameter an interface for config parameter schemas.
 //
-// Summary: Represents a ConfigParameter.
+// Summary: Represents a unified interface for accessing configuration parameter schemas.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
+	// Summary: Retrieves the underlying schema structure for this parameter.
+	//
+	// Parameters:
+	//   - None.
+	//
 	// Returns:
-	//   - *configv1.ParameterSchema: The parameter schema.
+	//   - *configv1.ParameterSchema: The parameter schema containing rules and type information.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetSchema() *configv1.ParameterSchema
 }
 
 // McpFieldParameter an interface for McpField parameter schemas.
 //
-// Summary: Represents a McpFieldParameter.
+// Summary: Represents an interface providing access to MCP field parameter properties.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - None.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//
+	// Summary: Retrieves the name of the parameter.
+	//
+	// Parameters:
+	//   - None.
+	//
 	// Returns:
 	//   - string: The name of the parameter.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetName() string
 	// GetDescription returns the description of the parameter.
 	//
+	// Summary: Retrieves the human-readable description of the parameter.
+	//
+	// Parameters:
+	//   - None.
+	//
 	// Returns:
 	//   - string: The description of the parameter.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetDescription() string
 	// GetType returns the type of the parameter.
 	//
+	// Summary: Retrieves the underlying data type of the parameter as a string.
+	//
+	// Parameters:
+	//   - None.
+	//
 	// Returns:
 	//   - string: The type of the parameter.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetType() string
 	// GetIsRepeated returns true if the parameter is a repeated field (array).
 	//
+	// Summary: Checks whether the parameter is allowed to have multiple values.
+	//
+	// Parameters:
+	//   - None.
+	//
 	// Returns:
-	//   - bool: True if the parameter is repeated.
+	//   - bool: True if the parameter is repeated (array), false otherwise.
+	//
+	// Throws/Errors:
+	//   - None.
+	//
+	// Side Effects:
+	//   - None.
 	GetIsRepeated() bool
 }
 
@@ -227,24 +384,18 @@ type McpFieldParameter interface {
 // from a service configuration into a `structpb.Struct` that can be used as the
 // `properties` field in a protobuf-based tool input schema.
 //
+// Summary: Translates configuration parameter schemas into protobuf Struct properties for MCP schema.
+//
 // Parameters:
-//   - params: A slice of parameters implementing ConfigParameter.
+//   - params ([]T): A slice of parameters implementing ConfigParameter.
 //
 // Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
-//   - []string: A list of required parameter names.
+//   - *structpb.Struct: The constructed properties structure for the schema.
+//   - []string: A slice containing the names of all required parameters.
 //   - error: An error if the conversion fails.
 //
-// Summary: Executes ConfigSchemaToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.
@@ -287,23 +438,17 @@ func ConfigSchemaToProtoProperties[T ConfigParameter](params []T) (*structpb.Str
 // `structpb.Struct` that can be used as the `properties` field in a
 // protobuf-based tool input schema.
 //
+// Summary: Translates MCP field parameters into a protobuf Struct matching JSON schema properties.
+//
 // Parameters:
-//   - params: A slice of parameters implementing McpFieldParameter.
+//   - params ([]T): A slice of parameters implementing McpFieldParameter.
 //
 // Returns:
-//   - *structpb.Struct: The properties structure for the input schema.
+//   - *structpb.Struct: The properties structure representing the input schema fields.
 //   - error: An error if the conversion fails.
 //
-// Summary: Executes McpFieldsToProtoProperties operation.
-//
-// Parameters:
-//   - TODO: Document parameters.
-//
-// Returns:
-//   - TODO: Document returns.
-//
-// Errors:
-//   - TODO: Document errors.
+// Throws/Errors:
+//   - None.
 //
 // Side Effects:
 //   - None.

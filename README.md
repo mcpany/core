@@ -1,17 +1,17 @@
-# MCP Any
+# MCP Any: Universal AI Adapter
 
 ## Elevator Pitch
-**What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+**What is this?** MCP Any is the premier Universal Adapter for AI agents.
+**Why does it exist?** It empowers developers and AI engineers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations. Serving as an ultimate universal bridge, it eliminates the need to write custom boilerplate adapters, acting as the foundational backbone for robust, interoperable autonomous systems.
 
 ## Architecture
-MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
+MCP Any relies on a "Configuration over Code" paradigm. Users deploy a single, unified binary that reads dynamically loaded capability definitions. The architecture supports modern protocols seamlessly—gRPC, OpenAPI, HTTP, GraphQL, and CLI tools—without requiring modifications to underlying source code.
 
 **Key Design Patterns & Features:**
-- **Dynamic Tool Registration**: Add and modify capabilities purely via configuration files at runtime.
-- **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution and contain side effects safely.
-- **Upstream Authentication**: Out-of-the-box identity federation with various standard identity providers.
-- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain boundary domains between differing agent systems.
+- **Dynamic Tool Registration**: Add, hot-swap, and modify capabilities purely via configuration files at runtime.
+- **Safety Policies**: Features robust constraint engines and multi-layered safety mechanisms designed to restrict arbitrary code execution and securely contain side effects.
+- **Upstream Authentication**: Out-of-the-box identity federation integrates effortlessly with standard identity providers.
+- **Multi-Tenant Isolation**: Safe-by-default execution spaces that maintain strict boundary domains between differing agent systems.
 
 ### High-Level Flow
 ```mermaid
@@ -50,7 +50,7 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
    ```
 
 ## Development
-We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
+We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard" of this project.
 
 ```bash
 # Run the test suite to ensure no code logic breaks
@@ -64,7 +64,7 @@ bazelisk build //server/cmd/mcpany
 ```
 
 ## Configuration
-MCP Any uses environment variables and secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios, but here are the core variables:
+MCP Any uses environment variables and secrets to configure the runtime environment safely. Required configurations vary based on deployment scenarios. Below are the core variables:
 
 - `MCPANY_ALLOW_LOOPBACK_RESOURCES`: Set to `true` to allow loopback resources. (Default: `false`)
 - `MCPANY_CONFIG_PATH`: Path to the YAML/JSON definitions. (e.g. `/etc/mcpany/config.yaml`)
