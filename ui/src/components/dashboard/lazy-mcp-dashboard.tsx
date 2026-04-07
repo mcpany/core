@@ -8,6 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+/**
+ * LazyMcpDashboard component.
+ *
+ * Summary: Renders the Lazy-MCP Tool Search Dashboard.
+ *
+ * @returns The rendered component.
+ * @throws {Error} None.
+ */
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<{name: string, score: number}[]>([]);
