@@ -13,17 +13,25 @@ test.describe('Lazy MCP Dashboard', () => {
     await request.delete(`/api/v1/services/${SERVICE_ID}`).catch(() => {});
 
     // Seed a mock service via API
+    // Instead of go run, we define an inline command line service that echoes a JSON
+    // but the backend `mcp` SDK handles the `listTools` request natively from the server side.
+    // Oh wait, `mock_mcp_server` is NOT available to `go run` because Bazel tests sandbox it.
+    // Instead, we can use a simpler `command_line_service` mimicking a tool definition
+    // directly, like `playground-image.spec.ts` does using `tools: [{name: 'read_file'...}]`.
     const response = await request.post('/api/v1/services', {
       data: {
         id: SERVICE_ID,
         name: 'Lazy MCP Test Service',
-        version: '1.0.0',
-        priority: 10,
-        disable: false,
         command_line_service: {
-            command: 'go run server/cmd/mock_mcp_server/main.go',
-            working_directory: '.',
-            env: {}
+            command: 'echo',
+            tools: [
+                { name: 'read_file', description: 'Read a file' },
+                { name: 'list_directory', description: 'List a directory' }
+            ],
+            calls: {
+                'read_file': { args: ["test"] },
+                'list_directory': { args: ["test"] }
+            }
         }
       },
       headers: HEADERS
@@ -32,7 +40,6 @@ test.describe('Lazy MCP Dashboard', () => {
     expect(response.status()).toBe(200);
 
     // Wait for the service to be loaded and its tools to be available
-    // For this, we poll the tools endpoint until we see "read_file" or "list_directory" etc.
     let toolsLoaded = false;
     for (let i = 0; i < 20; i++) {
       const toolsRes = await request.get('/api/v1/tools');
@@ -67,7 +74,6 @@ test.describe('Lazy MCP Dashboard', () => {
     await searchInput.fill('read');
     await searchButton.click();
 
-    // Verify loading state appears
     // wait for response or UI update
     await expect(page.getByText('read_file')).toBeVisible();
 
