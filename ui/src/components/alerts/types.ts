@@ -1,27 +1,12 @@
 /**
- * Summary: Document Severity
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export type Severity = "critical" | "warning" | "info";
 /**
- * Summary: Document AlertStatus
+ * Summary: Defines the severity levels for alerts.
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -32,15 +17,30 @@ export type Severity = "critical" | "warning" | "info";
  *
  * Side Effects:
  *   - None
+ */
+export type Severity = "critical" | "warning" | "info";
+
+/**
+ * Summary: Defines the lifecycle status states for an alert.
  *
- * AlertStatus type definition.
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
  */
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
 /**
- * Summary: Document Alert
+ * Summary: Represents a system alert with its metadata and state.
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -51,8 +51,6 @@ export type AlertStatus = "active" | "acknowledged" | "resolved";
  *
  * Side Effects:
  *   - None
- *
- * Alert type definition.
  */
 export interface Alert {
   id: string;
@@ -65,9 +63,9 @@ export interface Alert {
   source: string;
 }
 /**
- * Summary: Document AlertRule
+ * Summary: Defines a rule for triggering alerts based on metric thresholds.
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -78,10 +76,7 @@ export interface Alert {
  *
  * Side Effects:
  *   - None
- *
- * Alert type definition.
  */
-
 export interface AlertRule {
   id: string;
   name: string;

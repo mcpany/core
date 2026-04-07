@@ -17,6 +17,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Defines the configuration requirements and metadata for an MCP service.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -42,6 +57,21 @@ export interface ServiceRegistryItem {
  *   - None
  *
  * Registry of popular services with their default configurations.
+ */
+/**
+ * Summary: Provides a global registry of supported MCP services and their default configurations.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
  */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---

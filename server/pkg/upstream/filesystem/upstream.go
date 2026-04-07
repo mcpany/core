@@ -29,12 +29,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// Upstream implements the upstream.Upstream interface for filesystem services.
+// Summary: Upstream represents a data structure.
 //
-// It provides tools for interacting with various filesystem backends (local,
-// S3, GCS, etc.) as defined in the service configuration.
+// Parameters:
+//   - None
 //
-// Summary: Represents a Upstream.
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Upstream struct {
 	mu      sync.Mutex
 	closers []io.Closer
@@ -260,12 +267,20 @@ type fsCallable struct {
 // Summary: Executes a filesystem tool.
 //
 // Parameters:
-//   - ctx: context.Context. The execution context.
-//   - req: *tool.ExecutionRequest. The request containing arguments.
+// Summary: Call executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - req *tool.ExecutionRequest: Input parameter.
 //
 // Returns:
-//   - any: The result of the execution.
-//   - error: An error if execution fails.
+//   - (any, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

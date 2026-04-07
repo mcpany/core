@@ -15,9 +15,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Seeder seeds the database with service templates.
+// Summary: Seeder represents a data structure.
 //
-// Summary: Represents a Seeder.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Seeder struct {
 	Store       storage.Storage
 	ExamplesDir string
@@ -25,7 +35,19 @@ type Seeder struct {
 
 // ConfigFile represents the structure of the config.yaml in examples.
 //
-// Summary: Represents a ConfigFile.
+// Summary: ConfigFile represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ConfigFile struct {
 	UpstreamServices []map[string]any `yaml:"upstream_services"`
 }

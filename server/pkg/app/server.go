@@ -127,23 +127,19 @@ func (a *Application) uploadFile(w http.ResponseWriter, r *http.Request) {
 	_, _ = fmt.Fprintf(w, "File '%s' uploaded successfully (size: %d bytes)", html.EscapeString(safeFilename), written)
 }
 
-// RunOptions configuration for starting the MCP Any application.
+// Summary: RunOptions represents a data structure.
 //
-// Summary: Options for configuring the application runtime.
+// Parameters:
+//   - None
 //
-// Fields:
-//   - Ctx: context.Context. The context for the application.
-//   - Fs: afero.Fs. The filesystem interface.
-//   - Stdio: bool. Whether to run in stdio mode (for CLI/one-off usage).
-//   - JSONRPCPort: string. The port for the JSON-RPC/HTTP server.
-//   - GRPCPort: string. The port for the gRPC registration server.
-//   - ConfigPaths: []string. Paths to configuration files.
-//   - APIKey: string. The master API key for the server.
-//   - ShutdownTimeout: time.Duration. The timeout for graceful shutdown.
-//   - TLSCert: string. Path to the TLS certificate file.
-//   - TLSKey: string. Path to the TLS private key file.
-//   - TLSClientCA: string. Path to the TLS client CA certificate file (for mTLS).
-//   - DBPath: string. Path to the SQLite database file.
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type RunOptions struct {
 	Ctx             context.Context
 	Fs              afero.Fs
@@ -162,6 +158,19 @@ type RunOptions struct {
 // Runner defines the interface for running the application.
 //
 // Summary: Interface for application execution and management.
+// Summary: Runner represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Runner interface {
 	// Run starts the application with the given options.
 	//
@@ -203,23 +212,19 @@ type Runner interface {
 //   - TemplateManager: *TemplateManager. Manages templates.
 //   - SkillManager: *skill.Manager. Manages agent skills.
 //   - AlertsManager: *alerts.Manager. Manages system alerts.
-//   - DiscoveryManager: *discovery.Manager. Manages auto-discovery of services.
-//   - SettingsManager: *GlobalSettingsManager. Manages dynamic global settings.
-//   - ProfileManager: *profile.Manager. Manages user profiles.
-//   - AuthManager: *auth.Manager. Manages authentication and authorization.
-//   - RegistrationRetryDelay: time.Duration. Delay between service registration retries.
-//   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
-//   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
-//   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
-// Application ...
+// Summary: Application represents a data structure.
 //
-// Summary: Represents the Application.
 // Parameters:
-//   - None.
+//   - None
+//
 // Returns:
-//   - None.
-// Throws/Errors:
-//   - None.
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -323,6 +328,20 @@ type statsCacheEntry struct {
 //
 // Returns:
 //   - (*Application): The initialized application.
+// Summary: NewApplication executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *Application {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewApplication() *Application {
 	busProvider, _ := bus.NewProvider(nil)
 	return &Application{
@@ -359,6 +378,20 @@ func NewApplication() *Application {
 //   - Loads configuration.
 //
 //nolint:gocyclo // Run is the main entry point and setup function, expected to be complex
+// Summary: Run executes the operation.
+//
+// Parameters:
+//   - opts RunOptions: Input parameter.
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (a *Application) Run(opts RunOptions) error {
 	log := logging.GetLogger()
 	fs, err := setup(opts.Fs)
@@ -944,6 +977,22 @@ func (a *Application) Run(opts RunOptions) error {
 // Side Effects:
 //   - Reads configuration files.
 //   - Updates global settings, user auth, profiles, and service registry.
+// Summary: ReloadConfig executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - fs afero.Fs: Input parameter.
+//   - configPaths []string: Input parameter.
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (a *Application) ReloadConfig(ctx context.Context, fs afero.Fs, configPaths []string) error {
 	log := logging.GetLogger()
 	start := time.Now()
@@ -1376,6 +1425,20 @@ func (a *Application) generateConfigDiff(oldConfig, newConfig map[string]string)
 //
 // Returns:
 //   - (error): nil if startup completes successfully, or a context error if canceled.
+// Summary: WaitForStartup executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (a *Application) WaitForStartup(ctx context.Context) error {
 	select {
 	case <-a.startupCh:
@@ -1506,6 +1569,22 @@ func (a *Application) filesystemHealthCheck(_ context.Context) health.CheckResul
 //
 // Returns:
 //   - (error): nil if healthy, or an error if the health check fails.
+// Summary: HealthCheck executes the operation.
+//
+// Parameters:
+//   - out io.Writer: Input parameter.
+//   - addr string: Input parameter.
+//   - timeout time.Duration: Input parameter.
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func HealthCheck(out io.Writer, addr string, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -2558,6 +2637,20 @@ func (a *Application) createAuthMiddleware(forcePrivateIPOnly bool, trustProxy b
 //
 // Returns:
 //   - (http.Handler): The wrapped handler.
+// Summary: HTTPRequestContextMiddleware executes the operation.
+//
+// Parameters:
+//   - next http.Handler: Input parameter.
+//
+// Returns:
+//   - http.Handler {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (a *Application) HTTPRequestContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), middleware.HTTPRequestContextKey, r)
@@ -2645,6 +2738,20 @@ func startGrpcServer(
 //
 // Returns:
 //   - *middleware.AuditMiddleware: The current audit middleware instance.
+// Summary: GetAuditMiddleware executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *middleware.AuditMiddleware {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
 	a.configMu.Lock()
 	defer a.configMu.Unlock()

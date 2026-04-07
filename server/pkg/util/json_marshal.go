@@ -26,16 +26,19 @@ var (
 	}
 )
 
-// FastMarshalToString performs a high-performance JSON marshal into a string.
-//
-// Summary: Marshals to a string efficiently.
+// Summary: FastMarshalToString executes the operation.
 //
 // Parameters:
-//   - v (interface{}): The value to marshal.
+//   - v interface{}: Input parameter.
 //
 // Returns:
-//   - string: The marshaled string.
-//   - error: An error if marshaling fails.
+//   - (string, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func FastMarshalToString(v interface{}) (string, error) {
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
@@ -62,7 +65,19 @@ func FastMarshalToString(v interface{}) (string, error) {
 //
 // Returns:
 //   - []byte: The marshaled byte slice.
-//   - error: An error if marshaling fails.
+// Summary: FastMarshal executes the operation.
+//
+// Parameters:
+//   - v interface{}: Input parameter.
+//
+// Returns:
+//   - ([]byte, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func FastMarshal(v interface{}) ([]byte, error) {
 	return FastJSON.Marshal(v)
 }

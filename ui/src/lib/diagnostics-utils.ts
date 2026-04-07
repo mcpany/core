@@ -1,7 +1,12 @@
 /**
- * Summary: Document DiagnosticResult
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Summary: Represents the outcome of analyzing a connection or system error.
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -12,11 +17,7 @@
  *
  * Side Effects:
  *   - None
- *
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
  */
-
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;
@@ -26,24 +27,19 @@ export interface DiagnosticResult {
 }
 
 /**
- * Summary: Document analyzeConnectionError
+ * Summary: Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
  *
- * Params:
- *   - Documented below.
+ * Parameters:
+ *   - error (string): The raw error string received from the backend or network.
  *
  * Returns:
- *   - Documented below.
+ *   - DiagnosticResult: A structured diagnostic result containing the category, severity, and suggested remediation.
  *
  * Errors:
  *   - None
  *
  * Side Effects:
  *   - None
- *
- * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
- *
- * @param error - The raw error string received from the backend or network.
- * @returns A structured DiagnosticResult containing the category, severity, and suggested remediation.
  */
 export function analyzeConnectionError(error: string): DiagnosticResult {
   const err = error.toLowerCase();

@@ -12,9 +12,19 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// BlackboardStore represents a shared key-value store with agent-aware row-level security.
+// Summary: BlackboardStore represents a data structure.
 //
-// Summary: Represents a shared key-value store with agent-aware row-level security.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type BlackboardStore struct {
 	db *sql.DB
 }

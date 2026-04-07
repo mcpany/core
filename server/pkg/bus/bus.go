@@ -63,16 +63,19 @@ type Bus[T any] interface {
 	SubscribeOnce(ctx context.Context, topic string, handler func(T)) (unsubscribe func())
 }
 
-// Provider is a thread-safe container for managing multiple, type-safe bus
-// instances, with each bus being dedicated to a specific topic. It ensures that
-// for any given topic, there is only one bus instance, creating one on demand
-// if it doesn't already exist.
+// Summary: Provider represents a data structure.
 //
-// This allows different parts of the application to get a bus for a specific
-// message type and topic without needing to manage the lifecycle of the bus
-// instances themselves.
+// Parameters:
+//   - None
 //
-// Summary: Represents a Provider.
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Provider struct {
 	buses  *xsync.Map[string, any]
 	config *bus.MessageBus
@@ -81,6 +84,19 @@ type Provider struct {
 // NewProviderHook is a test hook for overriding the NewProvider logic.
 //
 // Summary: Represents a NewProviderHook.
+// Summary: NewProviderHook is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var NewProviderHook func(*bus.MessageBus) (*Provider, error)
 
 // NewProvider creates and returns a new Provider, which is used to manage
@@ -144,6 +160,19 @@ func NewProvider(messageBus *bus.MessageBus) (*Provider, error) {
 // GetBusHook is a test hook for overriding the bus retrieval logic.
 //
 // Summary: Represents a GetBusHook.
+// Summary: GetBusHook is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var GetBusHook func(p *Provider, topic string) (any, error)
 
 // GetBus retrieves a bus for the given topic. If a bus for the given topic

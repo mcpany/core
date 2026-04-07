@@ -23,9 +23,19 @@ const (
 	splunkBatchWait  = 1 * time.Second
 )
 
-// SplunkAuditStore sends audit logs to Splunk HTTP Event Collector.
+// Summary: SplunkAuditStore represents a data structure.
 //
-// Summary: Asynchronous audit store that pushes logs to Splunk via HEC.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type SplunkAuditStore struct {
 	config *configv1.SplunkConfig
 	client *http.Client
@@ -36,16 +46,20 @@ type SplunkAuditStore struct {
 
 // NewSplunkAuditStore creates a new SplunkAuditStore.
 //
-// Summary: Initializes a new SplunkAuditStore with background workers.
+// Summary: NewSplunkAuditStore executes the operation.
 //
 // Parameters:
-//   - config: *configv1.SplunkConfig. The Splunk HEC configuration.
+//   - config *configv1.SplunkConfig: Input parameter.
 //
 // Returns:
-//   - *SplunkAuditStore: The initialized store.
+//   - *SplunkAuditStore {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Starts background workers.
+//   - None
 func NewSplunkAuditStore(config *configv1.SplunkConfig) *SplunkAuditStore {
 	if config == nil {
 		config = &configv1.SplunkConfig{}
@@ -187,6 +201,20 @@ func (e *SplunkAuditStore) sendBatch(batch []Entry) {
 // Returns:
 //   - []Entry: Nil.
 //   - error: Always returns "not implemented".
+// Summary: Read executes the operation.
+//
+// Parameters:
+//   - _ context.Context: Input parameter.
+//   - _ Filter: Input parameter.
+//
+// Returns:
+//   - ([]Entry, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 	return nil, fmt.Errorf("read not implemented for splunk audit store")
 }
@@ -201,6 +229,20 @@ func (e *SplunkAuditStore) Read(_ context.Context, _ Filter) ([]Entry, error) {
 // Side Effects:
 //   - Closes channels.
 //   - Flushes pending batches.
+// Summary: Close executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (e *SplunkAuditStore) Close() error {
 	if e.done != nil {
 		close(e.done)

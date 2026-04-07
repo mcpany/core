@@ -34,15 +34,20 @@ func ensureSchema() (*jsonschema.Schema, error) {
 	return compiledSchema, schemaGenErr
 }
 
-// ValidateConfigAgainstSchema validates the raw configuration map against the generated JSON schema.
-//
-// Summary: Validates configuration against the JSON schema.
+// Summary: ValidateConfigAgainstSchema executes the operation.
 //
 // Parameters:
-//   - rawConfig: map[string]interface{}. The raw configuration data as a map.
+//   - rawConfig map[string]interface{}: Input parameter.
 //
 // Returns:
-//   - error: An error if validation fails.
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func ValidateConfigAgainstSchema(rawConfig map[string]interface{}) error {
 	schema, err := ensureSchema()
 	if err != nil {

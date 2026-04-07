@@ -13,9 +13,19 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// DMRHubConfig defines the configuration for the Dynamic Mesh Resilience Hub.
+// Summary: DMRHubConfig represents a data structure.
 //
-// Summary: Configuration for Dynamic Mesh Resilience Hub.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type DMRHubConfig struct {
 	// Enabled determines if the DMR Hub is active.
 	Enabled bool `json:"enabled"`
@@ -26,9 +36,19 @@ type DMRHubConfig struct {
 
 // DMRHub implements the Dynamic Mesh Resilience Hub middleware.
 // It verifies Zero-Knowledge State Attestation (ZKSA) migrations between
-// physical nodes upon subagent failure.
+// Summary: DMRHub represents a data structure.
 //
-// Summary: Represents the DMR Hub middleware.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type DMRHub struct {
 	config DMRHubConfig
 }
@@ -37,11 +57,20 @@ type DMRHub struct {
 //
 // Summary: Creates a new Dynamic Mesh Resilience Hub instance.
 //
+// Summary: NewDMRHub executes the operation.
+//
 // Parameters:
-//   - config (DMRHubConfig): The configuration settings.
+//   - config DMRHubConfig: Input parameter.
 //
 // Returns:
-//   - *DMRHub: The resulting DMR Hub instance.
+//   - *DMRHub {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewDMRHub(config DMRHubConfig) *DMRHub {
 	return &DMRHub{
 		config: config,
@@ -56,10 +85,21 @@ func NewDMRHub(config DMRHubConfig) *DMRHub {
 //   - ctx (context.Context): The execution context.
 //   - req (*tool.ExecutionRequest): The tool execution request.
 //   - next (tool.ExecutionFunc): The next handler in the chain.
+// Summary: Execute executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - req *tool.ExecutionRequest: Input parameter.
+//   - next tool.ExecutionFunc: Input parameter.
 //
 // Returns:
-//   - any: The execution result if allowed.
-//   - error: An error if the migration proof is invalid or missing during failure.
+//   - (any, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (h *DMRHub) Execute(ctx context.Context, req *tool.ExecutionRequest, next tool.ExecutionFunc) (any, error) {
 	if !h.config.Enabled {
 		return next(ctx, req)

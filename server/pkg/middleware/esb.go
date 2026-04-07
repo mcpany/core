@@ -17,10 +17,19 @@ const (
 	entanglementShardKey esbContextKey = "x-entanglement-shard"
 )
 
-// ESBMiddleware (Entangled State Broker) provides side-channel-immune speculative guarding
-// and enforces that requests are cryptographically bound to a mission-root intent.
+// Summary: ESBMiddleware represents a data structure.
 //
-// Summary: Implements the Entangled State Broker.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ESBMiddleware struct {
 	// Enable/disable the middleware
 	enabled bool
@@ -29,12 +38,20 @@ type ESBMiddleware struct {
 // NewESBMiddleware creates a new instance of the ESBMiddleware.
 //
 // Parameters:
-//   - config (*configv1.Middleware): The configuration for the middleware.
+// Summary: NewESBMiddleware executes the operation.
+//
+// Parameters:
+//   - config *configv1.Middleware: Input parameter.
 //
 // Returns:
-//   - (*ESBMiddleware): The newly created middleware.
+//   - *ESBMiddleware {
+: Result of the operation.
 //
-// Summary: Creates a new ESBMiddleware.
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 	enabled := true
 	if config != nil {
@@ -53,12 +70,22 @@ func NewESBMiddleware(config *configv1.Middleware) *ESBMiddleware {
 //   - method (string): The MCP method being called.
 //   - req (mcp.Request): The incoming request.
 //   - next (mcp.MethodHandler): The next handler in the chain.
+// Summary: Execute executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - method string: Input parameter.
+//   - req mcp.Request: Input parameter.
+//   - next mcp.MethodHandler: Input parameter.
 //
 // Returns:
-//   - (mcp.Result): The result of the request execution.
-//   - (error): An error if the request fails validation or execution.
+//   - (mcp.Result, error): Result of the operation.
 //
-// Summary: Executes the ESB middleware logic.
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (m *ESBMiddleware) Execute(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (mcp.Result, error) {
 	if !m.enabled {
 		return next(ctx, method, req)

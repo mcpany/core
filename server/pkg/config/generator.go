@@ -12,15 +12,19 @@ import (
 	"text/template"
 )
 
-// Generator handles the interactive generation of configuration files.
+// Summary: Generator represents a data structure.
 //
-// Summary: Interactive configuration generator.
+// Parameters:
+//   - None
 //
-// It prompts the user for input and uses templates to generate YAML configuration
-// for different types of services (HTTP, gRPC, OpenAPI, GraphQL).
+// Returns:
+//   - None
 //
-// Fields:
-//   - Reader (*bufio.Reader): The reader to use for user input.
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Generator struct {
 	Reader *bufio.Reader
 }
@@ -167,10 +171,19 @@ const httpServiceTemplate = `upstreamServices:
 // Fields:
 //   - Name (string): The name of the service.
 //   - Address (string): The base URL/address of the service.
-//   - OperationID (string): The unique identifier for the operation.
-//   - Description (string): A human-readable description of the service operation.
-//   - Method (string): The HTTP method to use (e.g., "GET", "POST").
-//   - EndpointPath (string): The path of the endpoint (e.g., "/api/v1/users").
+// Summary: HTTPServiceData represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type HTTPServiceData struct {
 	Name         string
 	Address      string
@@ -245,6 +258,19 @@ const grpcServiceTemplate = `upstreamServices:
 //   - Name (string): The name of the service.
 //   - Address (string): The address of the gRPC service (host:port).
 //   - ReflectionEnabled (bool): Indicates whether gRPC reflection should be enabled.
+// Summary: GRPCServiceData represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type GRPCServiceData struct {
 	Name              string
 	Address           string
@@ -298,6 +324,19 @@ const openapiServiceTemplate = `upstreamServices:
 // Fields:
 //   - Name (string): The name of the service.
 //   - SpecPath (string): The path or URL to the OpenAPI specification file.
+// Summary: OpenAPIServiceData represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type OpenAPIServiceData struct {
 	Name     string
 	SpecPath string
@@ -348,7 +387,19 @@ const graphqlServiceTemplate = `upstreamServices:
 //   - Name (string): The name of the service.
 //   - Address (string): The URL of the GraphQL endpoint.
 //   - CallName (string): The name of the GraphQL query or mutation to expose.
-//   - SelectionSet (string): The GraphQL selection set for the operation.
+// Summary: GraphQLServiceData represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type GraphQLServiceData struct {
 	Name         string
 	Address      string

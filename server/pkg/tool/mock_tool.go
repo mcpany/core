@@ -11,9 +11,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MockTool is a mock implementation of the Tool interface for testing purposes.
+// Summary: MockTool represents a data structure.
 //
-// Summary: Mock tool for testing.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type MockTool struct {
 	ToolFunc           func() *v1.Tool
 	MCPToolFunc        func() *mcp.Tool
@@ -23,10 +33,20 @@ type MockTool struct {
 
 // Tool returns the protobuf definition of the mock tool.
 //
-// Summary: Retrieves the mock tool definition.
+// Summary: Tool executes the operation.
+//
+// Parameters:
+//   - None
 //
 // Returns:
-//   - *v1.Tool: The tool definition.
+//   - *v1.Tool {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *MockTool) Tool() *v1.Tool {
 	if m.ToolFunc != nil {
 		return m.ToolFunc()
@@ -39,7 +59,20 @@ func (m *MockTool) Tool() *v1.Tool {
 // Summary: Retrieves the MCP tool definition.
 //
 // Returns:
-//   - *mcp.Tool: The MCP tool definition.
+// Summary: MCPTool executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *mcp.Tool {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *MockTool) MCPTool() *mcp.Tool {
 	if m.MCPToolFunc != nil {
 		return m.MCPToolFunc()
@@ -126,7 +159,20 @@ func (m *MockTool) Execute(ctx context.Context, req *ExecutionRequest) (any, err
 // Summary: Retrieves the cache configuration.
 //
 // Returns:
-//   - *configv1.CacheConfig: The cache configuration.
+// Summary: GetCacheConfig executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *configv1.CacheConfig {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *MockTool) GetCacheConfig() *configv1.CacheConfig {
 	if m.GetCacheConfigFunc != nil {
 		return m.GetCacheConfigFunc()

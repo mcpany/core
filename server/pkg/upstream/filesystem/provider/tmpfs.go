@@ -9,9 +9,19 @@ import (
 	"github.com/spf13/afero"
 )
 
-// TmpfsProvider provides access to a temporary in-memory filesystem.
+// Summary: TmpfsProvider represents a data structure.
 //
-// Summary: Represents a TmpfsProvider.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type TmpfsProvider struct {
 	fs afero.Fs
 }

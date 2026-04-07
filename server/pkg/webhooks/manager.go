@@ -12,17 +12,19 @@ import (
 	"time"
 )
 
-// WebhookConfig represents a configured webhook.
+// Summary: WebhookConfig represents a data structure.
 //
-// Summary: Webhook configuration definition.
+// Parameters:
+//   - None
 //
-// Fields:
-//   - ID (string): Unique identifier for the webhook.
-//   - URL (string): The destination URL.
-//   - Events ([]string): List of events to subscribe to.
-//   - Active (bool): Whether the webhook is enabled.
-//   - LastTriggered (time.Time): Timestamp of the last execution.
-//   - Status (string): Status of the last execution (success, failure, pending).
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type WebhookConfig struct {
 	ID            string    `json:"id"`
 	URL           string    `json:"url"`
@@ -35,6 +37,19 @@ type WebhookConfig struct {
 // Manager manages webhooks.
 //
 // Summary: Webhook lifecycle manager.
+// Summary: Manager represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Manager struct {
 	mu         sync.RWMutex
 	webhooks   map[string]*WebhookConfig
@@ -50,6 +65,20 @@ type Manager struct {
 //
 // Side Effects:
 //   - Initializes internal maps and HTTP client.
+// Summary: NewManager executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *Manager {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewManager() *Manager {
 	return &Manager{
 		webhooks:   make(map[string]*WebhookConfig),
@@ -63,6 +92,20 @@ func NewManager() *Manager {
 //
 // Returns:
 //   - []*WebhookConfig: A list of webhook configurations.
+// Summary: ListWebhooks executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []*WebhookConfig {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) ListWebhooks() []*WebhookConfig {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -80,9 +123,20 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 // Parameters:
 //   - w (*WebhookConfig): The webhook configuration to add.
 //
+// Summary: AddWebhook executes the operation.
+//
+// Parameters:
+//   - w *WebhookConfig: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
 // Side Effects:
-//   - Updates the internal webhook map.
-//   - Generates an ID if one is not provided.
+//   - None
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -102,7 +156,19 @@ func (m *Manager) AddWebhook(w *WebhookConfig) {
 //
 // Returns:
 //   - *WebhookConfig: The webhook configuration.
-//   - bool: True if found, false otherwise.
+// Summary: GetWebhook executes the operation.
+//
+// Parameters:
+//   - id string: Input parameter.
+//
+// Returns:
+//   - (*WebhookConfig, bool): Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -119,6 +185,20 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 //
 // Side Effects:
 //   - Removes the webhook from the internal map.
+// Summary: DeleteWebhook executes the operation.
+//
+// Parameters:
+//   - id string: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

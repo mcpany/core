@@ -11,9 +11,19 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// ScopesConfig defines the configuration for capability-based scoping.
+// Summary: ScopesConfig represents a data structure.
 //
-// Summary: Represents the configuration for capability-based tool scoping.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ScopesConfig struct {
 	// Roles maps a role name to a list of allowed capability prefixes.
 	Roles map[string][]string `json:"roles"`
@@ -21,7 +31,19 @@ type ScopesConfig struct {
 
 // ScopesMiddleware enforces granular capability-based tokens for tool execution.
 //
-// Summary: Represents middleware that enforces tool execution scopes based on agent roles.
+// Summary: ScopesMiddleware represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ScopesMiddleware struct {
 	config ScopesConfig
 }

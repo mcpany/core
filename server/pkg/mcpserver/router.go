@@ -9,17 +9,19 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MethodHandler defines the signature for a function that handles an MCP method call.
-//
-// Summary: Handler function signature for MCP methods.
+// Summary: MethodHandler represents a data structure.
 //
 // Parameters:
-//   - ctx (context.Context): The context for the request.
-//   - req (mcp.Request): The request object.
+//   - None
 //
 // Returns:
-//   - mcp.Result: The result of the operation.
-//   - error: An error if the operation fails.
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error)
 
 // Router is responsible for mapping MCP method names to their corresponding handler functions.
@@ -28,6 +30,19 @@ type MethodHandler func(ctx context.Context, req mcp.Request) (mcp.Result, error
 //
 // Side Effects:
 //   - Stores handlers in an internal map.
+// Summary: Router represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Router struct {
 	handlers map[string]MethodHandler
 }
@@ -41,9 +56,20 @@ type Router struct {
 //
 // Returns:
 //   - *Router: A new, initialized Router.
+// Summary: NewRouter executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *Router {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Allocates memory for the Router and its handler map.
+//   - None
 func NewRouter() *Router {
 	return &Router{
 		handlers: make(map[string]MethodHandler),
@@ -61,8 +87,21 @@ func NewRouter() *Router {
 // Returns:
 //   - None.
 //
+// Summary: Register executes the operation.
+//
+// Parameters:
+//   - method string: Input parameter.
+//   - handler MethodHandler: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
 // Side Effects:
-//   - Updates the internal handler map.
+//   - None
 func (r *Router) Register(method string, handler MethodHandler) {
 	r.handlers[method] = handler
 }
@@ -79,7 +118,19 @@ func (r *Router) Register(method string, handler MethodHandler) {
 //   - bool: A boolean indicating whether a handler was found (true) or not (false).
 //
 // Side Effects:
-//   - None.
+// Summary: GetHandler executes the operation.
+//
+// Parameters:
+//   - method string: Input parameter.
+//
+// Returns:
+//   - (MethodHandler, bool): Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (r *Router) GetHandler(method string) (MethodHandler, bool) {
 	handler, ok := r.handlers[method]
 	return handler, ok

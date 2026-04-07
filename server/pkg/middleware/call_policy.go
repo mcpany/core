@@ -12,10 +12,19 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CallPolicyMiddleware is a middleware that enforces call policies (allow/deny)
-// based on tool name and arguments.
+// Summary: CallPolicyMiddleware represents a data structure.
 //
-// Summary: Middleware that evaluates and enforces security policies for tool executions.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type CallPolicyMiddleware struct {
 	toolManager tool.ManagerInterface
 }
@@ -23,12 +32,20 @@ type CallPolicyMiddleware struct {
 // NewCallPolicyMiddleware creates a new CallPolicyMiddleware.
 //
 // Summary: Initializes a new CallPolicyMiddleware.
+// Summary: NewCallPolicyMiddleware executes the operation.
 //
 // Parameters:
-//   - toolManager: tool.ManagerInterface. The tool manager to access tool and service information.
+//   - toolManager tool.ManagerInterface: Input parameter.
 //
 // Returns:
-//   - *CallPolicyMiddleware: The initialized middleware.
+//   - *CallPolicyMiddleware {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewCallPolicyMiddleware(toolManager tool.ManagerInterface) *CallPolicyMiddleware {
 	return &CallPolicyMiddleware{
 		toolManager: toolManager,

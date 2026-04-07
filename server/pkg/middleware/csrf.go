@@ -13,9 +13,19 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// CSRFMiddleware protects against Cross-Site Request Forgery attacks.
+// Summary: CSRFMiddleware represents a data structure.
 //
-// Summary: Middleware that blocks unauthorized cross-origin requests.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type CSRFMiddleware struct {
 	allowedOrigins map[string]bool
 	mu             sync.RWMutex
@@ -23,16 +33,20 @@ type CSRFMiddleware struct {
 
 // NewCSRFMiddleware creates a new CSRFMiddleware.
 //
-// Summary: Initializes a new CSRFMiddleware with a list of allowed origins.
+// Summary: NewCSRFMiddleware executes the operation.
 //
 // Parameters:
-//   - allowedOrigins: []string. A list of origin strings (e.g., "https://example.com") allowed to make requests.
+//   - allowedOrigins []string: Input parameter.
 //
 // Returns:
-//   - *CSRFMiddleware: The initialized middleware.
+//   - *CSRFMiddleware {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Populates the internal allowed origins map.
+//   - None
 func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 	m := &CSRFMiddleware{
 		allowedOrigins: make(map[string]bool),
@@ -50,6 +64,20 @@ func NewCSRFMiddleware(allowedOrigins []string) *CSRFMiddleware {
 //
 // Side Effects:
 //   - Replaces the existing allowed origins map in a thread-safe manner.
+// Summary: Update executes the operation.
+//
+// Parameters:
+//   - origins []string: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *CSRFMiddleware) Update(origins []string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -69,10 +97,20 @@ func (m *CSRFMiddleware) Update(origins []string) {
 // Returns:
 //   - http.Handler: The wrapped handler.
 //
+// Summary: Handler executes the operation.
+//
+// Parameters:
+//   - next http.Handler: Input parameter.
+//
+// Returns:
+//   - http.Handler {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
 // Side Effects:
-//   - Inspects Method, Headers, Origin, and Referer of incoming requests.
-//   - Blocks requests with 403 Forbidden if validation fails.
-//   - Logs warnings for blocked requests.
+//   - None
 func (m *CSRFMiddleware) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 1. Safe Methods are always allowed

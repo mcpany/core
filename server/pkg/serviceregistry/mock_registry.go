@@ -11,9 +11,19 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockServiceRegistry is a mock implementation of ServiceRegistryInterface.
+// Summary: MockServiceRegistry represents a data structure.
 //
-// Summary: Represents a MockServiceRegistry.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type MockServiceRegistry struct {
 	mock.Mock
 }

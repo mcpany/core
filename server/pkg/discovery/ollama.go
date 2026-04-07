@@ -17,9 +17,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Provider defines the interface for auto-discovering local services.
+// Summary: Provider represents a data structure.
 //
-// Summary: Represents a Provider.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Provider interface {
 	// Name returns the name of the discovery provider.
 	Name() string
@@ -29,8 +39,19 @@ type Provider interface {
 
 // OllamaProvider discovers local Ollama instances.
 // OllamaProvider is a provider that discovers local Ollama instances.
+// Summary: OllamaProvider represents a data structure.
 //
-// Summary: Represents a OllamaProvider.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type OllamaProvider struct {
 	Endpoint   string // e.g., "http://localhost:11434"
 	client     *http.Client

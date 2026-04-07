@@ -17,32 +17,56 @@ import (
 	"github.com/google/uuid"
 )
 
-// KindPostCall identifies a post-call webhook.
+// Summary: KindPostCall is a global constant or variable.
 //
-// Summary: Constant for post-call webhook kind.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 const KindPostCall = "PostCall"
 
 // MarkdownHandler is a webhook handler that converts HTML content to Markdown.
 // It processes incoming CloudEvents containing HTML and returns the converted Markdown.
+// Summary: MarkdownHandler represents a data structure.
 //
-// Summary: Webhook handler for Markdown conversion.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type MarkdownHandler struct{}
 
 // Handle processes the markdown conversion request.
 // It expects a CloudEvent with "inputs" or "result" fields containing HTML strings or structures.
 //
-// Summary: Handles the markdown conversion request.
+// Summary: Handle executes the operation.
 //
 // Parameters:
-//   - w: http.ResponseWriter. The HTTP response writer.
-//   - r: *http.Request. The HTTP request.
+//   - w http.ResponseWriter: Input parameter.
+//   - r *http.Request: Input parameter.
 //
 // Returns:
+//   - {
+: Result of the operation.
 //
-//	None.
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Writes the converted Markdown to the response.
+//   - None
 func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -100,6 +124,19 @@ func (h *MarkdownHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The maximum characters can be specified via the "max_chars" query parameter (default 100).
 //
 // Summary: Webhook handler for text truncation.
+// Summary: TruncateHandler represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type TruncateHandler struct{}
 
 // Handle processes the text truncation request.
@@ -115,7 +152,21 @@ type TruncateHandler struct{}
 //	None.
 //
 // Side Effects:
-//   - Writes the truncated text to the response.
+// Summary: Handle executes the operation.
+//
+// Parameters:
+//   - w http.ResponseWriter: Input parameter.
+//   - r *http.Request: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -179,6 +230,19 @@ func (h *TruncateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 // The page size can be specified via the "page_size" query parameter (default 1000).
 //
 // Summary: Webhook handler for pagination.
+// Summary: PaginateHandler represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type PaginateHandler struct{}
 
 // Handle processes the pagination request.
@@ -193,8 +257,21 @@ type PaginateHandler struct{}
 //
 //	None.
 //
+// Summary: Handle executes the operation.
+//
+// Parameters:
+//   - w http.ResponseWriter: Input parameter.
+//   - r *http.Request: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
 // Side Effects:
-//   - Writes the paginated content to the response.
+//   - None
 func (h *PaginateHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

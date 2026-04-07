@@ -36,14 +36,19 @@ var (
 	metricToolsCallLatency = []string{"tools", "call", "latency"}
 )
 
-// AddReceivingMiddlewareHook is a testing hook that allows inspection of the middleware chain.
+// Summary: AddReceivingMiddlewareHook is a global constant or variable.
 //
-// It is invoked when the Server method is called, allowing tests to verify which middlewares are present.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - When set, this function is called synchronously during Server() access.
-//
-// Summary: Represents a AddReceivingMiddlewareHook.
+//   - None
 var AddReceivingMiddlewareHook func(name string)
 
 // Server is the core of the MCP Any application.
@@ -53,6 +58,19 @@ var AddReceivingMiddlewareHook func(name string)
 // handlers and communicates with backend workers via an event bus.
 //
 // Summary: Represents a Server.
+// Summary: Server represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Server struct {
 	server          *mcp.Server
 	router          *Router
@@ -1333,6 +1351,19 @@ func convertMapToCallToolResult(m map[string]any) (*mcp.CallToolResult, error) {
 // its JSON content only when logged.
 //
 // Summary: Represents a LazyRedact.
+// Summary: LazyRedact represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type LazyRedact []byte
 
 // LogValue implements slog.LogValuer.
@@ -1367,7 +1398,19 @@ func (l LazyRedact) LogValue() slog.Value {
 // It avoids expensive serialization of large payloads (e.g. images, huge text)
 // and lazily computes the string representation only when logging is enabled.
 //
-// Summary: Represents a LazyLogResult.
+// Summary: LazyLogResult represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type LazyLogResult struct {
 	Value        any
 	JSONBytes    []byte

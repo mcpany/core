@@ -1,7 +1,12 @@
 /**
- * Summary: Document MarketplaceItemConfig
+ * Copyright 2026 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Summary: Defines the execution configuration for a marketplace item.
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -12,14 +17,7 @@
  *
  * Side Effects:
  *   - None
- *
- * Copyright 2026 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
  */
-
-
-
-
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
@@ -42,6 +40,21 @@ export interface MarketplaceItemConfig {
  *   - None
  *
  * EnvVarDefinition type definition.
+ */
+/**
+ * Summary: Defines an environment variable requirement for a marketplace item.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
  */
 export interface EnvVarDefinition {
   name: string;
@@ -69,6 +82,21 @@ export interface EnvVarDefinition {
  *
  * MarketplaceItem type definition.
  */
+/**
+ * Summary: Represents a marketplace item, such as a community tool or service.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ */
 export interface MarketplaceItem {
   id: string;
   name: string;
@@ -93,6 +121,21 @@ export interface MarketplaceItem {
  *   - None
  *
  * The MARKETPLACE_ITEMS const.
+ */
+/**
+ * Summary: Provides a global static collection of available marketplace items.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {

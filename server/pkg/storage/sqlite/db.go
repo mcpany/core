@@ -14,27 +14,38 @@ import (
 	_ "modernc.org/sqlite" // Register sqlite driver
 )
 
-// DB wraps the sql.DB connection.
+// Summary: DB represents a data structure.
 //
-// Summary: Represents a DB.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type DB struct {
 	*sql.DB
 }
 
 // NewDB opens or creates a SQLite database at the specified path.
 //
-// Summary: Initializes a SQLite database connection.
+// Summary: NewDB executes the operation.
 //
 // Parameters:
-//   - path (string): The file path to the SQLite database.
+//   - path string: Input parameter.
 //
 // Returns:
-//   - *DB: The database connection.
-//   - error: An error if the database cannot be opened or initialized.
+//   - (*DB, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Creates the database file and directories if they don't exist.
-//   - Initializes the database schema.
+//   - None
 func NewDB(path string) (*DB, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
 		return nil, fmt.Errorf("failed to create db directory: %w", err)

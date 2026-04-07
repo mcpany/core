@@ -13,18 +13,19 @@ import (
 	"github.com/google/uuid"
 )
 
-// WebhookRequest matches the data payload sent by mcpany
-//
-// Summary: Defines the JSON structure of incoming webhook payloads.
+// Summary: WebhookRequest represents a data structure.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - None.
+//   - None
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type WebhookRequest struct {
 	Kind     int            `json:"kind"` // 1=PreCall, 2=PostCall
 	ToolName string         `json:"tool_name"`
@@ -42,7 +43,19 @@ type WebhookRequest struct {
 //   - None.
 //
 // Throws/Errors:
-//   - None.
+// Summary: WebhookResponse represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type WebhookResponse struct {
 	ReplacementObject any `json:"replacement_object,omitempty"`
 }
@@ -148,5 +161,17 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 //   - None.
 //
 // Throws/Errors:
-//   - None.
+// Summary: StatusOK is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 const StatusOK = 200

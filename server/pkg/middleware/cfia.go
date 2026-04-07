@@ -13,9 +13,19 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// CFIAConfig defines the configuration for Context-File Integrity Attestation.
+// Summary: CFIAConfig represents a data structure.
 //
-// Summary: Configuration for Context-File Integrity Attestation (CFIA) Middleware.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type CFIAConfig struct {
 	// Enabled determines if the CFIA middleware is active.
 	Enabled bool `json:"enabled"`
@@ -29,10 +39,19 @@ type CFIAConfig struct {
 
 // CFIAMiddleware implements Context-File Integrity Attestation.
 // It intercepts requests to read local files, calculates their hashes,
-// and ensures they match known-good, hardware-attested manifests to
-// prevent Deceptive Context Injection.
+// Summary: CFIAMiddleware represents a data structure.
 //
-// Summary: Represents the CFIA Middleware.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type CFIAMiddleware struct {
 	config CFIAConfig
 }

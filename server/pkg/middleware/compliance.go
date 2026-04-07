@@ -12,9 +12,19 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// JSONRPCError represents a JSON-RPC 2.0 error object.
+// Summary: JSONRPCError represents a data structure.
 //
-// Summary: Represents a JSONRPCError.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type JSONRPCError struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -23,7 +33,19 @@ type JSONRPCError struct {
 
 // JSONRPCResponse represents a JSON-RPC 2.0 response object.
 //
-// Summary: Represents a JSONRPCResponse.
+// Summary: JSONRPCResponse represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type JSONRPCResponse struct {
 	JSONRPC string        `json:"jsonrpc"`
 	ID      any           `json:"id"`
@@ -32,16 +54,20 @@ type JSONRPCResponse struct {
 
 // JSONRPCComplianceMiddleware ensures that errors are returned as valid JSON-RPC responses.
 //
-// Summary: Wraps non-JSON error responses in a JSON-RPC error format.
+// Summary: JSONRPCComplianceMiddleware executes the operation.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - next http.Handler: Input parameter.
 //
 // Returns:
-//   - http.Handler: The wrapped handler that enforces JSON-RPC compliance for errors.
+//   - http.Handler {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Intercepts and rewrites HTTP response bodies for error status codes.
+//   - None
 func JSONRPCComplianceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Only intercept POST requests (likely JSON-RPC)
@@ -101,6 +127,20 @@ type smartResponseWriter struct {
 //
 // Returns:
 //   - http.Header: The header map.
+// Summary: Header executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - http.Header {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (w *smartResponseWriter) Header() http.Header {
 	return w.header
 }
@@ -111,6 +151,20 @@ func (w *smartResponseWriter) Header() http.Header {
 //
 // Parameters:
 //   - code: int. The HTTP status code.
+// Summary: WriteHeader executes the operation.
+//
+// Parameters:
+//   - code int: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (w *smartResponseWriter) WriteHeader(code int) {
 	if w.committed {
 		return
@@ -142,7 +196,19 @@ func (w *smartResponseWriter) WriteHeader(code int) {
 //
 // Returns:
 //   - int: The number of bytes written.
-//   - error: An error if the write fails.
+// Summary: Write executes the operation.
+//
+// Parameters:
+//   - b []byte: Input parameter.
+//
+// Returns:
+//   - (int, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (w *smartResponseWriter) Write(b []byte) (int, error) {
 	if !w.committed {
 		w.WriteHeader(http.StatusOK)
@@ -186,6 +252,20 @@ func (w *smartResponseWriter) flushHeader() {
 // Returns:
 //
 //	None.
+// Summary: Flush executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (w *smartResponseWriter) Flush() {
 	if w.passThrough {
 		if f, ok := w.w.(http.Flusher); ok {

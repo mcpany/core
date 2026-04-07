@@ -35,9 +35,19 @@ const (
 	TypeString = "string"
 )
 
-// MaxRecursionDepth limits the depth of nested messages to prevent infinite recursion.
+// Summary: MaxRecursionDepth is a global constant or variable.
 //
-// Summary: Represents a MaxRecursionDepth.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 const MaxRecursionDepth = 10
 
 // MethodDescriptorToProtoProperties converts the fields of a method's input
@@ -188,7 +198,19 @@ func fieldToSchema(field protoreflect.FieldDescriptor, depth int) (map[string]in
 
 // ConfigParameter an interface for config parameter schemas.
 //
-// Summary: Represents a ConfigParameter.
+// Summary: ConfigParameter represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ConfigParameter interface {
 	// GetSchema returns the parameter schema.
 	//
@@ -199,7 +221,19 @@ type ConfigParameter interface {
 
 // McpFieldParameter an interface for McpField parameter schemas.
 //
-// Summary: Represents a McpFieldParameter.
+// Summary: McpFieldParameter represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type McpFieldParameter interface {
 	// GetName returns the name of the parameter.
 	//

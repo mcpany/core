@@ -20,20 +20,20 @@ type server struct {
 	pb.UnimplementedGreeterServer
 }
 
-// SayHello implements helloworld.GreeterServer.
-//
-// Summary: Returns a greeting response containing the name.
+// Summary: SayHello executes the operation.
 //
 // Parameters:
-//   - ctx (context.Context): The context.
-//   - in (*pb.HelloRequest): The hello request.
+//   - ctx context.Context: Input parameter.
+//   - in *pb.HelloRequest: Input parameter.
 //
 // Returns:
-//   - *pb.HelloReply: The hello reply.
-//   - error: An error if it fails.
+//   - (*pb.HelloReply, error): Result of the operation.
 //
-// Throws/Errors:
-//   - error: If the context is canceled.
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil

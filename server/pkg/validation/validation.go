@@ -16,16 +16,20 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// IsValidBindAddress checks if a given string is a valid bind address.
-// A valid bind address is in the format "host:port".
-//
-// Summary: Validates a bind address string.
+// Summary: IsValidBindAddress executes the operation.
 //
 // Parameters:
-//   - s: string. The address string to validate.
+//   - s string: Input parameter.
 //
 // Returns:
-//   - error: An error if validation fails.
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func IsValidBindAddress(s string) error {
 	_, port, err := net.SplitHostPort(s)
 	if err != nil {
@@ -69,11 +73,19 @@ func IsValidBindAddress(s string) error {
 //
 // Parameters:
 //   - path: string. The path to check.
+// Summary: IsSecurePath is a global constant or variable.
+//
+// Parameters:
+//   - None
 //
 // Returns:
-//   - error: An error if the path is insecure.
+//   - None
 //
-// IsSecurePath is a variable to allow mocking in tests.
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var IsSecurePath = func(path string) error {
 	// ⚡ BOLT: Fast path to avoid expensive string splitting for safe paths.
 	// Randomized Selection from Top 5 High-Impact Targets
@@ -101,6 +113,19 @@ var IsSecurePath = func(path string) error {
 // path traversal sequences. It strictly disallows absolute paths and drive letters.
 //
 // Summary: Checks if a path is secure and relative.
+// Summary: IsSecureRelativePath is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var IsSecureRelativePath = func(path string) error {
 	// 1. Basic security check (no ..)
 	if err := IsSecurePath(path); err != nil {
@@ -144,6 +169,20 @@ var (
 //
 // Parameters:
 //   - paths: []string. The list of allowed paths.
+// Summary: SetAllowedPaths executes the operation.
+//
+// Parameters:
+//   - paths []string: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func SetAllowedPaths(paths []string) {
 	allowedPaths = paths
 }
@@ -157,6 +196,19 @@ func SetAllowedPaths(paths []string) {
 // - Private keys (id_rsa, id_dsa, *.pem, *.key)
 //
 // Summary: Checks for sensitive file patterns.
+// Summary: IsSensitivePath is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var IsSensitivePath = func(path string) error {
 	base := filepath.Base(path)
 	baseLower := strings.ToLower(base)
@@ -209,6 +261,19 @@ var IsSensitivePath = func(path string) error {
 // It is a variable to allow mocking in tests.
 //
 // Summary: Checks if a path is within allowed directories.
+// Summary: IsAllowedPath is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var IsAllowedPath = func(path string) error {
 	// 1. Basic security check (no .. in the path string itself)
 	if err := IsSecurePath(path); err != nil {
@@ -335,9 +400,20 @@ var allowedOpaqueSchemes = map[string]bool{
 //
 // Parameters:
 //   - s: string. The URL string.
+// Summary: IsValidURL executes the operation.
+//
+// Parameters:
+//   - s string: Input parameter.
 //
 // Returns:
-//   - bool: True if valid.
+//   - bool {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func IsValidURL(s string) bool {
 	if len(s) > 2048 || strings.TrimSpace(s) != s {
 		return false
@@ -393,6 +469,20 @@ func IsValidURL(s string) bool {
 //
 // Returns:
 //   - error: An error if validation fails.
+// Summary: ValidateHTTPServiceDefinition executes the operation.
+//
+// Parameters:
+//   - def *configv1.HttpCallDefinition: Input parameter.
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 	if def == nil {
 		return fmt.Errorf("http call definition cannot be nil")
@@ -419,6 +509,19 @@ func ValidateHTTPServiceDefinition(def *configv1.HttpCallDefinition) error {
 // FileExists checks if a file exists at the given path.
 //
 // Summary: Checks file existence.
+// Summary: FileExists is a global constant or variable.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var FileExists = func(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return err

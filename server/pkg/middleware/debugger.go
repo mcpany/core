@@ -16,9 +16,19 @@ import (
 	"github.com/google/uuid"
 )
 
-// DebugEntry represents a captured HTTP request/response.
+// Summary: DebugEntry represents a data structure.
 //
-// Summary: Data structure holding details of a captured HTTP transaction.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type DebugEntry struct {
 	ID              string        `json:"id"`
 	TraceID         string        `json:"trace_id"`
@@ -37,7 +47,19 @@ type DebugEntry struct {
 
 // Debugger monitors and records traffic for inspection.
 //
-// Summary: Middleware that captures recent HTTP traffic for debugging purposes.
+// Summary: Debugger represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Debugger struct {
 	ring        *ring.Ring
 	mu          sync.RWMutex
@@ -49,16 +71,20 @@ type Debugger struct {
 
 // NewDebugger creates a new Debugger middleware.
 //
-// Summary: Initializes the debugger with a fixed-size ring buffer.
+// Summary: NewDebugger executes the operation.
 //
 // Parameters:
-//   - size: int. The number of recent requests to keep in memory.
+//   - size int: Input parameter.
 //
 // Returns:
-//   - *Debugger: The initialized debugger.
+//   - *Debugger {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Starts a background goroutine to process debug entries.
+//   - None
 func NewDebugger(size int) *Debugger {
 	d := &Debugger{
 		ring:        ring.New(size),
@@ -134,9 +160,19 @@ type bodyLogWriter struct {
 //   - int: The number of bytes written.
 //   - error: An error if the write fails.
 //
+// Summary: Write executes the operation.
+//
+// Parameters:
+//   - b []byte: Input parameter.
+//
+// Returns:
+//   - (int, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
 // Side Effects:
-//   - Writes to the underlying http.ResponseWriter.
-//   - Writes to the internal buffer for logging, truncating if necessary.
+//   - None
 func (w *bodyLogWriter) Write(b []byte) (int, error) {
 	if !w.wroteHeader {
 		w.WriteHeader(http.StatusOK)
@@ -167,6 +203,20 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
+// Summary: WriteHeader executes the operation.
+//
+// Parameters:
+//   - statusCode int: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
@@ -194,9 +244,20 @@ type readCloserWrapper struct {
 //
 // Side Effects:
 //   - Intercepts HTTP requests and responses.
-//   - Generates trace and span IDs if missing.
-//   - Captures request and response bodies (truncated).
-//   - Sends debug entries to the ingress channel.
+// Summary: Handler executes the operation.
+//
+// Parameters:
+//   - next http.Handler: Input parameter.
+//
+// Returns:
+//   - http.Handler {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (d *Debugger) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -325,6 +386,20 @@ func isTextContent(contentType string) bool {
 //
 // Side Effects:
 //   - Acquires a read lock on the ring buffer.
+// Summary: Entries executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []DebugEntry {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (d *Debugger) Entries() []DebugEntry {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -347,6 +422,20 @@ func (d *Debugger) Entries() []DebugEntry {
 //
 // Side Effects:
 //   - Encodes the entries to JSON and writes to the response.
+// Summary: APIHandler executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - http.HandlerFunc {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (d *Debugger) APIHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

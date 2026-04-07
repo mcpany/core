@@ -10,10 +10,19 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-// CallableTool implements the Tool interface for a tool that is executed by a
-// Callable.
+// Summary: CallableTool represents a data structure.
 //
-// Summary: Represents a CallableTool.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type CallableTool struct {
 	*baseTool
 }
@@ -21,17 +30,23 @@ type CallableTool struct {
 // NewCallableTool creates a new CallableTool.
 //
 // Summary: Creates a new tool that wraps a Callable interface.
+// Summary: NewCallableTool executes the operation.
 //
 // Parameters:
-//   - toolDef: *configv1.ToolDefinition. The definition of the tool.
-//   - serviceConfig: *configv1.UpstreamServiceConfig. The configuration of the service the tool belongs to.
-//   - callable: Callable. The callable implementation for execution.
-//   - inputSchema: *structpb.Struct. The input schema for the tool.
-//   - outputSchema: *structpb.Struct. The output schema for the tool.
+//   - toolDef *configv1.ToolDefinition: Input parameter.
+//   - serviceConfig *configv1.UpstreamServiceConfig: Input parameter.
+//   - callable Callable: Input parameter.
+//   - inputSchema: Input parameter.
+//   - outputSchema *structpb.Struct: Input parameter.
 //
 // Returns:
-//   - *CallableTool: A pointer to the created CallableTool.
-//   - error: An error if creation fails.
+//   - (*CallableTool, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.UpstreamServiceConfig, callable Callable, inputSchema, outputSchema *structpb.Struct) (*CallableTool, error) {
 	base, err := newBaseTool(toolDef, serviceConfig, callable, inputSchema, outputSchema)
 	if err != nil {
@@ -51,6 +66,20 @@ func NewCallableTool(toolDef *configv1.ToolDefinition, serviceConfig *configv1.U
 // Returns:
 //   - any: The result of the execution.
 //   - error: An error if the operation fails.
+// Summary: Execute executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - req *ExecutionRequest: Input parameter.
+//
+// Returns:
+//   - (any, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	return t.callable.Call(ctx, req)
 }
@@ -61,6 +90,20 @@ func (t *CallableTool) Execute(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Returns:
 //   - Callable: The underlying callable.
+// Summary: Callable executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - Callable {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *CallableTool) Callable() Callable {
 	return t.callable
 }
@@ -71,6 +114,20 @@ func (t *CallableTool) Callable() Callable {
 //
 // Returns:
 //   - bool: True if streaming is supported.
+// Summary: IsStreaming executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - bool {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (t *CallableTool) IsStreaming() bool {
 	_, ok := t.callable.(StreamingCallable)
 	return ok
@@ -86,7 +143,20 @@ func (t *CallableTool) IsStreaming() bool {
 //
 // Returns:
 //   - <-chan any: A channel that emits streaming results.
-//   - error: An error if the operation fails or streaming is not supported.
+// Summary: StreamExecute executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - req *ExecutionRequest: Input parameter.
+//
+// Returns:
+//   - (<-chan any, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (t *CallableTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
 	if sc, ok := t.callable.(StreamingCallable); ok {
 		return sc.StreamCall(ctx, req)

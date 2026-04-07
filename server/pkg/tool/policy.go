@@ -14,16 +14,21 @@ import (
 
 var exportRegexCache sync.Map
 
-// ShouldExport determines whether a named item (tool, prompt, or resource) should be exported.
-//
-// Summary: Checks if an item should be exported based on policy.
+// Summary: ShouldExport executes the operation.
 //
 // Parameters:
-//   - name: string. The name of the item.
-//   - policy: *configv1.ExportPolicy. The export policy to evaluate.
+//   - name string: Input parameter.
+//   - policy *configv1.ExportPolicy: Input parameter.
 //
 // Returns:
-//   - bool: True if the item should be exported, false otherwise.
+//   - bool {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 	if policy == nil {
 		// Default to Allow/Export if no policy is present?
@@ -75,13 +80,22 @@ func ShouldExport(name string, policy *configv1.ExportPolicy) bool {
 //
 // Parameters:
 //   - policies: []*configv1.CallPolicy. The list of policies to evaluate.
-//   - toolName: string. The name of the tool being called.
-//   - callID: string. The unique ID of the call.
-//   - arguments: []byte. The arguments of the call (can be nil).
+// Summary: EvaluateCallPolicy executes the operation.
+//
+// Parameters:
+//   - policies []*configv1.CallPolicy: Input parameter.
+//   - toolName: Input parameter.
+//   - callID string: Input parameter.
+//   - arguments []byte: Input parameter.
 //
 // Returns:
-//   - bool: True if the call is allowed, false otherwise.
-//   - error: An error if evaluation fails.
+//   - (bool, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func EvaluateCallPolicy(policies []*configv1.CallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	// Fallback to slower implementation if not using compiled policies
 	for _, policy := range policies {
@@ -145,6 +159,19 @@ type compiledCallPolicyRule struct {
 // CompiledCallPolicy holds a compiled version of a call policy.
 //
 // Summary: Represents a pre-compiled call policy for efficient evaluation.
+// Summary: CompiledCallPolicy represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type CompiledCallPolicy struct {
 	policy        *configv1.CallPolicy
 	compiledRules []compiledCallPolicyRule
@@ -160,6 +187,19 @@ type CompiledCallPolicy struct {
 // Returns:
 //   - []*CompiledCallPolicy: The compiled policies.
 //   - error: An error if compilation fails (e.g., invalid regex).
+// Summary: CompileCallPolicies executes the operation.
+//
+// Parameters:
+//   - policies []*configv1.CallPolicy: Input parameter.
+//
+// Returns:
+//   - ([]*CompiledCallPolicy, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy, error) {
 	compiled := make([]*CompiledCallPolicy, 0, len(policies))
 	for _, p := range policies {
@@ -185,6 +225,19 @@ func CompileCallPolicies(policies []*configv1.CallPolicy) ([]*CompiledCallPolicy
 // Returns:
 //   - *CompiledCallPolicy: The compiled policy.
 //   - error: An error if compilation fails.
+// Summary: NewCompiledCallPolicy executes the operation.
+//
+// Parameters:
+//   - policy *configv1.CallPolicy: Input parameter.
+//
+// Returns:
+//   - (*CompiledCallPolicy, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, error) {
 	compiledRules := make([]compiledCallPolicyRule, len(policy.GetRules()))
 	for i, rule := range policy.GetRules() {
@@ -237,7 +290,22 @@ func NewCompiledCallPolicy(policy *configv1.CallPolicy) (*CompiledCallPolicy, er
 //
 // Returns:
 //   - bool: True if the call is allowed, false otherwise.
-//   - error: An error if evaluation fails.
+// Summary: EvaluateCompiledCallPolicy executes the operation.
+//
+// Parameters:
+//   - policies []*CompiledCallPolicy: Input parameter.
+//   - toolName: Input parameter.
+//   - callID string: Input parameter.
+//   - arguments []byte: Input parameter.
+//
+// Returns:
+//   - (bool, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func EvaluateCompiledCallPolicy(policies []*CompiledCallPolicy, toolName, callID string, arguments []byte) (bool, error) {
 	for _, policy := range policies {
 		policyBlocked := false

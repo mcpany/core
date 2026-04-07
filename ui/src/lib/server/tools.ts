@@ -1,7 +1,12 @@
 /**
- * Summary: Document Tool
+ * Copyright 2025 Author(s) of MCP Any
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * Summary: Defines an executable tool that can be invoked via the system.
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -12,11 +17,7 @@
  *
  * Side Effects:
  *   - None
- *
- * Copyright 2025 Author(s) of MCP Any
- * SPDX-License-Identifier: Apache-2.0
  */
-
 export interface Tool {
   name: string;
   description: string;
@@ -25,9 +26,9 @@ export interface Tool {
 }
 
 /**
- * Summary: Document BuiltInTools
+ * Summary: Provides a registry of standard, built-in tools (e.g., calculator, echo, system_info, weather).
  *
- * Params:
+ * Parameters:
  *   - None
  *
  * Returns:
@@ -38,9 +39,6 @@ export interface Tool {
  *
  * Side Effects:
  *   - None
- *
- * BuiltInTools contains the definitions and implementations of standard tools
- * provided by the server, such as calculator, echo, and system info.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {
@@ -138,26 +136,21 @@ export const BuiltInTools: Record<string, Tool> = {
 };
 
 /**
- * Summary: Document executeTool
+ * Summary: Executes a built-in tool by name with the provided arguments.
  *
- * Params:
- *   - Documented below.
+ * Parameters:
+ *   - toolName (string): The identifier of the tool to execute.
+ *   - args (any): The execution arguments required by the tool schema.
  *
  * Returns:
- *   - Documented below.
+ *   - Promise<any>: The result payload from the tool execution.
  *
  * Errors:
- *   - Documented below.
+ *   - Throws Error if the requested tool is not found in the registry.
+ *   - Throws Error if the tool execution logic fails.
  *
  * Side Effects:
- *   - None
- *
- * executeTool executes a built-in tool by name with the provided arguments.
- *
- * @param toolName - The name of the tool to execute.
- * @param args - The arguments for the tool execution.
- * @returns The result of the tool execution.
- * @throws Error if the tool is not found or execution fails.
+ *   - Can make network calls (e.g., weather tool).
  */
 export async function executeTool(toolName: string, args: any) {
   const tool = BuiltInTools[toolName];

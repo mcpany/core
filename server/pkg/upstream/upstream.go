@@ -13,13 +13,19 @@ import (
 	"github.com/mcpany/core/server/pkg/tool"
 )
 
-// Upstream defines the standard interface for all backend service integrations.
+// Summary: Upstream represents a data structure.
 //
-// Each implementation of this interface is responsible for discovering and
-// registering its capabilities, such as tools, prompts, and resources, with the
-// appropriate managers.
+// Parameters:
+//   - None
 //
-// Summary: Represents a Upstream.
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Upstream interface {
 	// Shutdown gracefully terminates the upstream service.
 	//
@@ -73,6 +79,19 @@ type Upstream interface {
 // runtime health status.
 //
 // Summary: Represents a HealthChecker.
+// Summary: HealthChecker represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type HealthChecker interface {
 	// CheckHealth performs a health check on the upstream service.
 	//

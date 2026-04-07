@@ -10,9 +10,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// OpenAPIProvider discovers services via OpenAPI specifications.
+// Summary: OpenAPIProvider represents a data structure.
 //
-// Summary: Represents a OpenAPIProvider.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type OpenAPIProvider struct {
 	Endpoint string // e.g., "http://localhost:8080/openapi.json"
 }

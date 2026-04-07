@@ -13,12 +13,19 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ClaudeDesktopConfig represents the structure of claude_desktop_config.json.
+// Summary: ClaudeDesktopConfig represents a data structure.
 //
-// Summary: Configuration format used by Claude Desktop.
+// Parameters:
+//   - None
 //
-// Fields:
-//   - MCPServers: map[string]MCPServerConfig. A map of server names to their configurations.
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ClaudeDesktopConfig struct {
 	MCPServers map[string]MCPServerConfig `json:"mcpServers"`
 }
@@ -28,9 +35,19 @@ type ClaudeDesktopConfig struct {
 // Summary: Configuration for a single MCP server in Claude Desktop.
 //
 // Fields:
-//   - Command: string. The command to execute to start the server.
-//   - Args: []string. The arguments to pass to the command.
-//   - Env: map[string]string. Environment variables to set for the server process.
+// Summary: MCPServerConfig represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type MCPServerConfig struct {
 	Command string            `json:"command"`
 	Args    []string          `json:"args"`
@@ -44,6 +61,19 @@ type MCPServerConfig struct {
 //
 // Fields:
 //   - UpstreamServices: []UpstreamService. A list of upstream services to configure.
+// Summary: McpAnyConfig represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type McpAnyConfig struct {
 	UpstreamServices []UpstreamService `yaml:"upstream_services"`
 }
@@ -54,8 +84,19 @@ type McpAnyConfig struct {
 //   Configuration for a single upstream service.
 //
 // Fields:
-//   - Name: string. The name of the service.
-//   - McpService: *McpService. The MCP service configuration (optional).
+// Summary: UpstreamService represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type UpstreamService struct {
 	Name       string      `yaml:"name"`
 	McpService *McpService `yaml:"mcp_service,omitempty"`
@@ -68,6 +109,19 @@ type UpstreamService struct {
 //
 // Fields:
 //   - StdioConnection: *StdioConnection. Parameters for connecting via standard I/O (optional).
+// Summary: McpService represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type McpService struct {
 	StdioConnection *StdioConnection `yaml:"stdio_connection,omitempty"`
 }
@@ -78,9 +132,19 @@ type McpService struct {
 //   Parameters for connecting to an MCP server using standard input/output streams.
 //
 // Fields:
-//   - Command: string. The command to execute.
-//   - Args: []string. The arguments to pass to the command.
-//   - Env: map[string]string. The environment variables to set for the command.
+// Summary: StdioConnection represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type StdioConnection struct {
 	Command string            `yaml:"command"`
 	Args    []string          `yaml:"args"`

@@ -12,9 +12,19 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// Manager handles the lifecycle and resolution of profiles.
+// Summary: Manager represents a data structure.
 //
-// Summary: Manages profile definitions and resolution.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Manager struct {
 	mu       sync.RWMutex
 	profiles map[string]*configv1.ProfileDefinition
@@ -22,13 +32,20 @@ type Manager struct {
 
 // NewManager creates a new Profile Manager.
 //
-// Summary: Initializes a new Profile Manager.
+// Summary: NewManager executes the operation.
 //
 // Parameters:
-//   - profiles: []*configv1.ProfileDefinition. Initial profile definitions.
+//   - profiles []*configv1.ProfileDefinition: Input parameter.
 //
 // Returns:
-//   - *Manager: The initialized manager.
+//   - *Manager {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 	m := &Manager{
 		profiles: make(map[string]*configv1.ProfileDefinition),
@@ -43,6 +60,20 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 //
 // Parameters:
 //   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
+// Summary: Update executes the operation.
+//
+// Parameters:
+//   - profiles []*configv1.ProfileDefinition: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {
@@ -60,9 +91,19 @@ func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 // Parameters:
 //   - name: string. The name of the profile.
 //
+// Summary: GetProfileDefinition executes the operation.
+//
+// Parameters:
+//   - name string: Input parameter.
+//
 // Returns:
-//   - *configv1.ProfileDefinition: The profile definition.
-//   - bool: True if found.
+//   - (*configv1.ProfileDefinition, bool): Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition, bool) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
@@ -79,9 +120,19 @@ func (m *Manager) GetProfileDefinition(name string) (*configv1.ProfileDefinition
 //   - profileName: string. The name of the profile to resolve.
 //
 // Returns:
-//   - map[string]*configv1.ProfileServiceConfig: Merged service configs.
-//   - map[string]*configv1.SecretValue: Merged secrets.
-//   - error: Error if profile not found or cycle detected.
+// Summary: ResolveProfile executes the operation.
+//
+// Parameters:
+//   - profileName string: Input parameter.
+//
+// Returns:
+//   - (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (m *Manager) ResolveProfile(profileName string) (map[string]*configv1.ProfileServiceConfig, map[string]*configv1.SecretValue, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()

@@ -19,19 +19,19 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(_ *http.Request) bool { return true },
 }
 
-// Signal represents a WebRTC signal.
-// Signal represents a WebRTC signaling message.
-//
-// Summary: Defines the structure for signaling messages in WebRTC setup.
+// Summary: Signal represents a data structure.
 //
 // Parameters:
-//   - None.
+//   - None
 //
 // Returns:
-//   - None.
+//   - None
 //
-// Throws/Errors:
-//   - None.
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Signal struct {
 	Type    string `json:"type"`
 	Payload string `json:"payload"`

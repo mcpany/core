@@ -24,17 +24,36 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// ErrServiceAlreadyRegistered is returned when attempting to register a service that is already active.
+// Summary: ErrServiceAlreadyRegistered is a global constant or variable.
 //
-// Summary: Represents a ErrServiceAlreadyRegistered.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var ErrServiceAlreadyRegistered = errors.New("service already registered")
 
 // ServiceRegistryInterface defines the interface for a service registry.
 //
-// It manages the registration, lifecycle, and discovery of upstream services
-// and their associated capabilities (tools, resources, prompts).
+// Summary: ServiceRegistryInterface represents a data structure.
 //
-// Summary: Represents a ServiceRegistryInterface.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ServiceRegistryInterface interface { //nolint:revive
 	// RegisterService registers a new upstream service based on the provided configuration.
 	//
@@ -106,7 +125,19 @@ type ServiceRegistryInterface interface { //nolint:revive
 // It serves as the central hub for managing upstream services, coordinating
 // with tool, prompt, and resource managers.
 //
-// Summary: Represents a ServiceRegistry.
+// Summary: ServiceRegistry represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ServiceRegistry struct {
 	mu              sync.RWMutex
 	serviceConfigs  map[string]*config.UpstreamServiceConfig

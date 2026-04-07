@@ -18,9 +18,19 @@ import (
 	"github.com/mcpany/core/server/pkg/logging"
 )
 
-// ManagerInterface defines the interface for managing alerts.
+// Summary: ManagerInterface represents a data structure.
 //
-// Summary: Represents a ManagerInterface.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ManagerInterface interface {
 	// ListAlerts returns a list of all alerts.
 	ListAlerts() []*Alert
@@ -58,7 +68,19 @@ type ManagerInterface interface {
 
 // Manager implements ManagerInterface using in-memory storage.
 //
-// Summary: Represents a Manager.
+// Summary: Manager represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Manager struct {
 	mu         sync.RWMutex
 	alerts     map[string]*Alert

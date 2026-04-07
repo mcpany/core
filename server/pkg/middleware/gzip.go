@@ -58,19 +58,20 @@ var byteBufferPool = sync.Pool{
 	},
 }
 
-// GzipCompressionMiddleware returns a middleware that compresses HTTP responses using Gzip.
-//
-// Summary: Middleware that compresses HTTP responses using Gzip if supported by the client.
+// Summary: GzipCompressionMiddleware executes the operation.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - next http.Handler: Input parameter.
 //
 // Returns:
-//   - http.Handler: The wrapped handler that performs compression.
+//   - http.Handler {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Intercepts the response writer to buffer and compress content.
-//   - Modifies the Content-Encoding header.
+//   - None
 func GzipCompressionMiddleware(next http.Handler) http.Handler {
 	pool := sync.Pool{
 		New: func() interface{} {
@@ -128,8 +129,19 @@ type gzipResponseWriter struct {
 //   - error: An error if the write fails.
 //
 // Side Effects:
-//   - Buffers data if the size is below the threshold.
-//   - Flushes buffer and writes to gzip writer if threshold is exceeded.
+// Summary: Write executes the operation.
+//
+// Parameters:
+//   - b []byte: Input parameter.
+//
+// Returns:
+//   - (int, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	// If we are already compressing, write to gzip writer
 	if w.writer != nil {
@@ -190,6 +202,20 @@ func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - May trigger an immediate flush if the content type is not compressible.
+// Summary: WriteHeader executes the operation.
+//
+// Parameters:
+//   - code int: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (w *gzipResponseWriter) WriteHeader(code int) {
 	if w.headerWritten {
 		return

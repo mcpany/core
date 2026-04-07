@@ -9,20 +9,37 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// RedactedString is the string used to replace sensitive data.
+// Summary: RedactedString is a global constant or variable.
 //
-// Summary: Constant string for redacted data.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 const RedactedString = "REDACTED"
 
 // SanitizeUser creates a sanitized copy of the user object with sensitive data redacted.
 //
-// Summary: Sanitizes a user object.
+// Summary: SanitizeUser executes the operation.
 //
 // Parameters:
-//   - u (*configv1.User): The user object to sanitize.
+//   - u *configv1.User: Input parameter.
 //
 // Returns:
-//   - *configv1.User: A sanitized copy of the user object, or nil if input is nil.
+//   - *configv1.User {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func SanitizeUser(u *configv1.User) *configv1.User {
 	if u == nil {
 		return nil
@@ -45,7 +62,20 @@ func SanitizeUser(u *configv1.User) *configv1.User {
 //   - c (*configv1.Credential): The credential object to sanitize.
 //
 // Returns:
-//   - *configv1.Credential: A sanitized copy of the credential object, or nil if input is nil.
+// Summary: SanitizeCredential executes the operation.
+//
+// Parameters:
+//   - c *configv1.Credential: Input parameter.
+//
+// Returns:
+//   - *configv1.Credential {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 	if c == nil {
 		return nil
@@ -71,8 +101,20 @@ func SanitizeCredential(c *configv1.Credential) *configv1.Credential {
 // Parameters:
 //   - a (*configv1.Authentication): The authentication object to sanitize.
 //
+// Summary: SanitizeAuthentication executes the operation.
+//
+// Parameters:
+//   - a *configv1.Authentication: Input parameter.
+//
 // Returns:
-//   - *configv1.Authentication: The sanitized authentication object, or nil if input is nil.
+//   - *configv1.Authentication {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication {
 	if a == nil {
 		return nil
@@ -122,6 +164,20 @@ func SanitizeAuthentication(a *configv1.Authentication) *configv1.Authentication
 //
 // Returns:
 //   - *configv1.UserToken: The sanitized user token, or nil if input is nil.
+// Summary: SanitizeUserToken executes the operation.
+//
+// Parameters:
+//   - t *configv1.UserToken: Input parameter.
+//
+// Returns:
+//   - *configv1.UserToken {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 	if t == nil {
 		return nil
@@ -143,7 +199,20 @@ func SanitizeUserToken(t *configv1.UserToken) *configv1.UserToken {
 //   - s (*configv1.SecretValue): The secret value to sanitize.
 //
 // Returns:
-//   - *configv1.SecretValue: The sanitized secret value, or nil if input is nil.
+// Summary: SanitizeSecretValue executes the operation.
+//
+// Parameters:
+//   - s *configv1.SecretValue: Input parameter.
+//
+// Returns:
+//   - *configv1.SecretValue {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func SanitizeSecretValue(s *configv1.SecretValue) *configv1.SecretValue {
 	if s == nil {
 		return nil

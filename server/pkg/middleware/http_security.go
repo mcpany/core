@@ -8,15 +8,20 @@ import (
 	"strings"
 )
 
-// HTTPSecurityHeadersMiddleware adds security headers to HTTP responses.
-//
-// Summary: Middleware that adds standard security headers to all HTTP responses.
+// Summary: HTTPSecurityHeadersMiddleware executes the operation.
 //
 // Parameters:
-//   - next: http.Handler. The next handler in the chain.
+//   - next http.Handler: Input parameter.
 //
 // Returns:
-//   - http.Handler: The wrapped handler that sets security headers.
+//   - http.Handler {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func HTTPSecurityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")

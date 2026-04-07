@@ -5,14 +5,36 @@ package alerts
 
 import "time"
 
-// Severity represents the severity level of an alert.
+// Summary: Severity represents a data structure.
 //
-// Summary: Represents a Severity.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Severity string
 
 // Status represents the status of an alert.
 //
-// Summary: Represents a Status.
+// Summary: Status represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Status string
 
 const (
@@ -39,7 +61,19 @@ const (
 
 // Alert represents a system alert.
 //
-// Summary: Represents a Alert.
+// Summary: Alert represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Alert struct {
 	ID        string    `json:"id"`
 	Title     string    `json:"title"`
@@ -53,7 +87,19 @@ type Alert struct {
 
 // AlertRule defines a condition for triggering an alert.
 //
-// Summary: Represents a AlertRule.
+// Summary: AlertRule represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type AlertRule struct {
 	ID          string    `json:"id"`
 	Name        string    `json:"name"`
@@ -68,7 +114,19 @@ type AlertRule struct {
 
 // AlertStats represents aggregated statistics for alerts.
 //
-// Summary: Represents a AlertStats.
+// Summary: AlertStats represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type AlertStats struct {
 	ActiveCritical      int    `json:"activeCritical"`
 	ActiveCriticalTrend string `json:"activeCriticalTrend"`

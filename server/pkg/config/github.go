@@ -32,17 +32,19 @@ var (
 	githubURLRe = regexp.MustCompile(githubURLRegexStr)
 )
 
-// GitHub represents a client for interacting with the GitHub API to fetch
-// configuration files or directories.
+// Summary: GitHub represents a data structure.
 //
-// Summary: A client for fetching configuration from GitHub.
+// Parameters:
+//   - None
 //
-// Fields:
-//   - Owner (string): The owner of the repository (user or organization).
-//   - Repo (string): The repository name.
-//   - Path (string): The path to the file or directory within the repository.
-//   - Ref (string): The branch, tag, or commit hash.
-//   - URLType (string): The type of URL (tree or blob).
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type GitHub struct {
 	Owner         string
 	Repo          string
@@ -157,6 +159,19 @@ func (g *GitHub) ToRawContentURL() string {
 //   - Type (string): The type of content (e.g., "file", "dir").
 //   - HTMLURL (string): The URL to view the content on GitHub.
 //   - DownloadURL (string): The URL to download the content (only for files).
+// Summary: Content represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Content struct {
 	Name        string `json:"name"`
 	Type        string `json:"type"`

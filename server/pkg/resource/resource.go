@@ -11,17 +11,36 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// ErrResourceNotFound is returned when a requested resource cannot be found.
+// Summary: ErrResourceNotFound is a global constant or variable.
 //
-// Summary: Represents a ErrResourceNotFound.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 var ErrResourceNotFound = errors.New("resource not found")
 
 // Resource defines the interface for a resource that can be managed by the Manager.
 //
-// Summary: Interface for a managed resource.
+// Summary: Resource represents a data structure.
 //
-// A resource represents a data source (e.g., a file, a database record) that can be
-// read by an MCP client.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Resource interface {
 	// Resource returns the MCP representation of the resource, which includes its metadata.
 	//
@@ -60,7 +79,19 @@ type Resource interface {
 // Summary: Interface for resource management.
 //
 // It provides methods for adding, removing, listing, and retrieving resources, as well
-// as managing callbacks for list changes.
+// Summary: ManagerInterface represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type ManagerInterface interface {
 	// GetResource retrieves a resource by its URI.
 	//
@@ -120,7 +151,19 @@ type ManagerInterface interface {
 // Summary: Thread-safe resource manager implementation.
 //
 // It manages the lifecycle and retrieval of resources, providing thread-safe access
-// and efficient listing via caching.
+// Summary: Manager represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type Manager struct {
 	mu                sync.RWMutex
 	resources         map[string]Resource
@@ -133,7 +176,20 @@ type Manager struct {
 // Summary: Creates a new resource manager.
 //
 // Returns:
-//   - *Manager: A new Manager instance.
+// Summary: NewManager executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *Manager {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewManager() *Manager {
 	return &Manager{
 		resources: make(map[string]Resource),
@@ -145,11 +201,19 @@ func NewManager() *Manager {
 // Summary: Retrieves a resource by URI.
 //
 // Parameters:
-//   - uri: string. The URI of the resource.
+// Summary: GetResource executes the operation.
+//
+// Parameters:
+//   - uri string: Input parameter.
 //
 // Returns:
-//   - Resource: The resource instance.
-//   - bool: True if found, false otherwise.
+//   - (Resource, bool): Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (rm *Manager) GetResource(uri string) (Resource, bool) {
 	rm.mu.RLock()
 	defer rm.mu.RUnlock()
@@ -166,12 +230,20 @@ func (rm *Manager) GetResource(uri string) (Resource, bool) {
 //
 // Returns:
 //
-//	None.
+// Summary: AddResource executes the operation.
+//
+// Parameters:
+//   - resource Resource: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Updates the internal resource storage.
-//   - Invalidates the list cache.
-//   - Triggers the on-change callback if registered.
+//   - None
 func (rm *Manager) AddResource(resource Resource) {
 	var callback func()
 	rm.mu.Lock()
@@ -199,7 +271,20 @@ func (rm *Manager) AddResource(resource Resource) {
 // Side Effects:
 //   - Updates the internal resource storage.
 //   - Invalidates the list cache.
-//   - Triggers the on-change callback if registered.
+// Summary: RemoveResource executes the operation.
+//
+// Parameters:
+//   - uri string: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (rm *Manager) RemoveResource(uri string) {
 	var callback func()
 	rm.mu.Lock()
@@ -224,6 +309,20 @@ func (rm *Manager) RemoveResource(uri string) {
 //
 // Returns:
 //   - []Resource: A slice of currently registered resources.
+// Summary: ListResources executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - []Resource {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (rm *Manager) ListResources() []Resource {
 	// ⚡ Bolt: Use a read-through cache to avoid repeated map iteration and slice allocation.
 	// The cache is invalidated on any write operation (Add/Remove).
@@ -272,6 +371,19 @@ func (rm *Manager) ListResources() []Resource {
 // Returns:
 //
 //	None.
+// Summary: OnListChanged executes the operation.
+//
+// Parameters:
+//   - f func(: Input parameter.
+//
+// Returns:
+//   - ): Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (rm *Manager) OnListChanged(f func()) {
 	rm.mu.Lock()
 	defer rm.mu.Unlock()
@@ -288,6 +400,21 @@ func (rm *Manager) OnListChanged(f func()) {
 //
 // Returns:
 //   - error: An error if resource not found or subscription fails.
+// Summary: Subscribe executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - uri string: Input parameter.
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 	resource, ok := rm.GetResource(uri)
 	if !ok {
@@ -307,10 +434,20 @@ func (rm *Manager) Subscribe(ctx context.Context, uri string) error {
 //
 //	None.
 //
+// Summary: ClearResourcesForService executes the operation.
+//
+// Parameters:
+//   - serviceID string: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
 // Side Effects:
-//   - Removes matching resources from storage.
-//   - Invalidates the list cache.
-//   - Triggers the on-change callback.
+//   - None
 func (rm *Manager) ClearResourcesForService(serviceID string) {
 	var callback func()
 	rm.mu.Lock()

@@ -24,9 +24,19 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// GlobalRateLimitMiddleware provides rate limiting functionality for all MCP requests.
+// Summary: GlobalRateLimitMiddleware represents a data structure.
 //
-// Summary: Middleware that enforces global rate limits on MCP requests across the entire server.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type GlobalRateLimitMiddleware struct {
 	mu     sync.RWMutex
 	config *configv1.RateLimitConfig
@@ -38,16 +48,20 @@ type GlobalRateLimitMiddleware struct {
 
 // NewGlobalRateLimitMiddleware creates a new GlobalRateLimitMiddleware.
 //
-// Summary: Initializes the global rate limit middleware with the provided configuration.
+// Summary: NewGlobalRateLimitMiddleware executes the operation.
 //
 // Parameters:
-//   - config: *configv1.RateLimitConfig. The rate limit configuration settings.
+//   - config *configv1.RateLimitConfig: Input parameter.
 //
 // Returns:
-//   - *GlobalRateLimitMiddleware: The initialized middleware instance.
+//   - *GlobalRateLimitMiddleware {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - Initializes internal caches for limiters.
+//   - None
 func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateLimitMiddleware {
 	return &GlobalRateLimitMiddleware{
 		config:   config,
@@ -65,6 +79,20 @@ func NewGlobalRateLimitMiddleware(config *configv1.RateLimitConfig) *GlobalRateL
 // Side Effects:
 //   - Acquires a lock to safely update the configuration.
 //   - Effectively changes rate limiting behavior for subsequent requests.
+// Summary: UpdateConfig executes the operation.
+//
+// Parameters:
+//   - config *configv1.RateLimitConfig: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (m *GlobalRateLimitMiddleware) UpdateConfig(config *configv1.RateLimitConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

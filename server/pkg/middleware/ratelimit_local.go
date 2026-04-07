@@ -12,26 +12,38 @@ import (
 	configv1 "github.com/mcpany/core/proto/config/v1"
 )
 
-// LocalLimiter is an in-memory implementation of Limiter.
+// Summary: LocalLimiter represents a data structure.
 //
-// Summary: Rate limiter implementation using golang.org/x/time/rate.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type LocalLimiter struct {
 	*rate.Limiter
 }
 
 // Allow checks if the request is allowed (cost 1).
 //
-// Summary: Checks if a single event is allowed by the rate limiter.
+// Summary: Allow executes the operation.
 //
 // Parameters:
-//   - _: context.Context. Unused.
+//   - _ context.Context: Input parameter.
 //
 // Returns:
-//   - bool: True if allowed, false otherwise.
-//   - error: Always nil.
+//   - (bool, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Consumes 1 token from the bucket if allowed.
+//   - None
 func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 	return l.Limiter.Allow(), nil
 }
@@ -48,8 +60,20 @@ func (l *LocalLimiter) Allow(_ context.Context) (bool, error) {
 //   - bool: True if allowed, false otherwise.
 //   - error: Always nil.
 //
+// Summary: AllowN executes the operation.
+//
+// Parameters:
+//   - _ context.Context: Input parameter.
+//   - n int: Input parameter.
+//
+// Returns:
+//   - (bool, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
 // Side Effects:
-//   - Consumes n tokens from the bucket if allowed.
+//   - None
 func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 	return l.Limiter.AllowN(time.Now(), n), nil
 }
@@ -64,6 +88,21 @@ func (l *LocalLimiter) AllowN(_ context.Context, n int) (bool, error) {
 //
 // Side Effects:
 //   - Modifies the underlying rate.Limiter state.
+// Summary: Update executes the operation.
+//
+// Parameters:
+//   - rps float64: Input parameter.
+//   - burst int: Input parameter.
+//
+// Returns:
+//   - {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func (l *LocalLimiter) Update(rps float64, burst int) {
 	limit := rate.Limit(rps)
 	if l.Limit() != limit {
@@ -77,6 +116,19 @@ func (l *LocalLimiter) Update(rps float64, burst int) {
 // LocalStrategy implements RateLimitStrategy for local in-memory rate limiting.
 //
 // Summary: Strategy for creating local rate limiters.
+// Summary: LocalStrategy represents a data structure.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type LocalStrategy struct{}
 
 // NewLocalStrategy creates a new LocalStrategy.
@@ -85,6 +137,20 @@ type LocalStrategy struct{}
 //
 // Returns:
 //   - *LocalStrategy: The initialized strategy.
+// Summary: NewLocalStrategy executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - *LocalStrategy {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewLocalStrategy() *LocalStrategy {
 	return &LocalStrategy{}
 }
@@ -99,13 +165,23 @@ func NewLocalStrategy() *LocalStrategy {
 //   - _: string. Unused (limitScopeKey).
 //   - _: string. Unused (partitionKey).
 //   - config: *configv1.RateLimitConfig. The rate limit configuration.
+// Summary: Create executes the operation.
+//
+// Parameters:
+//   - _ context.Context: Input parameter.
+//   - _: Input parameter.
+//   - _: Input parameter.
+//   - _ string: Input parameter.
+//   - config *configv1.RateLimitConfig: Input parameter.
 //
 // Returns:
-//   - Limiter: The created LocalLimiter.
-//   - error: Always nil.
+//   - (Limiter, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Sets a minimum burst of 1 if configured lower.
+//   - None
 func (s *LocalStrategy) Create(_ context.Context, _, _, _ string, config *configv1.RateLimitConfig) (Limiter, error) {
 	rps := config.GetRequestsPerSecond()
 	burst := int(config.GetBurst())

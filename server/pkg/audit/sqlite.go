@@ -17,9 +17,19 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-// SQLiteAuditStore writes audit logs to a SQLite database.
+// Summary: SQLiteAuditStore represents a data structure.
 //
-// Summary: Stores audit logs in a local SQLite database with tamper-evident hashing.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type SQLiteAuditStore struct {
 	db *sql.DB
 	mu sync.Mutex
@@ -160,17 +170,21 @@ func ensureColumn(db *sql.DB, colName string) error {
 
 // Write writes an audit entry to the database.
 //
-// Summary: Writes a single audit entry with cryptographic hash chaining.
+// Summary: Write executes the operation.
 //
 // Parameters:
-//   - ctx: context.Context. The request context.
-//   - entry: Entry. The audit entry to write.
+//   - ctx context.Context: Input parameter.
+//   - entry Entry: Input parameter.
 //
 // Returns:
-//   - error: An error if the write fails.
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
 //
 // Side Effects:
-//   - Inserts a row into the audit_logs table.
+//   - None
 func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -240,8 +254,20 @@ func (s *SQLiteAuditStore) Write(ctx context.Context, entry Entry) error {
 //   - []Entry: A slice of matching audit entries.
 //   - error: An error if the query fails.
 //
+// Summary: Read executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - filter Filter: Input parameter.
+//
+// Returns:
+//   - ([]Entry, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
 // Side Effects:
-//   - Executes a SELECT query on the database.
+//   - None
 func (s *SQLiteAuditStore) Read(ctx context.Context, filter Filter) ([]Entry, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -383,6 +409,20 @@ func (s *SQLiteAuditStore) Verify() (bool, error) {
 //
 // Side Effects:
 //   - Closes the DB connection.
+// Summary: Close executes the operation.
+//
+// Parameters:
+//   - None
+//
+// Returns:
+//   - error {
+: Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (s *SQLiteAuditStore) Close() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

@@ -11,22 +11,39 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-// MCPSession wraps an MCP session to provide client interaction capabilities like sampling and roots.
+// Summary: MCPSession represents a data structure.
 //
-// Summary: Provides a wrapper around the MCP server session to facilitate client interactions.
+// Parameters:
+//   - None
+//
+// Returns:
+//   - None
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 type MCPSession struct {
 	session *mcp.ServerSession
 }
 
 // NewMCPSession creates a new MCPSession.
 //
-// Summary: Initializes a new MCPSession instance.
+// Summary: NewMCPSession executes the operation.
 //
 // Parameters:
-//   - session: *mcp.ServerSession. The underlying MCP server session.
+//   - session *mcp.ServerSession: Input parameter.
 //
 // Returns:
-//   - *MCPSession: A new instance of MCPSession.
+//   - *MCPSession {
+: Result of the operation.
+//
+// Errors:
+//   - None
+//
+// Side Effects:
+//   - None
 func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 	return &MCPSession{session: session}
 }
@@ -39,10 +56,20 @@ func NewMCPSession(session *mcp.ServerSession) *MCPSession {
 //   - session: *mcp.ServerSession. The underlying MCP server session.
 //
 // Returns:
-//   - *MCPSession: A new instance of MCPSession.
+// Summary: NewMCPSampler executes the operation.
+//
+// Parameters:
+//   - session *mcp.ServerSession: Input parameter.
+//
+// Returns:
+//   - *MCPSession {
+: Result of the operation.
+//
+// Errors:
+//   - None
 //
 // Side Effects:
-//   - This function is deprecated and should be replaced by NewMCPSession.
+//   - None
 func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 	return NewMCPSession(session)
 }
@@ -58,9 +85,20 @@ func NewMCPSampler(session *mcp.ServerSession) *MCPSession {
 // Returns:
 //   - *mcp.CreateMessageResult: The result of the message creation from the client.
 //   - error: An error if no active session is available or if the request fails.
+// Summary: CreateMessage executes the operation.
 //
-// Throws/Errors:
-//   - Returns an error if the session is nil.
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//   - params *mcp.CreateMessageParams: Input parameter.
+//
+// Returns:
+//   - (*mcp.CreateMessageResult, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessageParams) (*mcp.CreateMessageResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for sampling")
@@ -81,6 +119,19 @@ func (s *MCPSession) CreateMessage(ctx context.Context, params *mcp.CreateMessag
 //
 // Throws/Errors:
 //   - Returns an error if the session is nil.
+// Summary: ListRoots executes the operation.
+//
+// Parameters:
+//   - ctx context.Context: Input parameter.
+//
+// Returns:
+//   - (*mcp.ListRootsResult, error): Result of the operation.
+//
+// Errors:
+//   - Returns an error if the operation fails.
+//
+// Side Effects:
+//   - None
 func (s *MCPSession) ListRoots(ctx context.Context) (*mcp.ListRootsResult, error) {
 	if s.session == nil {
 		return nil, fmt.Errorf("no active session available for roots inspection")
