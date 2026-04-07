@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Mesh Shadowing
+**Context:** Today's market sync revealed "Mesh Shadowing" vulnerabilities where un-attested inter-node channels are used to bypass gateway security.
+**Architecture Adjustment:**
+* Mandating **Mutual TPM Attestation** for all P2P tunnels; connections from nodes without a verified hardware identity in the Mesh Identity Registry are dropped immediately at the kernel level.
+* Introducing **Trace-Aware Tunnel Binding**: Every tunnel session is now cryptographically bound to the specific mission-root lineage that initiated it.
+**Security Impact:** Prevents lateral movement by rogue subagents across distributed nodes even if the local network is trusted.

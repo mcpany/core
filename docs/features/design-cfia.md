@@ -66,3 +66,10 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 * Mandating **Manual Hashing & Signing** (HITL) for all natural-language context ingestion.
 * Introducing **Attention-Anchor Matching**: The CFIA provider now provides a cryptographically signed "Attention Anchor" for each verified file, which is consumed by the ALT middleware to verify reasoning drivers.
 **Security Impact:** Prevents repository files from silently hijacking agent reasoning, even if they pass basic sandbox checks.
+
+### Update: 2026-07-25 - Defending against CVE-2026-27001
+**Context:** Research today confirmed that crafted control characters in directory names and metadata are being used for "Deceptive Context" injection.
+**Architecture Adjustment:**
+* Upgrading the **CFIA v2 Registry** to perform mandatory semantic sanitization of file paths and metadata before they are used as part of any attestation hash.
+* Integrating with the **ALSV Middleware** to enforce argument-level validation on any tool calls triggered by instructions found in project-local context files.
+**Security Impact:** Neutralizes "Invisible" instruction paths that attempt to bypass sandbox mounts via path manipulation.
