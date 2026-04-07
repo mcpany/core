@@ -1,0 +1,30 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+package mcpany.config.v1;
+
+import "google/protobuf/go_features.proto";
+import "proto/config/v1/upstream_service.proto";
+
+option go_package = "github.com/mcpany/core/proto/config/v1";
+option java_outer_classname = "ServiceTemplateProto";
+option features.(pb.go).api_level = API_OPAQUE;
+
+// ServiceTemplate defines a template for an upstream service that can be
+// used to quickly create new service instances in the wizard.
+message ServiceTemplate {
+  // The unique ID of the template (e.g. "google-calendar").
+  string id = 1;
+  // The human-readable name of the service (e.g. "Google Calendar").
+  string name = 2;
+  // A brief description of what the service does.
+  string description = 3;
+  // The default configuration for the service.
+  UpstreamServiceConfig service_config = 4 [json_name = "service_config"];
+  // Recommended tags for the service.
+  repeated string tags = 5;
+  // Icon name/identifier for the UI.
+  string icon = 6;
+}

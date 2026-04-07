@@ -1,0 +1,19 @@
+// Copyright 2025 Author(s) of MCP Any
+// SPDX-License-Identifier: Apache-2.0
+
+edition = "2023";
+
+option features.field_presence = IMPLICIT;
+
+package mcpany.mcp_options.v1;
+
+import "google/protobuf/go_features.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+option go_package = "github.com/mcpany/core/proto/mcp_options/v1";
+
+message Content {
+  string content = 1 [features.field_presence = EXPLICIT];
+  string role = 2 [features.field_presence = EXPLICIT];
+}
