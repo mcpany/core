@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Session-Revocation Enforcer (ASRE)**: (P0) Authoritative termination service providing hardware-attested, sub-millisecond closure of active transport channels upon revocation signals.
+- **Scope-Lineage Attestation (SLA) Provider**: (P0) Advanced identity service mandating cryptographic lineage proofs for scope claims in horizontal Agent Teams.
+- **Ghost-Hook Interdiction Proxy (GHIP)**: (P0) Discovery-time security layer performing sandboxed semantic analysis of natural-language context files to block hidden imperative instructions.
+
+### Priority Shifts
+- **Hardware-Locked Mission Budgets (HLMB)**: (Re-affirmed P0) Elevated with the requirement for **Atomic Revocation Persistence** tied to session heartbeats.
+- **Negative Discovery Attestation Provider**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **GHIP-compliant** discovery scanning.
