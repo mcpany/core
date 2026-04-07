@@ -20,11 +20,10 @@ test.describe.skip('Marketplace Wizard and Service Lifecycle', () => {
         id: 'postgres-template',
         name: 'PostgreSQL Database',
         description: 'Read-only access to PostgreSQL databases',
-        service_config: {
-          name: 'PostgreSQL Database',
-          command_line_service: {
-            command: 'npx -y @modelcontextprotocol/server-postgres',
-            env: {
+        name: 'PostgreSQL Database',
+        command_line_service: {
+          command: 'npx -y @modelcontextprotocol/server-postgres',
+          env: {
               POSTGRES_URL: {
                 plain_text: 'postgresql://user:password@localhost:5432/dbname',
               },

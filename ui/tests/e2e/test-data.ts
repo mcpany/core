@@ -118,52 +118,44 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             description: "Manage events and calendars.",
             icon: "calendar",
             tags: ["google", "productivity"],
-            service_config: {
-                name: "google_calendar",
-                upstream_auth: {
-                    oauth2: {
-                        token_url: "https://oauth2.googleapis.com/token",
-                        client_id: { plainText: "" },
-                        client_secret: { plainText: "" },
-                        scopes: "https://www.googleapis.com/auth/calendar"
-                    }
-                },
-                openapi_service: {
-                    spec_url: "https://api.apis.guru/v2/specs/googleapis.com/calendar/v3/openapi.yaml"
+            name: "google_calendar",
+            upstream_auth: {
+                oauth2: {
+                    token_url: "https://oauth2.googleapis.com/token",
+                    client_id: { plainText: "" },
+                    client_secret: { plainText: "" },
+                    scopes: "https://www.googleapis.com/auth/calendar"
                 }
+            },
+            openapi_service: {
+                spec_url: "https://raw.githubusercontent.com/googleapis/discovery-artifact-manager/master/discoveries/calendar.v3.rest.json"
             }
         },
         {
             id: "github",
-            name: "GitHub",
+            name: "github",
             description: "Interact with repositories, issues, and PRs.",
             icon: "github",
             tags: ["dev", "git"],
-            service_config: {
-                name: "github",
-                upstream_auth: {
-                    bearer_token: { token: { plainText: "" } }
-                },
-                openapi_service: {
-                    address: "https://api.github.com",
-                    spec_url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
-                }
+            upstream_auth: {
+                bearer_token: { token: { plainText: "" } }
+            },
+            openapi_service: {
+                address: "https://api.github.com",
+                spec_url: "https://raw.githubusercontent.com/github/rest-api-description/main/descriptions/api.github.com/api.github.com.yaml"
             }
         },
         {
             id: "linear",
-            name: "Linear",
+            name: "linear",
             description: "Issue tracking and project management.",
             icon: "linear",
             tags: ["dev", "pm"],
-            service_config: {
-                name: "linear",
-                upstream_auth: {
-                    api_key: { value: { plainText: "" } }
-                },
-                openapi_service: {
-                    spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
-                }
+            upstream_auth: {
+                api_key: { value: { plainText: "" } }
+            },
+            openapi_service: {
+                spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
             }
         }
     ];

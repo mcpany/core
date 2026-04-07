@@ -164,7 +164,6 @@ This is the top-level configuration for a single upstream service that MCP Any w
 | `rate_limit`              | `RateLimitConfig`        | Rate limiting to protect the upstream service from being overwhelmed.                         |
 | `load_balancing_strategy` | `enum`                   | Strategy for distributing requests among multiple instances of the service.                   |
 | `resilience`              | `ResilienceConfig`       | Advanced resiliency features like circuit breakers and retries to handle failures gracefully. |
-| `service_config`          | `oneof`                  | The specific configuration for the type of upstream service (gRPC, HTTP, OpenAPI, etc.).      |
 | `version`                 | `string`                 | The version of the upstream service, if known (e.g., "v1.2.3").                               |
 | `authentication`          | `AuthenticationConfig`   | Authentication configuration for securing access to the MCP Any service (incoming requests).  |
 | `disable`                 | `bool`                   | If true, this upstream service is disabled.                                                   |
@@ -225,7 +224,7 @@ upstream_services:
 
 ### Upstream Service Types
 
-The `service_config` oneof field can contain one of the following service types:
+The specific configuration for the type of upstream service should be defined directly under the service definition (without a wrapper). It can be one of the following service types:
 
 - **`GrpcUpstreamService`**: For gRPC services.
 - **`HttpUpstreamService`**: For generic HTTP services.
