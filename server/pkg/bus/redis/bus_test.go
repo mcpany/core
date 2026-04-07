@@ -538,14 +538,20 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 	bus := NewWithClient[string](client)
 	topic := "test-subscribe-panic"
 
-	handlerCalled := make(chan bool, 2)
+	handlerCalled := make(chan string, 2)
+	var mu sync.Mutex
+	callCount := 0
 
 	unsub := bus.Subscribe(context.Background(), topic, func(msg string) {
-		handlerCalled <- true
-		if len(handlerCalled) == 1 {
+		mu.Lock()
+		callCount++
+		currentCall := callCount
+		mu.Unlock()
+
+		handlerCalled <- msg
+		if currentCall == 1 {
 			panic("handler panic")
 		}
-		assert.Equal(t, "second message", msg)
 	})
 	defer unsub()
 
@@ -565,10 +571,22 @@ func TestBus_Subscribe_HandlerPanic(t *testing.T) {
 	_ = bus.Publish(context.Background(), topic, "second message")
 
 	// Wait for both messages to be processed
-	<-handlerCalled
-	<-handlerCalled
+	var msgs []string
+	for i := 0; i < 2; i++ {
+		select {
+		case m := <-handlerCalled:
+			msgs = append(msgs, m)
+		case <-time.After(5 * time.Second):
+			t.Fatalf("timed out waiting for message %d", i+1)
+		}
+	}
 
-	assert.Len(t, handlerCalled, 0, "handler should have been called twice")
+	assert.Equal(t, []string{"first message", "second message"}, msgs)
+
+	mu.Lock()
+	finalCount := callCount
+	mu.Unlock()
+	assert.Equal(t, 2, finalCount, "handler should have been called twice")
 }
 
 func TestBus_Subscribe_ContextCancellation(t *testing.T) {
