@@ -44,7 +44,7 @@ test.describe('Feature Screenshot', () => {
     }
   });
 
-  test('Verify RichResultViewer and Export', async ({ page }) => {
+  test('Verify RichResultViewer, Export, and Duration Coloring', async ({ page }) => {
     // We can't rely on the backend being alive or correctly seeded in this specific test
     // environment, so we intercept the API calls to guarantee the UI has data to render.
 
@@ -74,6 +74,27 @@ test.describe('Feature Screenshot', () => {
                         arguments: JSON.stringify({ "hello": "world" }),
                         result: JSON.stringify({ "output": "world" }),
                         duration: "10ms",
+                        durationMs: 10,
+                        error: ""
+                    },
+                    {
+                        timestamp: new Date().toISOString(),
+                        toolName: "medium_tool",
+                        userId: "e2e-admin-core",
+                        arguments: JSON.stringify({ "hello": "medium" }),
+                        result: JSON.stringify({ "output": "medium" }),
+                        duration: "1000ms",
+                        durationMs: 1000,
+                        error: ""
+                    },
+                    {
+                        timestamp: new Date().toISOString(),
+                        toolName: "slow_tool",
+                        userId: "e2e-admin-core",
+                        arguments: JSON.stringify({ "hello": "slow" }),
+                        result: JSON.stringify({ "output": "slow" }),
+                        duration: "2500ms",
+                        durationMs: 2500,
                         error: ""
                     }
                 ]
@@ -85,6 +106,12 @@ test.describe('Feature Screenshot', () => {
 
     // Wait for the mock to populate the list
     await expect(page.locator('text=echo_tool').first()).toBeVisible();
+
+    // Assert color coding for durations
+    // Given the component structure, the text is inside a Badge component which has the color class.
+    await expect(page.locator('td:has-text("10ms") .text-green-500').first()).toBeVisible();
+    await expect(page.locator('td:has-text("1000ms") .text-yellow-500').first()).toBeVisible();
+    await expect(page.locator('td:has-text("2500ms") .text-red-500').first()).toBeVisible();
 
     // Click "View"
     await page.locator('button:has-text("View")').first().click();
