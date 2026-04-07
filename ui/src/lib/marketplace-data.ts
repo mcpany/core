@@ -20,6 +20,18 @@
 
 
 
+/**
+ * Summary: Configuration for a marketplace item's execution.
+ *
+ * Parameters:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Throws/Errors:
+ *   - None
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
