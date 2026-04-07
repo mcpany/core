@@ -123,6 +123,12 @@
 *   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
 *   **[P0] Binary State Handoff (BSH) Gateway**: High-performance binary transport layer for agent state transfer. (Added: 2026-03-23 - Promoted to P0 on 2026-03-24)
 
+#### Upcoming (2026-04-07 Evolution - Iteration 2)
+*   **[P0] Social-Intent Firewall (SIF)**: Semantic screening layer for A2A social broadcasts to prevent "Context-Spray" exfiltration. (Added: 2026-04-07)
+*   **[P1] Behavioral Reputation Anchor (BRA)**: hardware-attested reasoning consistency signatures for ID-based reputation weighting. (Added: 2026-04-07)
+*   **[P1] A2A Social Sanitization Hub**: Authoritative redaction service for environment metadata in social mesh outputs. (Added: 2026-04-07)
+*   **[P0] LFPA Broker**: Time-bound hardware-attested trust leases for high-frequency framework handoffs. (Added: 2026-04-07)
+
 #### Upcoming (2026-03-24 Evolution)
 *   **[P0] Relational PoI Enforcement**: Advanced intent-chain validation to prevent "Context-Mirroring" attacks. (Added: 2026-03-24)
 *   **[P0] Ghost Shell Hook Profiler**: Instrumented sandbox for behavioral profiling of un-attested configuration hooks. (Added: 2026-03-24)

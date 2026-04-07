@@ -45,3 +45,9 @@ As agent swarms move toward decentralized coordination (via DCA), the risk of "M
 
 ## 7. Evolutionary Changelog
 * **2026-04-08:** Initial Document Creation.
+### Update: [2026-04-07] (Iteration 2) - Reputation-Shadowing Defense
+**Context:** Recent market sync findings reveal that malicious agents are exploiting the latency in Federated Reputation Quorums by "Shadowing" trusted IDs in different mesh nodes.
+**Architecture Adjustment:**
+* **Behavioral Reputation Anchoring (BRA):** Added a mandatory step in the Reputation Engine where IDs are cross-referenced with a hardware-attested reasoning consistency signature.
+* **Stylometric Validation:** The VSA broker now performs a sub-10ms stylometric match between the current bid and the historical "Behavioral Profile" of the claimed ID.
+**Security Impact:** Prevents malicious agents from winning auctions in the 200ms-500ms "Reputation Gap" window.

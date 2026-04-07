@@ -387,6 +387,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Social-Aware Security Boundaries**: To mitigate the risks of "Agentic Social Platforms" (like Moltbook), we are introducing "Privacy-Preserving A2A Handoffs." This ensures that when agents interact in shared spaces, they only exchange cryptographically minimized state that cannot be used for parent context reconstruction.
 - **Deterministic Attestation Gateway**: Moving toward a "Zero-Trust Discovery" model where no tool is exposed unless its structural metadata and Inode lineage are signed by an attested hardware authority.
 
+## Strategic Evolution: [2026-04-07] (Iteration 2)
+### Focus: Social-Intent Integrity & Behavioral Reputation Anchoring
+**Context**: The emergence of "Context-Spraying" in agentic social meshes (Moltbook breach) and the discovery of "Reputation-Shadowing" in federated discovery confirm that ID-based security is failing. We must now protect the **social boundary** of the mission intent and provide **behavioral signatures** that tie reputation to reasoning consistency rather than just static identity.
+**Strategic Pivot**:
+- **Social-Intent Firewall (SIF)**: MCP Any will evolve to act as the authoritative "Social Gatekeeper." We will implement SIF, which performs real-time semantic analysis of inter-agent social broadcasts to detect and block "Context-Spray" attempts designed to trick agents into merging mission-private context with public social streams.
+- **Behavioral Reputation Anchoring (BRA)**: To neutralize "Reputation-Shadowing," we are introducing BRA. Reputation scores will now be weighted by a hardware-attested signature of reasoning consistency. Malicious agents attempting to shadow a high-trust ID will be detected via "Stylometric Mismatch" before they can win an auction.
+- **A2A Social Sanitization Hub**: Supporting the stability of shared social spaces, we are introducing a sanitization hub. This layer will automatically redact environment-specific metadata (e.g., local paths, env var keys) from an agent's social output before it is broadcasted to the mesh.
+- **Leased Fast-Path Attestation (LFPA)**: To counter "Handshake Exhaustion" in deep, multi-framework swarms, MCP Any will implement LFPA. This allows agents to broker time-bound, hardware-attested trust leases that survive rapid framework handoffs, reducing the 50ms+ handshake tax to sub-millisecond validation.
+
 ---
 
 ## Strategic Evolution: [2026-03-14]

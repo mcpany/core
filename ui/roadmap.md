@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-07 Evolution - Iteration 2)
+- [ ] **[P0] Social-Intent Violation Monitor**: Real-time visualization of "Context-Spray" attempts and quarantined social pings. (Added: 2026-04-07)
+- [ ] **[P1] Behavioral Profiling Graph**: Visualization of hardware-attested reasoning consistency signatures for BRA. (Added: 2026-04-07)
+- [ ] **[P1] Social Sanitization Reviewer**: UI for inspecting and manual override of redacted social metadata. (Added: 2026-04-07)
+- [ ] **[P0] LFPA Lease Status Widget**: Real-time indicator for active fast-path attestation leases and time-to-expiry. (Added: 2026-04-07)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

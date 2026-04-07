@@ -793,6 +793,14 @@
 ![Marketplace](screenshots/marketplace.png)
 -sourced skills.
 
+## Evolution: [2026-04-07] (Iteration 2) Updates
+
+### Proposed Additions
+- **Social-Intent Firewall (SIF)**: (P0) Security middleware performing real-time semantic analysis of agent social broadcasts to block "Context-Spray" attacks.
+- **Behavioral Reputation Anchor (BRA)**: (P1) Reputation enhancement that weights scores by a hardware-attested signature of reasoning consistency.
+- **A2A Social Sanitization Hub**: (P1) Automatic redaction service for environment-specific metadata in agent social outputs.
+- **Leased Fast-Path Attestation (LFPA) Broker**: (P0) Performance utility facilitating time-bound, hardware-attested trust leases to neutralize "Handshake Exhaustion."
+
 ---
 
 ## Evolution: [2026-02-23] Updates
