@@ -9,18 +9,10 @@ import (
 	"time"
 
 	"github.com/mcpany/core/server/pkg/audit"
-	"github.com/mcpany/core/server/pkg/middleware"
 )
 
-func TestSeedTraces(t *testing.T) {
-	app, _, cleanup := setupTestApp(t)
-	defer cleanup()
-
-	// Need to initialize db and middleware
-	mid := app.GetAuditMiddleware()
-	if mid == nil {
-		t.Skip("Audit middleware disabled in standard setupTestApp, skipping mock tests")
-	}
+func TestSeedTraces_Custom(t *testing.T) {
+	app, mid := setupTracesTestApp(t)
 
 	// Initial seed shouldn't panic, writes to db
 	err := app.seedTraces(context.Background())
@@ -47,26 +39,13 @@ func TestSeedTraces(t *testing.T) {
 	}
 }
 
-func setupTestAppWithAudit(t *testing.T) (*Application, func()) {
-	app, _, cleanup := setupTestApp(t)
-
-	// Inject fake audit middleware
-	auditMid := middleware.NewAuditMiddleware(nil, 100)
-	app.auditMiddleware = auditMid
-
-	return app, cleanup
-}
-
-func TestSeedTracesWithMockMiddleware(t *testing.T) {
-	app, cleanup := setupTestAppWithAudit(t)
-	defer cleanup()
+func TestSeedTracesWithMockMiddleware_Custom(t *testing.T) {
+	app, mid := setupTracesTestApp(t)
 
 	err := app.seedTraces(context.Background())
 	if err != nil {
 		t.Fatalf("expected no error seeding traces, got %v", err)
 	}
-
-	mid := app.GetAuditMiddleware()
 
 	// Give broadcast channel a ms to drain
 	time.Sleep(10 * time.Millisecond)
