@@ -838,6 +838,11 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Mesh Reflection Alert Center**: (2026-07-25) Visual tracker for blocked RRPH reflection attempts and tunnel-handshake entropy.
+- [ ] **[P0] Adaptive Lease Status Widget**: (2026-07-25) Real-time indicator for AML-scaled lease durations and subagent reputation scores.
+- [ ] **[P1] Reason Quorum Scaler UI**: (2026-07-25) Visual workspace for monitoring DRQ-driven auditor scaling and uncertainty triggers.
+
 #### Upcoming (2026-07-23 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.

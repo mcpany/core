@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Handshake Reflection Attacks
+**Context**: Today's market sync revealed a "Handshake Reflection" exploit pattern in OpenClaw subagent routing where attackers reflect a node's own challenge to establish unauthorized tunnels.
+**Architecture Adjustment**:
+* Deprecating standard challenge-response in Section 4.
+* Introducing **Reflection-Resistant P2P Handshake (RRPH)** with mandatory nonce-origin binding.
+* Challenges must now be cryptographically bound to the (InitiatorID, ReceiverID) tuple to prevent reflection.
+**Security Impact**: Mitigates unauthorized lateral movement and "Mesh Shadowing" by rogue subagents mimicking legitimate nodes.

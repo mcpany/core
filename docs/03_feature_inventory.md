@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reflection-Resistant P2P Handshake (RRPH)**: (P0) Advanced security standard for AMT mandating strict nonce origin validation to neutralize "Handshake Reflection" attacks.
+- **Adaptive Mission Leases (AML) Service**: (P0) High-speed lifecycle service that dynamically scales hardware-locked lease durations based on real-time task risk and agent reputation.
+- **Dynamic Reasoning Quorum (DRQ) Hub**: (P1) Predictive coordination service that automatically scales the number of required auditors based on reasoning confidence signals.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RRPH** integration.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Evolving to act as the primary backend for the new **AML** service.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
