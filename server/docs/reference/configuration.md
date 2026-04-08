@@ -112,6 +112,25 @@ Contains server-wide operational parameters.
 | `auto_discover_local`| `bool`       | Whether to auto-discover local services (e.g. Ollama).                        |
 | `alerts`             | `AlertConfig`| Alert configuration.                                                          |
 
+#### Data Loss Prevention (`DLPConfig`)
+
+| Field             | Type              | Description                                                    |
+| ----------------- | ----------------- | -------------------------------------------------------------- |
+| `enabled`         | `bool`            | If true, DLP is enabled.                                       |
+| `custom_patterns` | `repeated string` | Custom regex patterns to redact in requests and responses.     |
+
+##### Use Case and Example
+
+Enable DLP to redact sensitive patterns from requests and responses.
+
+```yaml
+global_settings:
+  dlp:
+    enabled: true
+    custom_patterns:
+      - "API_KEY_[A-Z0-9]+"
+```
+
 ### `AuditConfig`
 
 Configuration for audit logging of tool executions.
