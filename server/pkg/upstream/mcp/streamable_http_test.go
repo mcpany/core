@@ -4,11 +4,14 @@
 package mcp
 
 import (
+	"google.golang.org/protobuf/types/known/structpb"
+
 	"os"
 	"strings"
 )
 
 import (
+
 	"context"
 	"encoding/json"
 	"errors"
@@ -1038,4 +1041,130 @@ func TestBuildSafeEnv(t *testing.T) {
 			assert.ElementsMatch(t, tt.expected, result)
 		})
 	}
+}
+
+// Tests for missing streamable_http.go branches
+
+type mockUpstreamAuthenticator struct {
+	authErr error
+}
+
+func (m *mockUpstreamAuthenticator) Authenticate(req *http.Request) error {
+	return m.authErr
+}
+
+func TestAuthenticatedRoundTripper_AuthError(t *testing.T) {
+	req, _ := http.NewRequest("GET", "http://example.com", nil)
+	rt := &authenticatedRoundTripper{
+		authenticator: &mockUpstreamAuthenticator{authErr: errors.New("auth failed")},
+	}
+	_, err := rt.RoundTrip(req)
+	assert.ErrorContains(t, err, "failed to authenticate mcp upstream request: auth failed")
+}
+
+func TestAuthenticatedRoundTripper_NilBase(t *testing.T) {
+	// Need a local server to hit with DefaultTransport
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	req, _ := http.NewRequest("GET", server.URL, nil)
+	rt := &authenticatedRoundTripper{
+		authenticator: &mockUpstreamAuthenticator{},
+		// base is implicitly nil
+	}
+	resp, err := rt.RoundTrip(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+}
+
+
+func TestUpstream_Register_HTTP_AuthFail(t *testing.T) {
+	u := NewUpstream(nil)
+	ctx := context.Background()
+	// Let's use json unmarshaling to construct the config properly
+	configJSON := `{
+		"id": "test-service-http-auth-fail",
+		"name": "test-service-http-auth-fail",
+		"mcp_service": {
+			"http_connection": {
+				"http_address": "http://example.com"
+			}
+		},
+		"upstream_auth": {
+			"type": "UPSTREAM_AUTH_TYPE_OAUTH2"
+		}
+	}`
+
+	var serviceConfig configv1.UpstreamServiceConfig
+	err := json.Unmarshal([]byte(configJSON), &serviceConfig)
+	require.NoError(t, err)
+
+	_, _, _, err = u.Register(ctx, &serviceConfig, newMockToolManager(), newMockPromptManager(), newMockResourceManager(), false)
+	assert.Error(t, err)
+}
+func TestUpstream_Register_HTTP_InvalidURL(t *testing.T) {
+	u := NewUpstream(nil)
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Id: proto.String("test-service-http-invalid-url"),
+		Name: proto.String("test-service-http-invalid-url"),
+		McpService: configv1.McpUpstreamService_builder{
+			HttpConnection: configv1.McpStreamableHttpConnection_builder{
+				HttpAddress: proto.String(":::invalid-url"),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	_, _, _, err := u.Register(ctx, serviceConfig, newMockToolManager(), newMockPromptManager(), newMockResourceManager(), false)
+	assert.ErrorContains(t, err, "invalid mcp http service address")
+}
+
+func TestUpstream_Register_HTTP_MissingAddress(t *testing.T) {
+	u := NewUpstream(nil)
+	ctx := context.Background()
+	serviceConfig := configv1.UpstreamServiceConfig_builder{
+		Id: proto.String("test-service-http-missing-url"),
+		Name: proto.String("test-service-http-missing-url"),
+		McpService: configv1.McpUpstreamService_builder{
+			HttpConnection: configv1.McpStreamableHttpConnection_builder{
+				HttpAddress: proto.String(""),
+			}.Build(),
+		}.Build(),
+	}.Build()
+
+	_, _, _, err := u.Register(ctx, serviceConfig, newMockToolManager(), newMockPromptManager(), newMockResourceManager(), false)
+	assert.ErrorContains(t, err, "mcp http service address is required")
+}
+
+func TestMergeStructs(t *testing.T) {
+	dst := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"a": structpb.NewStringValue("1"),
+			"b": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"c": structpb.NewStringValue("2"),
+				},
+			}),
+		},
+	}
+
+	src := &structpb.Struct{
+		Fields: map[string]*structpb.Value{
+			"a": structpb.NewStringValue("1-new"),
+			"b": structpb.NewStructValue(&structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"d": structpb.NewStringValue("3"),
+				},
+			}),
+		},
+	}
+
+	mergeStructs(dst, src)
+
+	assert.Equal(t, "1-new", dst.Fields["a"].GetStringValue())
+	assert.Equal(t, "2", dst.Fields["b"].GetStructValue().Fields["c"].GetStringValue())
+	assert.Equal(t, "3", dst.Fields["b"].GetStructValue().Fields["d"].GetStringValue())
 }
