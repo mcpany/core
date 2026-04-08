@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-08] Updates
+
+### Proposed Additions
+- **Deterministic Absence Proofs (DAP)**: (P0) Authoritative security service mandating hardware-attested manifests of non-existent files to prevent "Absence-as-Exploit" configuration injection (CVE-2026-25725 defense).
+- **Active Reasoning Interdiction (ARI)**: (P0) Cognitive security middleware performing real-time semantic deconstruction of reasoning traces to block "Chain-of-Thought Spoofing."
+- **Cross-Framework Skill Reputation (CFSR) Engine**: (P1) UAB-native middleware for brokering collective tool reliability scores across agent meshes.
+
+### Priority Shifts
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Now elevated with the requirement for mandatory **DAP-compliant** negative attestation.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Now elevated with mandatory **CFSR-quorum** requirements for high-risk actions.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

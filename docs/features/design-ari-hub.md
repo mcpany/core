@@ -81,6 +81,13 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Implementing **Attention-Driver Analysis** in the Semantic Consistency Engine to detect when "Injected Context" is the primary driver for high-risk tool proposals.
 **Security Impact:** Prevents "Invisible" instructions from project-local files from hijacking the agent's reasoning loop.
 
+### Update: 2026-04-08 - Countering Chain-of-Thought Spoofing
+**Context:** Today's market sync revealed the emergence of "Chain-of-Thought Spoofing," where malicious skills inject unauthorized reasoning steps to coerce parent agents.
+**Architecture Adjustment:**
+* The ARI Hub will now perform **Recursive Monologue Analysis**. It will compare subagent reasoning traces against a mission-root "Semantic Baseline" to detect logic grafting.
+* Introducing **Mandatory Reason-Step Attestation**. Every internal thought must be signed and verified before the final tool call is authorized.
+**Security Impact:** Neutralizes the ability of malicious tools to "social engineer" the agent's internal reasoning loop.
+
 ### Update: 2026-06-29 - ARI v2: Reasoning-Provenance Integration
 **Context:** The disclosure of Logic-Grafting (Zero-Day) attacks and the introduction of `x-gemini-provenance` headers demand a move from fragment-level to reasoning-step-level interdiction.
 **Architecture Adjustment:**

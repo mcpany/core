@@ -53,3 +53,10 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
     * **Security Impact:** Neutralizes the "Absence-as-Exploit" pattern by ensuring the sandbox state remains identical to the pre-attested manifest.
 * **2026-04-10:** Integrated with the **Deterministic Attestation Gateway** to support "Full-State Manifest" requirements for Claude Code deterministic boot compliance.
 * **2026-04-09:** Initial Document Creation.
+
+### Update: 2026-04-08 - Hardening via Mandatory DAP
+**Context:** The disclosure of CVE-2026-25725 confirms that missing configuration files (e.g., `.claude/settings.json`) are a critical attack vector if not protected at boot.
+**Architecture Adjustment:**
+* Integrating the **Deterministic Absence Proof (DAP) Provider** into the Pre-Flight scan phase.
+* The manifest will now include signed proofs for a "Forbidden Hook" list, ensuring these files cannot be created during the session.
+**Security Impact:** Prevents late-stage configuration injection exploits that bypass initial sandbox mounts.

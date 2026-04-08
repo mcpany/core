@@ -203,6 +203,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-08 Evolution)
+- [ ] **[P0] Pre-Flight Sandbox Audit Viewer**: UI for reviewing environment manifests and proof-of-non-existence for sensitive config files. (Added: 2026-04-08)
+- [ ] **[P0] Reasoning Integrity Dashboard**: Visual indicator for ARI status and logic grafting alerts. (Added: 2026-04-08)
+- [ ] **[P1] Cross-Framework Reputation Explorer**: Real-time browser for UAB tool reliability scores. (Added: 2026-04-08)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

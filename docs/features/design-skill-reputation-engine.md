@@ -45,3 +45,10 @@ The "ClawHavoc" registry compromise demonstrated that individual tool validation
 
 ## 7. Evolutionary Changelog
 * **2026-04-09:** Initial Document Creation.
+
+### Update: 2026-04-08 - UAB v1.4 Compliance
+**Context:** The UAB v1.4 draft introduces a standardized protocol for sharing tool reliability scores.
+**Architecture Adjustment:**
+* Adopting the `x-mcp-reputation` header standard for all inter-node reputation queries.
+* Implementing support for "Reputation Quorums," where high-risk actions require a minimum aggregate trust score from independent nodes.
+**Security Impact:** Enhances swarm-wide immunity against "ClawHavoc" style supply chain attacks.
