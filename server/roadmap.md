@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Speculative Intent Broker (SIB)**: Authoritative coordination service for hardware-attested reconciliation of conflicting speculative sub-intents. (Added: 2026-07-25)
+*   **[P0] Mesh-Aware Load Balancer (MALB)**: Resource management service implementing CLB-standard "Cognitive Intensity" monitoring and task offload. (Added: 2026-07-25)
+*   **[P0] Context-Eviction Guard (CEG)**: Security middleware performing semantic importance scoring to protect Silent Anchors from noise injection. (Added: 2026-07-25)
+*   **[P0] L-SNT (Low-Latency Sovereign Tunneling)**: Optimized mesh transport utilizing RAMC-based semantic filtering to reduce inter-node coordination tax. (Added: 2026-07-25)

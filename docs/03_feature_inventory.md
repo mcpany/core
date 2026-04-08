@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative Intent Broker (SIB)**: (P0) Authoritative coordination service utilizing hardware-attested "Thought Anchors" to resolve conflicting speculative sub-intents before scratchpad commitment.
+- **Mesh-Aware Load Balancer (MALB)**: (P0) Authoritative resource service monitoring mesh-node "Cognitive Intensity" in real-time and offloading reasoning tasks based on the CLB standard.
+- **Context-Eviction Guard (CEG)**: (P0) Security middleware performing semantic importance scoring to protect "Silent Anchors" from noise-driven eviction.
+
+### Priority Shifts
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **CEG-compliant** semantic importance scoring.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Evolving into **L-SNT** to support RAMC-based semantic fragment filtering.
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as a critical scaling dependency for the new **MALB** task offloading.
