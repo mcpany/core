@@ -69,6 +69,9 @@ test.describe('Register Service Dialog - Advanced JSON', () => {
         // Actually, since Monaco sets `value` prop, let's just type it.
         await page.keyboard.insertText(configString);
 
+        // Wait briefly for editor to process input
+        await page.waitForTimeout(500);
+
 
         // Click Register Service
         await page.getByRole('button', { name: 'Register Service' }).click();

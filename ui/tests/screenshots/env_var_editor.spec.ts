@@ -41,14 +41,30 @@ test.describe('Service Configuration Editor', () => {
     await page.getByRole('tab', { name: 'Advanced (JSON)' }).click();
 
     // In RegisterServiceDialog, Environment Variables are part of JSON config
-    // Update the configJson to include an environment variable
-    const configJsonLocator = page.locator('textarea[name="configJson"]');
-    const currentJson = await configJsonLocator.inputValue();
-    const config = JSON.parse(currentJson);
-    if (config.commandLineService) {
-        config.commandLineService.env = { TEST_ENV: 'test_value' };
-    }
-    await configJsonLocator.fill(JSON.stringify(config, null, 2));
+    // The Advanced tab now uses the Monaco editor which cannot be accessed via textarea[name="configJson"]
+    // so we set the value by focusing and typing the new configuration.
+    const editorLocator = page.locator('.monaco-editor');
+    await expect(editorLocator).toBeVisible();
+
+    const configPayload = {
+        name: "my-service",
+        type: "command_line",
+        commandLineService: {
+            command: "echo hello",
+            env: { TEST_ENV: 'test_value' }
+        }
+    };
+    const configString = JSON.stringify(configPayload, null, 2);
+
+    await editorLocator.click();
+
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+    await page.keyboard.press(`${modifier}+a`);
+    await page.keyboard.press('Backspace');
+    await page.keyboard.insertText(configString);
+
+    // Wait briefly for editor to process input
+    await page.waitForTimeout(500);
 
     // Switch back to Basic Configuration to see the JSON is valid (or just stay)
     await page.getByRole('tab', { name: 'Basic Configuration' }).click();
