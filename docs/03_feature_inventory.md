@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Conflict-Free Sovereignty Broker (CFSB)**: (P0) Authoritative reconciliation service for CRDT-based state shards utilizing hardware-attested semantic merging.
+- **Predictive Attention Tiering (PAT) Manager**: (P0) Attention governance service assigning mission-critical fragments to hardware-locked high-trust tiers to prevent noise-driven eviction.
+- **Semantic Re-Ingestion (SRI) Provider**: (P1) Fail-safe service that automatically re-injects mission-root anchors into the context window if semantic loss is detected.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption**: (Promoted from P1 to P0) Critical for neutralizing multi-hop P2P handshake latency in sharded SNT meshes.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with the requirement for mandatory **SRI** fail-safe integration to counter aggressive pruning.

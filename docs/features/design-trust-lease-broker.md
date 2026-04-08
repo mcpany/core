@@ -54,3 +54,10 @@ As agent swarms grow deeper and more autonomous, the "Attestation Tax"—the lat
 * Introducing the **Multi-Hop Persistence Relay (MHPR)**: Trust leases are now propagation-aware, allowing hardware attestation to survive up to 5 delegation hops without re-signing.
 * Upgrading the LFTA listener to support **Sub-Millisecond ARL Synchronization**: The broker now polls global revocation lists at 100ms intervals to prevent stale-token exploitation.
 **Security Impact:** Drastically reduces deep-swarm latency while maintaining real-time defense against compromised hardware tokens.
+
+### Update: 2026-07-25 - Predictive Shard Prefetching & Fast-Path Resumption
+**Context:** Today's research on OpenClaw SSA and Gemini CLI Attention Tiers highlights the need for proactive state management to avoid cognitive stall during high-jitter P2P discovery.
+**Architecture Adjustment:**
+* Introducing **Predictive Shard Prefetching**: The broker now utilizes real-time intent analysis to speculatively prepare and attest context shards before they are requested by specialist subagents.
+* Implementing **Fast-Path Mesh Resumption**: Trust leases now support "Mesh Tickets," allowing hardware attestation to persist across multi-node sharded meshes with sub-millisecond overhead, neutralizing discovery jitter.
+**Security Impact:** Enhances swarm responsiveness without compromising hardware-locked sovereignty, ensuring "High-Trust Attention Tiers" remain populated during aggressive GC.
