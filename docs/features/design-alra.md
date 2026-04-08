@@ -61,3 +61,8 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
     * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
     * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
     * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+
+### Update: 2026-07-25 - Semantic Attention Pinning
+**Context:** Gemini CLI v0.59.0 introduces driver-level semantic attention-weighting.
+**Architecture Adjustment:** * Upgrading ALRA to support Semantic Attention Pinning (SAP). * Utilizing driver-level weighting to ensure behavioral guardrails remain permanent.
+**Security Impact:** Prevents "Instruction Eviction" in 2M+ token windows, maintaining mission-root sovereignty.

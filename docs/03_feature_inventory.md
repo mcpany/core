@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Predictive Shard Placement (PSP) Engine**: (P0) Authoritative scheduling service for the DMR Hub that speculatively migrates context shards based on agent attention heatmaps to reduce MTTC.
+- **Recursive Lease Chaining (RLC) Provider**: (P0) Advanced identity service allowing subagents to issue hardware-chained sub-leases, facilitating deep autonomous delegation without recurring HITL.
+- **Semantic Attention Pinning (SAP) Middleware**: (P0) Cognitive security extension for ALRA utilizing driver-level weighting to prevent mission-root anchor eviction.
+- **Migration-Time Attestation (MTA) Hub**: (P0) Security middleware mandating hardware-re-attestation of physical memory boundaries during shard migration (CVE-2026-99101 defense).
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Elevated with mandatory support for **PSP** and **MTA** for distributed mesh stability.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with the requirement for **Recursive Lease Chaining (RLC)**.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Now elevated with **SAP-compliant** driver-level weighting.
