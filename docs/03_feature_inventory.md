@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Decision-Path Sovereignty (DPS) Monitor**: (P0) Authoritative validation service monitoring automated action-chains to detect and block cascading system failures.
+- **Epistemic Circuit Breaker (ECB) Hub**: (P0) Coordination service injecting automated checkpoints into complex decision paths to prevent poisoned model outputs from approving high-risk transactions.
+- **Fast-Path Mesh Handshake (FPMH) Provider**: (P0) Performance-optimizing middleware utilizing session-bound trust tickets to reduce inter-node P2P tunnel latency.
+- **Metadata Sanitization Hub (MSH)**: (P0) Real-time semantic sanitization service for agent-ingested external data (GitHub, Slack) to neutralize out-of-band instruction injection.
+
+### Priority Shifts
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Evolving into the **DPS Monitor** for comprehensive automated workflow integrity.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **FPMH-compliant** inter-node trust persistence.
