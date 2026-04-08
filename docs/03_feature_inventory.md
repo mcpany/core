@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Agentic Workload Identity (AWI) Provider**: (P0) Authoritative identity service issuing hardware-attested, task-bound tokens that rotate based on execution context.
+- **Shadow-Tunnel Interdiction (STI) Middleware**: (P0) Advanced security layer for the AMT Broker performing real-time semantic sanitization of mesh handshake metadata.
+- **Context-Bound Token Sharding (CBTS) Adapter**: (P1) Resource management middleware cryptographically binding reasoning budgets to specific context shards.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **STI-compliant** metadata sanitization to counter Tunnel-Vision exploits.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

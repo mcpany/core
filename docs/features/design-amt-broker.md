@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating "Tunnel-Vision" via STI
+**Context:** Today's market sync revealed the "Tunnel-Vision" exploit (CVE-2026-99021), where rogue subagents use un-sanitized mesh handshake metadata to map internal network topologies.
+**Architecture Adjustment:**
+*   Introducing the **Shadow-Tunnel Interdiction (STI)** middleware as a mandatory layer for all establishment handshakes.
+*   The STI middleware will strip all non-essential environment and network metadata from the coordination bus before it is mirrored to the remote node.
+*   Mandating "Workload-Aware Metadata Scoping," where handshake data is restricted to the minimum required for the current AWI-bound mission.
+**Security Impact:** Prevents lateral movement and unauthorized network mapping by rogue subagents within the distributed mesh.
