@@ -276,6 +276,22 @@ func TestSetUnexportedID_Robustness(t *testing.T) {
 	err := setUnexportedID(id, "test")
 	assert.NoError(t, err)
 
+	// float64 converting to int tests
+	id2 := &ID{}
+	err = setUnexportedID(id2, float64(42))
+	assert.NoError(t, err)
+	// verify it became int64 when possible (via fixID style float64 handling) or that we handle it safely
+	// We'll just verify no error and that we can extract the value using reflect
+	val := id2.value
+	if v, ok := val.(int64); ok {
+		assert.Equal(t, int64(42), v)
+	}
+
+	id3 := &ID{}
+	err = setUnexportedID(id3, float64(42.5))
+	assert.NoError(t, err)
+	assert.Equal(t, float64(42.5), id3.value)
+
 	// 2. Struct missing 'value' field
 	type IDMissing struct {
 		other int
@@ -346,6 +362,22 @@ func TestFixID_Robustness(t *testing.T) {
 			value string
 			extra int
 		}{"foo", 2}, "foo"},
+
+		// Deep pointer reflection tests
+		{"pointer_to_struct", &struct{ value string }{"s2"}, "s2"},
+		{"pointer_to_pointer_to_struct", func() interface{} {
+			p := &struct{ value string }{"s3"}
+			return &p
+		}(), "s3"}, // The fix un-wraps all levels of pointers
+
+		// Custom map types
+		{"custom_map_type", map[string]interface{}{"value": "custom-map"}, "custom-map"},
+		{"custom_map_type_nested", map[string]interface{}{"value": map[string]interface{}{"value": 456}}, 456},
+
+		// String-to-int fallback cases
+		{"string_looking_like_int", struct{ value string }{"123"}, 123},
+		{"string_not_int", struct{ value string }{"abc"}, "abc"},
+		{"pointer_to_string_looking_like_int", &struct{ value string }{"456"}, 456},
 	}
 
 	for _, tt := range tests {

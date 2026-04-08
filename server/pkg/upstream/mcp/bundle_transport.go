@@ -459,7 +459,10 @@ func fixID(id interface{}) interface{} {
 	}
 
 	val := reflect.ValueOf(id)
-	if val.Kind() == reflect.Ptr {
+	for val.Kind() == reflect.Ptr || val.Kind() == reflect.Interface {
+		if val.IsNil() {
+			return nil
+		}
 		val = val.Elem()
 	}
 
