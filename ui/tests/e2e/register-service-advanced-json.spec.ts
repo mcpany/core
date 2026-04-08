@@ -32,7 +32,15 @@ test.describe('Register Service Dialog - Advanced JSON', () => {
         await page.getByRole('button', { name: 'Add Service' }).click();
 
         // Start from Scratch (Blank template)
-        await page.getByRole('button', { name: 'Start from Scratch' }).click();
+        const startFromScratchButton = page.getByRole('button', { name: 'Start from Scratch' });
+        if (await startFromScratchButton.isVisible()) {
+            await startFromScratchButton.click();
+        } else {
+            const legacyCustomButton = page.locator('text=Custom').first();
+            if (await legacyCustomButton.isVisible()) {
+                await legacyCustomButton.click();
+            }
+        }
 
         // Switch to the Advanced (JSON) tab
         await page.getByRole('tab', { name: 'Advanced (JSON)' }).click();
