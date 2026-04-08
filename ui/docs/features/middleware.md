@@ -12,10 +12,5 @@ Navigate to `/middleware`. The interface visualizes the request flow from left t
 
 ![Middleware Pipeline](../screenshots/middleware.png)
 
-### 2. Configure a Component
-Click on any middleware block (e.g., **"Rate Limit"**) to inspect its settings.
-- **Enable/Disable**: Toggle the component without removing it.
-- **Configuration**: Edit parameters (e.g., "Max Requests per Minute").
-
-### 3. Reorder Pipeline
-(If supported) Drag and drop components to change their execution order. For example, moving **Logging** before **Auth** will log even rejected unauthenticated requests.
+### 2. Reorder Pipeline
+Change the execution order of middleware components. For example, moving **Logging** before **Auth** will log even rejected unauthenticated requests. Use the up and down arrows on the pipeline visualizer to reorder the pipeline.
