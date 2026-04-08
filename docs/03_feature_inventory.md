@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Attestation Translator (RAT)**: (P0) Aggregation service for multi-hop reason proofs (Gemini RRP) translating them into framework-neutral mission lineages.
+- **Dynamic Lease Extension (DLE) Broker**: (P0) Speculative extension service for hardware-locked capability leases based on semantic consistency proofs.
+- **Slow-Roll Entropy Monitor (SREM)**: (P0) Advanced security upgrade for the AEM detecting malicious instruction patterns in low-entropy reasoning fragments.
+- **Fast-Path Mesh Resumption (FPMR) Provider**: (P0) Performance service issuing "Cross-Node Trust Tickets" for sub-millisecond tunnel resumption in distributed Agent Teams.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with mandatory **SREM** integration to counter slow-roll hijacks.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Designated as the primary enforcement point for **FPMR-compliant** trust tickets.

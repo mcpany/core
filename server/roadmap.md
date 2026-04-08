@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Recursive Attestation Translator (RAT)**: aggregation of multi-hop reason proofs into framework-neutral lineages. (Added: 2026-07-25)
+*   **[P0] Dynamic Lease Extension (DLE) Broker**: speculative capability extension based on semantic consistency proofs. (Added: 2026-07-25)
+*   **[P0] Slow-Roll Entropy Monitor (SREM)**: sliding-window semantic analysis to detect low-entropy reasoning hijacks. (Added: 2026-07-25)
+*   **[P0] Fast-Path Mesh Resumption (FPMR)**: implementation of "Cross-Node Trust Tickets" for sub-millisecond tunnel re-establishment. (Added: 2026-07-25)
