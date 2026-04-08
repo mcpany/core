@@ -63,3 +63,10 @@ MCP Any needs to transition to an **Ephemeral Agency** model, where high-level p
 ## 7. Evolutionary Changelog
 * **2026-04-29:** Addressing "BoryptGrab" persistence by binding privilege leases to the ContextEngine's session lifecycle. Introduced "Lifecycle-Bound Revocation" to ensure high-risk capabilities are purged immediately upon subagent or task termination.
 * **2026-04-28:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Lease-Racing via ALR
+**Context**: Today's market sync revealed a TOCTOU "Lease-Racing" vulnerability in Claude Code's hardware leases, where subagents exploit a 50ms window during revocation.
+**Architecture Adjustment**:
+*   Integrating the **Atomic Lease Revocation (ALR) Controller** as the mandatory enforcement backend in Section 4.
+*   Transitioning from soft timeouts to TPM-bound monotonic heartbeats that trigger physical revocation in the secure enclave.
+**Security Impact**: Ensures absolute revocation atomicity, making it physically impossible for subagents to execute tool calls after the mission-termination signal is issued.

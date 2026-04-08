@@ -58,3 +58,10 @@ Claude Code v3.0 has introduced "Agent Teams" that collaborate via a shared proj
 *   **Echo-Immune Fragments**: Mandating monotonic, hardware-bound timestamps for all workspace writes in Section 4.
 *   **Temporal Sharding**: Introducing mission-phase scoped shards, ensuring that fragments from terminated sub-tasks are cryptographically invalidated for future reasoning steps.
 **Security Impact**: Prevents "State Stuttering" and ensures that the swarm maintains a single, forward-moving mission mainline.
+
+### Update: 2026-07-25 - Epistemic Purging for Ghost-Anchor Defense
+**Context**: OpenClaw research identified "Ghost-Anchor Persistence" (GAP) where high-priority context residue remains after node disconnection.
+**Architecture Adjustment**:
+*   Mandating the use of the **Epistemic State Scrubber (ESS)** for all scratchpad teardowns in Section 4.
+*   Implementing high-entropy semantic purging that actively overwrites mission-bound shards with cognitive noise before release.
+**Security Impact**: Prevents "Intent Residue" exfiltration and ensures absolute environment isolation between sequential agent sessions.

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Lease Revocation (ALR) Controller**: (P0) Authoritative hardware execution monitor utilizing TPM-bound monotonic heartbeats to ensure absolute revocation atomicity.
+- **Epistemic State Scrubber (ESS)**: (P0) Authoritative semantic purging service that performs high-entropy cleanup of mission-bound shards upon teammate disconnection.
+- **ARE Obfuscation Middleware**: (P1) Privacy middleware injecting reasoning-effort jitter and metadata salt into PPRP traces to neutralize side-channel complexity mapping.
+- **Node-to-Node Sovereignty Handshake**: (P1) Cleanup protocol mandating cryptographically signed "Cleanup Attestation" before tearing down encrypted P2P tunnels.
+
+### Priority Shifts
+- **Ephemeral Privilege Manager (EPM)**: (Re-affirmed P0) Elevated with mandatory **ALR-compliant** hardware heartbeats.
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Elevated with mandatory **ESS-compliant** shard purging.
