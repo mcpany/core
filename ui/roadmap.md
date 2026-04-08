@@ -843,6 +843,12 @@
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
 - [ ] **[P0] Environment-Aware Provenance Tracker**: (2026-07-23) Forensic UI for visualizing reasoning traces bound to specific execution environments.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Service Mesh Topology Monitor (v2)**: (2026-07-25) Real-time visualization of OpenClaw SNT v2.0 tunnels and P2P connection health.
+- [ ] **[P0] Mission Lease Manager (v2)**: (2026-07-25) Visual tracker for HLML capability leases with hardware-bound revocation status.
+- [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-25) Updated visualization for ARR budget re-allocations and HACA-attested cost attribution.
+- [ ] **[P1] Zero-Knowledge Audit Viewer**: (2026-07-25) Security workspace for reviewing Gemini-compliant privacy-preserving reasoning proofs.
+
 #### Upcoming (2026-07-22 Evolution)
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.

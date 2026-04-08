@@ -48,3 +48,7 @@ The Adaptive Resource Reclamation (ARR) Service provides a mesh-wide mechanism t
 
 ## 7. Evolutionary Changelog
 * **2026-07-23:** Initial Document Creation.
+* **2026-07-25:** Update: HACA Integration & Reflection Spoofing Defense.
+    - **Context:** Integration with Gemini's Hardware-Attested Cost Attribution (HACA) and detection of "Teammate Reflection Spoofing" exploits.
+    - **Architecture Adjustment:** Mandatory integration of HACA for all budget reclamation cycles to ensure non-repudiable attribution. Introducing "Manifest-Based Reflection" (MBR) checks to validate subagent urgency signals against the mission root before triggering reclamation.
+    - **Security Impact:** Prevents rogue subagents from "spoofing" urgency to drain sibling budgets and ensures total economic transparency.

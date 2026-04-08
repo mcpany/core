@@ -62,3 +62,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Update: OpenClaw SNT v2.0 Compliance & Replay Defense.
+    - **Context:** Today's market sync revealed a critical replay vulnerability in cross-node handshakes and the release of OpenClaw SNT v2.0.
+    - **Architecture Adjustment:** Implementing mandatory hardware-bound monotonic counters for all inter-node handshakes. Transitioning to OpenClaw SNT v2.0 compliant encrypted tunnels with sub-100ms resumption.
+    - **Security Impact:** Prevents tunnel hijacking via handshake replay and ensures absolute node sovereignty in distributed meshes.
