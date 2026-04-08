@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Reducing Tunneling Latency via Speculative Resumption
+**Context:** Market sync 2026-07-25 identified tunneling latency as a primary trigger for "Cognitive Stall" in distributed multi-node meshes (OpenClaw SNT).
+**Architecture Adjustment:**
+* Introducing the **Tunnel-Aware Shard Manager (TASM)** in Section 4. TASM pre-emptively migrates context shards between nodes based on reasoning-path predictions.
+* Enabling **Speculative Resumption** for mesh tunnels, allowing agents to initiate tool calls while the background hardware-attestation handshake completes in parallel.
+**Security Impact:** TASM migration signatures must be hardware-attested and bound to the verified mission-root intent, ensuring that pre-emptive state movement does not leak context to unauthorized nodes.

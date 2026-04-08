@@ -59,3 +59,10 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Conflict-Free Task Auctions for High-Density Meshes
+**Context:** Today's research into high-density horizontal swarms (Claude Code v3.2.1) confirms that synchronous mailbox locks and bidding loops lead to 5s+ coordination stalls.
+**Architecture Adjustment:**
+*   Introducing the **Optimistic Auction Gateway (OAG)** in Section 4. OAG allows parallel teammates to speculatively "soft-claim" tasks from the CRDT task list.
+*   Moving from per-bid attestation to **Leased Auction Quotas**, allowing agents to participate in multiple bids within a verified mission window without per-bid TPM signature overhead.
+**Security Impact:** Speculative claims are held in a hardware-locked "Probabilistic Buffer" and are automatically purged if the conflict resolution arbiter identifies a mission-root violation.

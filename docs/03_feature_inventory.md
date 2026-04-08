@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Optimistic Auction Gateway (OAG)**: (P0) High-performance coordination service brokering "Optimistic Task Claims" for horizontal swarms, allowing teammates to speculatively begin execution while the mesh performs background conflict resolution.
+- **Tunnel-Aware Shard Manager (TASM)**: (P1) Authoritative distributed state coordinator pre-emptively migrating context shards between nodes based on predicted inter-node tool calls to neutralize AMT latency.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **OAG** integration to support speculative coordination.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **TASM** integration to resolve tunneling overhead.
