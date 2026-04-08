@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Sovereign Telemetry Scrubber (STS)**: (P0) Authoritative privacy proxy that redacts sensitive mission metadata and fuzzes geocoordinates in outbound telemetry.
+- **Visual Intent Lineage Debugger (VILD)**: (P1) High-level UI component for visualizing hardware-attested mission paths across distributed nodes to counter verification fatigue.
+- **Cross-Node Intent Sharding (CNIS) Provider**: (P0) Advanced state management service facilitating cryptographically bound migration of intent shards across hardware enclaves.
+
+### Priority Shifts
+- **Global Agent Activity Map**: (Re-affirmed P0) Elevated with mandatory **STS** integration to ensure spatial privacy.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for **Task-Bound Ephemeral Handshakes**.
