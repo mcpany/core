@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Alignment with OpenClaw AES GA
+**Context**: Today's market sync confirmed that OpenClaw's Agentic Entropy Scoring (AES) has moved to General Availability, providing a standardized baseline for reasoning divergence.
+**Architecture Adjustment**:
+*   Implementing the `AEM-AES` Translation Layer to ingest native OpenClaw entropy signals.
+*   Introducing the "Protected Attention Slot" integration to automatically pin mission-root anchors when Coherence Scores drop below 0.8.
+**Security Impact**: Neutralizes "Instruction Eviction" by ensuring core guardrails are reinforced during high-entropy reasoning bursts.

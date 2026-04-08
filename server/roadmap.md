@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Manifest-Based Reflection (MBR) Arbiter**: Authoritative coordination service mandating that subagent self-reflection cycles align with hardware-attested manifests. (Added: 2026-07-25)
+*   **[P0] Metadata Splicing Shield**: Structural security middleware performing real-time validation of state-fragment tags to block imperative metadata instructions. (Added: 2026-07-25)
+*   **[P0] Adaptive Resource Reclamation (ARR) v2**: High-speed budgeting middleware dynamically throttling reflection depth based on task-risk scores. (Added: 2026-07-25)
+*   **[P0] GC-Immune Reasoning Anchors**: Implementation of "Protected Attention Slots" to prevent mission-root anchor eviction during aggressive GC. (Added: 2026-07-25)

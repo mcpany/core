@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the hardware-attested mission manifest.
+- **Metadata Splicing Shield**: (P0) Structural security middleware performing real-time validation of state-fragment tags to block imperative metadata instructions.
+- **Adaptive Resource Reclamation (ARR) v2**: (P0) Resource management service dynamically throttling reflection depth based on task-risk scores.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with mandatory support for **AES-compliant** real-time scoring.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Designated as the primary defense against instruction eviction in 2M+ context windows.
