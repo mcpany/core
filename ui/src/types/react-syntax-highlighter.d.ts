@@ -6,6 +6,17 @@
 // Type declarations for react-syntax-highlighter ESM sub-path imports
 declare module 'react-syntax-highlighter/dist/esm/prism-light' {
   import { ComponentType } from 'react';
+  /**
+   * Props for SyntaxHighlighter component.
+   *
+   * Summary: Defines properties for the Prism-based syntax highlighter.
+   *
+   * Parameters: None.
+   *
+   * Returns: None.
+   *
+   * Throws: None.
+   */
   export interface SyntaxHighlighterProps {
     language?: string;
     style?: Record<string, unknown>;
@@ -25,6 +36,17 @@ declare module 'react-syntax-highlighter/dist/esm/prism-light' {
 
 declare module 'react-syntax-highlighter/dist/esm/light' {
   import { ComponentType } from 'react';
+  /**
+   * Props for SyntaxHighlighter component.
+   *
+   * Summary: Defines properties for the Light syntax highlighter.
+   *
+   * Parameters: None.
+   *
+   * Returns: None.
+   *
+   * Throws: None.
+   */
   export interface SyntaxHighlighterProps {
     language?: string;
     style?: Record<string, unknown>;
@@ -60,15 +82,70 @@ declare module 'react-syntax-highlighter/dist/esm/languages/hljs/bash' { const v
 declare module 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext' { const v: unknown; export default v; }
 
 declare module 'react-syntax-highlighter/dist/esm/styles/prism' {
+  /**
+   * Visual Studio Code Dark Plus style.
+   *
+   * Summary: Prism style definitions for VS Code Dark+.
+   *
+   * Parameters: None.
+   *
+   * Returns: Style record.
+   *
+   * Throws: None.
+   */
   export const vscDarkPlus: Record<string, unknown>;
+  /**
+   * One Dark style.
+   *
+   * Summary: Prism style definitions for One Dark.
+   *
+   * Parameters: None.
+   *
+   * Returns: Style record.
+   *
+   * Throws: None.
+   */
   export const oneDark: Record<string, unknown>;
   const styles: Record<string, Record<string, unknown>>;
   export default styles;
 }
 
 declare module 'react-syntax-highlighter/dist/esm/styles/hljs' {
+  /**
+   * Docco style.
+   *
+   * Summary: Highlight.js style definitions for Docco.
+   *
+   * Parameters: None.
+   *
+   * Returns: Style record.
+   *
+   * Throws: None.
+   */
   export const docco: Record<string, unknown>;
+  /**
+   * Dark style.
+   *
+   * Summary: Highlight.js style definitions for Dark.
+   *
+   * Parameters: None.
+   *
+   * Returns: Style record.
+   *
+   * Throws: None.
+   */
   export const dark: Record<string, unknown>;
+  /**
+   * VS 2015 style.
+   *
+   * Summary: Highlight.js style definitions for VS 2015.
+   *
+   * Parameters: None.
+   *
+   * Returns: Style record.
+   *
+   * Throws: None.
+   */
   export const vs2015: Record<string, unknown>;
   const styles: Record<string, Record<string, unknown>>;
   export default styles;
