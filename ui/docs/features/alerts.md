@@ -22,15 +22,15 @@ The **Alerts & Incidents** feature provides a centralized console for monitoring
     -   Frontend: `ui/src/app/alerts/page.tsx`, `ui/src/components/alerts/alert-list.tsx`.
 -   **Route:** `/alerts`
 -   **API Endpoints:**
-    -   `GET /api/v1/alerts`: List all alerts.
-    -   `POST /api/v1/alerts`: Create a new alert.
-    -   `GET /api/v1/alerts/{id}`: Get alert details.
-    -   `PATCH /api/v1/alerts/{id}`: Update alert status.
-    -   `GET /api/v1/alerts/rules`: List all alert rules.
-    -   `POST /api/v1/alerts/rules`: Create a new alert rule.
-    -   `GET /api/v1/alerts/rules/{id}`: Get rule details.
-    -   `PUT /api/v1/alerts/rules/{id}`: Update rule.
-    -   `DELETE /api/v1/alerts/rules/{id}`: Delete rule.
+    -   `GET /alerts`: List all alerts.
+    -   `POST /alerts`: Create a new alert.
+    -   `GET /alerts/{id}`: Get alert details.
+    -   `PATCH /alerts/{id}`: Update alert status.
+    -   `GET /alerts/rules`: List all alert rules.
+    -   `POST /alerts/rules`: Create a new alert rule.
+    -   `GET /alerts/rules/{id}`: Get rule details.
+    -   `PUT /alerts/rules/{id}`: Update rule.
+    -   `DELETE /alerts/rules/{id}`: Delete rule.
 -   **Components:**
     -   `AlertsPage`: Main container layout.
     -   `AlertList`: The data table component with filtering logic, connected to the backend API.
