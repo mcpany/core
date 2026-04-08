@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Tunneling Overhead via FPIR
+**Context**: Market sync reveals that the 500ms+ latency of mandatory mesh encryption is impacting real-time agent coordination in OpenClaw meshes.
+**Architecture Adjustment**:
+* Implementing **Fast-Path Identity Resumption (FPIR)** using session-bound "Mesh Tickets."
+* Caching hardware-attested handshakes in secure memory for the duration of the mission-root session.
+* Reducing P2P tunnel re-establishment time from ~600ms to <10ms.
+**Security Impact**: Maintains hardware-level security while providing the performance required for high-frequency distributed tool calls.

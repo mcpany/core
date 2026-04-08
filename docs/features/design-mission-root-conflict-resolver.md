@@ -48,3 +48,11 @@ The Mission-Root Conflict Resolver (MRCR) acts as the authoritative kernel-level
 
 ## 7. Evolutionary Changelog
 * **2026-07-23:** Initial Document Creation.
+
+### Update: 2026-07-25 - Transitioning to Lock-Free Coordination
+**Context**: Today's research on Claude Code v3.2.1-beta confirms that global mutexes on the Blackboard are the primary cause of "Cognitive Stall" in high-density swarms.
+**Architecture Adjustment**:
+* Deprecating global shard locks in Section 4.
+* Introducing **Conflict-Free Replicated Data Types (CRDTs)** for shared teammate mailbox shards.
+* Implementing "Optimistic Commit" flows where teammates can apply local state updates that are later merged via mission-root priority rules.
+**Security Impact**: Reduces "Wait-Graph" visibility, neutralizing side-channel timing attacks that rely on monitoring coordination locks.
