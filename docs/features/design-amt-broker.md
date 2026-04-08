@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+### Update: [2026-07-25] - Neutralizing RCE and Sequential Tool Attack Chains
+**Context:** July 2026 security research into OpenClaw (arXiv:2603.12644) has identified that standard mesh tunnels are vulnerable to **Sequential Tool Attack Chains**, where a compromised subagent uses valid P2P tunnels to bridge from unprivileged to privileged tool contexts.
+**Architecture Adjustment:**
+- **Reasoning-Action Correlation**: Integrating the `Sequential Attack-Chain Interceptor` into the AMT handshake. Tunnels are no longer granted based on static hardware identity alone; they now require a **Lineage-Aware Intent Proof** that correlates the remote tool call with the cumulative reasoning trace of the mission-root.
+- **Dynamic Context Redaction**: AMT Brokers will now perform real-time semantic scrubbing of context fragments crossing the tunnel to prevent "Context Amnesia" exploits used in RCE-driven prompt injection.
+**Security Impact:** Mitigates the risk of a remote node being used as a lateral movement jump-box by a rogue parallel teammate.

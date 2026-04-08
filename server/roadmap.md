@@ -374,6 +374,11 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Attested Skill Registry**: Implementation of cryptographic provenance and behavioral signatures for tool registries to neutralize supply chain contamination. (Added: 2026-07-25)
+*   **[P0] Teammate Task-List Arbiter**: Secure, lock-free task claiming and hardware-attested reconciliation for horizontal meshes. (Added: 2026-07-25)
+*   **[P0] Sequential Attack-Chain Interceptor**: Multi-turn semantic correlation to detect RCE attempts bridging unprivileged to privileged contexts. (Added: 2026-07-25)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)
@@ -422,6 +427,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Continuous BSH Integrity Monitor**: Real-time WASM-based integrity checks for Binary State Handoffs to detect "Ghost Fragment" mutations. (Added: 2026-03-30)
 *   **[P1] UDP Beacon Discovery Listener**: High-speed reactive listener for Gemini-style Capability Beacons. (Added: 2026-03-30)
 *   **[P1] Correction Budget Controller**: Resource management middleware for agent self-correction loops. (Added: 2026-03-30)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Attested Skill Registry**: Implementation of cryptographic provenance and behavioral signatures for tool registries to neutralize supply chain contamination. (Added: 2026-07-25)
+*   **[P0] Teammate Task-List Arbiter**: Secure, lock-free task claiming and hardware-attested reconciliation for horizontal meshes. (Added: 2026-07-25)
+*   **[P0] Sequential Attack-Chain Interceptor**: Multi-turn semantic correlation to detect RCE attempts bridging unprivileged to privileged contexts. (Added: 2026-07-25)
 
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Reasoning-Bound Context Shifter**: Context management middleware for synchronizing dynamic shifting logic. (Added: 2026-04-01)

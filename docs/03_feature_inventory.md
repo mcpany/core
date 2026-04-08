@@ -181,6 +181,17 @@
 - **Teammate Task-List Arbiter**: (Evolved to LFTC) Now designated as the primary mechanism for lock-free horizontal coordination.
 - **Discovery Sandbox Middleware**: (Promoted to P0) Critical requirement for neutralizing startup-time RCE in agent environments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attested Skill Registry (ASR)**: (P0) Authoritative registry for agent tools and skills mandating cryptographic provenance and behavioral signatures to neutralize supply chain contamination.
+- **Teammate Task-List Arbiter**: (P0) Coordination service for horizontal Agent Teams providing secure, lock-free task claiming and hardware-attested state reconciliation.
+- **Sequential Attack-Chain Interceptor**: (P0) Security middleware that performs multi-turn semantic correlation to detect and block RCE attempts bridging unprivileged to privileged tool contexts.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Promoted to P0) Critical for supporting the horizontal shift in Claude Code Agent Teams.
+- **Attested Skill Registry**: (P0) Elevated to primary defense against the ongoing "ClawHavoc" style marketplace poisoning.
+
 ## Current Backlog (P0/P1)
 - **Policy Firewall**: Rego/CEL based hooking for tool calls.
 - **HITL Middleware**: Suspension protocol for user approval flows.
