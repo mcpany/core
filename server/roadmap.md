@@ -212,6 +212,12 @@
 *   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
 *   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
 
+#### Upcoming (2026-04-08 Evolution)
+*   **[P0] Headless Orchestration Proxy (HOP)**: Persistent coordination layer for background agent swarms and CI-bound "Dispatch" workers. (Added: 2026-04-08)
+*   **[P0] Multi-Registry Capability Router**: Aggregation and prioritized resolution of tools across multiple independent registries. (Added: 2026-04-08)
+*   **[P0] Unified Sandbox Provider (USP)**: Cross-OS isolation abstraction for macOS Seatbelt, Linux Bubblewrap, and Windows Containers. (Added: 2026-04-08)
+*   **[P1] Economic Load Balancer (ELB)**: Real-time reasoning router optimizing for token cost and mission budget across model providers. (Added: 2026-04-08)
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)

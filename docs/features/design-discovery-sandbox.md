@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-08 - Unified Sandbox Abstraction for Cross-OS Stability
+**Context:** Gemini CLI v0.36 has expanded sandboxing to macOS (Seatbelt) and Windows, highlighting the need for a cross-platform isolation strategy.
+**Architecture Adjustment:**
+* Evolving the sandbox layer into a **Unified Sandbox Provider (USP)**.
+* Implementing driver-based isolation that maps the discovery-phase sandbox requirements to OS-specific primitives (Seatbelt on macOS, Bubblewrap on Linux, Windows Containers).
+**Operational Impact:** Ensures a consistent "Zero-Trust Discovery" experience for developers across all operating systems.

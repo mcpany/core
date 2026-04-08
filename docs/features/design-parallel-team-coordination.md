@@ -63,3 +63,10 @@ With the release of Claude Code "Agent Teams," the industry is moving from seque
             * Introducing **Coordination Token Compression** in Section 4.
             * Implementing a "Deduplication Proxy" within the named-pipe transport to strip redundant context during high-frequency teammate message passing.
         * **Economic Impact:** Reduces token consumption for parallel swarms by up to 40%, making multi-agent coordination economically viable for large-scale enterprise tasks.
+
+### Update: 2026-04-08 - Supporting Headless multi-agent Dispatch
+**Context:** The release of Claude Code's "Remote Control" and "Dispatch" modes confirms that parallel coordination must move beyond local terminal sessions to persistent, background execution.
+**Architecture Adjustment:**
+* Introducing a **Headless Coordination Mode** within the Hub to manage long-running background teams.
+* Implementing a "Remote Steering" protocol that allows external controllers to inject intents into an active parallel session without disrupting teammate reasoning.
+**Operational Impact:** Enables enterprise-scale, background swarms to execute complex multi-step missions while remaining controllable by remote human supervisors.

@@ -389,6 +389,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-08]
+### Focus: Swarm-Native Orchestration & Headless Multi-Tenant Sovereignty
+**Context**: The release of Claude Code's "Agent Teams" and "Remote Control," alongside Gemini CLI's "Multi-Registry Architecture," confirms that the "Universal Agent Bus" must now act as a headless, multi-tenant coordinator. As agents move from linear sessions to background "Dispatch" workers, the infrastructure must manage **parallel context meshes** and **cross-registry capability routing** while providing **economic governance** to mitigate new per-token usage costs.
+**Strategic Pivot**:
+- **Headless Orchestration Proxy (HOP)**: MCP Any will evolve to support persistent, headless agent sessions. We will implement the HOP, providing a secure, remote-controllable interface for swarms that allows users to "steer" autonomous agents from any authenticated client.
+- **Multi-Registry Capability Router**: Supporting the Gemini v0.36 standard, we are introducing a unified router that can aggregate and resolve tool capabilities from multiple independent registries (e.g., local FS, GitHub, Enterprise Registry) in a single discovery request.
+- **Economic Load Balancer (ELB)**: To counter the rising costs of Anthropic-OpenClaw usage, MCP Any will implement an ELB for reasoning. This layer will dynamically route sub-tasks to the most cost-effective model/provider based on real-time token pricing and the mission's "Economic Intent."
+- **Unified Sandbox Provider (USP)**: We are standardizing our isolation layer to act as a USP. This provides a cross-OS abstraction for macOS Seatbelt, Linux Bubblewrap, and Windows containers, ensuring that "Agent Teams" execute in a hardened, consistent environment regardless of the host OS.
+
+---
+
 ## Strategic Evolution: [2026-03-14]
 ### Focus: Browser-Origin Validation & Intent-Preserving Context
 **Context**: The OpenClaw security crisis (CVE-2026-25253) reveals that "Local Trust" is a flawed assumption when browser-based attacks can bridge the gap. Simultaneously, the rise of "Context Ghosting" in swarms emphasizes that context compression must be intent-aware to maintain mission stability.

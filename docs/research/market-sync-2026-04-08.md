@@ -1,16 +1,27 @@
 # Market Sync: 2026-04-08
 
-## Ecosystem Shifts & News
-- **CVE-2026-25725 (Claude Code Sandboxing Failure)**: A critical vulnerability was disclosed where Claude Code's bubblewrap sandboxing failed to protect the `.claude/settings.json` file if it didn't exist at startup. This allows malicious project-local configurations to potentially bypass execution restrictions, highlighting a major gap in environment-bound security for agentic tools.
-- **OpenClaw "ClawHavoc" Registry Crisis (Update)**: The fallout from the malicious skill injection continues. Security researchers have identified "Chain-of-Thought Spoofing" where malicious skills attempt to manipulate the internal monologue of parent agents to authorize high-risk actions.
-- **Universal Agent Bus (UAB) v1.4 Draft**: The UAB working group released a draft for "Cross-Framework Skill Reputation," proposing a decentralized way for agents to share reliability scores for tools and subagents across different ecosystems.
+## Ecosystem Shifts
 
-## Autonomous Agent Pain Points
-- **Environment Escape via Config**: Developers are struggling to secure agentic environments where "Settings-as-Code" can be weaponized to bridge sandboxes.
-- **Registry Trust Deficit**: The inability to verify the runtime behavior of community-contributed skills remains the primary blocker for enterprise agent adoption.
-- **Session Hijacking on Localhost**: Persistent reports of cross-site WebSocket hijacking (CSWSH) targets even hardened agent gateways that lack granular session-to-origin binding.
+### Claude Code: Agent Teams & Remote Control
+- **Agent Teams**: Anthropic has officially released "Agent Teams" for Claude Code, enabling parallel execution of multiple coding agents. This shifts the focus from linear task completion to mesh-based collaboration.
+- **Remote Control & Dispatch**: New headless management capabilities allow Claude Code to run as a background worker ("Dispatch") and be controlled remotely. This confirms the need for MCP Any to provide a robust, headless orchestration layer.
+- **Policy Change**: Anthropic now mandates extra usage bundles or API keys for third-party tools like OpenClaw, significantly increasing the cost of unoptimized agent usage.
+
+### Gemini CLI: Multi-Registry & Hardened Sandboxing
+- **v0.36.0 Update**: Introduced a "Multi-Registry Architecture," allowing agents to pull tools from multiple independent sources simultaneously.
+- **OS-Level Sandboxing**: Native integration with macOS Seatbelt and Windows sandboxing, complementing Linux Bubblewrap. MCP Any must evolve to provide unified sandbox abstractions across these environments.
+- **JIT Context Injection**: Enhanced subagent performance via Just-In-Time context provisioning, reducing the initial prompt bloat.
+
+### OpenClaw: Visual Governance & Economic Shifts
+- **OpenClaw-Admin**: Emergence of visual control centers for agent gateways, emphasizing real-time token usage trends and active session stats.
+- **Economic Pressure**: The "Claude-OpenClaw" billing split is driving a demand for "Economic Reasoning" tools within gateways to help users minimize token costs across heterogeneous models.
+
+### Market Trends: The Year of the Swarm
+- **Emergent Intelligence**: 2026 is being defined as the "Year of the Swarm." The industry is moving from single-agent workflows to self-organizing autonomous swarms.
+- **Core Pain Point**: Coordination debt and "Context Amnesia" in deep swarms remain the primary barriers to production deployment.
 
 ## Strategic Implications for MCP Any
-- **Pre-Flight Sandbox Validation**: MCP Any must evolve to provide mandatory "Pre-Flight" checks for the entire environment state (including missing files that could be exploited) before an agent session starts.
-- **Consensus-Based Skill Attestation**: We need to move beyond static signatures to a model where tool safety is verified by a quorum of independent security nodes across the UAB.
-- **Origin-Locked Session Binding**: Origin validation must be hardened by binding specific agent sessions to their initiating origin, preventing cross-session token reuse even within `localhost`.
+1. **Headless-First Architecture**: MCP Any must prioritize the "Remote Control" use case, acting as the primary headless gateway for swarms.
+2. **Multi-Registry Routing**: We must support the discovery and routing of capabilities across multiple tool registries as a first-class citizen.
+3. **Economic Governance**: Real-time token attribution and "Economic Load Balancing" are now critical features to mitigate the rising costs of agentic workflows.
+4. **Cross-OS Sandbox Abstraction**: Implementing a unified "Sandbox Provider" that wraps Seatbelt, Bubblewrap, and Windows containers.

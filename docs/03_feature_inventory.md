@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-08] Updates
+
+### Proposed Additions
+- **Headless Orchestration Proxy (HOP)**: (P0) A persistent, remote-controllable gateway for background agent swarms, supporting "Remote Control" and "Dispatch" patterns.
+- **Multi-Registry Capability Router**: (P0) Aggregation service that resolves tool capabilities across multiple independent local and remote registries.
+- **Economic Load Balancer (ELB)**: (P1) Real-time reasoning router that optimizes for token cost and mission budget across heterogeneous model providers.
+- **Unified Sandbox Provider (USP)**: (P0) Cross-OS isolation abstraction wrapping macOS Seatbelt, Linux Bubblewrap, and Windows Containers.
+
+### Priority Shifts
+- **Parallel Team Coordination Hub**: (Re-affirmed P0) Elevated with mandatory support for **Headless Orchestration** and remote steering.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Now designated as the primary "Economic Approval" gate for high-cost agent actions.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

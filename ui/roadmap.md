@@ -713,6 +713,12 @@
 - [ ] **[P0] ZK-Discovery Broker Workspace**: (2026-07-01) UI for reviewing masked capability cards and unmasking schemas via mission-handshakes.
 - [ ] **[P0] Attention Anchor Heatmap**: (2026-07-01) Visual tracker for ALRA-pinned intent fragments and attention-density alerts.
 
+#### Upcoming (2026-04-08 Evolution)
+- [ ] **[P0] Remote Steering Interface**: UI for injecting priority intents and steering headless background agent swarms. (Added: 2026-04-08)
+- [ ] **[P0] Multi-Registry Topology View**: Visualization of capability origins and trust tiers across local and remote registries. (Added: 2026-04-08)
+- [ ] **[P1] Economic Reasoning Dashboard**: Real-time cost-to-token visualization and load balancer steering controls. (Added: 2026-04-08)
+- [ ] **[P0] Cross-OS Sandbox Status**: Real-time monitor of isolation driver status (Seatbelt/Bubblewrap/Windows). (Added: 2026-04-08)
+
 #### Upcoming (2026-07-03 Evolution)
 - [ ] **[P0] Zero-Copy Buffer Monitor**: (2026-07-03) Real-time visualization of memory-mapped reasoning shards and physical boundary isolation status.
 - [ ] **[P0] Stylometric Identity Dashboard**: (2026-07-03) Security workspace for visualizing behavioral "voice" matches and mimicry alerts.
