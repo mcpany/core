@@ -94,3 +94,87 @@ func TestFindInjection(t *testing.T) {
 		assert.Contains(t, err.Error(), "find injection detected", "Should detect -delete injection")
 	})
 }
+
+func TestCheckFindInjection(t *testing.T) {
+	tests := []struct {
+		name    string
+		val     string
+		base    string
+		wantErr bool
+	}{
+		{
+			name:    "safe find command with spaces",
+			val:     ". -name \"*.go\" -type f",
+			base:    "find",
+			wantErr: false,
+		},
+		{
+			name:    "not find base command",
+			val:     "-exec rm -rf /",
+			base:    "grep",
+			wantErr: false,
+		},
+		{
+			name:    "malicious exec flag",
+			val:     ". -name \"*.tmp\" -exec rm {} \\;",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "malicious execdir flag",
+			val:     ". -name \"*.tmp\" -execdir rm {} \\;",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "malicious ok flag",
+			val:     ". -name \"*.tmp\" -ok rm {} \\;",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "malicious okdir flag",
+			val:     ". -name \"*.tmp\" -okdir rm {} \\;",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "malicious delete flag",
+			val:     ". -name \"*.tmp\" -delete",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "malicious exec flag uppercase",
+			val:     ". -name \"*.tmp\" -EXEC rm {} \\;",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "malicious flag embedded inside safe string",
+			val:     ". -name \"-exec-is-bad\"",
+			base:    "find",
+			wantErr: false,
+		},
+		{
+			name:    "malicious flag with prefix spacing",
+			val:     ". -name \"*.tmp\"    -exec   rm {} \\;",
+			base:    "find",
+			wantErr: true,
+		},
+		{
+			name:    "empty value",
+			val:     "",
+			base:    "find",
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := checkFindInjection(tt.val, tt.base); (err != nil) != tt.wantErr {
+				t.Errorf("checkFindInjection() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
