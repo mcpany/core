@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mcpany/core/server/pkg/client"
+	"github.com/mcpany/core/pkg/client"
 	"github.com/mcpany/core/server/pkg/pool"
 	"github.com/stretchr/testify/require"
 )

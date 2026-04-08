@@ -11,7 +11,7 @@ go_library(
         "http_client_wrapper.go",
         "websocket.go",
     ],
-    importpath = "github.com/mcpany/core/server/pkg/client",
+    importpath = "github.com/mcpany/core/pkg/client",
     visibility = ["//visibility:public"],
     deps = [
         "//proto/config/v1:config",

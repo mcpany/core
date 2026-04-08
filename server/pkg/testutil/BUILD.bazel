@@ -14,7 +14,7 @@ go_library(
     deps = [
         "//proto/config/v1:config",
         "//proto/mcp_router/v1:mcp_router",
-        "//server/pkg/client",
+        "//pkg/client",
         "//server/pkg/pool",
         "//server/pkg/tool",
         "@com_github_stretchr_testify//require",
@@ -27,7 +27,7 @@ go_test(
     srcs = ["testutil_test.go"],
     embed = [":testutil"],
     deps = [
-        "//server/pkg/client",
+        "//pkg/client",
         "//server/pkg/pool",
         "//server/pkg/tool",
         "@com_github_stretchr_testify//assert",
