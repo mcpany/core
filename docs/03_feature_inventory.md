@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Neural Monologue Shield (NMS)**: (P0) Authoritative reasoning vault utilizing hardware-bound encryption for subagent reasoning monologues to protect cognitive privacy.
+- **Hardware-Locked Resumption (HLR) Provider**: (P0) Advanced continuity service mandating fresh TPM-attested signatures for session recovery to neutralize "Resumption Hijacking."
+- **DSG-Native Grafting Hub**: (P1) Authoritative broker for dynamic tool loading (UAB v1.6), requiring real-time behavioral profiling and multi-signature attestation.
+- **State-Differential Context Sync**: (P0) Security middleware anchoring state mutations to mission-phases to prevent hallucination cross-pollination.
+
+### Priority Shifts
+- **Durable Mission Continuity Provider**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HLR** integration.
+- **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Elevated priority due to "Verification Fatigue" pain points discovered in headless swarms.
