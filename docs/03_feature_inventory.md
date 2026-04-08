@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Instruction Deconstructor (RID)**: (P0) Authoritative syntax guard performing graph-based deconstruction of command pipelines in natural-language configs to block recursive bypasses.
+- **Hardware-Attested Discovery Approval (HADA) Gateway**: (P0) Advanced security service mandating hardware-bound handshakes for all discovery-time execution (e.g., discoveryCommand).
+- **Pre-Flight Trust Enclave**: (P0) Ephemeral, zero-trust sandbox for hosting discovery and configuration-loading logic to prevent unauthorized host-level access.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **Intent-Bound Memory Shards (v2)** with hardware-attested "Plan Anchors."
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolving into the **Pre-Flight Trust Enclave** for comprehensive startup-phase sovereignty.

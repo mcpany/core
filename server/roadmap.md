@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Recursive Instruction Deconstructor (RID)**: Authority for graph-based deconstruction of command pipelines in natural-language configs. (Added: 2026-07-25)
+*   **[P0] Hardware-Attested Discovery Approval (HADA)**: Mandated hardware signals for all discovery-time execution to prevent startup-time RCE. (Added: 2026-07-25)
+*   **[P0] Pre-Flight Trust Enclave**: Ephemeral, zero-trust sandbox for hosting discovery and configuration-loading logic. (Added: 2026-07-25)
