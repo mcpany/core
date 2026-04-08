@@ -838,6 +838,10 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Lease-Grafting Breach Alert**: Real-time notification and visualization of blocked privilege escalation attempts (CVE-2026-92102).
+- [ ] **[P0] GC-Immune Anchor Highlighter**: UI indicator for reasoning fragments marked as "Permanent" via PRA.
+
 #### Upcoming (2026-07-23 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.

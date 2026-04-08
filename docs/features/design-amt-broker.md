@@ -61,4 +61,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 * **Observability:** Integrated with the "Service Mesh Topology Monitor" in the UI for real-time visualization of inter-node tunnels.
 
 ## 7. Evolutionary Changelog
+* **2026-07-25: Support for Fast-Path Mesh Handshakes (FPMH)**
+    * **Context:** Market sync identified tunneling overhead as a primary blocker for distributed agents. OpenClaw v3.6.2 introduced FPMH to solve this.
+    * **Architecture Adjustment:**
+        * Introducing `Mesh Tickets`: Hardware-bound, session-specific tokens that allow for sub-millisecond tunnel resumption.
+        * Upgrading `amt.ResumeTunnel` to use these tickets, bypassing the full TPM attestation ceremony for subsequent calls within a mission window.
+    * **Security Impact:** Maintains zero-trust sovereignty while significantly reducing coordination tax.
 * **2026-07-24:** Initial Document Creation.

@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Lease-Grafting Interceptor (LGI)**: (P0) Authoritative security service performing real-time semantic deconstruction of hardware-attested leases to neutralizing CVE-2026-92102.
+- **CRDT-Native Coordination Bridge**: (P0) Scaling middleware for horizontal meshes implementing Conflict-Free Replicated Data Types for shared teammate state (scratchpads/mailboxes).
+- **Permanent Reasoning Anchor (PRA) Manager**: (P0) Advanced attention governance service allowing mission-critical fragments to be marked as "GC-Immune."
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with mandatory support for **Fast-Path Mesh Handshakes (FPMH)**.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with mandatory **LGI-compliant** semantic validation.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
