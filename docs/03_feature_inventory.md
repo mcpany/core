@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Universal Key Orchestration Bridge (UKOB)**: (P0) Authoritative key relay service automating hardware-attested key rotation across heterogeneous mesh nodes to neutralize handshake fatigue.
+- **Mission-Root Cold-Storage (MRCS) Sink**: (P1) Automated archival service for preserving hardware-attested reasoning traces and environment state in immutable, air-gapped storage.
+- **Attestation-Aware UI Bridge**: (P0) Security upgrade for the A2UI Gateway mandating visual "Cognitive Badges" for all agent-generated UI elements.
+- **Cross-Enclave Continuity Provider**: (P0) Translation middleware preserving mission-root continuity as context shards migrate across disparate hardware enclave providers.
+
+### Priority Shifts
+- **A2UI Native Gateway**: (Re-affirmed P0) Evolving into the **Attestation-Aware UI Bridge** for visual sovereignty.
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **UKOB** integration for large-scale key distribution.

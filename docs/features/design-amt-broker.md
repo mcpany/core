@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Universal Key Orchestration (UKOB)
+**Context:** Today's market sync revealed "Key Exhaustion" vulnerabilities in high-density meshes using manual SNT key rotation (OpenClaw v3.7.0).
+**Architecture Adjustment:**
+*   Deprecating static node-to-node key management in Section 4.
+*   Introducing the **Universal Key Orchestration Bridge (UKOB)** as the primary control plane for AMT Broker.
+*   Automating hardware-attested key rotation across 50+ nodes using UKOB-mediated re-keying events.
+**Security Impact:** Prevents side-channel key analysis in long-running tunnels and ensures sub-millisecond mesh scaling without central handshake bottlenecks.
