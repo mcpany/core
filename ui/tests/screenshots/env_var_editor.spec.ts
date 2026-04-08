@@ -4,8 +4,23 @@
  */
 
 import { test, expect } from '@playwright/test';
+import { seedGlobalState } from '../e2e/test-data';
 
 test.describe('Service Configuration Editor', () => {
+  test.beforeEach(async ({ request, page }) => {
+    await seedGlobalState(request);
+    await page.goto('/login');
+    await page.waitForLoadState('networkidle');
+
+    await page.fill('input[name="username"]', 'e2e-admin-core');
+    await page.fill('input[name="password"]', 'password');
+    await Promise.all([
+        page.waitForURL('/', { timeout: 30000 }),
+        page.click('button[type="submit"]', { force: true })
+    ]);
+    await expect(page).toHaveURL('/', { timeout: 15000 });
+  });
+
   test('should allow editing environment variables for command line service', async ({ page }) => {
     // Navigate to services page
     await page.goto('/upstream-services');
@@ -20,9 +35,14 @@ test.describe('Service Configuration Editor', () => {
     if (await customHttpOption.isVisible()) {
         await customHttpOption.click();
     } else {
-        const customOption = page.locator('text=Custom').first();
+        const customOption = page.getByRole('button', { name: 'Start from Scratch' });
         if (await customOption.isVisible()) {
              await customOption.click();
+        } else {
+            const legacyOption = page.locator('text=Custom').first();
+            if (await legacyOption.isVisible()) {
+                await legacyOption.click();
+            }
         }
     }
 
