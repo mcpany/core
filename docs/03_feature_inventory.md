@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Agent-to-Agent Identity Attestation (AAIA) Hub**: (P0) Authoritative local identity service issuing hardware-attested, session-bound identity fragments for all intra-swarm communication to neutralizing lateral social engineering.
+- **Lateral Instruction Integrity (LII) Validator**: (P0) Security service performing real-time structural and semantic validation of teammate instructions against the mission manifest and pre-declared sender roles.
+- **Dynamic Permission Decay (DPD) Controller**: (P0) Stability middleware that automatically "decays" trust leases and capabilities in response to anomalous coordination patterns, requiring re-attestation.
+
+### Priority Shifts
+- **Command Traceability Provider (CTP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AAIA-compliant** signing of every reasoning fragment to ensure non-repudiable lineage.
+- **NHI Lifecycle Governance Provider**: (Re-affirmed P0) Designated as a critical dependency for the **DPD Controller** to manage trust-lease decay events.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

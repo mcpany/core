@@ -218,6 +218,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] AAIA (Agent-to-Agent Identity Attestation) Hub**: Authoritative service for issuing hardware-attested, session-bound identity fragments for every agent. (Added: 2026-07-25)
+*   **[P0] Lateral Instruction Integrity (LII) Validator**: Real-time structural and semantic validation service for inter-agent coordination messages. (Added: 2026-07-25)
+*   **[P0] Non-Repudiable Fragment Signer**: Identity middleware ensuring every reasoning fragment is cryptographically linked to its generating agent. (Added: 2026-07-25)
+*   **[P0] Dynamic Permission Decay (DPD) Controller**: Stability middleware for automatic trust-lease decay in response to anomalous inter-agent patterns. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
