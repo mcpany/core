@@ -110,6 +110,30 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 	return w, ok
 }
 
+// ToggleWebhook updates the active state of a webhook.
+//
+// Summary: Toggles webhook active state.
+//
+// Parameters:
+//   - id (string): The webhook ID.
+//   - active (bool): The new active state.
+//
+// Returns:
+//   - error: An error if the webhook is not found.
+//
+// Side Effects:
+//   - Updates the active status of the specified webhook.
+func (m *Manager) ToggleWebhook(id string, active bool) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	w, ok := m.webhooks[id]
+	if !ok {
+		return fmt.Errorf("webhook not found")
+	}
+	w.Active = active
+	return nil
+}
+
 // DeleteWebhook removes a webhook by ID.
 //
 // Summary: Deletes a webhook.

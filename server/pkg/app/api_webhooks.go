@@ -91,6 +91,20 @@ func (a *Application) handleWebhookDetail() http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(wh)
+		case http.MethodPatch:
+			var req struct {
+				Active bool `json:"active"`
+			}
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			if err := a.WebhooksManager.ToggleWebhook(id, req.Active); err != nil {
+				http.Error(w, err.Error(), http.StatusNotFound)
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"status":"success"}`))
 		case http.MethodDelete:
 			a.WebhooksManager.DeleteWebhook(id)
 			w.WriteHeader(http.StatusNoContent)

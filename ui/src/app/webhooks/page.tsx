@@ -80,9 +80,24 @@ export default function WebhooksPage() {
     }, []);
 
     const toggleWebhook = async (id: string) => {
-        // Toggle active status not implemented in backend yet, just placeholder for UI interaction
-        // In real impl, this would be a PATCH or PUT
-        toast.info("Toggle active status not yet implemented in backend");
+        const webhook = webhooks.find((w) => w.id === id);
+        if (!webhook) return;
+
+        try {
+            const res = await fetch(`/api/v1/webhooks/${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ active: !webhook.active }),
+            });
+            if (res.ok) {
+                toast.success(`Webhook ${!webhook.active ? 'enabled' : 'disabled'}`);
+                fetchWebhooks();
+            } else {
+                toast.error("Failed to toggle webhook status");
+            }
+        } catch (error) {
+            toast.error("Failed to toggle webhook status");
+        }
     };
 
     const deleteWebhook = async (id: string) => {

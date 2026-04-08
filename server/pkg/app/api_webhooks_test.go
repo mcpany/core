@@ -85,3 +85,35 @@ func TestHandleWebhookDetail(t *testing.T) {
 		t.Errorf("DELETE expected webhook to be gone")
 	}
 }
+
+func TestHandleWebhookDetailPatch(t *testing.T) {
+	app := NewApplication()
+	// Pre-populate
+	w := &webhooks.WebhookConfig{
+		ID:     "wh-patch",
+		URL:    "http://example.com",
+		Events: []string{"test"},
+		Active: false,
+	}
+	app.WebhooksManager.AddWebhook(w)
+
+	handler := app.handleWebhookDetail()
+
+	body := []byte(`{"active": true}`)
+	req := httptest.NewRequest("PATCH", "/webhooks/wh-patch", bytes.NewBuffer(body))
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("PATCH expected 200, got %d", rr.Code)
+	}
+
+	updated, ok := app.WebhooksManager.GetWebhook("wh-patch")
+	if !ok {
+		t.Fatalf("webhook disappeared")
+	}
+	if !updated.Active {
+		t.Errorf("PATCH expected webhook to be active")
+	}
+}
