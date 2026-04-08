@@ -62,3 +62,4 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Added **Mesh Topology Masking (MTM)** requirement to Section 4. Coordination responses over the tunnel must now be jittered to prevent node distance inference via side-channel analysis.

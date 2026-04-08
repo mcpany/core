@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh Topology Masking (MTM) Provider**: (P0) Security service injecting hardware-attested, intent-aware jitter into inter-node coordination to neutralize side-channel tunnel-mapping.
+- **Teammate Reflection Quorum (TRQ) Adapter**: (P0) Distributed coordination service requiring peer-attestation of refined reasoning before shared state mutations.
+- **Attestation-Fast-Path (AFP) Optimizer**: (P0) Performance-optimizing extension for the FPIR provider allowing batch-signing of coordination fragments.
+
+### Priority Shifts
+- **Higher-Dimensional Behavioral Attestation (HDBA)**: (Re-affirmed P0) Elevated with mandatory protection against **Semantic Mirroring** in ZK-proofs.
+- **Manifest-Based Reflection (MBR) Arbiter**: (Re-affirmed P0) Elevated with mandatory **TRQ** integration for peer-attested self-correction.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
