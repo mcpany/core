@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Trust Inheritance Middleware**: (P0) Authoritative coordination service allowing new nodes in elastic swarms to inherit hardware-attested trust from active mission anchors, neutralizing "Handshake Storms."
+- **Recursive Scratchpad Isolation (RSI) Manager**: (P0) Security middleware hosting ephemeral scratchpad shards to prevent reasoning leakage between parallel teammates before mission-root commitment.
+- **Cognitive Debt Arbiter (CDA)**: (P0) Resource management service monitoring reasoning-effort (`x-gemini-reasoning-effort`) borrowing and capping recursive debt loops to prevent swarm-wide cognitive bankruptcy.
+- **Echo-Residue Sanitizer (ERS)**: (P0) Kernel-level memory scrubber for sharded mailbox and scratchpad buffers to neutralize stylometric "ghost traces" (CVE-2026-99102 defense).
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **CDA** integration to prevent cognitive debt cascades.
+- **Reasoning-Aware Redaction (RAR) Engine**: (Re-affirmed P0) Evolving to support mandatory **ERS-compliant** kernel-level memory scrubbing.

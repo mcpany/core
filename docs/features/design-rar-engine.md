@@ -55,3 +55,8 @@ The RAR Engine is designed to solve this by providing a unified governance layer
 
 ## 7. Evolutionary Changelog
 * **2026-07-19:** Initial Document Creation.
+
+### Update: 2026-07-25 - Echo-Residue Sanitizer (ERS) Integration
+**Context:** Today's market sync revealed CVE-2026-99102 (stylometric traces in kernel buffers).
+**Architecture Adjustment:** * Integrated kernel-level memory scrubbing for all sharded buffers upon fragment deletion to neutralize "ghost traces."
+**Security Impact:** Mitigates cross-mission stylometric mimicry by ensuring absolute erasure of sharded state fragments.
