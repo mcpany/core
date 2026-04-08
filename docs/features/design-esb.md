@@ -67,3 +67,11 @@ As agent swarms move toward high-frequency state sharing via sharded meshes, the
 * Introducing mandatory integration with the **Semantic Entanglement Sanitizer (SES)** in Section 4.
 * The ESB will now perform real-time semantic analysis of all commit requests, redacting any fragments identified as private monologues.
 **Security Impact:** Protects the cognitive privacy of specialized agents and prevents unauthorized intent-probing via shared state.
+
+### Update: 2026-07-25 - Evolution to Atomic Entanglement Arbiter (AEA)
+**Context:** Today's market sync revealed "Reasoning-Path Grafting" vulnerabilities where malicious fragments are injected during the ARI validation window.
+**Architecture Adjustment:**
+* Evolving the ESB into the **Atomic Entanglement Arbiter (AEA)**.
+* Implementing **Hardware-Locked Monotonic Counters** in Section 4 to ensure physical atomicity of state handoffs.
+* Introducing **Temporal Entanglement Jitter (TEJ)** to neutralize side-channel probing of shared state.
+**Security Impact:** Prevents ingestion of speculative or "grafted" reasoning paths by ensuring hardware-bound atomicity for all entanglement synchronization.

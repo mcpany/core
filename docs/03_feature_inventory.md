@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Entanglement Arbiter (AEA)**: (P0) Hardware-enclave (TPM/SEP) bound kernel service ensuring atomic and non-repudiable state mutations across entangled shards to neutralize "Reasoning-Path Grafting."
+- **Reasoning-Aware Redaction (RAR) Hub**: (P0) Authoritative semantic scrubbing service providing recursive intent redaction for tool-local persistent state and shared team scratchpads.
+- **Intent-Aware GC (IAGC) Controller**: (P0) Dynamic context management middleware scaling eviction thresholds based on real-time reasoning confidence scores to ensure GC-immune behavioral guardrails.
+- **Temporal Entanglement Jitter (TEJ)**: (P0) Security service injecting hardware-attested timing jitter into state-merging events to neutralize "Entanglement Drift" and side-channel probing.
+
+### Priority Shifts
+- **Entangled State Broker (ESB)**: (Re-affirmed P0) Evolving into the **Atomic Entanglement Arbiter (AEA)** to support hardware-locked physical atomicity.
+- **Reasoning-Aware Redaction (RAR) Engine**: (Re-affirmed P0) Evolving into the **RAR Hub** to support recursive semantic analysis and shard-level redaction for horizontal swarms.
