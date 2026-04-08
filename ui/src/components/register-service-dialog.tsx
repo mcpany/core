@@ -18,6 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
+import Editor from "@monaco-editor/react";
+import { useTheme } from "next-themes";
 import { UpstreamServiceConfig } from "@/lib/types";
 import { Credential } from "@proto/config/v1/auth";
 import { Plus, RotateCw, ChevronLeft, Loader2, Activity, CheckCircle2, XCircle, ArrowLeft, AlertTriangle } from "lucide-react";
@@ -155,6 +157,8 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
   }, [open]);
 
   // Watch for sensitive data
+  const { resolvedTheme } = useTheme();
+
   const watchedAddress = form.watch("address");
   const watchedCommand = form.watch("command");
   const watchedConfigJson = form.watch("configJson");
@@ -687,7 +691,23 @@ export function RegisterServiceDialog({ onSuccess, trigger, serviceToEdit }: Reg
                         <FormItem>
                         <FormLabel>Configuration JSON</FormLabel>
                         <FormControl>
-                            <Textarea className="font-mono" rows={15} {...field} />
+                            <div className="h-[400px] border rounded-md overflow-hidden">
+                                <Editor
+                                    height="100%"
+                                    defaultLanguage="json"
+                                    value={field.value}
+                                    onChange={(val) => field.onChange(val || "")}
+                                    theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
+                                    options={{
+                                        minimap: { enabled: false },
+                                        scrollBeyondLastLine: false,
+                                        fontSize: 12,
+                                        tabSize: 2,
+                                        wordWrap: "on",
+                                        formatOnPaste: true,
+                                    }}
+                                />
+                            </div>
                         </FormControl>
                         <FormDescription>
                             Full JSON configuration for the UpstreamServiceConfig.
