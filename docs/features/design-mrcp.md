@@ -77,3 +77,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
 *   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
 **Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
+
+### Update: 2026-07-25 - Active Mission Re-Anchoring via MRD
+**Context:** Emergence of "Ship of Theseus" intent drift in long-running missions reveals that passive continuity is insufficient to maintain behavioral guardrails.
+**Architecture Adjustment:**
+*   Integrating the **Mission-Root Defragmenter (MRD)** into the continuity lifecycle.
+*   Automated defragmentation triggers are now part of the `POST /mission/resume` flow to ensure a "clean" semantic start.
+*   Mandating **HARG-compliant** monotonic tokens for all checkpoint/resume events to prevent TunnelCrack-style interception.
+**Security Impact:** Prevents semantic drift from evicting mission-root guardrails and ensures resumption handshakes are immune to spoofing.

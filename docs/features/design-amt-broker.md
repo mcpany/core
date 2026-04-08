@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resumption Sovereignty via HARG
+**Context:** The discovery of the "TunnelCrack" exploit in SNT confirms that session-bound mesh tickets are susceptible to interception and spoofing.
+**Architecture Adjustment:**
+*   Deprecating session-bound "Mesh Tickets" in Section 4.
+*   Mandating **Hardware-Attested Resumption Guard (HARG)** for all tunnel resumptions.
+*   Resumption handshakes now require a TPM-bound monotonic counter match to invalidate stale handshake fragments.
+**Security Impact:** Neutralizes TunnelCrack by ensuring that inter-node resumptions are cryptographically bound to a unique, non-reusable hardware lineage.

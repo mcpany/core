@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mission-Root Defragmenter (MRD)**: (P0) Authoritative semantic scrubbing service performing real-time analysis and re-anchoring of mission-root intents in the attention window.
+- **Hardware-Attested Resumption Guard (HARG)**: (P0) Core security service utilizing TPM-bound monotonic counters to invalidate stale session fragments and neutralize "TunnelCrack" exploits.
+- **Epistemic Integrity Quorum Hub**: (P1) Distributed attestation service requiring independent auditor verification for reflective reasoning traces to block recursive hallucination loops.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with mandatory **HARG-compliant** monotonic anchoring.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for **HARG-gated** resumption handshakes.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Evolving into the **MRD** for active semantic maintenance.
