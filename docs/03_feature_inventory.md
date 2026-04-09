@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Shard-Level Redaction (SLR) Hub**: (P0) Authoritative redaction broker utilizing semantic scanners to redact PII and private monologues from context shards before mesh-wide sharing.
+- **Ephemeral Workspace Snapshot (EWS) Bridge**: (P0) Resilience service providing hardware-locked, point-in-time environment recovery for autonomous file edits.
+- **Attention-Weighted Quota (AWQ) Controller**: (P1) Advanced resource manager scaling token/reasoning budgets based on real-time attention priority to neutralize REE.
+- **Multi-modal Header Sanitizer (MHS)**: (P0) Security middleware for recursive deconstruction of image/audio metadata to block instruction smuggling (CVE-2026-10101 defense).
+
+### Priority Shifts
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Multi-modal Header Sanitization**.
+- **Project-Local Snapshot (PLSS) Sync**: (Re-affirmed P0) Evolving to act as the primary backend for the **EWS Bridge**.

@@ -77,3 +77,10 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
 *   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
 **Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
+
+### Update: 2026-07-25 - Hardware-Locked Mission Leases (HLML)
+**Context:** Stabilization of the HLML standard in Claude Code v3.2.0 confirms that persistence must be tied to strictly scoped capability leases.
+**Architecture Adjustment:**
+* Integrating **HLML Provider** into the resumption flow.
+* Resumption state is now cryptographically bound to the active mission lease, ensuring that "Lease Expiration" automatically invalidates continuity tokens.
+**Security Impact:** Prevents "Persistence Bypasses" where an agent could resume a mission after its authorized capability lease has been revoked by the hardware root.

@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Fast-Path Tunnel Resumption
+**Context:** Research into Sovereign Node Tunneling (SNT) reveals that tunneling overhead is a primary pain point for sub-millisecond tool execution.
+**Architecture Adjustment:**
+* Introducing "Lightweight Mesh Handshakes" in Section 4.
+* Utilizing session-bound trust tickets to resume secure tunnels across distributed nodes.
+**Performance Impact:** Reduces tunnel resumption overhead to sub-millisecond levels, maintaining mesh sovereignty without a coordination tax.
