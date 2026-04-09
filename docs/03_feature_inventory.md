@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Autonomous Sovereignty Arbiter (ASA) Broker**: (P0) Authoritative host for hardware-attested "Mission Constitutions" to autonomously reconcile conflicting instructions from disparate frameworks.
+- **Reward Integrity Attestation (RIA) Provider**: (P0) Security service mandating TPM-signed performance-reward tokens and success signals to neutralize "Reward Poisoning."
+- **Project-Bound Identity (PBI) Enforcer**: (P0) Identity middleware binding capability tokens to project Merkle trees for instant revocation upon unauthorized mutation.
+- **Mission-Root Cohesion Anchors**: (P0) Advanced pinning mechanism injecting signed mission fragments to prevent "Cohesion Collapse" in deep meshes.
+
+### Priority Shifts
+- **AIR (Autonomous Intent Reconciliation) Hub**: (Re-affirmed P0) Elevated with mandatory support for **ASA-compliant** constitutional arbitration.
+- **Sovereign Mesh Identity (SMI) Relay**: (Re-affirmed P0) Elevated with the requirement for **PBI-compliant** environment binding.

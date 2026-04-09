@@ -63,3 +63,10 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 * Integrating the Lock-Free Mesh Arbiter (LFMA) with the DMR migration path.
 * Transitioning from "Push-based Migration" to "Speculative Shard Pulling" during high-latency coordination windows.
 **Security Impact**: Reduces the window for "Stale Identity" reuse by mandating hardware-attested identity rotation (HAIR) as a prerequisite for shard resumption post-migration.
+
+### Update: 2026-11-02 - Integrating Constitutional Arbitration for Mesh Recovery
+**Context**: Today's research into "Autonomous Sovereignty Arbitration" (ASA) confirms that failover state migration must not only be resilient but also constitutionally aligned.
+**Architecture Adjustment**:
+* Mandating an ASA-check during the "Emergency State Migration" protocol.
+* Destination nodes must now verify the "Mission Constitution" before accepting a migrated specialist shard.
+**Security Impact**: Prevents "Intent Hijacking" during node failover by ensuring the re-spawned subagent remains bound to the user-signed constitutional priority.
