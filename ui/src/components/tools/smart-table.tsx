@@ -58,11 +58,17 @@ export function SmartTable({ data }: SmartTableProps) {
   // Extract columns
   const columns = useMemo(() => {
     const keys = new Set<string>();
+    let hasPrimitives = false;
     data.slice(0, 100).forEach((item) => {
       if (typeof item === 'object' && item !== null) {
         Object.keys(item).forEach(k => keys.add(k));
+      } else {
+        hasPrimitives = true;
       }
     });
+    if (hasPrimitives && keys.size === 0) {
+        keys.add('Value');
+    }
     return Array.from(keys);
   }, [data]);
 
@@ -175,6 +181,9 @@ export function SmartTable({ data }: SmartTableProps) {
 
     if (value === null || value === undefined) {
       return <span className="text-muted-foreground/50 italic text-xs">null</span>;
+    }
+    if (value === "") {
+      return <span className="text-muted-foreground/50 italic text-xs">empty string</span>;
     }
     if (typeof value === 'boolean') {
       return (
@@ -305,15 +314,18 @@ export function SmartTable({ data }: SmartTableProps) {
                         ) : (
                             paginatedData.map((row, i) => (
                                 <TableRow key={i} className="hover:bg-muted/30 transition-colors group/row">
-                                    {columns.map(col => (
-                                        <TableCell
-                                            key={col}
-                                            className="py-2.5 px-4"
-                                            style={{ width: columnWidths[col] ? `${columnWidths[col]}px` : 'auto', maxWidth: columnWidths[col] ? `${columnWidths[col]}px` : undefined, overflow: columnWidths[col] ? 'hidden' : undefined }}
-                                        >
-                                            {renderCell(row[col], col, i)}
-                                        </TableCell>
-                                    ))}
+                                    {columns.map(col => {
+                                        const cellValue = typeof row === 'object' && row !== null ? row[col] : row;
+                                        return (
+                                            <TableCell
+                                                key={col}
+                                                className="py-2.5 px-4"
+                                                style={{ width: columnWidths[col] ? `${columnWidths[col]}px` : 'auto', maxWidth: columnWidths[col] ? `${columnWidths[col]}px` : undefined, overflow: columnWidths[col] ? 'hidden' : undefined }}
+                                            >
+                                                {renderCell(cellValue, col, i)}
+                                            </TableCell>
+                                        );
+                                    })}
                                 </TableRow>
                             ))
                         )}
