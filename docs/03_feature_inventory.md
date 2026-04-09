@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Active Lease Arbiter (ALA)**: (P0) Authoritative verification service that detects "No-Op Heartbeats" and forcefully reclaims MBHL capabilities to prevent "Lease-Squatting."
+- **Predictive Intent-Gated Tunneling (PIGT)**: (P0) High-speed attestation service for the AMT Broker that speculatively establishes P2P tunnels based on real-time intent analysis.
+- **Epistemic Rate Limiting (ERL) Provider**: (P1) Advanced resource management service that dynamically scales tool-call quotas based on hardware-attested reasoning confidence.
+- **Interrupt-Aware Conflict Resolver (IACR)**: (P0) High-frequency Blackboard arbiter allowing mission-root interrupts to bypass standard consensus latency.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **PIGT** integration to reduce distributed swarm latency.
+- **Capability Garbage Collection (CGC) Provider**: (Evolved to ALA) Now designated as the primary defense against lease-based resource starvation.

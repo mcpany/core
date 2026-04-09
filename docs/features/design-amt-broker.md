@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Predictive Intent-Gated Tunneling (PIGT)
+**Context:** Today's market sync revealed that mandatory P2P tunnels introduce significant latency, and "Lease-Squatting" exploits demand more active governance. OpenClaw v3.7.0's move to Intent-Gated Tunnels confirms we must shift from reactive to predictive attestation.
+**Architecture Adjustment:**
+* Introducing **Predictive Intent-Gated Tunneling (PIGT)** in Section 4.
+* The AMT Broker now utilizes real-time intent analysis to speculatively prepare tunnels before a remote tool call is issued.
+* Deprecating purely reactive tunnel establishment for high-frequency specialist handoffs.
+**Security Impact:** Reduces "Coordination Deadlock" risk by ensuring tunnels are pre-verified against the mission root, while maintaining Zero-Trust hardware isolation.

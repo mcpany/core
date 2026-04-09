@@ -48,3 +48,11 @@ The Mission-Root Conflict Resolver (MRCR) acts as the authoritative kernel-level
 
 ## 7. Evolutionary Changelog
 * **2026-07-23:** Initial Document Creation.
+
+### Update: 2026-07-25 - Interrupt-Aware Conflict Resolution (IACR)
+**Context:** Market feedback indicates that standard consensus heartbeats cause "Coordination Deadlocks" during rapid mission pivots.
+**Architecture Adjustment:**
+* Introducing **Interrupt-Aware Conflict Resolution (IACR)** in Section 4.
+* Implementing a "Fast-Path Interrupt" signal that allows mission-root instructions to bypass standard sharding locks and authority-score checks.
+* Forcing immediate state reconciliation upon receipt of a high-priority mission-root pivot.
+**Security Impact:** Ensures mission-root sovereignty is maintained even during high-contention parallel execution, preventing subagents from "locking out" parent corrections.

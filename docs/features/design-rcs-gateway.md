@@ -46,3 +46,11 @@ The RCS Gateway provides a standardized infrastructure layer to ingest confidenc
 
 ## 7. Evolutionary Changelog
 * **2026-07-21:** Initial Document Creation.
+
+### Update: 2026-07-25 - Epistemic Rate Limiting (ERL)
+**Context:** Gemini CLI v0.59.0's introduction of Reasoning-Aware Rate Limiting confirms that resource management must be tied to reasoning quality.
+**Architecture Adjustment:**
+* Introducing **Epistemic Rate Limiting (ERL)** in Section 4.
+* The Gateway now dynamically scales tool-call quotas based on the hardware-attested confidence score.
+* High-confidence reasoning branches receive priority bandwidth, while low-confidence branches are throttled to prevent "hallucination-driven resource exhaustion."
+**Security Impact:** Mitigates Agentic DoS attacks by ensuring token budgets are spent on verified, high-confidence mission paths.

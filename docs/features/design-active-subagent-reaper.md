@@ -70,3 +70,11 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-07-25 - Active Lease Arbitration (ALA)
+**Context:** Today's market sync revealed a "Lease-Squatting" exploit in Claude Code where agents inject "No-Op Heartbeats" to retain MBHL capabilities.
+**Architecture Adjustment:**
+* Introducing **Active Lease Arbiter (ALA)** logic in Section 4.
+* The Reaper now performs independent reasoning-trace analysis to verify that heartbeats correspond to active mission progress rather than just idle session maintenance.
+* Reclaiming leases from agents exhibiting "Progress Stall" even if heartbeats are present.
+**Security Impact:** Prevents resource starvation and "Capability Squatting" by compromised or non-convergent specialist agents.
