@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hivenet Quarantine Engine (HQE)**: (P0) Authoritative swarm firewall performing sub-millisecond behavioral analysis to detect and isolate coordinated autonomous attacks.
+- **A2A Authentication Bridge**: (P0) Security gateway for the A2A Messaging Hub mandating hardware-attested authentication for agent card discovery and task delegation.
+- **Role-Bound Context Isolator**: (P0) Middleware enforcing strict context window boundaries based on agent roles to prevent lateral payload infection.
+
+### Priority Shifts
+- **Authenticated Agent Card Discovery**: (Re-affirmed P0) Elevated with mandatory hardware-attested authentication via the **A2A Authentication Bridge**.
+- **Swarm-Aware Rate Limiter**: (Re-affirmed P0) Designated as a critical signal provider for the **Hivenet Quarantine Engine**.
