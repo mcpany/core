@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Dynamic Shard Re-Balancing (DSRB)
+**Context:** Today's market sync revealed that static P2P tunnels in OpenClaw are suffering from 200ms+ latency during mesh resumption.
+**Architecture Adjustment:**
+*   Introducing the **Dynamic Shard Re-Balancing (DSRB) Broker**.
+*   Deprecating static shard anchoring in Section 4.
+*   The AMT Broker will now utilize ARE (Reasoning Intensity) scores to proactively migrate context shards to the physical node with the lowest predicted latency for the next reasoning step.
+**Security Impact:** Reduces the window for timing-based side-channel attacks by normalizing shard access times across the distributed mesh.

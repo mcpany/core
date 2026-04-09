@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Shared Attention Registry (SAR) Hub**: Implementation of a team-level logic deduplication service to reduce token waste. (Added: 2026-07-25)
+*   **[P0] Dynamic Shard Re-Balancing (DSRB) Broker**: Latency-aware context migration for distributed AMT nodes. (Added: 2026-07-25)
+*   **[P0] Phantom Intent Guard (PIG)**: Semantic sanitization for context summaries to prevent "Summarization Hijacking." (Added: 2026-07-25)
+*   **[P0] HAIS v2.0 Compliance Enforcer**: Kernel-level intent-to-capability binding using TPM signatures. (Added: 2026-07-25)

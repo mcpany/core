@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Shared Attention Registry (SAR) Hub**: (P0) Distributed coordination service enabling teammates to deduplicate reasoning traces while protecting GC-Immune anchors.
+- **Dynamic Shard Re-Balancing (DSRB) Broker**: (P0) High-speed mesh management service that migrates context shards between AMT nodes based on latency and ARE scores.
+- **Phantom Intent Guard (PIG)**: (P0) Semantic security middleware that detects maliciously injected "Phantom Intents" within context summaries.
+- **HAIS v2.0 Compliance Enforcer**: (P0) Core security service mandating that all tool capabilities be cryptographically bound to hardware-signed intent branches.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **DSRB** integration to resolve tunneling latency.
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Designated as the primary enforcement point for the **Phantom Intent Guard (PIG)**.
