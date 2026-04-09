@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Non-blocking Mesh Coordination Arbiter**: (P0) Authoritative coordination service implementing optimistic state synchronization to resolve "Cognitive Stall" in horizontal swarms.
+- **Latency-Optimized Peer Handoff Middleware**: (P0) Performance extension for the AMT Broker utilizing persistent session resumption to reduce tunneling overhead.
+- **Hardware Lease Expiration Monitor**: (P1) Lifecycle management service for mission-bound hardware leases (MBHL) that automatically revokes capabilities from orphaned subagents.
+- **ZK-Attestation Continuity Provider**: (P1) Identity service integrating Zero-Knowledge proof signals into the trust persistence layer for privacy-preserving audits.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **Persistent Session Resumption** integration.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Designated as the primary enforcement point for the new **Lease Expiration Monitor**.
