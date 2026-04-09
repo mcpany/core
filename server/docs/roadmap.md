@@ -61,7 +61,7 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 8.  **Downstream mTLS**: Enforce mutual TLS for agents collecting to MCP Any (Zero Trust).
 9.  **Just-In-Time (JIT) Access**: Temporary elevation of privileges for specific tools (e.g., "Grant Write access for 1 hour").
 10. **Fine-Grained ABAC**: Attribute-Based Access Control (e.g. "Only allow production tools during business hours").
-11. **Tool Signature Verification**: Enforce that loaded WASM/Binary tools are signed by a trusted key.
+11. **Tool Signature Verification**: [Completed] Enforce that loaded WASM/Binary tools are signed by a trusted key via Integrity checks.
 12. **Vulnerability Scanning Integration**: Auto-scan registered tool container images for CVEs.
 13. **Policy dry-run mode**: Test new security policies on traffic without blocking (shadow mode).
 14. **Compliance Reports**: Generate PDF reports of user activity for SOC2/ISO audits.
@@ -92,14 +92,14 @@ Based on a review of the MCP ecosystem (mcp.so, LobeHub, GitHub, Docker), we ide
 
 ### Developer Experience
 
-35. **Enhanced Configuration Validation**: Implement strict schema validation (using JSON Schema) to catch structure errors like `service_config` wrapper usage at parsing time.
+35. **Enhanced Configuration Validation**: [Completed] Implement strict schema validation (using JSON Schema) to catch structure errors like `service_config` wrapper usage at parsing time.
 36. **Interactive `mcp init` CLI**: A wizard to generate valid configuration files interactively, reducing copy-paste errors from docs.
 
 ## Codebase Health Report
 
 ### Critical Areas
 
-- **Webhooks "Test" Code**: `server/cmd/webhooks` needs formalization if intended for production (Sidecar pattern).
+- **Webhooks Sidecar**: [Completed] `server/cmd/webhooks` has been formalized for production use.
 - **SDK Consolidation**: `server/pkg/client` should ideally be in a separate repository to be used by other Go clients without pulling in the whole server.
 
 ### Recommendations
