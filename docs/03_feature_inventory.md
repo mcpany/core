@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **GC-Immune Reasoning Anchors**: (P0) Advanced pinning mechanism for mission-critical context fragments to prevent eviction during aggressive context-window garbage collection.
+- **Optimistic Tunnel Resumption (OTR) Broker**: (P1) High-performance coordination service using hardware-attested trust tickets to speculatively resume encrypted P2P tunnels.
+- **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Promoted from P1 to P0) Critical for supporting the sub-millisecond performance needs of P2P mesh architectures (SNT compliance).
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with mandatory support for **OTR-compliant** speculative task handoffs.
