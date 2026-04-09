@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Standardized Teammate Mailbox (STM)**: (P0) Sharded, P2P messaging bus utilizing CRDTs for non-blocking horizontal swarm coordination.
+- **Asynchronous Execution Queue (AEQ)**: (P0) Event-driven state manager for tool calls and queued confirmations to maintain agent responsiveness.
+- **Mesh-Resident Task Arbiter**: (P1) Lifecycle and conflict resolution service for horizontal teammate task-claiming.
+- **Intent-Bound Mailbox Isolation**: (P0) Security middleware cryptographically restricting coordination fragments to specific mission-root branches.
+
+### Priority Shifts
+- **Lock-Free mesh coordination**: (Re-affirmed P0) Elevated with mandatory **STM** compliance for CRDT-based synchronization.
+- **Durable Mission Continuity Provider**: (Re-affirmed P0) Designated as a critical dependency for **AEQ** state persistence across reboots.

@@ -59,3 +59,10 @@ As AI agent ecosystems transition from solitary tools to multi-agent swarms, the
 * **RID Parental Override**: Implementing a real-time "Kill Switch" in the Delegation Engine that allows parent agents to revoke sub-delegations if intent drift is detected.
 * **Shard-Aware Task Cards**: Task cards now support `required_shards` metadata to facilitate pre-emptive mounting by the Shard Manager.
 **Security Impact:** Mitigates "Intent Hijacking" by rogue subagents and provides a distributed safety net for sensitive operations.
+
+### Update: 2026-07-25 - Transition to Sharded Mailbox Models
+**Context**: Emergence of parallel Agent Teams (Claude Code) reveals bottlenecks in centralized coordination locks.
+**Architecture Adjustment**:
+* Deprecating global task locks in favor of sharded, task-bound mailboxes using CRDTs for non-blocking task claiming.
+* Introducing STM (Standardized Teammate Mailbox) as the default coordination transport for horizontal swarms.
+**Security Impact**: Mitigates coordination-level Denial of Service (DoS) and ensures message isolation between parallel intent branches.
