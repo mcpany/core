@@ -55,62 +55,42 @@ const getTableData = (data: unknown, smartTable: boolean) => {
     if (!smartTable) return null;
     const content = tryParse(data);
 
-    if (Array.isArray(content) && content.length > 0) {
-        const isListOfObjects = content.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
-        if (isListOfObjects) {
-            return content;
-        }
-        const isListOfPrimitives = content.every(item => typeof item !== 'object' || item === null);
-        if (isListOfPrimitives) {
-            return content.map((item, index) => ({ index, value: item }));
-        }
-    }
+    let largestArray: any[] | null = null;
 
-    if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
-        let largestArray: any[] | null = null;
-        Object.values(content).forEach(val => {
-            if (Array.isArray(val) && val.length > 0) {
-                const isListOfObjects = val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
-                if (isListOfObjects) {
-                    if (!largestArray || val.length > largestArray.length) {
-                        largestArray = val;
-                    }
-                } else {
-                    const isListOfPrimitives = val.every(item => typeof item !== 'object' || item === null);
-                    if (isListOfPrimitives) {
-                        const mapped = val.map((item, index) => ({ index, value: item }));
-                        if (!largestArray || mapped.length > largestArray.length) {
-                            largestArray = mapped;
-                        }
+    const traverse = (obj: any, currentDepth: number) => {
+        if (currentDepth > 3) return; // Limit depth to 3
+        if (!obj || typeof obj !== 'object') return;
+
+        if (Array.isArray(obj) && obj.length > 0) {
+            const isListOfObjects = obj.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+            if (isListOfObjects) {
+                if (!largestArray || obj.length > largestArray.length) {
+                    largestArray = obj;
+                }
+            } else {
+                const isListOfPrimitives = obj.every(item => typeof item !== 'object' || item === null);
+                if (isListOfPrimitives) {
+                    const mapped = obj.map((item, index) => ({ index, value: item }));
+                    if (!largestArray || mapped.length > largestArray.length) {
+                        largestArray = mapped;
                     }
                 }
-            } else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
-                Object.values(val).forEach(nestedVal => {
-                    if (Array.isArray(nestedVal) && nestedVal.length > 0) {
-                        const isListOfObjects = nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
-                        if (isListOfObjects) {
-                            if (!largestArray || nestedVal.length > largestArray.length) {
-                                largestArray = nestedVal;
-                            }
-                        } else {
-                            const isListOfPrimitives = nestedVal.every(item => typeof item !== 'object' || item === null);
-                            if (isListOfPrimitives) {
-                                const mapped = nestedVal.map((item, index) => ({ index, value: item }));
-                                if (!largestArray || mapped.length > largestArray.length) {
-                                    largestArray = mapped;
-                                }
-                            }
-                        }
-                    }
-                });
             }
-        });
-        if (largestArray) {
-            return largestArray;
         }
-    }
 
-    return null;
+        // Traverse children
+        if (!Array.isArray(obj)) {
+            Object.values(obj).forEach(val => traverse(val, currentDepth + 1));
+        } else {
+            // For arrays of arrays or mixed, we can traverse each item.
+            // Typically, we only care about objects containing arrays.
+            obj.forEach(val => traverse(val, currentDepth + 1));
+        }
+    };
+
+    traverse(content, 0);
+
+    return largestArray;
 };
 
 /**

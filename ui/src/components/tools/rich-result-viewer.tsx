@@ -149,37 +149,41 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
     const { isTableEligible, tableData } = useMemo(() => {
         if (mcpContent) return { isTableEligible: false, tableData: [] };
 
-        // 1. Array of objects
-        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
-            return { isTableEligible: true, tableData: content };
-        }
+        let largestArray: any[] | null = null;
 
-        // 2. Object containing an array of objects. We aggressively scan the top 2 levels.
-        if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
-            let largestArray: any[] = [];
+        const traverse = (obj: any, currentDepth: number) => {
+            if (currentDepth > 3) return; // Limit depth to 3
+            if (!obj || typeof obj !== 'object') return;
 
-            // Level 1 scan
-            Object.values(content).forEach(val => {
-                 if (Array.isArray(val) && val.length > 0 && val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
-                     if (val.length > largestArray.length) {
-                         largestArray = val;
-                     }
-                 }
-                 // Level 2 scan
-                 else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
-                      Object.values(val).forEach(nestedVal => {
-                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
-                               if (nestedVal.length > largestArray.length) {
-                                   largestArray = nestedVal;
-                               }
-                           }
-                      });
-                 }
-            });
-
-            if (largestArray.length > 0) {
-                 return { isTableEligible: true, tableData: largestArray };
+            if (Array.isArray(obj) && obj.length > 0) {
+                const isListOfObjects = obj.every(item => typeof item === 'object' && item !== null && !Array.isArray(item));
+                if (isListOfObjects) {
+                    if (!largestArray || obj.length > largestArray.length) {
+                        largestArray = obj;
+                    }
+                } else {
+                    const isListOfPrimitives = obj.every(item => typeof item !== 'object' || item === null);
+                    if (isListOfPrimitives) {
+                        const mapped = obj.map((item, index) => ({ index, value: item }));
+                        if (!largestArray || mapped.length > largestArray.length) {
+                            largestArray = mapped;
+                        }
+                    }
+                }
             }
+
+            // Traverse children
+            if (!Array.isArray(obj)) {
+                Object.values(obj).forEach(val => traverse(val, currentDepth + 1));
+            } else {
+                obj.forEach(val => traverse(val, currentDepth + 1));
+            }
+        };
+
+        traverse(content, 0);
+
+        if (largestArray) {
+             return { isTableEligible: true, tableData: largestArray };
         }
 
         return { isTableEligible: false, tableData: [] };
