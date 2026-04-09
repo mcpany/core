@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Task-Claim Arbiter (TCA)**: (P0) Authoritative coordination service for the Shared Task Board mandating hardware-attested identity verification before teammate task-claiming.
+- **Reasoning-Aware Rate Limiter (RARL)**: (P0) Economic security middleware monitoring real-time reasoning effort and throttling subagents that exceed authorized "Reasoning Leases."
+- **Semantic Handoff Validator**: (P0) Stability middleware ensuring mission-root anchors are preserved during specialist agent handoffs to prevent guardrail loss.
+- **Kernel-Level Pipe Isolation (KLPI)**: (P0) Hardware-enclave bound isolation for Docker-bound inter-agent communication to prevent container namespace escapes.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to TCA) Now designated as the primary enforcement point for secure horizontal task coordination.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **RARL-compliant** reasoning effort monitoring.

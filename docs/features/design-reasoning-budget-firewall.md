@@ -59,3 +59,11 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-07-25 - Reasoning-Aware Rate Limiting (RARL)
+**Context:** Market analysis revealed a new "Reasoning Exhaustion" attack vector where compromised subagents purposefully trigger high-effort reasoning loops to drain parent quotas and cause a denial of mission.
+**Architecture Adjustment:**
+*   Introducing the **Reasoning-Aware Rate Limiter (RARL)** as a core component of the RBF.
+*   RARL dynamically throttles subagents based on the cumulative reasoning effort signaled in headers (e.g., `x-gemini-reasoning-effort`).
+*   Implements "Reasoning Quench" signals that MCP Any sends back to the subagent to forcefully reduce reasoning depth when limits are approached.
+**Security Impact:** Neutralizes economic DoS attacks by ensuring that subagents cannot maliciously or accidentally exhaust the swarm's reasoning budget.
