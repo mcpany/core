@@ -1934,3 +1934,27 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-24] (Iteration 2) Updates
+
+### Proposed Additions
+- **Asynchronous Task Progress (ATP) Adapter**: (P0) Authoritative broker for real-time tool progress updates, allowing agents to stream telemetry without blocking reasoning.
+- **Lock-Free Teammate Synchronization (LFTS)**: (P0) Scaling service utilizing Conflict-Free Replicated Data Types (CRDTs) to neutralize the MTTC coordination bottleneck.
+- **Mission-Root Attention Anchors (MRAA)**: (P0) Advanced pinning mechanism for mission-critical fragments to prevent "Instruction Eviction" during aggressive context GC.
+- **Behavioral Redaction Gateway**: (P0) Context-aware security service that performs real-time masking based on the agent's role and mission intent.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Evolved to LFTS) Now designated as the primary architecture for horizontal swarm performance.
+- **Coordination Token Optimizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ATP-compliant** telemetry streaming.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Asynchronous Task Progress (ATP) Hub**: (P0) Authoritative broker for real-time tool telemetry streaming to neutralize "Swarm Silence."
+- **Lock-Free Teammate Synchronization (LFTS)**: (P0) Coordination service utilizing CRDTs to eliminate MTTC bottlenecks in horizontal swarms.
+- **Mission-Root Attention Anchors (MRAA)**: (P0) Advanced pinning mechanism for mission-critical fragments to prevent eviction during aggressive context GC.
+- **Reasoning-Aware Redaction Gateway**: (P0) Context-aware security service that performs real-time masking based on the agent's current mission-root role.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Evolved to LFTS) Now designated as the primary architecture for mesh performance.
+- **Coordination Token Optimizer**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ATP-compliant** telemetry.

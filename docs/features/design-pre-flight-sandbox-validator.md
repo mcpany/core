@@ -53,3 +53,17 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
     * **Security Impact:** Neutralizes the "Absence-as-Exploit" pattern by ensuring the sandbox state remains identical to the pre-attested manifest.
 * **2026-04-10:** Integrated with the **Deterministic Attestation Gateway** to support "Full-State Manifest" requirements for Claude Code deterministic boot compliance.
 * **2026-04-09:** Initial Document Creation.
+
+### Update: 2026-07-24 - Non-Blocking Progress Streams
+**Context:** Today's research into Gemini CLI v0.60.0 revealed that agents now expect real-time execution feedback to prevent "Swarm Silence".
+**Architecture Adjustment:**
+* Integrating **Asynchronous Task Progress (ATP)** into the Validator's proxy layer.
+* Proxied tools can now stream progress events without violating the Pre-Flight Manifest's immutability rules, as telemetry is treated as "Append-Only Observability".
+**Security Impact:** Prevents malicious tools from using "Progress Flooding" to exfiltrate context while maintaining user-visible liveness signals.
+
+### Update: 2026-07-25 - Non-Blocking Progress Streams
+**Context:** Today's research into Gemini CLI v0.60.0 revealed that agents now expect real-time execution feedback to prevent "Swarm Silence".
+**Architecture Adjustment:**
+* Integrating **Asynchronous Task Progress (ATP)** into the Validator's proxy layer.
+* Proxied tools can now stream progress events without violating the Pre-Flight Manifest's immutability rules, as telemetry is treated as "Append-Only Observability".
+**Security Impact:** Prevents malicious tools from using "Progress Flooding" to exfiltrate context while maintaining user-visible liveness signals.

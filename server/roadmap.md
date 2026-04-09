@@ -1030,3 +1030,15 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-24 Evolution)
+*   **[P0] Asynchronous Task Progress (ATP)**: Implementation of real-time tool telemetry streaming to neutralize "Swarm Silence". (Added: 2026-07-24)
+*   **[P0] Lock-Free Teammate Sync (LFTS)**: Decentralized coordination bus utilizing CRDTs to solve the MTTC bottleneck. (Added: 2026-07-24)
+*   **[P0] Mission-Root Attention Anchors (MRAA)**: Middleware for mandatory pinning of mission guardrails in 1M+ token windows. (Added: 2026-07-24)
+*   **[P0] Behavioral Redaction Gateway**: Context-aware sanitization engine for tool outputs and inter-agent messages. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Asynchronous Task Progress (ATP)**: Implementation of real-time tool telemetry streaming to neutralize "Swarm Silence". (Added: 2026-07-25)
+*   **[P0] Lock-Free Teammate Sync (LFTS)**: Decentralized coordination bus utilizing CRDTs to solve the MTTC bottleneck. (Added: 2026-07-25)
+*   **[P0] Mission-Root Attention Anchors (MRAA)**: Middleware for mandatory pinning of mission guardrails in 1M+ token windows. (Added: 2026-07-25)
+*   **[P0] Reasoning-Aware Redaction Gateway**: Context-aware sanitization engine for tool outputs and inter-agent messages. (Added: 2026-07-25)

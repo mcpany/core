@@ -21,3 +21,21 @@
 - **Cognitive Stall**: Parallel teammates in Claude Code teams frequently enter 5s+ wait cycles during complex conflict resolution on the shared task list, highlighting the need for **Lock-Free Mesh Coordination**.
 - **Tunneling Overhead**: The latency introduced by mandatory P2P tunnels in OpenClaw is impacting sub-millisecond tool execution, increasing the demand for **Fast-Path Identity Resumption**.
 - **GC Fragility (Re-affirmed)**: Agents continue to lose behavioral guardrails when "Silent Anchors" are evicted by aggressive context-window garbage collection.
+
+---
+
+## Iteration 2: 2026-07-24 Context Sync
+
+### 1. Gemini CLI v0.60.0: Progress Streams & Intent-Aware Masking
+- **Observation**: Release v0.60.0 emphasizes user-visible progress updates for MCP tools and behavioral tests for output masking.
+- **Infrastructure Impact**: Universal adapters must now support asynchronous progress notifications to prevent "Swarm Silence" during deep execution.
+- **Security Trend**: Masking is moving from simple regex to behavioral-based redaction where the context of the reasoning determines the sensitivity of the data.
+
+### 2. The "MTTC" Bottleneck in Large Swarms
+- **Finding**: Community reports on Agent Swarms (CrewAI, AutoGen) show that MTTC (Mean Time to Coordinate) becomes the primary performance killer as swarms exceed 5 agents.
+- **Root Cause**: Reliance on centralized coordination locks and sequential task bidding.
+- **Opportunity**: MCP Any can provide a "Lock-Free Task Bus" that utilizes CRDTs for teammate state synchronization.
+
+### 3. Instruction Eviction in 1M+ Context Windows
+- **Trend**: As models support larger windows, agents are becoming more prone to "Instruction Eviction" where core mission guardrails are pushed out of the attention head by high-volume tool data.
+- **Action**: Implementing "Silent Anchors" that are programmatically re-injected or pinned at the hardware level is becoming a standard for mission sovereignty.
