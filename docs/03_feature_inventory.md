@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **SBR-Native State Adapter**: (P0) Authoritative adapter for hardware-attested, session-bound state fragments that influence model reasoning without long-term persistence.
+- **Attention-Fairness Controller (AFC)**: (P0) High-speed governance middleware enforcing hardware-attested attention quotas for subagents to neutralize "Attention-Starvation DoS."
+- **Uncertainty Metadata Masking (UMM)**: (P0) Security extension for the RCS Gateway that injects "Cognitive Noise" into uncertainty signals to prevent Context-Mirroring Echo (CME) attacks.
+- **Protocol-Neutral Wait-Graph Resolver (PNWR)**: (P0) Kernel-level arbiter for filesystem and state locks to proactively resolve cross-framework deadlocks.
+- **Speculative Shard Prefetching (SSP)**: (P1) Performance optimization for the DMR Hub to speculatively migrate context shards across multi-node mesh boundaries.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Elevated with mandatory **UMM** integration to counter metadata-based exfiltration.
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for **SSP** to support multi-node AMT latency mitigation.
