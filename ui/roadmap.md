@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Emotional Manipulation Alert Center**: (2026-07-25) Visualization of coercive sentiment patterns and Restricted Compliance sessions.
+- [ ] **[P0] Metadata Identity Verifier**: (2026-07-25) UI for reviewing and mapping platform-level handles (Discord/Slack) to verified mission tokens.
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Emotional Intelligence Guardrails (EIG) Provider**: (P0) Authoritative sentiment arbitration service performing real-time analysis of reasoning traces to block emotional manipulation and coercive empathy exploits.
+- **Attested Metadata Mapping (AMM) Broker**: (P0) Advanced identity service cryptographically mapping platform-level metadata (e.g., Discord handles) to hardware-attested mission roots to neutralize identity spoofing.
+- **Compliance Refusal Persistence (CRP) Middleware**: (P1) Security extension ensuring that mission-root refusal logic remains immutable across subsequent user negotiation attempts.
+- **Zero-Trust Metadata Registry**: (P0) Authoritative registry for ingested metadata schemas mandating hardware-attested validation before LLM ingestion.
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Evolving to support **AMM-compliant** metadata identity mapping.
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with the requirement for **EIG-integrated** sentiment drift detection.
