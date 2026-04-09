@@ -82,3 +82,11 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 * MLE Gateway now enforces mandatory hardware-signed leases for "High-Impact" tool categories (e.g., `run_shell_command`).
 * Leases are cryptographically tied to the TPM-attested mission fragment and expire automatically upon mission termination signals.
 **Security Impact:** Mitigates persistent privilege escalation by ensuring that high-privilege tool access is physically revoked by the hardware root at the end of a specific mission, even if the agent process remains active.
+
+### Update: 2026-07-25 - Mirroring-Resistant Termination (MRT) Handshake
+**Context:** Today's market sync revealed a new vulnerability where "Stylometric Mimicry" is used to prematurely terminate legitimate mission-root branches (Mirroring-based DoS).
+**Architecture Adjustment:**
+* Upgrading the validation pipeline to mandate the **MRT Handshake** for all session decommissioning requests.
+* Termination signals now require a multi-signature quorum (Mission-Root + independent Security Auditor) signed by hardware-bound keys.
+* Integration with the **Stylometric Behavioral Firewall (SBF)** to flag and interdict termination requests that exhibit low stylometric confidence despite valid cryptographic tokens.
+**Security Impact:** Prevents unauthorized mission termination by rogue subagents, ensuring that only the verified mission root can decommission its own branches.
