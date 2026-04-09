@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Lease Invalidation (ALI) Hub**: (P0) Authoritative invalidation service utilizing ebpf-mediated signals to instantly collapse Sovereign Node Tunnels upon mission-drift detection.
+- **RAE Shard Broker**: (P0) Advanced security service facilitating hardware-enclave session key rotation for reasoning-aware encryption of teammate scratchpads.
+- **Cross-Modal Intent Reconstruction (CMIR) Validator**: (P0) Pre-reasoning semantic deconstruction service for SVG/binary traces to ensure intent-scoping across all modalities.
+- **Mesh-Resident Handshake Interception (MRHI) Provider**: (P0) Security middleware monitoring non-primary coordination channels for unauthorized agency-initiation signals.
+
+### Priority Shifts
+- **Machine-Speed Swarm Quarantine (MSSQ)**: (Re-affirmed P0) Evolving into the **ALI Hub** for kernel-mediated revocation.
+- **Skill-State Sovereignty (SSS) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **RAE** integration.
