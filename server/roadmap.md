@@ -476,7 +476,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Attestation Gateway**: Extension of the Pre-Flight Validator to provide signed environment manifests for deterministic agent boot. (Added: 2026-04-10)
 *   **[P0] Mandatory Origin Validation (SOP)**: Enforcement of browser-origin headers for all local listeners to patch CVE-2026-25253. (Added: 2026-04-10)
 
-#### Upcoming (2026-04-09 Evolution)
+#### Upcoming (2026-04-09 Evolution - Iteration 2)
 *   **[P0] Pre-Flight Sandbox Validator**: Core security service for environment-manifest generation and config-injection defense (CVE-2026-25725). (Added: 2026-04-09)
 *   **[P0] Origin-Locked Session Bridge**: Hardened session manager binding agent tokens to cryptographically verified browser/CLI origins. (Added: 2026-04-09)
 *   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-09)
@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-09 Evolution - Iteration 2)
+*   **[P0] Hardware-Attested Bridge Sovereignty (HABS)**: Authoritative security service requiring hardware-bound identity tokens for cloud-to-local tool bridges. (Added: 2026-04-09)
+*   **[P0] Privacy-Preserving A2A Handoffs (PPAH)**: Advanced communication protocol using ZK-proofs and differential privacy for context isolation in social meshes. (Added: 2026-04-09)
+*   **[P1] Federated Reputation Quorum (FRQ) Node**: Peer-to-peer security node for collective tool safety attestation. (Added: 2026-04-09)

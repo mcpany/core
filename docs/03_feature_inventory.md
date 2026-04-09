@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-09] (Iteration 2) Updates
+
+### Proposed Additions
+- **Hardware-Attested Bridge Sovereignty (HABS)**: (P0) Authoritative security service requiring hardware-bound identity tokens for all cloud-to-local tool bridges to neutralize credential bypass.
+- **Privacy-Preserving A2A Handoffs (PPAH)**: (P0) Advanced communication protocol using ZK-proofs and differential privacy to ensure context isolation in shared social agent meshes.
+- **Federated Reputation Quorum (FRQ) Node**: (P1) Peer-to-peer security node for collective tool safety attestation within the UAB mesh.
+
+### Priority Shifts
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Elevated with the requirement for **Full-State Manifest** enforcement before agent boot.
