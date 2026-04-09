@@ -1,6 +1,16 @@
 # Feature Inventory: MCP Any
 
-## Evolution: [2026-04-01] (Iteration 2) Updates
+## Evolution: [2026-04-09] (Iteration 2) Updates
+
+### Proposed Additions
+- **Negative Attestation Provider**: (P0) Advanced security service for the DAG that generates signed proofs of non-existence for restricted directory paths.
+- **Privacy-Preserving A2A Handoffs**: (P1) Middleware that implements noise-injection and state-minimization for inter-agent coordination messages to prevent context reconstruction.
+- **Federated Reputation Quorum Hub**: (P0) Distributed coordination service that aggregates skill reputation signals from multiple independent nodes to reach a safety consensus.
+
+### Priority Shifts
+- **Pre-Flight Sandbox Validator**: (Re-affirmed P0) Elevated with mandatory support for **Negative Attestation** proofs.
+- **Cross-Framework Skill Reputation Engine**: (Promoted from P1 to P0) Critical for implementing the Collective Skill Defense.
+
 
 ### Proposed Additions
 - **Agentic Entropy Monitor (AEM)**: (P0) Authoritative coherence service performing real-time analysis of subagent reasoning entropy to block semantic drift.

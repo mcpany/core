@@ -31,3 +31,19 @@
 1. **Local Trust is Dead**: CVE-2026-25253 (OpenClaw loopback) and Claude Code sandbox escapes confirm that even local listeners and project-local files must be treated as hostile.
 2. **Collective Reputation**: Individual tool validation is insufficient. The market is moving towards "Consensus-Based" and "Reputation-Bound" capability models.
 3. **Hardware-Linked Identity**: To bridge "Headless Handoff" trust gaps, hardware-bound attestation (TPM/SEP) is becoming a requirement for enterprise agent infrastructure.
+
+## Iteration 2: Strategic Deep-Dive
+
+### Ecosystem Shifts & News (Cont.)
+- **CVE-2026-25725 Post-Mortem Analysis**: Further investigation into the Claude Code sandbox escape reveals that "Absence-as-Exploit" is a recurring pattern. If an infrastructure layer assumes a file is safe because it doesn't exist, a subagent can create it with malicious hooks. This mandates a shift to "Negative Attestation" where the absence of files is also cryptographically signed.
+- **"Agentic Social Engineering" Emergence**: A new class of attacks where specialist agents in a swarm use high-trust coordination channels to "gaslight" supervisor agents into granting excessive permissions or exfiltrating data. Static tool-gating is insufficient against this behavioral threat.
+- **Federated Reputation Standard**: The UAB working group has fast-tracked the "Collective Skill Reputation" (CSR) draft. It proposes a decentralized quorum where tool safety is no longer determined by a single registry but by the consensus of independent security nodes.
+
+### Autonomous Agent Pain Points (Cont.)
+- **Recursive Context Reconstruction**: Malicious agents in shared social spaces (like Moltbook) are successfully "re-stitching" parent contexts from multiple sanitized handoffs, bypassing privacy filters.
+- **Cold-Start Attestation Latency**: The industry-wide pivot to full-environment manifests is causing a 200ms-500ms delay in agent startup, leading to "Speculative Handoff" attempts that bypass safety gates.
+
+### Strategic Implications for MCP Any (Cont.)
+- **Collective Skill Defense**: MCP Any must evolve from a "Proxy for Tools" to a "Member of a Reputation Quorum." We need to support federated attestation of tool behavior.
+- **Deterministic Attestation Gateway**: We must implement a "Full-State Manifest" that includes "Non-Existence Proofs" for restricted paths.
+- **Privacy-Preserving A2A Handoffs**: Implement noise-injection or state-minimization to prevent context reconstruction in shared coordination spaces.

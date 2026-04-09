@@ -423,6 +423,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] UDP Beacon Discovery Listener**: High-speed reactive listener for Gemini-style Capability Beacons. (Added: 2026-03-30)
 *   **[P1] Correction Budget Controller**: Resource management middleware for agent self-correction loops. (Added: 2026-03-30)
 
+#### Upcoming (2026-04-09 Evolution)
+*   **[P0] Negative Attestation Provider**: Implementation of cryptographically signed proofs of non-existence for restricted paths. (Added: 2026-04-09)
+*   **[P0] Federated Reputation Quorum Hub**: Decentralized coordination service for collective tool safety attestation. (Added: 2026-04-09)
+*   **[P1] Privacy-Preserving A2A Proxy**: Middleware for state-minimization and noise-injection in inter-agent coordination. (Added: 2026-04-09)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Reasoning-Bound Context Shifter**: Context management middleware for synchronizing dynamic shifting logic. (Added: 2026-04-01)
 *   **[P0] Path Normalization Engine (NaaS)**: Centralized OS-agnostic path normalization service. (Added: 2026-04-01)

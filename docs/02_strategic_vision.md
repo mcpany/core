@@ -371,6 +371,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Active Context Governance**: Leveraging the matured `ContextEngine` APIs, MCP Any will implement "Inference-Time Data Sanitization (IDS)." This ensures that all context fragments (textual or multimodal) are semantically sanitized before reaching the LLM's reasoning engine.
 - **Origin-Locked Local Trust**: Patching the loopback trust gap (CVE-2026-25253) by mandating cryptographically bound origin validation for all local listeners, ensuring browsers cannot bridge into the agent's control plane.
 
+## Strategic Evolution: [2026-04-09] (Iteration 2)
+### Focus: Collective Skill Defense & Deterministic Environment Integrity
+**Context**: The emergence of "Absence-as-Exploit" vectors (CVE-2026-25725) and "Agentic Social Engineering" proves that passive sandboxing and static reputation are no longer sufficient. Swarms are now operating in high-trust coordination channels where malicious subagents can weaponize the environment itself or manipulate peer reasoning.
+**Strategic Pivot**:
+- **Collective Skill Defense (CSD)**: MCP Any will evolve from individual tool validation to a "Federated Reputation Quorum." Tool safety will be determined by the collective attestation of independent security nodes in the UAB mesh.
+- **Deterministic Attestation Gateway (DAG)**: We are mandating a "Full-State Manifest" that includes signed "Non-Existence Proofs" for restricted paths. This ensures that a subagent cannot create a malicious configuration hook in a previously empty directory.
+- **Privacy-Preserving A2A Handoffs**: To counter context-reconstruction attacks, we are implementing state-minimization and noise-injection in shared coordination spaces, ensuring that specialist agents only receive the minimum intent-bound state required.
+
 ## Strategic Evolution: [2026-04-09]
 ### Focus: Collective Skill Defense & Deterministic Environment Integrity
 **Context**: Recent sandbox escapes (CVE-2026-25725) and the rise of "Inference-Time Exploitation" prove that individual agent sandboxing and static configuration checks are no longer sufficient. Agents are now operating in "High-Trust, Low-Verification" swarms where malicious subagents can weaponize the environment itself.
