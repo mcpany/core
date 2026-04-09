@@ -14,4 +14,4 @@ sso:
 
 - **Identity Header Support**: Trusted proxy pattern via `X-MCP-Identity`.
 - **Bearer Token Validation**: Validates `Authorization: Bearer <token>` headers.
-- **Redirects**: Redirects unauthenticated users to the IDP login URL.
+- **JSON Responses**: Returns a `401 Unauthorized` JSON payload containing a `login_url` field for unauthenticated users instead of an HTTP redirect.
