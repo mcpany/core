@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Consensus-Driven Resource Rebalancing (CDRR) Manager**: (P0) Authoritative mesh service allowing subagents to auction surplus reasoning/token budgets to eliminate cognitive stall.
+- **Fast-Path Tunnel Resumption (FPTR) Middleware**: (P0) Security service utilizing hardware-attested session tickets for sub-millisecond secure P2P tunnel recovery.
+- **Hardware-Attested Anchor Persistence (HAAP)**: (P0) Advanced pinning mechanism for mission-critical context fragments utilizing hardware-enclave buffers to survive aggressive GC.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated to P0 and evolved into **FPTR** to address inter-node tunneling latency.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with the requirement for mandatory **HAAP** integration.
