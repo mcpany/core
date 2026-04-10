@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Epistemic Certainty Arbiter (ECA)**: Authoritative reasoning quality broker utilizing hardware-attested confidence scores to quarantine low-certainty reasoning fragments. (Added: 2026-07-25)
+*   **[P0] Adaptive Attestation Quota (AAQ) Controller**: High-performance security middleware dynamically scaling hardware signature frequency to neutralize "Attestation Exhaustion." (Added: 2026-07-25)
+*   **[P0] Epistemic Shard Anchoring (ESA)**: Advanced context pinning service utilizing hardware-locked "Anchor Shards" to prevent mission-root dilution. (Added: 2026-07-25)
+*   **[P0] Memory Stitching Firewall**: Security extension for the ARR Hub implementing entropy-injected redaction to prevent context re-composition. (Added: 2026-07-25)

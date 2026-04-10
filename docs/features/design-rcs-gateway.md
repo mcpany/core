@@ -9,7 +9,7 @@ The RCS Gateway provides a standardized infrastructure layer to ingest confidenc
 
 ## 2. Goals & Non-Goals
 * **Goals:**
-    * standardizing the ingestion of confidence/uncertainty scores from disparate agent frameworks.
+    * Standardizing the ingestion of confidence/uncertainty scores from disparate agent frameworks.
     * Implementing threshold-based "Confidence-Based Escalation" to human supervisors or audit agents.
     * Providing hardware-attested "Epistemic Attestation Badges" for tool results.
 * **Non-Goals:**
@@ -46,3 +46,11 @@ The RCS Gateway provides a standardized infrastructure layer to ingest confidenc
 
 ## 7. Evolutionary Changelog
 * **2026-07-21:** Initial Document Creation.
+
+### Update: 2026-07-25 - Evolution to Epistemic Certainty Arbiter (ECA)
+**Context:** Today's market sync revealed the introduction of "Epistemic Sovereignty" in Gemini CLI, requiring active interdiction rather than just passive scoring.
+    **Architecture Adjustment:**
+    * Renaming the service to **Epistemic Certainty Arbiter (ECA)**.
+    * Integrating hardware-attested confidence scores directly into the `Active Reasoning Interdiction (ARI) Hub`.
+    * Implementing "Certainty-Locked Commitment" where state mutations to the Blackboard are blocked if the confidence fragment fails to reach the mission-root quorum threshold.
+    **Security Impact:** Prevents "Hallucination Pollution" by ensuring only verifiable reasoning paths can mutate shared swarm state.

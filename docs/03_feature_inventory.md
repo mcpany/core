@@ -1927,10 +1927,22 @@
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
-- **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections between distributed agent nodes to neutralize "Mesh Shadowing."
+- **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P tunnels between distributed agent nodes to neutralize "Mesh Shadowing."
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Epistemic Certainty Arbiter (ECA)**: (P0) Authoritative reasoning quality broker utilizing hardware-attested confidence scores to quarantine low-certainty reasoning fragments.
+- **Adaptive Attestation Quota (AAQ) Controller**: (P0) High-performance security middleware dynamically scaling hardware signature frequency to neutralize "Attestation Exhaustion."
+- **Epistemic Shard Anchoring (ESA)**: (P0) Advanced context pinning service utilizing hardware-locked "Anchor Shards" to prevent mission-root dilution across dynamic re-sharding events.
+- **Memory Stitching Firewall**: (P0) Security extension for the ARR Hub implementing entropy-injected redaction to prevent context re-composition.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Evolving into the **Epistemic Certainty Arbiter (ECA)** for active reasoning interdiction.
+- **Distributed Trust Lease Broker**: (Re-affirmed P0) Designated as the primary enforcement mechanism for the **AAQ Controller**'s lease-based attestation.
