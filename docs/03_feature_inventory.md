@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Swarm-Bound Execution Context (SBEC) Broker**: (P0) Authoritative coordination service for shared cognitive sandboxes, utilizing zero-copy shared memory regions for swarm teammates.
+- **Zero-Knowledge PR Attestation (ZKPA) Gateway**: (P0) Advanced security middleware facilitating ZK-proofs for code generation integrity, evolving from APRIG.
+- **Collective Swarm Identity (CSI) Provider**: (P0) Identity middleware issuing recursive, hardware-attested "Swarm Tokens" for unified security principals.
+
+### Priority Shifts
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Evolving into the **Mission-Root Conflict Arbiter (MRCA)** with deep intent analysis support.
+- **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Upgrading to support the new **ZKPA** standard for privacy-preserving auditing.
