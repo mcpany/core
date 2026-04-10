@@ -8,7 +8,33 @@ import (
 	"math"
 )
 
+// Summary: float32ToBytes converts a slice of float32 to a byte slice.
+//
+// Parameters:
+//   - floats ([]float32): The float32 slice to convert.
+//
+// Returns:
+//   - []byte: The converted byte slice.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 // float32ToBytes converts a slice of float32 to a byte slice.
+// Summary: bytesToFloat32 converts a byte slice to a slice of float32.
+//
+// Parameters:
+//   - bytes ([]byte): The byte slice to convert.
+//
+// Returns:
+//   - []float32: The converted float32 slice.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func float32ToBytes(floats []float32) []byte {
 	bytes := make([]byte, len(floats)*4)
 	for i, f := range floats {
