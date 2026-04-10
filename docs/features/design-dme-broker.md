@@ -61,3 +61,10 @@ The Distributed Memory Enclave (DME) Broker solves this by leveraging hardware-e
         * Upgrading `CreateEnclave` in Section 4 to include mandatory **Physical Shard Sovereignty (PSS)**.
         * Shards are now cryptographically pinned to specific hardware Enclave IDs using TPM-bound nonces.
     * **Security Impact**: Prevents a compromised subagent from mounting a sibling shard by spoofing enclave-local metadata.
+
+### Update: 2026-07-25 - Neural-Active Shard Validation (NASV)
+**Context:** Today's market sync revealed the discovery of "Shard Shadowing" (CVE-2026-10101) in predictive sharding engines like OpenClaw NAS.
+**Architecture Adjustment:**
+* Integrating the **Neural-Active Shard Validator (NASV)** as a prerequisite for enclave re-mapping.
+* Section 4 now mandates a "Predictive Intent Proof" for all pre-warming signals.
+**Security Impact:** Prevents subagents from exploiting the race condition between shard prediction and hardware attestation to access parent memory segments.

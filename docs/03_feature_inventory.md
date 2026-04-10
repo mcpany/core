@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Neural-Active Shard Validator (NASV)**: (P0) Authoritative metadata security service performing real-time verification of shard integrity before predictive re-routing.
+- **Handshake Lineage Attestation (HLA) Provider**: (P0) Security middleware mandating that teammate initialization sequences are cryptographically bound to their complete parentage.
+- **Audio-Aware Monologue Scrubber (AAMS)**: (P0) Advanced extension for the MMS performing high-entropy audio metadata analysis to neutralize "Instruction Echoes."
+
+### Priority Shifts
+- **Physical Shard Sovereignty (PSS) Provider**: (Re-affirmed P0) Elevated with mandatory **NASV** integration for neural-active sharding defense.
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Designated as the primary enforcement point for **HLA-compliant** heterogeneous handshakes.

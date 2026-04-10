@@ -85,3 +85,10 @@ The T2T Encryption Bridge provides a universal, secure bus for teammate-to-teamm
 *   The Mailbox Integrity Middleware now performs semantic fragment scanning *before* re-composition.
 *   Shards now mandate a "Fragment Proof" (SMI-bound signature) for every message segment.
 **Security Impact:** Prevents "State Splicing" attacks by ensuring every fragment in the teammate coordination loop is semantically validated against the Mission Root.
+
+### Update: 2026-07-25 - Handshake Lineage Attestation (HLA)
+**Context:** The disclosure of "Protocol Injection" vulnerabilities in heterogeneous teammate handshakes (Claude Code HTH) confirm that transport-layer security is insufficient during teammate formation.
+**Architecture Adjustment:**
+* Upgrading Section 4 to mandate **Handshake Lineage Attestation (HLA)** for all cross-framework initializations.
+* T2T Bridge now intercepts teammate "Hello" packets and performs recursive lineage verification against the mission root.
+**Security Impact:** Neutralizes the risk of specialists injecting imperative commands into parent control loops during the mesh formation phase.

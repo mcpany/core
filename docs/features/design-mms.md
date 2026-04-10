@@ -54,3 +54,10 @@ The **Multimodal Monologue Scrubber (MMS)** is a semantic security middleware fo
 *   Integrating **Path-Complexity Analysis** into the SVG deconstructor.
 *   Mandating that all SVG paths conform to a "Simplicity Baseline" before being exposed to high-trust specialists.
 **Security Impact:** Neutralizes "Visual Prompt Injection" via adversarial path geometry.
+
+### Update: 2026-07-25 - Audio-Aware Monologue Scrubbing (AAMS)
+**Context:** Today's research into Gemini CLI MMRP traces reveals that private mission constraints can be leaked through high-entropy audio metadata side-channels.
+**Architecture Adjustment:**
+* Introducing **Audio-Aware Monologue Scrubbing (AAMS)** as a mandatory component of the MMS pipeline.
+* Adding deep-packet metadata inspection for all audio reasoning fragments to detect "Instruction Echoes."
+**Security Impact:** Prevents mission-root constraint leakage through non-textual reasoning side-channels in multimodal swarms.
