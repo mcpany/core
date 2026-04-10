@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: [2026-07-25] - Addressing Hallucinatory Drift in Distributed Teams
+**Context**: Today's market sync and ecosystem analysis of OpenClaw v3.6.2 and Claude Code v3.3.0 confirm that distributed teammates are prone to high-latency cognitive stalls and reasoning drift when operating over P2P tunnels.
+**Architecture Adjustment**:
+*   **AEM-AMT Integration**: The AEM will now ingest reasoning traces directly from the **AMT Broker**'s secure buffers to ensure that remote tool calls are audited for semantic coherence before execution.
+*   **Speculative Entropy Scoring**: To support **Fast-Path Mesh Resumption**, the AEM will perform optimistic entropy scoring on speculative reasoning branches, allowing teammates to proceed while background audits complete.
+**Security Impact**: Neutralizes "Delayed Payload" exfiltration in distributed meshes by detecting misaligned reasoning before it can be committed to remote node state.

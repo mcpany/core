@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Locked Configuration Anchor (HLCA)**: (P0) Advanced security service cryptographically binding project settings to TPM-signed user sessions to neutralize CVE-2026-33068.
+- **Behavioral Skill Profiler**: (P0) Mandatory forensic service for real-time sandboxed profiling of dynamic skills to detect "ClawHavoc" style marketplace poisoning.
+- **Fast-Path Mesh Resumption**: (P0) Performance optimization using session-bound "Mesh Tickets" to reduce the 200ms+ latency of P2P mesh tunnels.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: (Re-affirmed P0) Now elevated with the requirement for mandatory **HLCA-compliant** attestation.
+- **Attested Discovery Authority**: (Re-affirmed P0) Designated as the primary gate for the **Behavioral Skill Profiler** to neutralize "Delayed Payload" exploits.
