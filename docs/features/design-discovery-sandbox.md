@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-10 - Integrating Negative Discovery Attestation (NDA)
+**Context:** Today's market sync confirmed that "Ghost-Execution" via discovery commands is a primary attack vector for agent frameworks.
+**Architecture Adjustment:**
+* **Negative Discovery Attestation (NDA):** Section 4 now mandates that all discovery-phase execution must be accompanied by a cryptographically signed "Negative Proof".
+* **Enforcement:** The sandbox will now verify that no unauthorized project-local hooks or automated tool sequences were triggered during the pre-flight discovery scan.
+**Security Impact:** Neutralizes startup-time RCE by ensuring that tool discovery remains purely descriptive and cannot be weaponized to execute code on the host.

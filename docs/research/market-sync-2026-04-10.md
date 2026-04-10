@@ -1,22 +1,21 @@
 # Market Sync: 2026-04-10
 
-## Ecosystem Shifts & Competitor Analysis
+## Ecosystem Updates
 
-### Claude Code: Shift to "Deterministic Boot" (Post-CVE-2026-25725)
-- **Context**: In response to the bubblewrap sandbox escape where agents could inject hooks by creating missing config files, the community is moving toward a "Deterministic Boot" model.
-- **Finding**: High-security environments are now mandating a pre-execution environment manifest that signs the presence (or absence) of every file in the `.claude/` and `.env` directories.
-- **Action**: MCP Any must accelerate the `Deterministic Attestation Gateway` to provide this "Full-State Manifest" as a service for local agents.
+### Claude Code & OpenClaw
+* **CVE-2026-25725 (Sandbox Escape)**: A critical vulnerability was disclosed where agents could escape their sandbox by manipulating project-local configuration files *before* the environment was fully locked. This has led to a major industry shift toward "Deterministic Boot" sequences.
+* **OpenClaw `ContextEngine` Stabilization**: The pluggable `ContextEngine` API has reached v1.0, allowing for more granular control over context pruning and "Intent-Bound" memory.
+* **Agent Teams Launch**: Claude Code's "Agent Teams" feature is driving demand for horizontal coordination and sharded mailbox architectures to prevent coordination deadlocks.
 
-### OpenClaw: ContextEngine Plugin Maturation
-- **Update**: The `ContextEngine` API has stabilized, allowing for "Active Context Governance" where third-party plugins can intercept and sanitize context fragments in real-time.
-- **Impact**: MCP Any's `Inference-Time Data Sanitizer` can now be implemented as a native OpenClaw ContextEngine plugin, ensuring that "Prompt Path" attacks are neutralized before ingestion.
+### Gemini CLI
+* **Ghost-Execution Vulnerability**: A new exploit pattern emerged where discovery commands (e.g., `discoveryCommand`) were executed with excessive privileges during the tool discovery phase, leading to host-level compromise.
+* **ARE (Advanced Reasoning Effort) Headers**: Gemini now supports signaling reasoning intensity, requiring infrastructure to perform "Reasoning-Aware Throttling."
 
-### The Rise of Inference-Time Data Sanitization (IDS)
-- **Trend**: Standard data scrapers are increasingly being weaponized via multimodal "Polyglot" payloads (e.g., malicious instructions hidden in SVG/metadata).
-- **Finding**: Conventional text-based sanitization is insufficient. The market is demanding IDS solutions that understand the "Semantic Intent" of data fragments.
-- **Opportunity**: MCP Any's position as a universal gateway allows it to perform IDS across all connected tools and agents, creating a unified security perimeter.
+## Market Pain Points & Trends
+1. **Instruction Eviction**: Agents are losing critical mission guardrails due to aggressive context-window garbage collection in 1M+ token models.
+2. **Context Smuggling**: Attackers are using multi-modal metadata (SVG, CSS) to inject "invisible" instructions that bypass text-based filters.
+3. **Loopback Trust Gap**: Implicit trust in `localhost` is being exploited via browser-based cross-site scripting (XSS) to hijack local agent gateways.
 
-## Summary of Unique Findings
-1. **From Partial to Full State**: Sandboxing is no longer about just restricting access; it's about verifying the *entire* environmental state before execution.
-2. **Context as a Control Plane**: Context management (ContextEngine) is becoming the primary control plane for agent security, surpassing simple tool-call validation.
-3. **Multimodal Sanitization**: Security middleware must now be multimodal-aware to detect "Prompt Path" injections in non-textual metadata.
+## Unique Findings
+* **Negative Discovery Attestation**: A new security pattern where agents must cryptographically prove the *absence* of unauthorized configuration hooks before execution.
+* **Deterministic Boot Manifests**: The move from "Partial Sandbox" to "Full-State Manifests" where the entire environment state is signed before agent boot.

@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-10] (Iteration 2) Updates
+
+### Proposed Additions
+- **Negative Discovery Attestation Provider**: (P0) Advanced extension for the Discovery Sandbox that provides cryptographic proof of the absolute absence of unauthorized hook execution during the discovery phase.
+- **ARE-Responsive Budget Controller**: (P1) Resource management layer that consumes Gemini CLI `ARE` headers to dynamically prioritize token allocation for high-intensity reasoning.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Evolved with the requirement for "Mandatory Discovery-Phase Isolation" to counter CVE-2026-0628.
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with the requirement for mandatory **ARE-Responsive** prioritization.

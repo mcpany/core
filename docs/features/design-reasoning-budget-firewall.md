@@ -59,3 +59,10 @@ As AI agent frameworks like Gemini CLI and OpenClaw move toward high-intensity r
 *   Implementing **Cross-Mission Budget Continuity**. Reasoning budgets are now reconciled against a persistent "Mission Root Registry."
 *   Introducing a "Lease Migration Protocol" for framework-neutral handoffs, ensuring budget integrity as agents move between local and cloud environments.
 **Security Impact:** Prevents "Budget Reset" exploits where subagents trigger mission restarts to refresh their reasoning quotas.
+
+### Update: 2026-04-10 - ARE-Aware Budget Prioritization
+**Context:** Gemini CLI's introduction of Advanced Reasoning Effort (ARE) headers requires infrastructure to handle variable reasoning intensity.
+**Architecture Adjustment:**
+* **ARE Budget Controller:** Section 4 is updated to include a dynamic priority queue for token and compute allocation based on real-time ARE signals.
+* **Quota Enforcement:** High-intensity reasoning fragments will now be subject to hardware-attested quotas to prevent "Agentic DoS" attacks.
+**Security Impact:** Ensures mission-root stability by preventing specialist subagents from exhausting the swarm's token budget through infinite or high-intensity reasoning loops.
