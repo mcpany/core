@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Verifiable RL Reward Provider (VRP)**: Authority for hardware-attested binary truth signals to prevent reward spoofing. (Added: 2026-07-25)
+*   **[P0] Adaptive Context Stability (ACS) Monitor**: Semantic drift analysis middleware for intent-anchored summarization. (Added: 2026-07-25)
+*   **[P0] Hardware-Locked PID Scrubbing**: Kernel-level isolation of identity tokens from sub-process procfs environments. (Added: 2026-07-25)
+*   **[P1] PPA Hub v2 (ZK-Summarization)**: Support for Zero-Knowledge proofs of security-compliance for compact context fragments. (Added: 2026-07-25)

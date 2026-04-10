@@ -82,3 +82,11 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 * MLE Gateway now enforces mandatory hardware-signed leases for "High-Impact" tool categories (e.g., `run_shell_command`).
 * Leases are cryptographically tied to the TPM-attested mission fragment and expire automatically upon mission termination signals.
 **Security Impact:** Mitigates persistent privilege escalation by ensuring that high-privilege tool access is physically revoked by the hardware root at the end of a specific mission, even if the agent process remains active.
+
+### Update: 2026-07-25 - Adaptive Context Stability (ACS)
+**Context:** Today's research on OpenClaw v3.7 revealed the emergence of "Compaction Drift," where aggressive context summarization erases mission-critical security guardrails over long sessions.
+**Architecture Adjustment:**
+* Integrating the **ACS Monitor** into the MLE Gateway.
+* The gateway will now perform real-time semantic analysis of summarized context fragments against the hardware-attested mission-root manifest.
+* Automated "Anchor Re-injection" triggers are implemented to restore mission-bound constraints when stability scores fall below mission thresholds.
+**Security Impact:** Prevents "Context-Window Flooding" and summarization-based bypasses by ensuring that the agent's attention remains permanently anchored to the authorized security policy.

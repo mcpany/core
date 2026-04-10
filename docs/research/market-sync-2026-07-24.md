@@ -20,4 +20,10 @@
 ## Autonomous Agent Pain Points
 - **Cognitive Stall**: Parallel teammates in Claude Code teams frequently enter 5s+ wait cycles during complex conflict resolution on the shared task list, highlighting the need for **Lock-Free Mesh Coordination**.
 - **Tunneling Overhead**: The latency introduced by mandatory P2P tunnels in OpenClaw is impacting sub-millisecond tool execution, increasing the demand for **Fast-Path Identity Resumption**.
-- **GC Fragility (Re-affirmed)**: Agents continue to lose behavioral guardrails when "Silent Anchors" are evicted by aggressive context-window garbage collection.
+- **GC Fragility**: Agents continue to lose behavioral guardrails when "Silent Anchors" are evicted by aggressive context-window garbage collection.
+- **"Claudy Day" Exploit**: Recent demonstrations of "invisible" prompt injection chaining show that even default sessions are vulnerable to exfiltration if infrastructure doesn't enforce strict semantic boundaries.
+
+## Strategic Recommendation
+- Accelerate **Attested Mesh Tunneling (AMT) Broker** to unify multi-node execution.
+- Mandate **Hardware-Locked Mission Leases (HLML)** for all P0 service adapters.
+- Implement **Privacy-Preserving Audit (PPA) Hub** to support ZK-based reasoning attestation.

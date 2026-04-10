@@ -54,3 +54,12 @@ The **Environment Sovereignty Enforcer (ESE)** is a core security service for th
 
 ## 7. Evolutionary Changelog
 *   **2026-06-10:** Initial Document Creation.
+
+
+### Update: 2026-07-25 - Hardware-Locked PID Scrubbing
+**Context:** Claude Code v3.2.0 added PID namespace isolation and environment scrubbing. Simultaneously, researchers have identified side-channel attacks via procfs for identity exfiltration.
+**Architecture Adjustment:**
+* Mandating the **Hardware-Locked PID Scrubbing** middleware.
+* The enforcer will now perform kernel-level scrubbing of sensitive environment metadata (e.g., `MCPANY_SESSION_TOKEN`) for all tool-executing sub-processes.
+* Identity tokens are moved to secure, kernel-bound memory segments that are explicitly unmapped from the sub-process procfs.
+**Security Impact:** Prevents side-channel identity leakage and neutralizing "Credential Squatting" by rogue specialists, ensuring that only the MCP Any core can access raw hardware-attested tokens.

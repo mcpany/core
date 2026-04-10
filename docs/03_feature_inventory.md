@@ -1934,3 +1934,25 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-24] Updates
+
+### Proposed Additions
+- **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections between distributed agent nodes to neutralize "Mesh Shadowing."
+- **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
+- **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Verifiable RL Reward Provider (VRP)**: (P0) Authoritative truth service issuing hardware-attested binary reward signals to neutralize reputation spoofing.
+- **Adaptive Context Stability (ACS) Monitor**: (P0) Semantic drift analysis service that compares summarized context fragments against mission-root manifests.
+- **Hardware-Locked PID Scrubbing Provider**: (P0) Kernel-level security service for isolating hardware-attested tokens from sub-process procfs environments.
+
+### Priority Shifts
+- **Environment Sovereignty Enforcer (ESE)**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Locked PID Scrubbing**.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P1) Evolving to support **ZK-summarization proofs**.
