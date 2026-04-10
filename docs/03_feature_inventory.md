@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Tunnel Attestation (RTA) Broker**: (P0) Authoritative tunnel audit service mandating nested hardware signatures for multi-hop agent meshes to neutralize intermediate injection.
+- **Contextual Entanglement Scorer (CES)**: (P0) Real-time semantic analysis middleware scoring subagent fragment correlation to trigger automated attention gating.
+- **Shadow-Handshake Interceptor (SHI)**: (P0) Security middleware interdicting unauthorized agency-initiation signals to ensure mission-root sovereignty.
+- **Priority-Aware Mailbox Sharding (PAMS)**: (P0) Coordination upgrade allowing lock-free bypass for safety-critical intent fragments.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RTA-compliant** hop attestation.
+- **Priority-Aware Mailbox Sharding (PAMS)**: (Promoted to P0) Critical for neutralizing coordination stalls in high-density horizontal Agent Teams.
