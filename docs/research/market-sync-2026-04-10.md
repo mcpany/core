@@ -20,3 +20,13 @@
 1. **From Partial to Full State**: Sandboxing is no longer about just restricting access; it's about verifying the *entire* environmental state before execution.
 2. **Context as a Control Plane**: Context management (ContextEngine) is becoming the primary control plane for agent security, surpassing simple tool-call validation.
 3. **Multimodal Sanitization**: Security middleware must now be multimodal-aware to detect "Prompt Path" injections in non-textual metadata.
+
+## Additional Findings: 2026-04-10 (PM Update)
+
+### Claude Code: PID-Namespace Isolation & Teammate Coordination
+- **Finding**: Claude Code has introduced mandatory PID-namespace isolation for all subagent tool execution. By using `unshare(CLONE_NEWPID)`, it ensures that subagents cannot see or signal processes outside their own sandbox.
+- **Teammate Sync**: Introduced "Agent Teams" with a real-time shared task list broker. This uses a CRDT-based backend to ensure non-blocking task claiming across parallel agent instances.
+
+### OpenClaw: Sidecar-Bound Secret Provider
+- **Update**: OpenClaw v3.6.1 has shifted to loading transport-level secrets (API keys, mTLS certs) through top-level sidecar containers.
+- **Action**: MCP Any should implement a similar "Sidecar-Bound Secret Provider" to decouple credential management from the primary agent reasoning process.

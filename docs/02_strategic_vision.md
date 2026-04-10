@@ -9,6 +9,12 @@
 - **Argument-Level Semantic Validation (ALSV)**: To neutralize the shell-fallback and allowlist bypass vulnerabilities seen in OpenClaw, we are mandating ALSV for all command-based tools. MCP Any will perform real-time, semantic analysis of command arguments, blocking any use of unauthorized flags or shell metacharacters.
 - **Teammate Task-Claim Integrity**: We are implementing "Auth-before-Claim" for all teammate coordination. Teammates must provide a hardware-attested mission-root token before claiming tasks from the shared mailbox, ensuring that a compromised specialist agent cannot "hijack" unauthorized work.
 
+### Evolution Update: [2026-04-10-PM] - Subprocess Sovereignty & Teammate Brokerage
+**Strategic Shift**:
+- **PID-Namespace Isolation**: Following the Claude Code 2026.4.10 update, MCP Any will mandate PID-namespace isolation for all subprocess-based tools. This prevents subagents from discovering or interfering with host processes, ensuring "Subprocess Sovereignty."
+- **Universal Teammate Task-List Broker**: Introducing a CRDT-native task list broker to support horizontal swarms. This allows parallel teammates to synchronize task states without global coordination stalls.
+- **Sidecar Secret Provisioning**: Transitioning to sidecar-bound secret loading to isolate credentials from the primary reasoning process, following the latest OpenClaw v3.6.1 patterns.
+
 ## Mission Statement
 MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
 

@@ -51,5 +51,8 @@ The persistent threat of Remote Code Execution (RCE) via project-local configura
         * Elevating "Non-Existence Proofs" to a mandatory, hardware-signed requirement for all sensitive configuration paths (`.claude/settings.json`, `.env`, etc.).
         * The Validator will now explicitly block any `file_create` event for paths identified as "Absent" in the Pre-Flight Manifest, even if the agent sandbox allows it.
     * **Security Impact:** Neutralizes the "Absence-as-Exploit" pattern by ensuring the sandbox state remains identical to the pre-attested manifest.
-* **2026-04-10:** Integrated with the **Deterministic Attestation Gateway** to support "Full-State Manifest" requirements for Claude Code deterministic boot compliance.
+* **2026-04-10:** PID-Namespace Isolation & Deterministic Gateway Integration.
+    * **Context:** Market research revealed that high-security agents (Claude Code) are mandating PID-namespace isolation to prevent host process discovery.
+    * **Architecture Adjustment:** Mandating the use of `CLONE_NEWPID` for all subprocess-based tools. The Validator now verifies that the execution environment supports and enforces namespace isolation.
+    * **Integration:** Synced with the **Deterministic Attestation Gateway** to provide full-state environmental manifests.
 * **2026-04-09:** Initial Document Creation.
