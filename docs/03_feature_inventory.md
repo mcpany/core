@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Event-Driven Swarm Hub (EDSH)**: (P0) Authoritative coordination service supporting pub/sub semantics for asynchronous agent signaling and task completion events.
+- **Isolated Workspace Sidecar (IWS) Manager**: (P0) Advanced filesystem service managing Git-isolated worktrees or ephemeral container mounts to prevent cross-teammate state pollution.
+- **Predictive Task Prefetcher (PTP)**: (P0) Performance-optimizing middleware speculatively preparing and sandboxing teammate environments based on real-time task list analysis.
+- **Atomic Shard Scrubbing (ASS) Provider**: (P0) Hardware-attested security service for neutralizing "Ghost Fragments" in shared memory during agent rotation.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **EDSH** pub/sub integration.
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Designated as the primary enforcement point for **PTP-compliant** sandbox pre-loading.

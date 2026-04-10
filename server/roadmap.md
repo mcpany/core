@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Event-Driven Swarm Hub (EDSH)**: Authoritative coordination service supporting pub/sub semantics for asynchronous agent signaling. (Added: 2026-07-25)
+*   **[P0] Isolated Workspace Sidecar (IWS) Manager**: Advanced filesystem service managing Git-isolated worktrees and ephemeral mounts. (Added: 2026-07-25)
+*   **[P0] Predictive Task Prefetcher (PTP)**: Performance-optimizing middleware for speculative environment sandboxing and pre-loading. (Added: 2026-07-25)
+*   **[P0] Atomic Shard Scrubbing (ASS) Provider**: Hardware-attested security service for neutralizing "Ghost Fragments" during agent rotation. (Added: 2026-07-25)
