@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-04-10 Evolution)
+- [ ] **[P0] AFSA Manifest Editor**: (2026-04-10) Interactive UI for composing and TPM-signing Agent-Facing Security Anchors.
+- [ ] **[P0] Syscall Execution Streamer**: (2026-04-10) Real-time visual terminal showing eBPF-instrumented syscalls during the discovery phase.
+- [ ] **[P0] Semantic Config Approval Dialog**: (2026-04-10) Hardened MFA dialog for reviewing configuration changes as intent propositions.
+- [ ] **[P0] Mailbox Lineage Inspector**: (2026-04-10) Forensic UI for visualizing the hardware-attested lineage of coordination messages.
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

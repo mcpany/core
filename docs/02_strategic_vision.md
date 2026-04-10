@@ -156,6 +156,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-10]
+### Focus: Agentic Zero-Trust & Syscall-Aware Discovery
+**Context**: The disclosure of CVE-2026-25593 (OpenClaw configuration RCE) and the emergence of "Agent-Facing" defense paradigms confirm that we must move beyond securing the agent's *output* to securing the agent's *ingestion* of its own operational environment. Simultaneously, Sysdig's syscall-level instrumentation of coding agents proves that the infrastructure must act as a kernel-level monitor for agentic intent.
+**Strategic Pivot**:
+- **Agent-Facing Security Anchors (AFSA)**: MCP Any will evolve to host "Self-Hardening" manifests. These are security policies designed specifically for agent ingestion, allowing the model to incorporate Zero-Trust constraints into its own Chain-of-Thought, effectively making security a reasoning primitive.
+- **Syscall-Aware Discovery Proxy**: To neutralize "cliPath" style exploits, we are upgrading the Discovery Sandbox. Every discovery-time command will be monitored at the syscall level (via eBPF/Falco integration), blocking any attempt to spawn unauthorized shells or access sensitive system files during the pre-flight phase.
+- **Config-as-Intent Validation**: Moving beyond static JSON schema checks, we are implementing "Semantic Config Validation." MCP Any will treat all configuration changes as "Intent Propositions," requiring multi-agent attestation if the proposed settings diverge from the hardware-attested mission-root security baseline.
+- **Inbox-Lineage Sovereignty**: Supporting the stability of teammate meshes, we are mandating "Lineage-Aware Mailboxes." Every coordination message must be cryptographically bound to the initiating agent's hardware-attested identity and its verified role in the mission manifest, neutralizing mimicry-based hijacking.
+
+---
+
 ## Strategic Evolution: [2026-05-14]
 ### Focus: Pluggable Context Sovereignty & Swarm-Speed Identity Defense
 **Context**: The maturation of OpenClaw's `ContextEngine` and the rise of "AI Swarm Attacks" (Hivenets) mark a shift from linear agent security to "Machine-Speed Mesh Defense." As non-human identities outnumber humans 100:1, the "Universal Agent Bus" must move beyond simple bridging to active, hardware-attested identity and state orchestration.

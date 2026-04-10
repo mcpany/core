@@ -1,22 +1,15 @@
 # Market Sync: 2026-04-10
 
-## Ecosystem Shifts & Competitor Analysis
+## Ecosystem Shifts
+- **OpenClaw (CVE-2026-25593):** Discovery of a critical RCE vulnerability in the Gateway WebSocket API. Unauthenticated local clients could inject commands via unsafe `cliPath` values in the configuration. This highlights the extreme risk of unvalidated configuration-as-execution in agent environments.
+- **"Agent-Facing" Defense (SlowMist):** Emergence of a new paradigm where security guides are designed to be ingested and enforced by the AI agents themselves (Agentic Zero-Trust). This shifts the burden of hardening from humans to the agents, making security part of the reasoning loop.
+- **Syscall-Level Instrumentation (Sysdig TRT):** Advanced detection patterns for coding agents (Claude Code, Gemini CLI) have been established at the syscall level. This confirms that infrastructure must monitor not just tool outputs, but the underlying system behavior of the agent process.
+- **Horizontal Swarm Security:** Industry consensus is moving toward "Inbox" (Mailbox) and "Manifest" (Discovery) protection as the primary frontiers for securing multi-agent teammate meshes.
 
-### Claude Code: Shift to "Deterministic Boot" (Post-CVE-2026-25725)
-- **Context**: In response to the bubblewrap sandbox escape where agents could inject hooks by creating missing config files, the community is moving toward a "Deterministic Boot" model.
-- **Finding**: High-security environments are now mandating a pre-execution environment manifest that signs the presence (or absence) of every file in the `.claude/` and `.env` directories.
-- **Action**: MCP Any must accelerate the `Deterministic Attestation Gateway` to provide this "Full-State Manifest" as a service for local agents.
+## Autonomous Agent Pain Points
+- **Discovery-Time RCE:** The "Pre-Flight" phase (tool discovery) remains the most vulnerable window for remote code execution.
+- **Mimicry in Swarms:** Difficulty in distinguishing between legitimate parent instructions and spoofed subagent commands in shared teammate mailboxes.
+- **Syscall-Level Obfuscation:** Agents inadvertently executing obfuscated shell commands through high-trust tools.
 
-### OpenClaw: ContextEngine Plugin Maturation
-- **Update**: The `ContextEngine` API has stabilized, allowing for "Active Context Governance" where third-party plugins can intercept and sanitize context fragments in real-time.
-- **Impact**: MCP Any's `Inference-Time Data Sanitizer` can now be implemented as a native OpenClaw ContextEngine plugin, ensuring that "Prompt Path" attacks are neutralized before ingestion.
-
-### The Rise of Inference-Time Data Sanitization (IDS)
-- **Trend**: Standard data scrapers are increasingly being weaponized via multimodal "Polyglot" payloads (e.g., malicious instructions hidden in SVG/metadata).
-- **Finding**: Conventional text-based sanitization is insufficient. The market is demanding IDS solutions that understand the "Semantic Intent" of data fragments.
-- **Opportunity**: MCP Any's position as a universal gateway allows it to perform IDS across all connected tools and agents, creating a unified security perimeter.
-
-## Summary of Unique Findings
-1. **From Partial to Full State**: Sandboxing is no longer about just restricting access; it's about verifying the *entire* environmental state before execution.
-2. **Context as a Control Plane**: Context management (ContextEngine) is becoming the primary control plane for agent security, surpassing simple tool-call validation.
-3. **Multimodal Sanitization**: Security middleware must now be multimodal-aware to detect "Prompt Path" injections in non-textual metadata.
+## Unique Findings
+- The integration of "Security Guides" directly into the agent's system prompt or context window is becoming a standardized requirement for "High-Trust" certification.

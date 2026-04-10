@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-10] Updates
+
+### Proposed Additions
+- **Agent-Facing Security Anchors (AFSA)**: (P0) Authoritative "Self-Hardening" manifests designed for agentic ingestion, making Zero-Trust constraints a reasoning primitive.
+- **Syscall-Aware Discovery Proxy**: (P0) Advanced security extension for the Discovery Sandbox utilizing eBPF/Falco for kernel-level monitoring of discovery-time execution.
+- **Semantic Config Validator**: (P0) Governance middleware that treats configuration changes as "Intent Propositions," requiring mission-root attestation for any baseline divergence.
+- **Inbox-Lineage Sovereignty Provider**: (P0) Identity service mandating that all inter-teammate coordination messages be cryptographically bound to hardware-attested roles.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory **Syscall-Aware** monitoring.
+- **Local-Only WebSocket Auth (LOWA) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **Semantic Config Validation**.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

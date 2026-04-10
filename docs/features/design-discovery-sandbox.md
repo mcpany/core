@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-10 - Syscall-Aware Discovery Interdiction
+**Context:** Discovery of CVE-2026-25593 (OpenClaw `cliPath` RCE) and the release of Sysdig's syscall-level instrumentation patterns confirm that environment isolation is insufficient. Malicious discovery hooks can attempt to bypass container boundaries or execute obfuscated commands that appear safe to static analysis.
+**Architecture Adjustment:**
+*   Upgrading the Middleware to include a **Syscall-Aware Proxy**.
+*   Integrating eBPF-based monitoring (via Falco or similar kernel-level probes) during the `ExecuteDiscovery` phase.
+*   Enforcing a "Kernel-Level Deny-List" for unauthorized syscalls (e.g., `execve` to shells, `connect` to non-local IPs) within the discovery process lifecycle.
+**Security Impact:** Prevents RCE even if the sandbox configuration is weak, by monitoring the *intent* of the discovery process at the syscall layer.

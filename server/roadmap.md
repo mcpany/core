@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-10 Evolution)
+*   **[P0] Agent-Facing Security Anchors (AFSA)**: Authoritative "Self-Hardening" manifests for agentic ingestion, making Zero-Trust constraints a reasoning primitive. (Added: 2026-04-10)
+*   **[P0] Syscall-Aware Discovery Proxy**: eBPF-based kernel monitoring for discovery-time command execution to neutralize RCE. (Added: 2026-04-10)
+*   **[P0] Semantic Config Validator**: Intent-aware validation for project-local configuration changes, treating them as "Intent Propositions." (Added: 2026-04-10)
+*   **[P0] Inbox-Lineage Sovereignty Provider**: Cryptographic binding of teammate coordination messages to hardware-attested mission roles. (Added: 2026-04-10)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)
