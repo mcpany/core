@@ -1550,3 +1550,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Attestation-Optimized Shard Sovereignty & Lifecycle-Bound Lease Enforcement
+**Context**: The emergence of "Attestation-Bound Shard Migration" (ABSM) and the disclosure of "Teammate Shadowing" (GSA-2026-SHADOW) confirm that **State Mobility** must now be hardware-attested and **Lease Lifecycle** must be recipient-locked. As meshes scale, "Attestation Fatigue" and "Lease Squatting" demand that infrastructure move beyond static gates to active **Dynamic Shard Orchestration** and **Automated Privilege Reclamation**.
+
+**Strategic Pivot**:
+- **Dynamic Shard Orchestrator (DSO)**: MCP Any will evolve to act as the authoritative "Shard Mobility Broker." We will implement DSO, supporting the hardware-attested migration of context shards between distributed nodes (ABSM), ensuring that an agent's memory state persists securely as it moves across the SNT mesh.
+- **Recipient-Bound Mailbox Integrity (RBMI)**: To neutralize "Teammate Shadowing," we are upgrading the Mailbox Injection Shield (MIS). This layer will mandate cryptographically signed fragments that are uniquely bound to the specific recipient teammate's hardware-attested identity, ensuring that MBHLs cannot be hijacked by siblings.
+- **Intent-Aware Jitter Controller**: Supporting the "Context-Aware Jitter" standard, MCP Any will evolve its side-channel defenses. This service will dynamically scale timing variations based on the real-time sensitivity of the mission-root intent, neutralizing high-frequency probing of Reasoning Proofs (PPRP).
+- **Mission-Bound Lease Reaper (MBLR)**: To counter "Lease Squatting," we are introducing the MBLR. This service will perform hardware-locked reclamation of orphaned privileges, forcefully revoking MBHLs if a subagent fails to provide a mission-aligned termination proof upon task completion.

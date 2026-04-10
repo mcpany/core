@@ -1924,6 +1924,18 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Dynamic Shard Orchestrator (DSO)**: (P0) Authoritative mobility broker facilitating hardware-attested migration of context shards between distributed SNT nodes (ABSM compliance).
+- **Recipient-Bound Mailbox Integrity (RBMI) Validator**: (P0) Advanced security extension for the MIS mandating cryptographically bound coordination fragments for specific recipient identities.
+- **Mission-Bound Lease Reaper (MBLR)**: (P0) Lifecycle security service performing hardware-locked reclamation of orphaned MBHLs to neutralize "Lease Squatting."
+- **Intent-Aware Jitter Controller**: (P1) Risk-aware side-channel defense dynamically scaling PPRP timing variations based on mission sensitivity.
+
+### Priority Shifts
+- **Mailbox Injection Shield (MIS)**: (Re-affirmed P0) Elevated with mandatory support for **RBMI-compliant** recipient binding.
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Designated as the primary coordination layer for the **Dynamic Shard Orchestrator (DSO)**.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
