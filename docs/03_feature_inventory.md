@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Multi-Node Consensus Hub (MNCH)**: (P0) Authoritative quorum broker for multi-device environments mandating majority consensus for high-risk tool execution.
+- **Asynchronous Identity Persistence (AIP) Broker**: (P0) Coordination service for pausing and resuming missions across disparate hardware nodes with hardware-attested continuity (Teammate-Resume-Tokens).
+- **Speculative Token Filter (STF)**: (P1) Security middleware for hardware-locked filtering of predicted tokens to neutralize Speculative Decoding Leakage (SDL).
+
+### Priority Shifts
+- **Multi-Hop Persistence Relay (MHPR)**: (Re-affirmed P0) Designated as a critical component for **AIP-compliant** session migration.
+- **Context-File Integrity Attestation (CFIA)**: (Re-affirmed P0) Elevated with mandatory support for **MNCH-validated** hash signatures.

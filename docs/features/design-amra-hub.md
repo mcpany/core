@@ -44,3 +44,10 @@ As AI agent swarms evolve toward "Long-Haul Agency," missions frequently exceed 
 
 ## 7. Evolutionary Changelog
 * **2026-06-18:** Initial Document Creation.
+
+### Update: 2026-07-25 - Supporting Asynchronous Teammate Handoffs (ATH)
+**Context:** Today's research revealed Claude Code's "ATH" standard for multi-node missions. Agents now need to move mission state across disparate hardware nodes while maintaining hardware-attested continuity.
+**Architecture Adjustment:**
+* Section 4 now includes the "Teammate-Resume-Token" (TRT) as a core artifact of the AMRA Hub.
+* The AMRA Hub will now act as a global (cross-node) broker for TRTs, allowing a session paused on Node A to be resumed on Node B using a hardware-locked attestation bridge.
+**Security Impact:** Prevents "Cognitive Amnesia" and unauthorized state hijacking during multi-node handoffs by binding the TRT to a verifiable hardware lineage.
