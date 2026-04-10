@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Attested Lease Aggregator (HALA)**: (P0) Authoritative bundler service for aggregating high-frequency subagent leases into a single hardware-attested token to neutralize "Attestation Storms."
+- **Mesh-Local Offload (MLO) Integrity Provider**: (P0) Security service for hardware-attested sub-reasoning offloads between edge nodes, ensuring mission-root intent persistence without centralized routing.
+- **Zero-Knowledge Shard Verification (ZKSV) Hub**: (P1) Proof-broker enabling agents to attest the integrity of individual context shards using ZK-proofs for parallel mesh auditing.
+- **Mission-Root Jitter Normalizer**: (P1) Performance-optimizing middleware providing hardware-attested timing normalization for P2P coordination signals.
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as a critical dependency for managing budget allocation during mesh-local offloads.
+- **Zero-Knowledge State Attestation (ZKSA)**: (Re-affirmed P0) Evolving into **ZKSV** to support parallel shard-level verification.
