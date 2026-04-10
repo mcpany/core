@@ -86,3 +86,11 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-07-25 - Enclave-Bound Task Sharding
+**Context:** Today's market sync reveals the emergence of "Reasoning-Path Shadowing" (RPS) and the maturation of "Task-Bound Enclaves" (TBE) in competitor frameworks. Logical isolation is no longer sufficient to prevent "Memory Smearing" in high-density meshes.
+**Architecture Adjustment:**
+* **Hardware-Locked Sharding**: Transitioning task-bound shards from in-memory buffers to **Hardware-Bound Enclaves** (TPM/SEP).
+* **Physical Boundary Enforcement**: Utilizing the **DME Broker** to physically isolate shard memory regions, ensuring that teammates from different frameworks (e.g., OpenClaw, Claude Code) cannot "smear" data into sibling shards.
+* **Shadowing Interdiction**: Integrating the **RSM (Reasoning Shadowing Mitigator)** directly into the shard ingest pipeline to detect and block stylometrically shadowed fragments before they are persisted.
+**Security Impact:** Mitigates the risk of side-channel intent hijacking and ensures absolute physical isolation for mission-critical coordination state.

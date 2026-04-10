@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Intra-Agent Governance Broker (IAGB)**: (P0) Authoritative reasoning enforcement service performing real-time analysis of internal monologues against mission-root constraints.
+- **Enclave-Bound Shard Manager (EBSM)**: (P0) Hardware-enclave bound coordination service utilizing TPM/SEP to physically isolate task-bound mailbox shards.
+- **Reasoning Shadowing Mitigator (RSM)**: (P0) Security middleware performing high-dimensional stylometric analysis to detect mimicry-based authority hijacking.
+- **Consensus-Bound Compaction Gate**: (P1) Distributed coordination service mandating multi-agent consensus before context eviction to ensure mission-root continuity.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Evolving into **EBSM** to support hardware-enclave isolation.
+- **Stylometric Identity Anchoring (SIA)**: (Re-affirmed P0) Elevated with mandatory **RSM-compliant** shadowing detection.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

@@ -10,6 +10,12 @@
 ## 2. Updated Roadmap
 
 ### Status: Active Development
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Intra-Agent Governance Broker (IAGB)**: Authoritative reasoning-aware circuit breaker to prevent mission drift. (Added: 2026-07-25)
+*   **[P0] Enclave-Bound Shard Manager (EBSM)**: Hardware-isolated coordination shards to neutralize physical memory smearing. (Added: 2026-07-25)
+*   **[P0] Reasoning Shadowing Mitigator (RSM)**: Multi-dimensional stylometric analysis to block authority hijacking in meshes. (Added: 2026-07-25)
+*   **[P1] Consensus-Bound Compaction Gate**: Multi-agent consensus requirement for state summarization to ensure mission-root continuity. (Added: 2026-07-25)
+
 
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.

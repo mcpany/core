@@ -3,6 +3,10 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Reasoning Interdiction Dashboard**: (2026-07-25) Real-time visualization of IAGB circuit-breaker events and alignment scores.
+- [ ] **[P0] Enclave Shard Integrity Monitor**: (2026-07-25) Visual indicator for hardware-pinned shards and physical memory violation alerts.
+- [ ] **[P0] Shadowing Attack Visualizer**: (2026-07-25) Forensic UI for identifying and reviewing stylometrically shadowed reasoning fragments.
+- [ ] **[P1] Compaction Quorum Manager**: (2026-07-25) Workspace for monitoring multi-agent consensus on context compaction events.
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)
