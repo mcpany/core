@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Zero-Latency Mesh Resumption
+**Context:** Today's market sync revealed OpenClaw's move toward "Resumption Tickets" to mitigate the latency tax of mandatory P2P tunnels.
+**Architecture Adjustment:**
+* Implementing a "Mesh Ticket" store within the FPIR provider.
+* Tickets are issued post-initial AMT handshake and are valid for 300 seconds for sub-millisecond tunnel resumption.
+**Security Impact:** Reduces the frequency of expensive cryptographic handshakes while maintaining origin-locked sovereignty via time-bound hardware-attested tickets.

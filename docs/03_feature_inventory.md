@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Scratchpad Arbiter**: (P0) Kernel-level lock manager for shared team scratchpads providing mission-bound atomic write-access to resolve "Scratchpad Deadlocks."
+- **Epistemic Attestation Provider**: (P0) Authoritative confidence broker utilizing hardware-attested uncertainty signals to trigger automated supervisor escalations.
+- **Blackboard Sanitization Reaper**: (P0) Lifecycle security service that forcefully purges intent-specific "Dormant Fragments" from the Blackboard upon mission completion.
+- **Mesh-Ticket Resumption Provider**: (P0) Performance-optimizing identity service utilizing session-bound tickets for zero-latency resumption of AMT tunnels.
+
+### Priority Shifts
+- **Adaptive Resource Reclamation (ARR) Service**: (Promoted from P1 to P0) Critical for maintaining mesh performance during high-density "Thinking" bursts and resolving coordination stalls.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **Mesh-Ticket** resumption.
