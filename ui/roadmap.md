@@ -2,6 +2,11 @@
 
 ## Status: Active Development
 
+### Evolution: [2026-07-25]
+- [ ] **[P0] Mission Lease Manager**: (2026-07-25) Visual tracker for active HLML-bound capability leases and their automated expiration status.
+- [ ] **[P0] Mesh Load Balancing Monitor**: (2026-07-25) Real-time visualization of SALB routing decisions and shard contention levels.
+- [ ] **[P0] Fast-Path Resumption Widget**: (2026-07-25) Dashboard indicator for sub-millisecond mesh resumption and ticket-bound trust status.
+
 ### Universal Agent Bus (New Strategic Priorities)
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)

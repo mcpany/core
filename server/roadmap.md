@@ -9,6 +9,11 @@
 
 ## 2. Updated Roadmap
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] State-Aware Load Balancer (SALB)**: Implementation of conflict-aware routing for horizontal teammate meshes. (Added: 2026-07-25)
+*   **[P0] Hardware-Locked Mission Leases (HLML)**: Core service for issuing TPM-signed, task-specific capability leases. (Added: 2026-07-25)
+*   **[P0] Fast-Path Mesh Resumption**: Optimization for AMT using session-bound Mesh Tickets to neutralize tunneling latency. (Added: 2026-07-25)
+
 ### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)

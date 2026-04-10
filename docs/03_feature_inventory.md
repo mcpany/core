@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **State-Aware Load Balancer (SALB)**: (P0) Advanced routing service for horizontal meshes that optimizes coordination requests based on real-time shard utilization and conflict entropy.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Security middleware issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
+- **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections between distributed agent nodes.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Promoted to P0) Critical for neutralizing the latency overhead of mandatory mesh encryption and P2P tunneling.
+- **Lock-Free Mesh Coordination**: (Re-affirmed P0) Elevated with mandatory **SALB** integration to resolve cognitive stalls in high-density teams.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

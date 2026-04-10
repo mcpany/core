@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Tunneling Latency Overhead
+**Context:** Today's market sync revealed that the mandatory P2P tunnels in OpenClaw v3.6.1 are introducing significant latency, impacting sub-millisecond tool execution.
+**Architecture Adjustment:**
+* Prioritizing the "Fast-Path Mesh Resumption" mechanism in Section 4.
+* Introducing session-bound "Mesh Tickets" to allow sub-millisecond resumption of secure tunnels across distributed nodes, bypassing the full TPM handshake for established mission branches.
+**Security Impact:** Reduces "Cognitive Stall" in distributed swarms while maintaining hardware-attested sovereignty.
