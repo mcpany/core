@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Credential-Safe Mesh Tunneling & MBHL Integration
+**Context:** The disclosure of CVE-2026-32211 (Azure DevOps MCP Bypass) and the mass exposure of unauthenticated MCP servers reveal that transport-layer security alone is insufficient to protect sensitive credentials in distributed meshes.
+**Architecture Adjustment:**
+* Integrating the **Hardware-Attested Credential Broker (HACB)** into the AMT handshake. Remote tool calls will now carry task-specific, brokered credential fragments rather than raw tokens.
+* Mandating the use of **Mission-Bound Hardware Leases (MBHL)** for any remote execution that involves persistent state mutation.
+* Introducing an "Automatic Quarantining" trigger in Section 4 that terminates tunnels if the **Mesh Exposure Scanner** detects insecure non-loopback bindings on either node.
+**Security Impact:** Prevents credential exfiltration during inter-node handoffs and ensures that remote lateral movement is strictly bounded by hardware-attested mission roots.

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Attested Credential Broker (HACB)**: (P0) Authoritative security service acting as a "Secret Mint," ensuring credentials are brokered via hardware-attested, task-bound sessions.
+- **Mesh Exposure Scanner**: (P0) Proactive network security service that automatically audits service bindings and quarantines unauthenticated non-loopback listeners.
+- **Multi-Signature Auditor Quorum**: (P0) Distributed security middleware requiring cryptographically bound approval tokens from verified independent auditors for dynamic tool grafting.
+- **Mission-Bound Hardware Leases (MBHL) Provider**: (P0) Standardized security middleware (formerly HLML) issuing TPM-signed, mission-fragment-specific capability leases for high-privilege tasks.
+
+### Priority Shifts
+- **Verified Skill Registry**: (Re-affirmed P0) Elevated with the requirement for mandatory **Multi-Signature Auditor Quorum** integration.
+- **Same-Origin Policy (SOP) Enforcer**: (Re-affirmed P0) Designated as the primary enforcement point for **Mesh Exposure Scanner** interdiction policies.

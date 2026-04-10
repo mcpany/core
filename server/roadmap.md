@@ -1027,6 +1027,11 @@ These features represent the next logical steps for the product, focusing on Ent
 
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
-*   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
+*   **[P0] Mission-Bound Hardware Leases (MBHL) Provider**: Advanced security middleware (formerly HLML) for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Hardware-Attested Credential Broker (HACB)**: Secret management service for brokering hardware-attested, task-specific credentials. (Added: 2026-07-25)
+*   **[P0] Mesh Exposure Scanner**: Proactive network audit service for identifying and quarantining insecure MCP endpoints. (Added: 2026-07-25)
+*   **[P0] Multi-Signature Auditor Quorum**: Consensus-based validation hub for dynamic tool grafting and skill installation. (Added: 2026-07-25)
