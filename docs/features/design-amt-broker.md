@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Tunnel-Splitting Redirection
+**Context:** Today's market sync revealed a new "Tunnel-Splitting" exploit pattern in OpenClaw SNT, where malformed handshake packets redirect tool-call traffic to unauthenticated side-channels.
+**Architecture Adjustment:**
+* Implementing **Full-Stack Tunnel Sovereignty (FTS)** within Section 4.
+* Mandating deep-packet semantic inspection for all P2P handshake sequences.
+* Introducing mandatory session-integrity heartbeats that use hardware-bound monotonic counters to detect redirection attempts.
+**Security Impact:** Prevents attackers from bypassing hardware-attested tunnels via handshake manipulation, ensuring all inter-node traffic remains within the verified mainline.

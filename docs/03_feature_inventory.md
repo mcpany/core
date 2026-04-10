@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Full-Stack Tunnel Sovereignty (FTS) Enforcer**: (P0) Advanced AMT Broker extension performing deep-packet semantic inspection and mandatory session-integrity heartbeats to neutralize "Tunnel-Splitting."
+- **ACP-Immune Memory Tiers**: (P0) Hardware-attested pinning mechanism for mission-root fragments to prevent eviction during Active Context Pruning (ACP).
+- **Atomic Lease-Bound Purge (ALBP) Service**: (P0) Lifecycle security middleware that forcefully purges project-local workspace fragments immediately upon mission-root lease expiration.
+- **Dynamic Quorum Damping (DQD) Middleware**: (P0) Stability service that dynamically scales quorum requirements and weighting based on real-time network stability to prevent Consensus Collapse.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **FTS-compliant** packet inspection and session heartbeats.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Designated as the primary infrastructure for triggering **ALBP-compliant** workspace purging.
