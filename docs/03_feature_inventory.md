@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative State Commit (SSC) Broker**: (P0) Authoritative host for speculative state, utilizing "Hardware-Locked Probabilistic Buffers" to neutralize the "Coordination Tax."
+- **Quantum-Resistant Attestation (QRA) Provider**: (P0) Advanced security service implementing NIST-standard (FIPS 203/204) algorithms for inter-agent coordination fragments.
+- **Zero-Latency Mission Resumption (ZLMR) Manager**: (P0) Infrastructure for "Pre-Attested Snapshots," enabling mission resumption in <100ms.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with mandatory support for **Speculative Drift** detection in SSC buffers.
+- **Post-Quantum Mesh Handshake (PQMH)**: (Promoted from P1 to P0) Critical foundation for the new **QRA Provider** and long-term mesh integrity.

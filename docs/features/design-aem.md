@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Speculative Drift Management
+**Context:** Today's market sync revealed "State Divergence" issues in OpenClaw SSC early adopters.
+**Architecture Adjustment:**
+* Integrating real-time entropy scoring for Hardware-Locked Probabilistic Buffers.
+* Introducing automated "Speculative Pruning" triggers when coherence falls below 0.8 in the buffer phase.
+**Security Impact:** Prevents divergent speculative reasoning from polluting the mission-root state during high-frequency parallel coordination.
