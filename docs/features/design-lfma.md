@@ -59,3 +59,7 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-07-25:** Update: Resolving Silent Shard Collisions.
+    *   **Context:** Today's market sync revealed that "Silent Collisions" in lock-free meshes are causing divergent reasoning paths when multiple agents act on the same converged state simultaneously.
+    *   **Architecture Adjustment:** Introducing **Intent-Bound Shard Isolation (IBSI)**. Every teammate is now assigned a "Speculative Shard" (isolated scratchpad) for task mutations.
+    *   **Security Impact:** Prevents unauthorized cross-intent state pollution and ensures that conflict resolution is anchored to the parent mission-root priority.

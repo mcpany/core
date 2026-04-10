@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Handshake-as-a-Service (HaaS) Broker**: (P0) High-performance identity brokering service issuing hardware-attested trust tickets for sub-millisecond mesh resumption across P2P tunnels.
+- **Intent-Bound Shard Isolation (IBSI)**: (P0) Security middleware providing isolated speculative scratchpads for horizontal teammates to prevent silent shard collisions.
+- **Reasoning-Aware Transport (RAT) Optimizer**: (P1) Efficiency service dynamically prioritizing coordination fragments based on hardware-attested reasoning intensity to bypass noise.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with the requirement for mandatory **HaaS-compliant** trust ticket issuance.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with mandatory **IBSI-compliant** shard isolation.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
