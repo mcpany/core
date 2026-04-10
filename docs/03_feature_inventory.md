@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Agentic Quorum Hub (AQC)**: (P0) Authoritative consensus service requiring multi-agent, cryptographically bound approval for high-stakes tool calls.
+- **Contextual Entanglement Provider (ECS)**: (P0) Shard-level middleware facilitating secure state sharing across disparate agent missions using hardware-attested sovereignty bridges.
+- **Reasoning-Path Watermark (RPW) Validator**: (P0) Advanced provenance service for verifying hardware-attested cryptographic watermarks embedded in reasoning tokens.
+- **Entanglement Drift Arbitrator**: (P1) Stability middleware for the AIA Broker that automatically revokes multi-mission entanglement leases upon detection of semantic drift.
+
+### Priority Shifts
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Evolving into the **Agentic Quorum Hub (AQC)** to support multi-agent "Agent-in-the-Loop" models.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **ECS-compliant** multi-mission entanglement.

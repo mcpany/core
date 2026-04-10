@@ -66,3 +66,11 @@ As agent swarms grow in complexity, the monolithic transfer of context becomes a
 * Every sharded fragment now includes a cryptographically bound "Gravity Anchor" containing the mission-root intent.
 * The Shard Manager now enforces mission-alignment during fragment reconstruction.
 **Security Impact:** Ensures that parallel teammates remain anchored to the parent's verified goal, preventing sub-task isolation and intent hijacking.
+
+### Update: 2026-07-25 - Contextual Entanglement (ECS)
+**Context:** Today's ecosystem sync revealed OpenClaw's move toward "Entangled Context Shards" to solve cross-mission siloing.
+**Architecture Adjustment:**
+* Introducing the **Contextual Entanglement Provider (ECS)** as an extension to the Shard Manager.
+* Implementing `Entangle(shardID string, missionID string) (LeaseID, error)` to facilitate multi-mission state sharing.
+* Shards can now be "entangled" across disparate mission-roots, utilizing hardware-attested sovereignty bridges to maintain fragment-level integrity.
+**Security Impact:** Prevents "Entanglement Drift" and state poisoning by mandating real-time consensus for cross-mission mutations.
