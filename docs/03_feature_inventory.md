@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Deterministic Mission Lifecycle Controller**: (P0) Authoritative service for synchronizing state rollbacks and resource reclamation with the expiration of hardware-locked leases.
+- **Mesh Ticket Provisioner**: (P0) Performance-optimized issuer of hardware-attested trust tickets for sub-millisecond tunnel resumption in AMT.
+
+### Priority Shifts
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated criticality due to the surge in headless swarm deployments requiring strict boundary enforcement.
+- **Fast-Path Mesh Resumption**: (Re-affirmed P0) Elevated criticality to address the 200ms+ latency ceiling in distributed SNT meshes.

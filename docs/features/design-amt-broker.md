@@ -62,3 +62,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Fast-Path Mesh Resumption Integration.
+    * **Context:** Today's market sync revealed a 200ms+ latency ceiling in distributed SNT meshes due to repeated full P2P handshakes.
+    * **Architecture Adjustment:** Introducing the `Mesh Ticket Provisioner` to broker hardware-attested trust tickets for sub-millisecond tunnel resumption.
+    * **Security Impact:** Maintains hardware-attested sovereignty while reducing coordination tax for high-frequency inter-node calls.
