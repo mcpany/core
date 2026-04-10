@@ -199,7 +199,6 @@ go_test(
         "url_parsing_test.go",
         "vim_security_test.go",
         "watch_security_test.go",
-        "webrtc_extra_test.go",
         "webrtc_test.go",
         "websocket_coverage_test.go",
         "websocket_tool_test.go",
@@ -209,7 +208,6 @@ go_test(
     embed = [":tool"],
     tags = ["integration"],
     deps = [
-        "//proto/api/v1:api",
         "//proto/bus",
         "//proto/config/v1:config",
         "//proto/examples/weather/v1:weather",

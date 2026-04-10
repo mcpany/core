@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "dummy",
+    srcs = ["deps.go"],
+    importpath = "github.com/mcpany/core/server/pkg/dummy",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_apimachinery//pkg/runtime",
+        "@io_k8s_sigs_controller_runtime//:controller-runtime",
+        "@org_golang_google_genproto_googleapis_api//annotations",
+    ],
+)

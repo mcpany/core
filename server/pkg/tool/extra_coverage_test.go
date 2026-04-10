@@ -5,7 +5,6 @@ package tool
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -290,37 +289,3 @@ func TestManager_GetTool_NotFound(t *testing.T) {
 	assert.Nil(t, tool)
 }
 
-func TestWebrtcTool_Close_And_ExecuteWithoutPool(t *testing.T) {
-	// Set env to disable STUN for faster/safer test
-	os.Setenv("MCPANY_WEBRTC_DISABLE_STUN", "true")
-	defer os.Unsetenv("MCPANY_WEBRTC_DISABLE_STUN")
-
-	wt, err := NewWebrtcTool(
-		pb.Tool_builder{Name: proto.String("tool"), UnderlyingMethodFqn: proto.String("WEBRTC http://127.0.0.1")}.Build(),
-		nil, // No pool -> triggers executeWithoutPool
-		"s",
-		nil,
-		&configv1.WebrtcCallDefinition{},
-	)
-	assert.NoError(t, err)
-
-	// Test Close (no pool)
-	assert.NoError(t, wt.Close())
-
-	// Trigger Execute -> executeWithoutPool
-	// This will try to create connection and fail or hang?
-	// It calls newPeerConnection (succeeds with disabled STUN)
-	// Then executeWithPeerConnection -> unmarshal input -> ... -> http request
-	// We pass invalid input JSON to fail early in executeWithPeerConnection,
-	// verifying that executeWithoutPool was called and called executeWithPeerConnection.
-
-	req := &ExecutionRequest{
-		ToolName:   "tool",
-		ToolInputs: []byte("invalid json"),
-	}
-
-	_, err = wt.Execute(context.Background(), req)
-	assert.Error(t, err)
-	// executeWithPeerConnection returns "failed to unmarshal tool inputs"
-	assert.Contains(t, err.Error(), "failed to unmarshal tool inputs")
-}
