@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hierarchical Mission Anchor (HMA) Manager**: (P0) Authoritative lineage service utilizing hardware-locked monotonic counters to anchor deep agent chains to the mission-root.
+- **Cross-Node State Synchronization (CNSS) Hub**: (P0) Distributed coordination service for optimistic context shard synchronization across multi-node agent meshes.
+- **Temporal Lease Delegation (TLD) Provider**: (P0) Advanced security service allowing agents to delegate hardware-signed leases to sub-specialists without mission-root roundtrips.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **CNSS-compliant** state pre-fetching to neutralize cross-node latency.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Designated as the primary enforcement point for **MRC-compliant** reasoning snapshots.
