@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Fast-Path Identity Resumption (FPIR) Provider**: (P0) Performance-optimizing identity service brokering session-bound, hardware-attested trust tickets for sub-10ms teammate rotation.
+- **Reasoning-Path Integrity (RPI) Validator**: (P0) Advanced security middleware performing real-time semantic hash-chaining of coordination fragments to neutralize Reasoning Grafting (CVE-2026-88102).
+- **CRDT-Native Mailbox Sharding**: (P0) Scaling coordination architecture using Conflict-Free Replicated Data Types to resolve 5s+ cognitive stalls in high-density teams.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **FPMR-compliant** trust tickets.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Designated as the primary mechanism for mitigating "Attestation Fatigue" in modern swarms.
