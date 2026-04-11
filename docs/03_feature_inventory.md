@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Atomic Rotation Integrity (ARI) Hub**: (P0) authoritative identity stabilizer utilizing hardware-attested monotonic rotation tokens to neutralize "Identity Drift."
+- **Attention-Locked Context Windows (ALCW)**: (P0) hardware-bound attention governance marking mission-root fragments as "GC-Immune."
+- **Speculative Zero-Knowledge Discovery (SZKD)**: (P0) performance-optimized discovery gateway facilitating masked predictive scoping.
+- **Predictive Intent Validator**: (P0) security middleware cross-referencing pre-declared intent sequences against hardware-attested manifests.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Now elevated with mandatory **SZKD** support for predictive scoping.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving into the **ALCW** standard for hardware-locked attention immunity.

@@ -87,3 +87,10 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - Neutralizing Identity Drift in High-Frequency Swarms
+**Context:** Today's market sync revealed the risk of "Identity Drift" during Gemini CLI's Multi-Swarm Identity Rotation (MSIR), where subagents occasionally lose mission-root authority.
+**Architecture Adjustment:**
+* Evolving the ARI Hub to act as the authoritative **Identity Stabilizer** in Section 4.
+* Implementing **Atomic Rotation Integrity (ARI)** using hardware-attested monotonic rotation tokens. Every identity rotation must be anchored to a valid ARI hash-chain state to ensure authority continuity.
+**Security Impact:** Prevents "Orphaned Agency" and authority leakage during rapid cross-framework identity transitions.

@@ -61,3 +61,10 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
     * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
     * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
     * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+
+### Update: 2026-07-25 - Attention-Locked Context Windows (ALCW)
+**Context:** Today's market sync confirmed the maturity of ALCW in Claude Code v3.3.0, marking a shift from probabilistic anchoring to deterministic attention locking.
+**Architecture Adjustment:**
+* Adopting the **ALCW Standard** in Section 4. Mission-root fragments are now marked with hardware-bound attention headers that ensure they are physically immutable in the KV-cache.
+* Implementing **Attention-Driver Analysis** to periodically verify that mission-root anchors maintain >80% attention-weight dominance for high-stakes tool calls.
+**Security Impact:** Prevents "Instruction Pruning" during long-haul reasoning sessions, ensuring behavioral guardrails remain permanent.
