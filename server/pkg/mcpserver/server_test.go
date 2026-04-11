@@ -527,6 +527,254 @@ func TestServer_Resources(t *testing.T) {
 	})
 }
 
+func TestConvertMapToCallToolResult(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       map[string]any
+		expected    *mcp.CallToolResult
+		expectError bool
+		errorMsg    string
+	}{
+		{
+			name:        "no content and no isError",
+			input:       map[string]any{"other": "value"},
+			expectError: true,
+			errorMsg:    "neither content nor isError present",
+		},
+		{
+			name: "isError only",
+			input: map[string]any{
+				"isError": true,
+			},
+			expected: &mcp.CallToolResult{
+				Content: make([]mcp.Content, 0),
+				IsError: true,
+			},
+		},
+		{
+			name: "content is not a list",
+			input: map[string]any{
+				"content": "not a list",
+			},
+			expectError: true,
+			errorMsg:    "content is not a list",
+		},
+		{
+			name: "content item is not a map",
+			input: map[string]any{
+				"content": []any{"not a map"},
+			},
+			expectError: true,
+			errorMsg:    "content item is not a map",
+		},
+		{
+			name: "content type is not a string",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": 123},
+				},
+			},
+			expectError: true,
+			errorMsg:    "content type is not a string",
+		},
+		{
+			name: "text content missing text string",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "text", "text": 123},
+				},
+			},
+			expectError: true,
+			errorMsg:    "text content text is not a string",
+		},
+		{
+			name: "text content valid",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "text", "text": "hello world"},
+				},
+				"isError": false,
+			},
+			expected: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{Text: "hello world"},
+				},
+				IsError: false,
+			},
+		},
+		{
+			name: "image data not string",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "image", "data": 123},
+				},
+			},
+			expectError: true,
+			errorMsg:    "image content data is not a string",
+		},
+		{
+			name: "image invalid base64",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "image", "data": "invalid-b64-!"},
+				},
+			},
+			expectError: true,
+			errorMsg:    "failed to decode image data",
+		},
+		{
+			name: "image mimeType not string",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "image", "data": "YWJj", "mimeType": 123},
+				},
+			},
+			expectError: true,
+			errorMsg:    "image content mimeType is not a string",
+		},
+		{
+			name: "image valid",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "image", "data": "YWJj", "mimeType": "image/png"},
+				},
+				"isError": true,
+			},
+			expected: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.ImageContent{Data: []byte("abc"), MIMEType: "image/png"},
+				},
+				IsError: true,
+			},
+		},
+		{
+			name: "resource not map",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "resource", "resource": "not a map"},
+				},
+			},
+			expectError: true,
+			errorMsg:    "resource content resource is not a map",
+		},
+		{
+			name: "resource uri not string",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "resource", "resource": map[string]any{"uri": 123}},
+				},
+			},
+			expectError: true,
+			errorMsg:    "resource uri is not a string",
+		},
+		{
+			name: "resource invalid blob base64",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "resource", "resource": map[string]any{
+						"uri":  "file:///test",
+						"blob": "invalid-b64-!",
+					}},
+				},
+			},
+			expectError: true,
+			errorMsg:    "failed to decode resource blob",
+		},
+		{
+			name: "resource valid with string blob",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "resource", "resource": map[string]any{
+						"uri":      "file:///test",
+						"mimeType": "text/plain",
+						"text":     "file content",
+						"blob":     "ZGVm",
+					}},
+				},
+			},
+			expected: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.EmbeddedResource{
+						Resource: &mcp.ResourceContents{
+							URI:      "file:///test",
+							MIMEType: "text/plain",
+							Text:     "file content",
+							Blob:     []byte("def"),
+						},
+					},
+				},
+				IsError: false,
+			},
+		},
+		{
+			name: "resource valid with bytes blob",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "resource", "resource": map[string]any{
+						"uri":  "file:///test2",
+						"blob": []byte("bytes blob"),
+					}},
+				},
+			},
+			expected: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.EmbeddedResource{
+						Resource: &mcp.ResourceContents{
+							URI:  "file:///test2",
+							Blob: []byte("bytes blob"),
+						},
+					},
+				},
+				IsError: false,
+			},
+		},
+		{
+			name: "unsupported type",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "unknown_type"},
+				},
+			},
+			expectError: true,
+			errorMsg:    "unsupported content type for fast path",
+		},
+		{
+			name: "multiple contents",
+			input: map[string]any{
+				"content": []any{
+					map[string]any{"type": "text", "text": "hello"},
+					map[string]any{"type": "image", "data": "YWJj", "mimeType": "image/png"},
+				},
+			},
+			expected: &mcp.CallToolResult{
+				Content: []mcp.Content{
+					&mcp.TextContent{Text: "hello"},
+					&mcp.ImageContent{Data: []byte("abc"), MIMEType: "image/png"},
+				},
+				IsError: false,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := mcpserver.ConvertMapToCallToolResult(tt.input)
+			if tt.expectError {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.errorMsg)
+			} else {
+				require.NoError(t, err)
+				// isError only branch sets Content to nil instead of length zero slice,
+				// check that they behave exactly alike:
+				if result.Content == nil {
+					result.Content = make([]mcp.Content, 0)
+				}
+				assert.Equal(t, tt.expected, result)
+			}
+		})
+	}
+}
+
 func TestServer_Getters(t *testing.T) {
 	poolManager := pool.NewManager()
 	f := factory.NewUpstreamServiceFactory(poolManager, nil)

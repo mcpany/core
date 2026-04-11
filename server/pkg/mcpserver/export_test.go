@@ -25,3 +25,6 @@ func (s *Server) ResourceListFilteringMiddleware(next mcp.MethodHandler) mcp.Met
 func (s *Server) PromptListFilteringMiddleware(next mcp.MethodHandler) mcp.MethodHandler {
 	return s.promptListFilteringMiddleware(next)
 }
+
+// ConvertMapToCallToolResult exports convertMapToCallToolResult for testing.
+var ConvertMapToCallToolResult = convertMapToCallToolResult
