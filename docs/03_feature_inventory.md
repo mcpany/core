@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-11] Updates (Iteration 2)
+
+### Proposed Additions
+- **ClawHub SDK Integration**: (P0) Transition from unregulated npm dependencies to the curated ClawHub marketplace SDK for enhanced skill discovery and security.
+- **SSH Sandboxing Adapter**: (P1) Implementation of OpenClaw-style SSH sandboxed execution for high-risk system tools.
+- **Teammate-to-Teammate (T2T) Intent Validation**: (P0) High-speed mailbox middleware for Claude-style Agent Teams to ensure peer instructions align with the team lead's mission root.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Elevated to core infrastructure role to support the 2026-04-11 standard for cross-framework task brokering.
+- **Deterministic Environment Attestation**: (Re-affirmed P0) Promoted as the mandatory foundation for all compliant Agent Team boots.

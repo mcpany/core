@@ -61,3 +61,10 @@ The persistent threat from project-local configuration vulnerabilities (CVE-2025
 * **Hardware-Locked Boot:** Section 4 now includes a requirement for TPM-bound signatures on all project-local hooks and security-critical settings.
 * **Binding Logic:** The gateway will now refuse to attest to a manifest if sensitive hooks are not cryptographically bound to the local machine's TPM, neutralizing the risk of "Payload Smuggling" in malicious repo clones.
 **Security Impact:** Moves the trust boundary from the software manifest to the hardware, ensuring that security policies cannot be bypassed even if the manifest file itself is compromised or replaced.
+
+### Update: 2026-04-11 - Pre-Execution Attestation for Agent Teams
+**Context:** The disclosure of CVE-2026-25725 (Shadow-Sandbox escapes) proves that runtime monitoring is insufficient. Security must be established *before* the first reasoning step.
+**Architecture Adjustment:**
+* Section 4 now mandates a "Full-State Manifest" as a prerequisite for any sub-process spawn in an Agent Team.
+* Implementing signed "Non-Existence Proofs" for restricted paths to prevent configuration-injection escapes.
+**Security Impact:** Neutralizes "Settings-as-Shell" exploits by ensuring the environment is immutable and verified before agent execution.

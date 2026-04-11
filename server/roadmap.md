@@ -462,6 +462,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-08)
 
 #### Upcoming (2026-04-11 Evolution)
+*   **[P0] ClawHub SDK Integration**: Transition to curated ClawHub marketplace SDK for enhanced skill discovery and security. (Added: 2026-04-11)
+*   **[P1] SSH Sandboxing Adapter**: OpenClaw-style SSH sandboxed execution for high-risk system tools. (Added: 2026-04-11)
+*   **[P0] Teammate-to-Teammate (T2T) Intent Validation**: High-speed mailbox middleware for Claude-style Agent Teams to ensure peer instructions align with mission root. (Added: 2026-04-11)
 *   **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A protocol to secure agent-to-agent delegation. (Added: 2026-04-11)
 *   **[P0] Deterministic Environment Attestation**: Full-state manifest service to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
 *   **[P1] Structured Context Propagation**: Implementation of trace-linked security context for distributed agent swarms. (Added: 2026-04-11)

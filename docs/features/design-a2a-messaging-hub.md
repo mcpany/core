@@ -97,3 +97,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **A2A Authentication Proxy:** Introducing a mandatory authentication gate for the `/v1/a2a/propose` and `/v1/a2a/mailbox` endpoints in Section 4. The hub will now validate bearer tokens against a verified peer registry.
 * **Execution Identity Integration:** Extending the A2A Task Card in Section 4 to include a `sandbox_attestation` field, allowing agents running in gVisor to prove their environment integrity.
 **Security Impact:** Eliminates unauthenticated capability probes and provides a foundation for zero-trust inter-agent delegation in heterogeneous meshes.
+
+### Update: 2026-04-11 - Evolution to Universal Agent Messaging
+**Context:** Today's research confirms that A2A has moved beyond a simple coordination protocol to the "Messaging Tier" of the Universal Agent Bus. Mandatory authentication and structured task objects are now required for all compliant swarms.
+**Architecture Adjustment:**
+* Transitioning Section 4 from "Pseudo-MCP" bridge logic to native A2A frame handling.
+* Implementing "Auth-Before-Discovery" as a mandatory gate for all A2A mailbox interactions.
+**Security Impact:** Prevents "Shadow Capability" mapping and unauthenticated discovery probes, aligning with Gemini CLI v0.33.0 patterns.

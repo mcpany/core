@@ -244,6 +244,9 @@
 - [ ] **[P0] Non-Existence Proof Visualizer**: UI for inspecting the "Absent File" manifest during Deterministic Boot attestation. (Added: 2026-04-12)
 
 #### Upcoming (2026-04-11 Evolution)
+- [ ] **[P0] ClawHub Marketplace Explorer**: UI for browsing, profiling, and installing skills from the curated ClawHub registry. (Added: 2026-04-11)
+- [ ] **[P0] Teammate Mailbox Monitor**: Real-time visualization of inter-agent mailbox messages and T2T intent validation status. (Added: 2026-04-11)
+- [ ] **[P1] SSH Sandbox Terminal**: Integrated web terminal for monitoring and interacting with sandboxed SSH tool sessions. (Added: 2026-04-11)
 - [ ] **[P0] A2A Message Inspector**: Visual tool for debugging and tracing A2A task delegation and agent-to-agent communication. (Added: 2026-04-11)
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-11)
 - [ ] **[P1] Context Propagation Visualizer**: Trace-linked visualization of how security context flows between tools and agents. (Added: 2026-04-11)
