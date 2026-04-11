@@ -1,5 +1,19 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Latency Mesh Resumption (ZLMR)**: (P0) Performance-optimizing service utilizing session-bound tickets to eliminate inter-node handshake overhead.
+- **Structural Context Re-composition (SCR) Middleware**: (P0) Advanced state governance layer that re-assembles sharded ATH fragments into mission-anchored context blocks.
+- **Attention-Weight Attestation (AWA) Provider**: (P0) Advanced security service providing hardware-attested summaries of attention-head distribution to verify mission-root anchoring.
+- **Leased Attestation Shards (LAS)**: (P1) Batch-based hardware attestation utility enabling high-frequency tool calls without per-call TPM latency.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory **ZLMR** integration to support sub-millisecond mesh migration.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with the requirement for **AWA-compliant** provenance to counter reasoning drift.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving to support **SCR-compliant** asynchronous state merging.
+
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
