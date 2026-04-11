@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Federated Skill Attestation (FSA) Hub**: (P0) Authoritative security service utilizing SHA-256 Merkle trees to verify behavioral and static lineage of agent skills.
+- **Epistemic Truth Broker (ETB)**: (P0) Authoritative state-verification middleware issuing hardware-signed "Truth Receipts" for high-trust tool outputs.
+- **Skill Passport Registry**: (P0) A federated registry for storing and sharing hardware-attested behavioral manifests for AI agent skills.
+- **Stylometric Phishing Detector**: (P1) Real-time security extension for the SBF v2 that detects subagent mimicry attempts using stylometric drift analysis.
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Evolving into **Stylometric Phishing Detector** for SBF v2 integration.
+- **Zero-Knowledge Capability Discovery (ZKCD)**: (Promoted to P0) Now a mandatory requirement for all enterprise swarms to counter shadow mapping.
