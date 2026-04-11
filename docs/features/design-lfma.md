@@ -59,3 +59,10 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Mailbox Ghosting (CVE-2026-94002)
+**Context:** Today's disclosure of persistent locks in Claude Code teams confirms that lock-free systems must still handle "Process Death" gracefully.
+**Architecture Adjustment:**
+* Introducing **Lock-Free Task Reclamation (LFTR)**. The LFMA now integrates with the kernel-level subagent liveness monitor.
+* Implementing "Lease-Bound Claims": Task claims in the CRDT now carry a hardware-attested lease that must be renewed via the heartbeat protocol.
+**Security Impact:** Neutralizes "Coordination Stall" by automatically re-auctioning tasks held by "Ghost" teammates without requiring a manual lock-break.

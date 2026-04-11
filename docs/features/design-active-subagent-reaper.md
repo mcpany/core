@@ -70,3 +70,10 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-07-25 - Active Mesh Task Reclamation
+**Context:** The "Mailbox Ghosting" vulnerability (CVE-2026-94002) highlights the need for the Reaper to manage not just sessions, but active task locks in horizontal teams.
+**Architecture Adjustment:**
+* **LFTR Integration**: The Reaper now explicitly emits `RECLAIM_TASK` signals to the LFMA when a subagent process terminates.
+* **Hardware-Attested Re-Auction**: Any task reclaimed by the Reaper is immediately tagged with a "Forced Reclamation" bit, requiring the next claiming teammate to perform a full mission-root re-attestation.
+**Security Impact:** Ensures that "Ghost" processes cannot leave the swarm in a deadlocked state and prevents "Zombie" agents from retaining task-bound capabilities.

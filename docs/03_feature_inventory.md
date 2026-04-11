@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Distributed Reasoning Anchor (DRA) Hub**: (P0) Authoritative service replicating mission-root guardrails across a hardware-attested teammate mesh to neutralize "GC Fragility."
+- **Active Intent Steerage (AIS) Broker**: (P0) Security middleware facilitating real-time injection of corrective instructions into running agent sessions without breaking the intent chain.
+- **Lock-Free Task Reclamation (LFTR) Service**: (P0) Kernel-level monitoring service that automatically reclaims and re-auctions mailbox tasks held by non-responsive or "Ghost" teammates.
+- **Shadow-Instruction Scanner**: (P0) Security middleware performing semantic analysis of natural-language configuration files to detect and block guardrail overrides.
+
+### Priority Shifts
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with the requirement for mandatory **DRA-compliant** mesh replication.
+- **Autonomous Task Reaper (ATR)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **LFTR** integration to resolve CVE-2026-94002.

@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Distributed Reasoning Anchor (DRA) Hub**: authoritative service for replicating mission-root guardrails across hardware-attested teammate shards to neutralize GC Fragility. (Added: 2026-07-25)
+*   **[P0] Active Intent Steerage (AIS) Broker**: security middleware facilitating real-time injection of corrective instructions into running sessions without breaking the intent chain. (Added: 2026-07-25)
+*   **[P0] Lock-Free Task Reclamation (LFTR) Service**: kernel-level monitoring for subagent liveness to automatically reclaim and re-auction tasks held by "Ghost" teammates. (Added: 2026-07-25)
+*   **[P0] Shadow-Instruction Scanner**: security middleware performing semantic analysis of markdown configurations to detect and block guardrail overrides. (Added: 2026-07-25)
