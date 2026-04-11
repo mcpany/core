@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Shadow-Tunnel Intercepts
+**Context:** Today's market sync revealed the "Shadow-Tunnel" exploit in OpenClaw, where subagents can hijack P2P tunnels by spoofing session-bound coordination fragments.
+**Architecture Adjustment:**
+* Deprecating persistent "Mesh Tickets" for tunnel resumption.
+* Introducing mandatory **Ephemeral Mesh Identity (EMI)** integration in Section 4.
+* Mandating **Per-Call Monotonic Handshaking** for all inter-node tool calls to ensure every message is cryptographically unique.
+**Security Impact:** Eliminates the replay window for intercepted tunnel tickets and ensures non-repudiable per-call authorization across physical boundaries.

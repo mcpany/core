@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Ephemeral Mesh Identity (EMI) Provider**: (P0) Authoritative identity service issuing hardware-attested, per-call tokens to eliminate session-reuse and tunnel hijacking.
+- **Entropy-Aware Budgeting (EAB)**: (P0) High-speed stability middleware monitoring semantic convergence vs reasoning entropy to neutralize "Lease-Squatting."
+- **Output-Linked Proof (OLP) Hub**: (P0) Advanced ZK-attestation hub cryptographically binding reasoning proofs to the semantic output of agent actions.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **EMI-compliant** per-call rotation.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P0) Evolving into the **OLP Hub** to counter context-grafting (Z-Proof poisoning).
