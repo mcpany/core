@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Tool Mesh Sidecar (TMS) Adapter**: Authoritative sidecar orchestration for compute-heavy tools, managed as sovereign mesh residents. (Added: 2026-07-25)
+*   **[P0] Automated SSDF Attestation Hub**: Implementation of hardware-attested SSDF compliance fragments for autonomous PR remediation. (Added: 2026-07-25)
+*   **[P1] Recursive Provenance Compressor (RPC)**: Multi-hop reasoning trace compression to prevent transport-layer metadata exhaustion ("Lineage Bloom"). (Added: 2026-07-25)

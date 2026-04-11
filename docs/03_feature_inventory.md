@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Tool Mesh Sidecar (TMS) Adapter**: (P0) Authoritative sidecar orchestration service enabling compute-heavy tools to be managed as sovereign mesh residents in independent containers.
+- **Automated SSDF Attestation Hub**: (P0) Compliance middleware facilitating hardware-attested SSDF provenance for autonomous PR remediation and vulnerability patching.
+- **Recursive Provenance Compressor (RPC)**: (P1) Advanced telemetry service providing lossy-but-verifiable compression for multi-hop reasoning traces to prevent transport-layer metadata exhaustion.
+
+### Priority Shifts
+- **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **RPC-compliant** lineage compression.
+- **Autonomous PR Integrity Gate (APRIG)**: (Re-affirmed P0) Now designated as the primary enforcement point for the new **SSDF Attestation** requirements.
