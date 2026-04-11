@@ -247,6 +247,10 @@
 - [ ] **[P0] A2A Message Inspector**: Visual tool for debugging and tracing A2A task delegation and agent-to-agent communication. (Added: 2026-04-11)
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-11)
 - [ ] **[P1] Context Propagation Visualizer**: Trace-linked visualization of how security context flows between tools and agents. (Added: 2026-04-11)
+- [ ] **[P0] ASPM Posture Scoreboard**: Real-time dashboard for monitoring agent security scores and compliance status. (Added: 2026-04-11)
+- [ ] **[P0] ADR Interdiction Alerts**: Interactive UI for reviewing autonomous quarantine events and interdiction logs. (Added: 2026-04-11)
+- [ ] **[P0] M2M Visibility Explorer**: Trace-linked visualizer for machine-to-machine coordination fragments. (Added: 2026-04-11)
+- [ ] **[P0] ZTRG Redaction Monitor**: UI for reviewing semantically redacted retrieval fragments. (Added: 2026-04-11)
 
 #### Upcoming (2026-04-10 Evolution)
 - [ ] **[P0] IDS Status Monitor**: Real-time dashboard for visualizing semantically sanitized context fragments and blocked "Prompt Path" injections. (Added: 2026-04-10)

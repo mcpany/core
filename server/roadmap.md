@@ -465,6 +465,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A protocol to secure agent-to-agent delegation. (Added: 2026-04-11)
 *   **[P0] Deterministic Environment Attestation**: Full-state manifest service to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
 *   **[P1] Structured Context Propagation**: Implementation of trace-linked security context for distributed agent swarms. (Added: 2026-04-11)
+*   **[P0] Agentic Security Posture Management (ASPM) Hub**: Centralized real-time monitoring and scoring of connected agent security postures. (Added: 2026-04-11)
+*   **[P0] Agentic Detection and Response (ADR) Middleware**: Sub-millisecond autonomous interdiction for anomalous agent behavior. (Added: 2026-04-11)
+*   **[P0] M2M Visibility Engine**: Trace-linked semantic monitoring of all machine-to-machine coordination fragments. (Added: 2026-04-11)
+*   **[P0] Zero-Trust Retrieval Guard (ZTRG)**: Real-time semantic scanning and redaction of retrieved data fragments. (Added: 2026-04-11)
 
 #### Upcoming (2026-04-12 Evolution)
 *   **[P0] A2A Messaging Hub**: Transition from a simple bridge to a native A2A messaging implementation with integrated Zero-Trust policy enforcement. (Added: 2026-04-12)

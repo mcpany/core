@@ -1319,6 +1319,10 @@
 - **A2A Interoperability Layer**: (P0) Native messaging hub implementation for the Agent2Agent (A2A) protocol, facilitating secure task delegation and coordination between disparate frameworks.
 - **Deterministic Environment Attestation Gateway**: (P0) Advanced pre-execution security service that generates signed environment manifests, including non-existence proofs for restricted configuration hooks.
 - **Structured Context Propagation Middleware**: (P1) Implementation of emerging context propagation standards to ensure rich, structured contextual data (trace IDs, session IDs) flows securely across the agentic lifecycle.
+- **ASPM Hub**: (P0) Authoritative security posture management service for real-time monitoring and scoring of connected agents and tools.
+- **ADR Middleware**: (P0) Real-time detection and autonomous response middleware for interdicting anomalous agent behavior.
+- **M2M Visibility Engine**: (P0) High-fidelity, trace-linked semantic monitoring service for machine-to-machine coordination.
+- **Zero-Trust Retrieval Guard (ZTRG)**: (P0) Security middleware for real-time semantic scanning and redaction of tool-retrieved data.
 
 ### Priority Shifts
 - **Tool Metadata Sanitizer**: Promoted to **P0**. Urgent requirement to address CVE-2026-45201.
