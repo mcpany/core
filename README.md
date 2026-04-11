@@ -1,8 +1,8 @@
 # MCP Any
 
 ## Elevator Pitch
-**What is this?** MCP Any is the Universal Adapter for AI agents.
-**Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+**What is this project and why does it exist?**
+MCP Any is the Universal Adapter for AI agents. It exists to empower developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
 
 ## Architecture
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
@@ -48,6 +48,7 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
    ```bash
    bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
    ```
+   *You are now up and running from `git clone` to `Hello World`.*
 
 ## Development
 We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
