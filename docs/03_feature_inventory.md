@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Monotonic Mission Authorization (MMA)**: (P0) Authoritative "Mission Root Broker" mandating TPM-bound monotonic counters for all mission-initiation signals.
+- **Thinking-Time Lease (TTL) Broker**: (P0) Authoritative coordination service hosting granular, time-bound reasoning leases for agents and thinking tools (CBS v1.0 compliance).
+- **Self-Reflection Integrity Gate (SRIG)**: (P0) Semantic security middleware validating subagent reflection traces against hardware-attested manifests to prevent policy bypass.
+- **Cross-Node Intent Watermarking (CNIW) Provider**: (P1) Identity extension for the RPA provider facilitating cryptographically signed hardware watermarks on all reasoning fragments.
+
+### Priority Shifts
+- **Reasoning Path Attestation (RPA)**: (Re-affirmed P0) Elevated with the requirement for mandatory **CNIW** hardware watermarking.
+- **Mission-Locked Execution (MLE) Gateway**: (Re-affirmed P0) Designated as the primary enforcement point for **MMA-compliant** mission initiation.
