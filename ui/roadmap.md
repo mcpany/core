@@ -248,6 +248,11 @@
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-11)
 - [ ] **[P1] Context Propagation Visualizer**: Trace-linked visualization of how security context flows between tools and agents. (Added: 2026-04-11)
 
+#### Upcoming (2026-04-11 Evolution - Iteration 2)
+- [ ] **[P0] Swarm Attack Visualizer**: Real-time Gantt-style chart showing coordinated agent behavior and SAAD neutralization events. (Added: 2026-04-11)
+- [ ] **[P0] Discovery Sandbox Monitor**: Real-time visualization of sandboxed discovery command execution and safety attestation status. (Added: 2026-04-11)
+- [ ] **[P0] Teammate Task List Viewer**: High-speed, CRDT-native visualization of the shared task list for horizontal swarms. (Added: 2026-04-11)
+
 #### Upcoming (2026-04-10 Evolution)
 - [ ] **[P0] IDS Status Monitor**: Real-time dashboard for visualizing semantically sanitized context fragments and blocked "Prompt Path" injections. (Added: 2026-04-10)
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-10)

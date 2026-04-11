@@ -355,6 +355,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Deterministic Environment Integrity**: We are mandating a "Deterministic Boot" sequence. MCP Any will generate signed "Non-Existence Proofs" for sensitive project-local files (like `.claude/settings.json`) to prevent configuration-injection escapes before any agent is allowed to execute.
 - **Settings Injection Guard**: Introducing an active interception layer for project-local configurations. Any modification to agent settings must match an attested baseline, neutralizing the "Rug Pull" vector where malicious repositories weaponize configuration hooks.
 
+## Strategic Evolution: [2026-04-11] (Iteration 2)
+### Focus: Swarm Intelligence Sovereignty & Pre-Execution Sandbox Enforcement
+**Context**: The emergence of "Agentic Social Engineering" in horizontal meshes (Claude Code Agent Teams) and the disclosure of "Settings-as-Shell" exploits in Gemini CLI prove that individual agent security is obsolete. We must now protect the **collective integrity** of the mesh and mandate **zero-trust isolation** before any tool discovery even begins. The collapse of MTTC (Mean Time to Coordinate) in high-density swarms confirms that infrastructure must move beyond passive routing to active Mesh Governance.
+**Strategic Pivot**:
+- **Swarm-Aware Autonomous Defense (SAAD) Hub**: MCP Any will evolve to act as the authoritative "Swarm Firewall." We will implement the SAAD Hub, performing real-time, cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks and "low-and-slow" reconnaissance probes that evade single-point monitors.
+- **Environment-Locked Discovery Sandbox**: To neutralize "Settings-as-Shell" exploits, we are mandating Isolated Discovery Environments. All discovery-time execution (e.g., `discoveryCommand`) will be executed in a ephemeral, resource-restricted sandbox before any tool schema is exposed to the model.
+- **Lock-Free Teammate Coordination (LFTC)**: Supporting the efficiency of horizontal swarms, we are introducing LFTC. This service will host granular, task-bound mailbox shards utilizing Conflict-Free Replicated Data Types (CRDTs) to ensure non-blocking task claiming and delegation.
+- **Cross-Registry Reputation Quorum**: We are implementing a federated reputation model for tool discovery. MCP Any will peer with other mesh nodes to reach a consensus on skill safety before allowing them to be loaded into the mission-root "Discovery Bus."
+
 ## Strategic Evolution: [2026-04-11]
 ### Focus: Standardized Agent Interoperability & Deterministic Environment Integrity
 **Context**: The maturation of the A2A protocol as a universal messaging tier and the persistent threats from configuration-based vulnerabilities (CVE-2025-59536) demand that MCP Any evolves into a "Relational Gateway." We must not only secure the tool-to-model path but also the agent-to-agent communication and the environmental foundation upon which agents operate.

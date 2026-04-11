@@ -1313,6 +1313,17 @@
 
 ---
 
+## Evolution: [2026-04-11] (Iteration 2) Updates
+
+### Proposed Additions
+- **Swarm-Aware Autonomous Defense (SAAD) Hub**: (P0) Authoritative security service performing real-time, cross-agent behavioral analysis to detect coordinated "Hivenet" swarm attacks.
+- **Environment-Locked Discovery Sandbox**: (P0) Mandatory ephemeral isolation for all discovery-phase execution (e.g., `discoveryCommand`) to neutralize "Settings-as-Shell" RCE.
+- **Lock-Free Teammate Coordination (LFTC)**: (P0) Sharded, CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory **Environment-Locked** isolation for all project-local configurations.
+- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary integration point for the **SAAD Hub** telemetry.
+
 ## Evolution: [2026-04-11] Updates
 
 ### Proposed Additions

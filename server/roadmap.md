@@ -466,6 +466,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Deterministic Environment Attestation**: Full-state manifest service to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
 *   **[P1] Structured Context Propagation**: Implementation of trace-linked security context for distributed agent swarms. (Added: 2026-04-11)
 
+#### Upcoming (2026-04-11 Evolution - Iteration 2)
+*   **[P0] Swarm-Aware Autonomous Defense (SAAD) Hub**: Behavioral analysis engine for detecting coordinated "Hivenet" swarm attacks. (Added: 2026-04-11)
+*   **[P0] Environment-Locked Discovery Sandbox**: Mandatory ephemeral isolation for `discoveryCommand` execution to neutralize "Settings-as-Shell" RCE. (Added: 2026-04-11)
+*   **[P0] Lock-Free Mesh Coordination**: CRDT-based mailbox synchronization for horizontal teammate scaling. (Added: 2026-04-11)
+
 #### Upcoming (2026-04-12 Evolution)
 *   **[P0] A2A Messaging Hub**: Transition from a simple bridge to a native A2A messaging implementation with integrated Zero-Trust policy enforcement. (Added: 2026-04-12)
 *   **[P0] Settings Injection Guard**: Active interception layer for project-local agent configurations to neutralize "Rug Pull" exfiltration attacks. (Added: 2026-04-12)

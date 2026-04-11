@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-11 - Environment-Locked Discovery
+**Context:** Emerging research on "Agentic Social Engineering" and GTG-1002 swarm campaigns confirms that discovery-phase isolation must include **Environment-Locked** constraints to prevent subagents from mapping the host environment via side-channels (e.g., timing, shared `/tmp` access).
+**Architecture Adjustment:**
+* Mandating "Environment-Locked" containers for discovery. These containers are restricted from viewing any host process environment variables or shared filesystem paths (excluding the target repo).
+* Implementing "Negative Discovery Proofs": Providing cryptographic proof that NO unauthorized project-local hooks were executed during the pre-flight phase.
+**Security Impact:** Prevents "low-and-slow" reconnaissance probes that utilize discovery hooks to map the host security posture.
