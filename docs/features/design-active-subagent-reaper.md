@@ -70,3 +70,11 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-07-25 - Neutralizing Lease-Shadowing via APTR
+**Context:** Today's market sync revealed a new exploit (CVE-2026-99102) where rogue subagents use detached process forking to bypass session-bound hardware leases.
+**Architecture Adjustment:**
+* Implementing **Atomic Process-Tree Reaping (APTR)**.
+* The **Reaper Daemon** now recursively monitors all child processes spawned within a mission scope, even those attempting to escape process groups.
+* Integrating with kernel-level `ebpf` monitors to detect and terminate "Shadow Processes" immediately upon lease expiration.
+**Security Impact:** Prevents persistent unauthorized execution by orphaned sub-processes, ensuring absolute sovereignty of the Mission-Bound Hardware Lease.
