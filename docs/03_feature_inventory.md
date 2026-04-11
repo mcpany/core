@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Audit Hub (ZKAH)**: (P0) Authoritative proof bridge allowing subagents to submit hardware-attested ZK-proofs of reasoning integrity to auditors.
+- **Entropic Mesh Resumption**: (P0) Performance-optimizing coordination service utilizing pre-shared entropy shards for sub-millisecond tunnel resumption.
+- **Multi-Mission Consensus (MMC) Arbiter**: (P0) Kernel-level arbitrator for optimistic state transitions spanning multiple mission roots to resolve coordination stalls.
+- **Speculative Mesh Handshake Provider**: (P1) Security middleware facilitating parallel tool preparation and background identity attestation in A2A swarms.
+
+### Priority Shifts
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Elevated with mandatory support for **MMC-compliant** inter-mission arbitration.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Designated as the primary infrastructure for implementing **Entropic Mesh Resumption**.
