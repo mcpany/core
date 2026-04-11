@@ -35,7 +35,7 @@ services:
     await page.keyboard.insertText(yamlContent);
 
     // 4. Save
-    await page.click('text=Save & Deploy');
+    await page.click('text=Save Changes');
 
     // 5. Verify redirection
     await expect(page).toHaveURL(new RegExp(`/stacks/${stackName}`));
