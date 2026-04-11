@@ -67,3 +67,10 @@ The "ClawHavoc" crisis demonstrated that open-source agent marketplaces are vuln
 * **Multi-Signature Requirement**: Transitioning from single-provider signing to MSSA. Dynamic skill grafting now requires cryptographically bound approval tokens from both the agent framework and a verified third-party security auditor.
 * **Auditor Sidecars**: Introducing "Auditor Sidecars" in the analysis engine that provide real-time, independent behavioral monitoring for high-risk tools.
 **Security Impact:** Mitigates the risk of "Rug-Pull" supply chain attacks by ensuring no single entity can authorize high-risk tool execution.
+
+### Update: 2026-07-25 - Securing the Skill Supply Chain (ClawHub Mass Compromise)
+**Context**: The discovery of 300+ malicious skills on ClawHub using professional deceptive documentation proves that behavioral profiling must be combined with absolute auditor transparency.
+**Architecture Adjustment**:
+* **Marketplace Auditor Quorum (MAQ)**: All dynamic grafts from public registries now require a 3-of-5 auditor consensus (Framework + Registry + 3rd Party Auditors).
+* **Transparent Behavioral Lineage**: Public audit logs for skill profiling are now cryptographically linked to the MSSA tokens, allowing users to inspect the sandbox traces before approval.
+**Security Impact**: Neutralizes large-scale marketplace poisonings by requiring multiple independent security entities to sign off on the tool's behavior history.

@@ -84,3 +84,10 @@ As agents increasingly rely on project-local configuration files (e.g., `.claude
 * **Hardware-Locked Anchoring**: Project-local settings are now cryptographically bound to a TPM-signed user session.
 * **Mandatory HLCA Validation**: Sections 3 and 4 are updated to require HLCA validation for any configuration file matching known agent settings patterns (e.g., `.claude/settings.json`, `GEMINI.md`).
 **Security Impact**: Ensures that even if a malicious configuration file is committed to a repository, it cannot silently bypass the workspace trust dialog without a hardware-bound user signature.
+
+### Update: 2026-07-25 - Neutralizing Repository-Based RCE (CVE-2026-24887)
+**Context**: Today's findings reveal a widespread RCE exploit in collaborative environments where agents execute "auto-exec" hooks from `.claude/settings.json` without re-attestation after a `git pull`.
+**Architecture Adjustment**:
+* **Deterministic Boot Manifests**: Mandating a pre-execution manifest that includes "Non-Existence Proofs" for unauthorized settings files.
+* **Continuous HLCA Enforcement**: Transitioning from session-start validation to per-call attestation for any configuration-driven tool execution.
+**Security Impact**: Eliminates the "Rug-Pull" vector where malicious updates to project settings can hijack an active agent session.
