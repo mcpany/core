@@ -246,6 +246,8 @@
 #### Upcoming (2026-04-11 Evolution)
 - [ ] **[P0] A2A Message Inspector**: Visual tool for debugging and tracing A2A task delegation and agent-to-agent communication. (Added: 2026-04-11)
 - [ ] **[P0] Deterministic Boot Dashboard**: UI for reviewing and signing Full-State Manifests before agent execution. (Added: 2026-04-11)
+- [ ] **[P0] Origin Violation Security Hub**: Security dashboard for tracking and mitigating CVE-2026-25253 style browser-origin hijacking. (Added: 2026-04-11)
+- [ ] **[P0] Consensus Attestation Workspace**: UI for monitoring multi-agent approvals and consensus status for high-risk actions. (Added: 2026-04-11)
 - [ ] **[P1] Context Propagation Visualizer**: Trace-linked visualization of how security context flows between tools and agents. (Added: 2026-04-11)
 
 #### Upcoming (2026-04-10 Evolution)

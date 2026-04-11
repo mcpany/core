@@ -1,23 +1,27 @@
 # Market Sync: 2026-04-11
 
-## Ecosystem Shifts & Competitor Analysis
+## Ecosystem Shifts
 
-### A2A Protocol: Maturation into a Messaging Tier
-- **Context**: The Agent2Agent (A2A) protocol, initially introduced by Google, is now being housed by the Linux Foundation. It is emerging as a universal messaging tier that allows specialized AI agents from different providers (Google, OpenAI, Anthropic) and frameworks (OpenClaw, AutoGen, CrewAI) to communicate and delegate tasks.
-- **Finding**: Unlike MCP which focuses on "Model-to-Tool", A2A focuses on "Agent-to-Agent" collaboration. It uses structured task objects and agent cards to ensure secure interoperability.
-- **Action**: MCP Any must position itself as the bridge between MCP tools and A2A-compliant swarms, acting as the secure coordination hub for multi-agent workflows.
+### OpenClaw Transition & Crisis
+- **Transition**: OpenClaw (formerly Clawdbot) has transitioned to an independent, OpenAI-sponsored foundation.
+- **Security Crisis**: A multi-vector security crisis has emerged, notably CVE-2026-25253 (loopback token exfiltration) and CVE-2026-25593 (RCE via unsafe `cliPath` in Gateway WebSocket API).
+- **Impact**: This confirms that "Implicit Local Trust" for loopback traffic is a failed security model. Enterprise adoption is now contingent on "Zero-Trust Local Transport".
 
-### Claude Code: Addressing Critical Configuration Flaws (CVE-2025-59536, CVE-2026-21852)
-- **Context**: Researchers have identified critical vulnerabilities in Claude Code project files where malicious configuration hooks can lead to Remote Code Execution (RCE) and API key exfiltration.
-- **Finding**: Attackers can exploit mechanisms like Hooks and environment variables when users clone untrusted repositories. This reinforces the need for "Deterministic Boot" where the environment state is verified before the agent executes.
-- **Action**: Accelerate the implementation of the `Deterministic Attestation Gateway` and `Inference-Time Data Sanitizer` to protect against these configuration-based attacks.
+### Gemini CLI & Gemini Code Assist
+- **Agent Mode**: Official preview release of Gemini Code Assist agent mode, powered by Gemini CLI.
+- **Capabilities**: Support for 1M-token context windows, `/memory`, `/stats`, and native MCP integration.
+- **Discovery**: Gemini CLI is moving toward authenticated A2A discovery and "Capability Beacons".
 
-### Standardized Context Propagation
-- **Trend**: There is an emerging need for standardized context propagation across distributed systems (Model Context Protocol in the observability sense).
-- **Finding**: Propagating rich, structured contextual data (trace IDs, session IDs, model parameters) is becoming vital for AI observability and security.
-- **Opportunity**: MCP Any can implement a "Structured Context Propagation Middleware" to ensure that security and audit context flows seamlessly between agents and tools.
+### Claude Code "Agent Teams"
+- **Parallelism**: Claude Code now supports running multiple agents in parallel ("Agent Teams"), each with its own role and role-specific context.
+- **Coordination**: This shifts the coordination bottleneck from sequential handoffs to parallel state reconciliation (e.g., shared teammate mailboxes).
 
-## Summary of Unique Findings
-1. **A2A as the Universal Bus**: The industry is coalescing around A2A for inter-agent communication, making it a critical transport for MCP Any to support.
-2. **Environment Integrity is Paramount**: The Claude Code CVEs prove that project-local files are a primary attack vector, mandating pre-execution attestation.
-3. **Observability-Linked Security**: Security is increasingly dependent on the ability to trace and correlate context through the entire agentic lifecycle.
+## Autonomous Agent Pain Points
+- **Agentic Social Engineering**: Malicious skills or peer agents coercing information from legitimate swarms via high-trust discovery channels.
+- **Configuration-as-Execution**: The "Settings-as-Shell" exploit pattern where agents ingest malicious hooks from project-local configuration files (e.g., `.claude/settings.json`).
+- **Approval Fatigue**: In complex swarms, manual HITL (Human-in-the-Loop) is becoming a scaling bottleneck, leading to "Approval Blindness".
+
+## Strategic Implications for MCP Any
+- **Universal Agent Bus** must mandate **Auth-before-Discovery** and **Deterministic Absence Proofs (DAP)** for environment integrity.
+- Transition from "Transport-Layer Security" to **"Reasoning-Path Sovereignty"**.
+- Need for a **Consensus-Based Task Attestation** layer to mitigate social engineering in swarms.

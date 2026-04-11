@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-11] Updates
+
+### Proposed Additions
+- **A2A Messaging Hub**: (P0) Native messaging hub implementation for the A2A protocol, facilitating secure task delegation and coordination between disparate frameworks with integrated Zero-Trust policy enforcement.
+- **Deterministic Environment Attestation Gateway**: (P0) Advanced pre-execution security service that generates signed environment manifests, including non-existence proofs for restricted configuration hooks.
+- **Origin-Locked Local Trust Bridge**: (P0) Hardened WebSocket/HTTP session manager that binds tokens to cryptographically verified origins, patching CVE-2026-25253.
+- **Consensus-Based Task Attestation Hub**: (P0) Distributed security middleware requiring multi-agent signatures for high-risk task delegations, neutralizing "Agentic Social Engineering."
+
+### Priority Shifts
+- **Isolated Named-Pipe Transport Middleware**: (Re-affirmed P0) Elevated with the requirement for mandatory **Origin-Locked** session binding.
+- **Deterministic Attestation Gateway**: (Promoted to P0) Critical for satisfying new "Deterministic Boot" requirements in enterprise swarms.

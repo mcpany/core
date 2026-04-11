@@ -462,8 +462,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Cross-Framework Skill Reputation Engine**: UAB v1.4 compliant middleware for cross-registry tool reliability scoring. (Added: 2026-04-08)
 
 #### Upcoming (2026-04-11 Evolution)
-*   **[P0] A2A Interoperability Layer**: Native messaging hub for the A2A protocol to secure agent-to-agent delegation. (Added: 2026-04-11)
+*   **[P0] A2A Messaging Hub**: Transition from a simple bridge to a native A2A messaging implementation with integrated Zero-Trust policy enforcement. (Added: 2026-04-11)
 *   **[P0] Deterministic Environment Attestation**: Full-state manifest service to prevent configuration-based RCE and exfiltration. (Added: 2026-04-11)
+*   **[P0] Origin-Locked Local Trust Bridge**: Mandatory validation of Origin/Sec-Fetch-Site headers for local listeners to patch CVE-2026-25253. (Added: 2026-04-11)
+*   **[P0] Consensus-Based Task Attestation**: Distributed security middleware requiring multi-agent signatures for high-risk delegations. (Added: 2026-04-11)
 *   **[P1] Structured Context Propagation**: Implementation of trace-linked security context for distributed agent swarms. (Added: 2026-04-11)
 
 #### Upcoming (2026-04-12 Evolution)
