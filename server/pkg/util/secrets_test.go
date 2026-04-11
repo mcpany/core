@@ -296,6 +296,39 @@ func TestResolveSecret(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("max recursion depth exceeded", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			assert.Equal(t, "my-token", r.Header.Get("Authorization"))
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("my-remote-secret"))
+		}))
+		defer server.Close()
+
+		// Create a circular dependency in token resolution
+		remoteContent := &configv1.RemoteContent{}
+		remoteContent.SetHttpUrl(server.URL)
+
+		auth := &configv1.Authentication{}
+		bearer := &configv1.BearerTokenAuth{}
+		bearerToken := &configv1.SecretValue{}
+
+		bearerTokenRemote := &configv1.RemoteContent{}
+		bearerTokenRemote.SetHttpUrl(server.URL)
+		bearerTokenRemote.SetAuth(auth) // Points back to the same auth object creating a loop
+		bearerToken.SetRemoteContent(bearerTokenRemote)
+
+		bearer.SetToken(bearerToken)
+		auth.SetBearerToken(bearer)
+		remoteContent.SetAuth(auth)
+
+		secret := &configv1.SecretValue{}
+		secret.SetRemoteContent(remoteContent)
+
+		_, err := util.ResolveSecret(context.Background(), secret)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "secret resolution exceeded max recursion depth of 10")
+	})
+
 	t.Run("ResolveSecret_RegexCache", func(t *testing.T) {
 		pt := &configv1.SecretValue{}
 		pt.SetPlainText("secret_pt")
