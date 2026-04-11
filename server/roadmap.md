@@ -218,6 +218,11 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Cognitive Shard Replication (CSR) Broker**: Implementation of RDMA-aware zero-copy replication for hardware-attested context shards. (Added: 2026-07-25)
+*   **[P0] Ghost Intent Interceptor (GII)**: Graph-based dependency analysis to detect and prune circular intent loops (CVE-2026-95001). (Added: 2026-07-25)
+*   **[P0] Attention-Sticky Reasoning Anchors (ASRA)**: Upgrade for the ALRA middleware to support sticky tokens that resist context-window eviction. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

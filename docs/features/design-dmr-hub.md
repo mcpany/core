@@ -63,3 +63,10 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 * Integrating the Lock-Free Mesh Arbiter (LFMA) with the DMR migration path.
 * Transitioning from "Push-based Migration" to "Speculative Shard Pulling" during high-latency coordination windows.
 **Security Impact**: Reduces the window for "Stale Identity" reuse by mandating hardware-attested identity rotation (HAIR) as a prerequisite for shard resumption post-migration.
+
+### Update: 2026-07-25 - Cognitive Shard Replication (CSR) Integration
+**Context**: Today's ecosystem updates revealed the emergence of CSR in OpenClaw, enabling stateful resilience across mesh nodes.
+**Architecture Adjustment**:
+* Integrating the CSR Broker as the primary state-sync mechanism for the DMR Hub.
+* Transitioning from "Check-point-and-Restore" to "Live RDMA Mirroring" for high-frequency reasoning shards.
+**Security Impact**: Ensures that even in a "Fail-Operational" state, mission-root boundaries are enforced through hardware-attested shard pinning (PSS).

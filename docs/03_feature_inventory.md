@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cognitive Shard Replication (CSR) Broker**: (P0) Authoritative service for cross-node replication of hardware-attested context shards to ensure fail-operational mesh resilience.
+- **Ghost Intent Interceptor (GII)**: (P0) Security middleware that performs graph-based dependency analysis to detect and prune circular intent loops (CVE-2026-95001 defense).
+- **Attention-Sticky Reasoning Anchors (ASRA)**: (P0) Advanced cognitive pinning mechanism for prioritizing mission-root intent at the LLM attention layer.
+
+### Priority Shifts
+- **Binary State Handoff (BSH) Gateway**: (Re-affirmed P0) Elevated with mandatory support for **Zero-Copy CSR** replication patterns.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving into **ASRA** to support "Attention-Sticky" token marking.
