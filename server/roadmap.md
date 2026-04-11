@@ -218,6 +218,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] MHPR Hub**: Facilitate persistent hardware-attested trust leases across infinite delegation hops (A->B->C). (Added: 2026-07-25)
+*   **[P0] CRDT-Native Mailbox Sharding Manager**: High-performance architecture to eliminate mailbox locks in 20+ horizontal Agent Teams. (Added: 2026-07-25)
+*   **[P0] Attention-Density Guard Middleware**: Protective layer utilizing hardware-bound headers to prevent mission-critical intent eviction. (Added: 2026-07-25)
+*   **[P0] Temporal Shard Isolation Provider**: Inject hardware-attested jitter into memory responses to neutralize side-channel probes. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

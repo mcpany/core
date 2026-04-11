@@ -1,5 +1,21 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Multi-Hop Persistence Relay (MHPR) Hub**: (P0) Advanced security service for the SMI Relay that facilitates hardware-attested trust lease propagation across infinite delegation hops (A->B->C).
+- **CRDT-Native Mailbox Sharding Manager**: (P0) High-performance coordination architecture utilizing Conflict-Free Replicated Data Types to eliminate teammate mailbox locks in 20+ horizontal Agent Teams.
+- **Attention-Density Guard (ADG) Middleware**: (P0) Cognitive security service utilizing hardware-bound attention-locking headers to "pin" mission-critical intent fragments at the LLM attention layer.
+- **Temporal Shard Isolation (TSI) Provider**: (P0) Security service injecting hardware-attested timing jitter into memory-broker responses to neutralize timing side-channels (CVE-2026-92001 defense).
+- **Multi-Hop Trust Lineage Inspector**: (P0) Forensic UI for visualizing hardware-attested lineage across deep delegation chains.
+- **CRDT Mailbox Performance Monitor**: (P0) High-speed visualization of lock-free teammate synchronization and CRDT conflict resolution.
+- **Attention Sovereignty Dashboard**: (P0) Heatmap visualization of context-window drivers and attention-locking status.
+- **Temporal Jitter Security Hub**: (P0) Monitor for TSI-injected jitter and shared-memory access windows.
+
+### Priority Shifts
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Elevated to support **CRDT-native** synchronization as the primary horizontal coordination pattern.
+- **Multi-Hop Persistence Relay (MHPR)**: (Promoted to P0) Critical for neutralizing the "Delegation Gap" in enterprise-scale swarms.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

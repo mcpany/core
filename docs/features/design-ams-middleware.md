@@ -86,3 +86,10 @@ The AMS Middleware solves this by sharding the inter-agent mailbox based on the 
 * Implementing **HLAP-Compliant Jitter**: Normalizing update micro-timing for mailbox shards using TPM monotonic timers to neutralize side-channel leakage.
 * Integrating with the **ZKSA Provider** to allow shards to verify task completion via Zero-Knowledge proofs, further isolating the central bus from raw teammate state.
 **Security Impact:** Prevents side-channel intent mapping and ensures that critical safety interventions bypass coordination locks instantly.
+
+### Update: 2026-07-25 - CRDT-Native Scaling and TSI Integration
+**Context:** Today's market sync reveals that horizontal Agent Teams (20+ teammates) are hitting a performance wall due to synchronous shard locks. Simultaneously, the CVE-2026-92001 disclosure confirms side-channel risks in shared memory.
+**Architecture Adjustment:**
+* **CRDT-Native Sharding**: Transitioning to a full lock-free architecture where mailbox shards utilize Conflict-Free Replicated Data Types (CRDTs) to handle concurrent task state updates without master-node locks.
+* **Temporal Shard Isolation (TSI)**: Integrating TSI into the AMS memory broker. MCP Any now injects hardware-attested monotonic jitter into shard responses, neutralizing side-channel mapping of parent attention priority.
+**Security Impact:** Eliminates global wait-states for high-density swarms and provides a deterministic defense against micro-timing side-channel probes in shared memory.
