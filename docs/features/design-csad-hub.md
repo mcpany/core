@@ -52,3 +52,10 @@ With the rise of "Hivenet" swarm attacks, individual agent behavioral monitoring
 *   Implementing **Teammate Impersonation Signature Detection**. CSAD will now perform semantic analysis of inter-agent mailbox messages to detect "Instruction Splicing" and role-divergent commands.
 *   Integrating with the `T2T Identity Rotation Provider` to flag any request using a stale or un-rotated identity fragment.
 **Security Impact:** Prevents lateral movement within horizontal teams by ensuring that inter-teammate coordination remains bound to the mission-root intent and its authorized roles.
+
+### Update: 2026-04-11 - Fragmented Exfiltration & GTG-1002 Defense
+**Context:** Today's research into the GTG-1002 swarm espionage campaign revealed a "Fragmented Exfiltration" technique where data is leaked in tiny, seemingly benign fragments across multiple agents with low reputation.
+**Architecture Adjustment:**
+*   Introducing **Temporal Entropy Scoring**. CSAD will now monitor the cumulative "Semantic Entropy" of data fragments leaving the mesh over 24-hour windows.
+*   Implementing **Collective Reputation Gating**. Tool execution now requires a minimum "Mesh Confidence Score" which is degraded by anomalous cross-agent patterns.
+**Security Impact:** Neutralizes coordinated espionage by detecting the aggregate intent of the swarm, even when individual actions appear authorized.

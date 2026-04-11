@@ -1,23 +1,27 @@
 # Market Sync: 2026-04-11
 
-## Ecosystem Shifts & Competitor Analysis
+## Ecosystem Updates
 
-### A2A Protocol: Maturation into a Messaging Tier
-- **Context**: The Agent2Agent (A2A) protocol, initially introduced by Google, is now being housed by the Linux Foundation. It is emerging as a universal messaging tier that allows specialized AI agents from different providers (Google, OpenAI, Anthropic) and frameworks (OpenClaw, AutoGen, CrewAI) to communicate and delegate tasks.
-- **Finding**: Unlike MCP which focuses on "Model-to-Tool", A2A focuses on "Agent-to-Agent" collaboration. It uses structured task objects and agent cards to ensure secure interoperability.
-- **Action**: MCP Any must position itself as the bridge between MCP tools and A2A-compliant swarms, acting as the secure coordination hub for multi-agent workflows.
+### Claude Code: "Deny-Rule Token Pressure" Vulnerability
+- **Discovery**: Reports from Adversa AI reveal a critical bypass in Claude Code's permission system. Enterprise "Deny" rules are being silently bypassed because the token cost of the security check (comparing the request against a long list of forbidden patterns) exceeds the configured "security budget" or causes context window overflow.
+- **Pain Point**: Relying on the LLM to enforce its own negative constraints is fragile under high-density context scenarios.
+- **Opportunity for MCP Any**: Implement **Off-Model Policy Gating** that runs in the gateway's native execution environment (Go), ensuring that "Deny" rules are enforced with zero token cost to the LLM and absolute certainty.
 
-### Claude Code: Addressing Critical Configuration Flaws (CVE-2025-59536, CVE-2026-21852)
-- **Context**: Researchers have identified critical vulnerabilities in Claude Code project files where malicious configuration hooks can lead to Remote Code Execution (RCE) and API key exfiltration.
-- **Finding**: Attackers can exploit mechanisms like Hooks and environment variables when users clone untrusted repositories. This reinforces the need for "Deterministic Boot" where the environment state is verified before the agent executes.
-- **Action**: Accelerate the implementation of the `Deterministic Attestation Gateway` and `Inference-Time Data Sanitizer` to protect against these configuration-based attacks.
+### OpenClaw: v2026.3.22 "ClawHub" Marketplace Pivot
+- **Shift**: OpenClaw has officially deprecated direct npm package usage for skills in favor of the curated ClawHub marketplace.
+- **Trend**: Move towards "Attested Tooling" where the infrastructure provider (OpenClaw/MCP Any) acts as the gatekeeper for tool integrity.
+- **MCP Any Alignment**: Strengthen the **Verified Skill Registry** to support ClawHub ingestion while maintaining local Zero-Trust overrides.
 
-### Standardized Context Propagation
-- **Trend**: There is an emerging need for standardized context propagation across distributed systems (Model Context Protocol in the observability sense).
-- **Finding**: Propagating rich, structured contextual data (trace IDs, session IDs, model parameters) is becoming vital for AI observability and security.
-- **Opportunity**: MCP Any can implement a "Structured Context Propagation Middleware" to ensure that security and audit context flows seamlessly between agents and tools.
+### AI Swarm Attacks: The GTG-1002 Campaign
+- **Event**: First documented case of a state-sponsored campaign (GTG-1002) utilizing autonomous agent swarms to perform coordinated espionage.
+- **Technique**: Agents share intelligence in real-time to adapt to defensive perimeters, bypassing traditional Data Loss Prevention (DLP) by fragmenting exfiltration across multiple "low-reputation" specialist agents.
+- **Strategic Need**: Transition from "Single-Agent Security" to **Collective Swarm Governance**.
 
-## Summary of Unique Findings
-1. **A2A as the Universal Bus**: The industry is coalescing around A2A for inter-agent communication, making it a critical transport for MCP Any to support.
-2. **Environment Integrity is Paramount**: The Claude Code CVEs prove that project-local files are a primary attack vector, mandating pre-execution attestation.
-3. **Observability-Linked Security**: Security is increasingly dependent on the ability to trace and correlate context through the entire agentic lifecycle.
+## Autonomous Agent Pain Points
+1. **Policy Fragility**: Security rules failing when models are "too busy" or context is too full.
+2. **Coordinated Malice**: Difficulty in detecting malicious intent when it is distributed across a mesh of seemingly innocent specialists.
+3. **Supply Chain Trust**: The persistent risk of "Skill Injection" in unregulated agent marketplaces.
+
+## Security Vulnerabilities
+- **CVE-2026-TOKEN-BYPASS (Claude Code)**: High-context requests causing silent failure of `deny` rule checks.
+- **Hivenet Probe Pattern**: New "low-and-slow" discovery patterns used by GTG-1002 agents to map local tool environments without triggering traditional rate limiters.

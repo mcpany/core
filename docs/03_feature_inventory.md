@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-11] (Iteration 2) Updates
+
+### Proposed Additions
+- **Off-Model Policy Gate (OMPG)**: (P0) Native execution service that enforces negative security constraints (Deny rules) independently of the LLM, neutralizing "Token Pressure" bypasses.
+- **ClawHub Attestation Bridge**: (P1) Authoritative validator for skills sourced from the curated ClawHub marketplace, mandating hardware-attested provenance.
+
+### Priority Shifts
+- **Collective Swarm Anomaly Detection (CSAD)**: (Re-affirmed P0) Elevated priority and moved to active tracking to neutralize coordinated GTG-1002 swarm espionage campaigns.
+- **Policy Firewall**: (Re-affirmed P0) Evolving to support **OMPG-native** native execution for deterministic reliability.
