@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Attestation Chain (RAC) Validator**: (P0) Authoritative security service implementing multi-layered cryptographic proofs to ensure lineage integrity and neutralize "Fragment Splicing."
+- **Workspace Trust Anchor (WTA) Enforcer**: (P0) Advanced security middleware mandating that all project-local configurations and context files are bound to a TPM-signed user session.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: (P0) Cognitive security service utilizing reasoning-aware redaction to prevent parent context exfiltration via shared workspaces.
+
+### Priority Shifts
+- **Relational PoI Chain Validator**: (Re-affirmed P0) Elevated with mandatory support for **RAC-compliant** lineage tokens.
+- **Hardware-Locked Configuration Anchor (HLCA)**: (Re-affirmed P0) Designated as the primary enforcement point for **WTA-compliant** workspace sovereignty.

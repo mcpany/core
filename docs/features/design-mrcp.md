@@ -77,3 +77,10 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
 *   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
 **Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
+
+### Update: 2026-07-25 - Supporting Recursive Attestation in Mission Resumption
+**Context:** Today's market sync revealed the adoption of RAC in OpenClaw, which requires mission resumption to be aware of the complete lineage, not just the last active session.
+**Architecture Adjustment:**
+*   Upgrading state snapshots to include the full **RAC Chain** for all active missions.
+*   Introducing a validation step during resumption that re-attests the lineage back to the hardware root.
+**Security Impact:** Prevents "Session Hijacking" where a rogue agent attempts to resume a mission with a truncated or spoofed lineage.
