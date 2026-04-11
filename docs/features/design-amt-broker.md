@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** **Update: Resolving Multi-Hop Attestation Decay**.
+    * **Context:** Today's market sync revealed "Attestation Decay" in OpenClaw's Sovereign Node Tunneling, where hardware-bound trust weakens during multi-hop delegations (Node A -> B -> C).
+    * **Architecture Adjustment:**
+        * Introducing **Recursive Tunneling Attestation (RTA)**. Every hop in the mesh must now append a hardware-attested "Hop Token" to the tunnel lineage.
+        * Brokering RTA-compliant signatures at the kernel level to ensure zero-trust continuity across infinite node handoffs.
+    * **Security Impact:** Prevents "Tunnel Spoofing" where an intermediary Node B could inject unauthorized commands into the stream to Node C.

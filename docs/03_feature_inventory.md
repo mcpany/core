@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Lock-Free Task Auction (LFTA) Hub**: (P0) Authoritative coordination service for memory-mapped, CRDT-based task queues. Resolves the 5s+ "Cognitive Stall" in Agent Teams by replacing filesystem-level locks with sub-millisecond mesh-resident synchronization.
+- **Recursive Tunneling Attestation (RTA) Provider**: (P0) Advanced security service for the AMT Broker that cryptographically verifies the hardware-bound lineage of multi-hop tunnels, neutralizing attestation decay in distributed meshes.
+- **ZK-Reasoning Attestation Provider**: (P0) Authoritative proof broker implementing the A2A ZKP standard. Facilitates the generation of Zero-Knowledge proofs for reasoning path integrity without context exfiltration.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **RTA** integration for multi-hop handoffs.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving into the **LFTA Hub** to support memory-mapped CRDT task queues.
+- **Privacy-Preserving Audit (PPA) Hub**: (Promoted to P0) Critical requirement for enterprise-grade auditing via the **ZK-Reasoning Attestation Provider**.

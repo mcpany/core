@@ -1030,3 +1030,6 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+*   **[P0] Lock-Free Task Auction (LFTA) Hub**: Memory-mapped, CRDT-based task coordination to resolve "Cognitive Stall" in horizontal swarms. (Added: 2026-07-25)
+*   **[P0] Recursive Tunneling Attestation (RTA)**: Multi-hop hardware-bound trust verification for distributed meshes. (Added: 2026-07-25)
+*   **[P0] ZK-Reasoning Attestation Provider**: Facilitate A2A-compliant Zero-Knowledge proofs for reasoning path integrity. (Added: 2026-07-25)
