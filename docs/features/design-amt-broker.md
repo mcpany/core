@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Lightweight Handshake Proxies (LHP)
+**Context:** Today's market sync revealed the adoption of LHP in Gemini CLI, which significantly reduces P2P tunnel establishment latency. Multi-node meshes are currently experiencing "Tunneling Overhead" that impacts high-frequency coordination.
+**Architecture Adjustment:**
+* Introducing a centralized (or peer-brokered) **Handshake Proxy Service (HPS)** in Section 4.
+* Deprecating synchronous full-TPM handshakes for tunnel resumption.
+* Implementing pre-authenticated "Mesh Tickets" brokered by the HPS to allow tunnel resumption in <40ms.
+**Security Impact:** Maintains hardware-locked sovereignty while neutralizing performance bottlenecks in distributed swarms.

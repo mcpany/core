@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Active Context Refresh (ACR) Middleware**: (P0) Authoritative attention guardian performing real-time context-window monitoring to re-inject mission-critical guardrails and prevent instruction eviction.
+- **Task-Completion Attestation (TCA) Provider**: (P0) Security service mandating hardware-attested proofs of task completion to neutralize "Mission-Root Ghosting" attempts during lease rotation.
+- **Handshake Proxy Service (HPS)**: (P1) Performance-optimizing coordination service brokering pre-authenticated, hardware-locked "Mesh Tickets" to reduce tunnel establishment latency.
+- **Semantic Token Compression (STC) Middleware**: (P1) Efficiency service performing real-time lossy compression of history fragments during ACR cycles to preserve attention budget.
+
+### Priority Shifts
+- **Fast-Path Mesh Resumption**: (Promoted from P1 to P0) Critical for satisfying the <40ms coordination latency required by high-frequency horizontal Agent Teams.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with the requirement for mandatory **TCA-compliant** task completion proofs.
