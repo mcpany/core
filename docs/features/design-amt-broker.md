@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Addressing Tunnel-Skip Vulnerability
+**Context:** Today's market sync revealed a "Tunnel-Skip" exploit pattern in OpenClaw v3.6.1 where warm-linked nodes bypass secondary handshakes.
+**Architecture Adjustment:**
+* Deprecating session-only "Mesh Tickets" for sensitive tool invocations in Section 4.
+* Introducing **Per-Call Mission-Bound Attestation (PC-MBA)** as the mandatory default for remote tool execution.
+* Implementing a "Freshness Proof" required for every inter-node RPC call, anchored to the specific sub-task intent.
+**Security Impact:** Mitigates unauthorized lateral movement by subagents using reused mesh sessions, ensuring every remote call is explicitly authorized by the current mission root.

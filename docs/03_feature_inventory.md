@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Per-Call AMT (PC-AMT) Validator**: (P0) Authoritative security extension for the AMT Broker mandating hardware-attested validation for every inter-node invocation to neutralize "Tunnel-Skip" session reuse.
+- **Reasoning-Correlated HLML Enforcer**: (P0) Advanced lifecycle service correlating hardware leases with verified agent reasoning progress, preventing "Lease-Squatting" by dormant subagents.
+- **Universal CI/CD Proof Verifier**: (P1) Integration hub for the PPA Hub that provides standardized GitHub/GitLab runners for verifying ZK reasoning proofs during the PR lifecycle.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PC-AMT** per-call attestation.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with the requirement for mandatory **Reasoning-Correlation** via the AIA Broker.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P1) Evolving into the **Universal CI/CD Verifier** for multi-framework compliance.
