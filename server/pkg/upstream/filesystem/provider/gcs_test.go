@@ -230,4 +230,71 @@ func TestGcsFile_Methods_Errors(t *testing.T) {
 
 	// Close on empty file
 	assert.NoError(t, f.Close())
+
+	_, err = f.ReadAt([]byte{}, 0)
+	assert.Error(t, err)
+	assert.Equal(t, "file not opened for reading", err.Error())
+
+	ret, err := f.WriteString("s")
+	assert.Error(t, err)
+	assert.Equal(t, 0, ret)
+	assert.Equal(t, "file not opened for writing", err.Error())
+}
+
+func TestGcsFile_Methods_Stat(t *testing.T) {
+	tests := []struct {
+		name    string
+		file    *gcsFile
+		want    os.FileInfo
+		wantErr bool
+	}{
+		{
+			name: "With Reader",
+			file: &gcsFile{
+				name: "test.txt",
+				reader: &storage.Reader{
+					Attrs: storage.ReaderObjectAttrs{
+						Size:         100,
+						LastModified: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
+					},
+				},
+			},
+			want: &gcsFileInfo{
+				name:    "test.txt",
+				size:    100,
+				modTime: time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
+				isDir:   false,
+			},
+			wantErr: false,
+		},
+		{
+			name: "With Writer",
+			file: &gcsFile{
+				name:   "test2.txt",
+				writer: &storage.Writer{},
+			},
+			want: &gcsFileInfo{
+				name:  "test2.txt",
+				size:  0,
+				isDir: false,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.file.Stat()
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+			}
+		})
+	}
+}
+
+func TestGcsFile_Name(t *testing.T) {
+	f := &gcsFile{name: "test"}
+	assert.Equal(t, "test", f.Name())
 }
