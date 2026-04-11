@@ -176,7 +176,7 @@ export function StackEditor({ stackId, initialValue = "", onSave, onCancel }: St
           )}
           <Button size="sm" onClick={handleSave} disabled={saving}>
             {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            Save & Deploy
+            Save Changes
           </Button>
         </div>
       </div>
