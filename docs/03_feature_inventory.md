@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hierarchical Reasoning-Budget Enforcer (HRBE)**: (P0) Authoritative economic security service allowing recursive delegation of fractional reasoning tokens to subagents.
+- **Atomic Shard-Sealing Middleware**: (P0) Security extension for the SRMS layer that semantically seals sharded context fragments to prevent cross-shard splicing.
+- **Ephemeral State Handover (ESH) Adapter**: (P0) Performance-optimizing bridge for transferring hardware-attested agent state between multi-device nodes with sub-100ms latency.
+- **Economic-Aware Resource Reclamation**: (P0) Upgrade for the ARR service that re-allocates "Budgeted Reasoning Hours" based on real-time task urgency and mission priority.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory support for **HRBE-compliant** fractional tokens.
+- **Stitch-Resistant Memory Segmentation (SRMS)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Atomic Sealing** to counter context-splicing.
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as the primary infrastructure for **Economic-Aware** budget management.

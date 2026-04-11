@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Ephemeral State Handover (ESH)
+**Context:** Today's market sync revealed the introduction of OpenClaw ESH for multi-node efficiency.
+**Architecture Adjustment:**
+* Implementing an "ESH Sidecar" within the AMT Broker to facilitate partial state transfer during tunnel establishment.
+* Introducing binary-diffing for agent context to reduce the payload size during node-to-node handovers.
+**Security Impact:** Maintains mission-root sovereignty during migration by requiring hardware-locked "Handover Tickets" to prevent state-splicing during the ephemeral transfer.
