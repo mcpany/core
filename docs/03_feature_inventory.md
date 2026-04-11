@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Consensus-Bound Tunnel Revocation (CBTR)**: (P0) Authoritative mesh monitoring service allowing hardware-attested quorums to revoke inter-node tunnels upon compromise detection.
+- **Nested Lease Attestation (NLA)**: (P0) Advanced security service ensuring that recursive capability sub-leases remain cryptographically bound to and cannot exceed parent mission root scopes.
+- **Stylometric Reasoning Defense (SRD)**: (P0) Upgrade for the SIV provider utilizing token-log-probability analysis and reasoning density to verify the behavioral origin of fragments.
+- **Speculative Shard Prefetcher**: (P1) High-speed coordination middleware pre-fetching sharded mailbox contexts to reduce attention-warmup latency in Agent Teams.
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Evolving into **SRD** to support higher-dimensional behavioral anchoring.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **CBTR** integration.

@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Consensus-Bound Tunnel Revocation (CBTR)
+**Context:** Today's market sync revealed a new "Tunnel Hijacking" pattern where a single compromised node in a sharded mesh can maintain unauthorized P2P tunnels.
+**Architecture Adjustment:**
+* Introducing CBTR middleware to the AMT Broker.
+* Any active tunnel now requires a "Distributed Liveness Proof" from at least two peer nodes in the mission cluster.
+* If a hardware-attested "Compromise Signal" reaches a quorum, the tunnel is forcefully terminated at the kernel level by the Workstation node.
+**Security Impact:** Mitigates persistent lateral movement by compromised sub-nodes in distributed swarm deployments.

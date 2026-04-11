@@ -46,3 +46,11 @@ The emergence of "Reasoning Mirroring" (CVE-2026-99012) highlights a critical vu
 
 ## 7. Evolutionary Changelog
 * **2026-07-20:** Initial Document Creation.
+
+### Update: 2026-07-25 - Stylometric Reasoning Defense (SRD)
+**Context:** Today's market sync revealed "Advanced Reasoning Mirroring" (CVE-2026-99012.2) that bypasses basic SIV by mimicking log-probabilities.
+**Architecture Adjustment:**
+* Upgrading SIV to SRD (Stylometric Reasoning Defense).
+* Integrating token-log-probability analysis as a mandatory signal in the BSA extractor.
+* Transitioning from linguistic pattern matching to high-dimensional "Reasoning Manifold" validation.
+**Security Impact:** Detects LLM-driven style mimicry that is indistinguishable by traditional NLP-based stylometry.
