@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Silent Anchor Guard (SAG)**: (P0) Authoritative behavioral enforcement service providing hardware-locked, immutable context fragments to neutralize "Shadow-Root" configuration exploits.
+- **Mission Reconstruction Hub (MRH)**: (P0) Performance-optimizing coordination service allowing teammates to reconstruct complete mission context from hardware-attested metadata.
+- **Recursive Quota Enforcement (RQE)**: (P0) Resource management extension for the RBF that dynamically scales token and reasoning budgets based on instruction-chain depth.
+- **Intent Soldering Interceptor**: (P1) Real-time semantic scanner for sharded context fragments designed to detect and block hidden instructions in metadata.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RQE** integration to counter recursive delegation storms.
+- **Intent-Bound Memory Shards**: (Re-affirmed P0) Elevated with the requirement for **MRH-compliant** metadata attestation.
