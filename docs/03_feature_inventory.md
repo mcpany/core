@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Autonomous Mesh Failover (AMF) Relay**: (P0) Authoritative resilience service utilizing hardware-attested heartbeats and preemptive state evacuation to sibling nodes.
+- **Reflective Governance Badge (RGB) Validator**: (P0) Security middleware mandating cryptographic reasoning badges for high-risk tool calls to ensure manifest-alignment.
+- **MMRL Trace Deconstructor**: (P0) Advanced sanitization extension for the MITS pipeline that deconstructs SVG/CSS metadata to neutralize hidden imperative commands.
+- **Speculative State Migration (SSM) Hub**: (P1) Optimization service for the DMR Hub that speculatively replicates state across sibling nodes during high network entropy.
+
+### Priority Shifts
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Elevated with mandatory support for **AMF-compliant** node failover.
+- **Manifest-Based Reflection (MBR) Arbiter**: (Re-affirmed P0) Elevated with mandatory **RGB-attested** reflection cycles.
+- **Multimodal Inference-Time Sanitizer (MITS)**: (Re-affirmed P0) Now elevated with the requirement for **MMRL-compliant** trace deconstruction.

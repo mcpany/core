@@ -63,3 +63,11 @@ The Dynamic Mesh Resilience (DMR) Hub evolves MCP Any from a static gateway into
 * Integrating the Lock-Free Mesh Arbiter (LFMA) with the DMR migration path.
 * Transitioning from "Push-based Migration" to "Speculative Shard Pulling" during high-latency coordination windows.
 **Security Impact**: Reduces the window for "Stale Identity" reuse by mandating hardware-attested identity rotation (HAIR) as a prerequisite for shard resumption post-migration.
+
+### Update: 2026-07-25 - Speculative State Migration for Autonomous Failover
+**Context**: Research into OpenClaw v3.7.0 reveals that waiting for heartbeat failure is too slow for 1M+ token contexts. We must anticipate failure via "State Evacuation" protocols.
+**Architecture Adjustment**:
+* Introducing the **Speculative State Migration (SSM) Hub** as a core extension.
+* Implementing "Preemptive State Evacuation" where state is background-replicated to verified sibling nodes when hardware entropy signals (thermal/memory pressure) exceed mission-root thresholds.
+* Integrating the **Autonomous Mesh Failover (AMF) Relay** to coordinate sub-100ms resumption of evacuated sessions.
+**Security Impact**: Ensures that "Mission-Root" anchors remain cryptographically pinned to the mesh even during physical node loss, neutralizing "Resilience Lag" exploits.
