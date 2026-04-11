@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attestation-Batching Middleware**: (P0) Authoritative trust aggregator allowing high-frequency tool calls to share a single hardware-attested session ticket to neutralize "Handshake Storms".
+- **Lineage-Aware Lease Inheritance**: (P0) Security upgrade for the HLML provider allowing subagents to securely inherit mission-root leases without redundant hardware prompts.
+- **Atomic Scratchpad Arbiter**: (P0) Kernel-level lock manager for shared team workspaces providing mission-bound atomic write-access to neutralize "Scratchpad Collision".
+- **Semantic Instruction Guard (SIG)**: (P0) Cognitive security layer performing real-time semantic analysis of ingested project context files to block policy-override instructions.
+
+### Priority Shifts
+- **Hardware-Locked Mission Lease (HLML)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Lineage-Aware Inheritance**.
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Now elevated with the requirement for **Attestation-Batching** to reduce tunnel latency.

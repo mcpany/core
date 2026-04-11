@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Attestation-Batching Middleware**: trust aggregator for high-frequency inter-node tool calls to neutralize "Handshake Storms". (Added: 2026-07-25)
+*   **[P0] Lineage-Aware Lease Inheritance**: security upgrade for HLML allowing subagents to inherit mission-root leases. (Added: 2026-07-25)
+*   **[P0] Atomic Scratchpad Arbiter**: kernel-level lock manager for shared team workspaces to prevent state collision. (Added: 2026-07-25)
+*   **[P0] Semantic Instruction Guard (SIG)**: real-time semantic analysis for project context files to block policy overrides. (Added: 2026-07-25)
