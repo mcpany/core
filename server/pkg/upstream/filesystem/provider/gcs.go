@@ -751,6 +751,7 @@ func (f *gcsFile) ReadAt(p []byte, off int64) (n int, err error) {
 	// storage.Reader doesn't support ReadAt directly unless created with range?
 	// But afero.File requires ReadAt.
 	// We can create a new reader with range.
+	if f.fs == nil || f.fs.client == nil { return 0, fmt.Errorf("file not opened for reading") }
 	rc, err := f.fs.client.Bucket(f.fs.bucket).Object(f.name).NewRangeReader(f.fs.ctx, off, int64(len(p)))
 	if err != nil {
 		return 0, err
