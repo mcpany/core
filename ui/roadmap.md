@@ -838,6 +838,11 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Jitter Profile Configurator**: UI for mapping context shard tiers to hardware-attested jitter ranges. (Added: 2026-07-25)
+- [ ] **[P0] CBLE Quorum Workspace**: Authorization interface for multi-agent lease escalation quorums. (Added: 2026-07-25)
+- [ ] **[P0] Auction Negotiation Heatmap**: Real-time visualization of task bidding loops and ANA arbitration events. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-23 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.

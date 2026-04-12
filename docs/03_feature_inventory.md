@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Risk-Aware Jitter Middleware**: (P0) Authoritative security service injecting hardware-attested timing variations into inter-node tunnels based on shard sensitivity.
+- **Consensus-Based Lease Escalation (CBLE) Hub**: (P0) Distributed coordination service requiring multi-agent quorums before mission-bound hardware lease escalation.
+- **Asynchronous Negotiation Arbiter (ANA)**: (P0) Kernel-level auction broker utilizing mission-root weighting to resolve task allocation and prevent bidding loops.
+
+### Priority Shifts
+- **Reasoning-Path Watermark (RPW) Validator**: (Re-affirmed P0) Designated as the primary enforcement point for **PPRP-compliant** reasoning integrity.
+- **Multi-Signature Skill Attestation (MSSA)**: (Re-affirmed P0) Elevated with mandatory integration into the **CBLE Hub** for high-privilege operations.
