@@ -90,3 +90,46 @@ func TestSubagentReaper_SweepExpired(t *testing.T) {
 		t.Errorf("Expected lease status to be EXPIRED, got %s", status)
 	}
 }
+
+func TestSubagentReaper_RegisterSubagent(t *testing.T) {
+	reaper := lifecycle.NewSubagentReaper()
+	intentID := "intent-001"
+	ttl := 5 * time.Second
+
+	// 1. Happy Path: Registering a subagent on an ACTIVE lease
+	reaper.RegisterBranch(intentID, ttl)
+
+	err := reaper.RegisterSubagent(intentID, "session-001")
+	if err != nil {
+		t.Fatalf("Expected successful registration, got err: %v", err)
+	}
+
+	// 2. Error Path: Registering on a non-existent lease
+	err = reaper.RegisterSubagent("non-existent", "session-002")
+	if err == nil {
+		t.Fatalf("Expected error for non-existent lease, got nil")
+	}
+	expectedErrMsg1 := "lease not found for intent: non-existent"
+	if err.Error() != expectedErrMsg1 {
+		t.Errorf("Expected error '%s', got '%v'", expectedErrMsg1, err)
+	}
+
+	// 3. Error Path: Registering on a non-ACTIVE lease
+	intentID2 := "intent-002"
+	reaper.RegisterBranch(intentID2, ttl)
+
+	// Transition it to PRUNED manually to test the failure
+	err = reaper.PruneIntent(intentID2)
+	if err != nil {
+		t.Fatalf("Failed to prune intent: %v", err)
+	}
+
+	err = reaper.RegisterSubagent(intentID2, "session-003")
+	if err == nil {
+		t.Fatalf("Expected error for non-ACTIVE lease, got nil")
+	}
+	expectedErrMsg2 := "cannot register subagent: lease is PRUNED"
+	if err.Error() != expectedErrMsg2 {
+		t.Errorf("Expected error '%s', got '%v'", expectedErrMsg2, err)
+	}
+}
