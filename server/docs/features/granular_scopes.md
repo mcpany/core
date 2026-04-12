@@ -10,10 +10,10 @@ It applies token-based scoping directly to roles.
 scopes:
   roles:
     default:
-      - "read"
-    admin:
       - "fs:read:/tmp"
-      - "db:write:users"
+    admin:
+      - "fs:"
+      - "db:"
 ```
 
 ## How it works
