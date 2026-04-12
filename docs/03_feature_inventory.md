@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Optimistic Attestation Middleware (OAM)**: (P0) Security middleware allowing speculative tool execution using temporary session keys while full hardware attestation completes.
+- **CRDT-Native Coordination Sharding**: (P0) Transition of mailbox infrastructure to lock-free shards supporting Claude Code NBTA patterns.
+- **Hierarchical Provenance Chain (HPC) Validator**: (P0) Core provenance service mandating cryptographic hash-chaining of all multi-hop delegations and reasoning fragments.
+- **Lease-Budget Auto-Reclaimer**: (P0) Autonomous resource management service that recycles unused hardware-attested leases from dormant sub-missions.
+
+### Priority Shifts
+- **Fast-Path Mesh Resumption**: (Re-affirmed P0) Elevated with mandatory support for **OAM-compliant** optimistic session keys.
+- **CRDT-Native Mailbox Sharding**: (Evolved to CRDT-Native Coordination Sharding) Now designated as the primary fix for the 5s+ coordination stall.

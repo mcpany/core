@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: [2026-07-25] - Integrating Optimistic Mesh Governance
+**Context:** Today's research into OpenClaw v3.6.2 revealed that full hardware attestation for each tunnel request introduces a ~150ms "Tunneling Tax" that breaks the perceived sub-millisecond local execution speed.
+**Architecture Adjustment:**
+- Deprecating synchronous "Lock-before-Call" requirement for AMT-v2.
+- Integrating with the **Optimistic Attestation Middleware (OAM)** to allow tool execution using speculative session keys while the AMT hardware handshake completes in the background.
+**Security Impact:** Maintains Zero-Trust by holding results in a probabilistic buffer until full attestation is confirmed, while achieving sub-10ms inter-node perception.
