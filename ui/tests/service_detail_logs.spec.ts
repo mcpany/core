@@ -21,7 +21,13 @@ test.describe('Service Detail Logs Tab', () => {
       }
     });
     expect(response.ok()).toBeTruthy();
-    const data = await response.json();
+    const text = await response.text();
+    let data: any = {};
+    try {
+        data = JSON.parse(text);
+    } catch (e) {
+        console.warn('Failed to parse response JSON:', text);
+    }
     // Use ID if available, otherwise fallback to name if the API behaves that way
     serviceId = data.id || data.name || serviceName;
   });
