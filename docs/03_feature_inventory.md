@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Inter-Agent Zero-Trust (IAZT) Validator**: (P0) Authoritative security service mandating continuous authentication and role-bound verification for every inter-agent interaction to prevent lateral moves.
+- **Lateral Infection Shield**: (P0) Security middleware enforcing strict boundary conditions between agent roles (researcher/executor) to contain compromise propagation.
+- **Adaptive Payload Sanitizer**: (P0) Real-time semantic analysis service for context-window fragments to detect and block re-engineered autonomous payloads.
+- **Role-Bound Skill Sandbox**: (P0) Task-specific execution environment for modular skills that restricts permissions to the absolute minimum required, neutralizing global privilege inheritance.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with a mandate for **Lateral Infection Shield** integration to ensure resumed missions are contained within authorized boundaries.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

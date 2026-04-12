@@ -77,3 +77,11 @@ The **Mission-Root Continuity Provider (MRCP)** is an infrastructure layer for M
 *   Integrating **Epistemic Attestation** into the resumption handshake to ensure the restored reasoning path maintains high confidence scores.
 *   Introducing hardware-locked "Cold Storage" shards for mission-root intents.
 **Security Impact:** Ensures mission-root anchors remain pinned even across transient session loss, neutralizing the risk of "Context Amnesia" in multi-day swarms.
+
+### Update: 2026-07-25 - Lateral Infection Containment
+**Context:** Today's research confirms that lateral infection is the primary risk for multi-agent meshes, especially during context resumption.
+**Architecture Adjustment:**
+*   Integrating the **Inter-Agent Zero-Trust (IAZT)** handshake into the resumption flow.
+*   Resumed state shards must now pass **Adaptive Payload Sanitization** before being re-ingested by the agent engine.
+*   Restoring role-bound boundary conditions to the mission manifest during recovery to prevent privilege escalation.
+**Security Impact:** Prevents a compromised session from spreading infection to high-trust teammates during the resumption phase.
