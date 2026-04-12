@@ -59,3 +59,11 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-07-25:** Priority-Aware Task Re-auctioning update.
+    ### Update: 2026-07-25 - Priority-Aware Task Re-auctioning
+    **Context:** Today's market sync revealed that parallel teammates frequently enter 5s+ "Cognitive Stall" wait cycles during complex conflict resolution on the shared task list.
+    **Architecture Adjustment:**
+    * Introducing **Priority-Aware Task Re-auctioning** to the Conflict Resolution Logic.
+    * Tasks held by low-velocity or non-responsive teammates are automatically re-auctioned to higher-priority specialists after a hardware-attested threshold.
+    * Deprecating simple LWW-Element-Set for a weighted CRDT model that incorporates real-time "Reasoning Intensity" (ARE) scores.
+    **Security Impact:** Prevents "Denial-of-Task" attacks by rogue or stalled sub-agents and improves mesh-wide liveness.

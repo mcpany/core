@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Active Memory Broker (AMB)**: (P0) Authoritative host for proactive context retrieval, managing "Active Memory" sub-agents to ensure mission-bound preference pulls.
+- **Mailbox Sovereignty Enforcer (MSE)**: (P0) Real-time, hardware-attested validation service for inter-teammate coordination fragments to prevent mailbox injection.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Elevated with mandatory CRDT-based task list synchronization to neutralize the "Mailbox Lock Stall."
+- **Asynchronous Mailbox Sharding (AMS)**: (Re-affirmed P0) Designated as the primary infrastructure for supporting non-blocking horizontal coordination in Agent Teams.
