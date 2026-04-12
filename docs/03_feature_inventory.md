@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **GNAP Protocol Adapter**: (P0) Infrastructure for Git-Native Agent Protocol, allowing agents to coordinate via decentralized repo-resident JSON manifests.
+- **CI/CD Workflow Integrity Guard**: (P0) Security middleware that validates sequences of agent actions (e.g., Scan -> PR) to prevent autonomous supply chain hijacking.
+- **Infer Hub Integration**: (P0) Autoritative bridge for OpenClaw's Infer Hub, providing multi-provider inference routing and load balancing.
+- **Memory-Wiki Compaction Engine**: (P1) Versioned context management providing pluggable compaction strategies for high-fidelity mission persistence.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: (Re-affirmed P0) Elevated with mandatory **CI/CD Workflow** validation.
+- **PNTD Discovery Provider**: (Re-affirmed P0) Elevated to support **GNAP-native** capability mapping.
