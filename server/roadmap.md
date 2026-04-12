@@ -218,6 +218,12 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Semantic Shard Mirroring (SSM) Broker**: Authoritative coordination service for context high-availability with hardware-attested consistency. (Added: 2026-07-25)
+*   **[P0] Attention-Bound Proof (ABP) Validator**: Security middleware mandating hardware-attested proofs linking tool calls to attention regions. (Added: 2026-07-25)
+*   **[P0] Prompt-Grafting Shield**: Authoritative security service performing real-time semantic deconstruction of shared reasoning traces. (Added: 2026-07-25)
+*   **[P0] Memfd-Bound Intent Inheritance Provider**: Cross-process orchestration middleware facilitating secure, memfd-based shared memory for subagent intent inheritance. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.

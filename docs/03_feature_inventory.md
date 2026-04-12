@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Semantic Shard Mirroring (SSM) Broker**: (P0) Authoritative coordination service for context high-availability, utilizing real-time, hardware-attested consistency checks to mirror context shards across mesh nodes.
+- **Attention-Bound Proof (ABP) Validator**: (P0) Security middleware mandating hardware-attested proofs that cryptographically link every tool call to specific attention regions in the reasoning trace.
+- **Prompt-Grafting Shield**: (P0) Authoritative security service performing real-time semantic deconstruction of shared reasoning traces to detect and block "invisible" instruction fragments.
+- **Memfd-Bound Intent Inheritance Provider**: (P0) Cross-process orchestration middleware facilitating secure, memfd-based shared memory for subagent intent inheritance.
+
+### Priority Shifts
+- **Context Sharding Manager**: (Re-affirmed P0) Elevated with the requirement for mandatory **SSM-compliant** mirroring.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Prompt-Grafting Shield** integration to protect anchor integrity.
