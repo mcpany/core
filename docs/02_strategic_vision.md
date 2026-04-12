@@ -355,6 +355,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Deterministic Environment Integrity**: We are mandating a "Deterministic Boot" sequence. MCP Any will generate signed "Non-Existence Proofs" for sensitive project-local files (like `.claude/settings.json`) to prevent configuration-injection escapes before any agent is allowed to execute.
 - **Settings Injection Guard**: Introducing an active interception layer for project-local configurations. Any modification to agent settings must match an attested baseline, neutralizing the "Rug Pull" vector where malicious repositories weaponize configuration hooks.
 
+## Strategic Evolution: [2026-04-12] (Iteration 2)
+### Focus: Configuration Anchoring & Natural-Language Sovereignty
+**Context**: Today's findings on CVE-2026-33068 (Claude Code Workspace Trust Bypass) and the emergence of `GEMINI.md` context files reveal that transport security and sandbox boundaries are insufficient if the **loading sequence** and **content integrity** are not hardware-locked. Malicious repository settings can now bypass trust dialogs, and natural-language "Invisible Instructions" can hijack reasoning loops.
+**Strategic Pivot**:
+- **Hardware-Locked Configuration Anchoring (HLCA)**: MCP Any will evolve to mandate HLCA for all project-local configurations. We will cryptographically bind user-attested settings to a TPM-signed session, ensuring that repository-committed files cannot silently override security policies.
+- **Context-File Integrity Attestation (CFIA)**: To neutralize "Deceptive Context" attacks, we are implementing CFIA. Any natural-language context file (e.g., `GEMINI.md`, `CONTEXT.md`) must be hashed and hardware-signed by the user before it is ingested, ensuring that instruction fragments are anchored to the user's verified intent.
+- **Plan-Mode Enforcement Middleware**: Leveraging Gemini CLI's shift to Plan-Mode-by-default, MCP Any will implement a global "Speculative Review" gate. High-risk actions identified during an agent's planning phase will require explicit user attestation before transition to the execution phase.
+
 ## Strategic Evolution: [2026-04-11]
 ### Focus: Standardized Agent Interoperability & Deterministic Environment Integrity
 **Context**: The maturation of the A2A protocol as a universal messaging tier and the persistent threats from configuration-based vulnerabilities (CVE-2025-59536) demand that MCP Any evolves into a "Relational Gateway." We must not only secure the tool-to-model path but also the agent-to-agent communication and the environmental foundation upon which agents operate.

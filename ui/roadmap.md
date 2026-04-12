@@ -242,6 +242,9 @@
 - [ ] **[P0] A2A Messaging Hub Dashboard**: Real-time monitor of inter-agent task proposals, bidding, and mailbox state. (Added: 2026-04-12)
 - [ ] **[P0] Settings Integrity Monitor**: Security dashboard for reviewing project-local configuration attestation status and injection alerts. (Added: 2026-04-12)
 - [ ] **[P0] Non-Existence Proof Visualizer**: UI for inspecting the "Absent File" manifest during Deterministic Boot attestation. (Added: 2026-04-12)
+- [ ] **[P0] Config Anchoring Manager**: UI for reviewing and hardware-signing project-local configuration files (HLCA). (Added: 2026-04-12)
+- [ ] **[P0] Context Attestation Workspace**: Security dashboard for TPM-signing natural-language context files (CFIA). (Added: 2026-04-12)
+- [ ] **[P1] Speculative Planning Reviewer**: Interactive UI for approving agent actions identified during the Plan-Mode phase. (Added: 2026-04-12)
 
 #### Upcoming (2026-04-11 Evolution)
 - [ ] **[P0] A2A Message Inspector**: Visual tool for debugging and tracing A2A task delegation and agent-to-agent communication. (Added: 2026-04-11)

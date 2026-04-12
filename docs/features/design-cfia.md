@@ -66,3 +66,10 @@ MCP Any needs to bridge the "Attestation Gap" for these non-structural context s
 * Mandating **Manual Hashing & Signing** (HITL) for all natural-language context ingestion.
 * Introducing **Attention-Anchor Matching**: The CFIA provider now provides a cryptographically signed "Attention Anchor" for each verified file, which is consumed by the ALT middleware to verify reasoning drivers.
 **Security Impact:** Prevents repository files from silently hijacking agent reasoning, even if they pass basic sandbox checks.
+
+### Update: 2026-04-12 - Anchoring Natural-Language Context (GEMINI.md)
+**Context**: The emergence of tiered natural-language context files (e.g., `GEMINI.md`) proves that agents now ingest instructions from beyond traditional configuration schemas.
+**Architecture Adjustment**:
+* **Tiered Context Anchoring**: Section 4 is updated to support tiered (global, root, subdirectory) CFIA signatures. MCP Any will now recursively check and validate hardware-attested signatures for all `.md` files identified as instruction fragments.
+* **Hash-Bound Context Ingestion**: Agent ingestion of natural-language files is now blocked until the SHA-256 hash of the content is verified against the hardware-attested CFIA Registry.
+**Security Impact**: Neutralizes "Invisible Instructions" committed to repositories, ensuring that only user-verified natural language context is used for reasoning.

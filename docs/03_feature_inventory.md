@@ -1313,6 +1313,17 @@
 
 ---
 
+## Evolution: [2026-04-12] Updates
+
+### Proposed Additions
+- **Hardware-Locked Configuration Anchoring (HLCA)**: (P0) Authoritative security service cryptographically binding project-local settings (e.g., `.claude/settings.json`) to TPM-signed user sessions to neutralize workspace trust bypasses (CVE-2026-33068).
+- **Context-File Integrity Attestation (CFIA)**: (P0) Advanced security middleware mandating hardware-attested hash signatures for all project-local context files (e.g., `GEMINI.md`, `CONTEXT.md`) before agent ingestion.
+- **Plan-Mode Enforcement Middleware**: (P1) Predictive safety gate mandating user attestation for high-risk actions identified during the agent's planning phase.
+
+### Priority Shifts
+- **Project Configuration Security Guard**: (Re-affirmed P0) Elevated with mandatory support for **HLCA-compliant** attestation.
+- **Inference-Time Data Sanitizer (IDS)**: (Re-affirmed P0) Now designated as the primary enforcement point for **CFIA-compliant** context files.
+
 ## Evolution: [2026-04-11] Updates
 
 ### Proposed Additions

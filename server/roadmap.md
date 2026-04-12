@@ -470,6 +470,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Messaging Hub**: Transition from a simple bridge to a native A2A messaging implementation with integrated Zero-Trust policy enforcement. (Added: 2026-04-12)
 *   **[P0] Settings Injection Guard**: Active interception layer for project-local agent configurations to neutralize "Rug Pull" exfiltration attacks. (Added: 2026-04-12)
 *   **[P0] Non-Existence Proof Generator**: Extension for the Deterministic Attestation Gateway to sign "Missing File" proofs (CVE-2026-25725). (Added: 2026-04-12)
+*   **[P0] Hardware-Locked Configuration Anchoring (HLCA)**: Authoritative service cryptographically binding project-local settings to TPM-signed sessions. (Added: 2026-04-12)
+*   **[P0] Context-File Integrity Attestation (CFIA)**: Mandatory hardware-attested hash signatures for all project-local context files (e.g., `GEMINI.md`). (Added: 2026-04-12)
+*   **[P1] Plan-Mode Enforcement Middleware**: Predictive safety gate requiring user attestation for planning-phase actions. (Added: 2026-04-12)
 
 #### Upcoming (2026-04-10 Evolution)
 *   **[P0] Inference-Time Data Sanitizer (IDS)**: Semantic context governance middleware utilizing OpenClaw ContextEngine hooks to block multimodal injections. (Added: 2026-04-10)
