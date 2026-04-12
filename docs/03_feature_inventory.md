@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Trust Provider (RTP)**: (P0) Authoritative "Trust Relay" utilizing Recursive Trust Tickets to facilitate multi-hop hardware attestation without repeated handshakes.
+- **Task-Bound Inode Locking (TBIL) Middleware**: (P0) Advanced security layer cryptographically binding filesystem Inodes to specific mission-root tasks to neutralize "Racing Symlinks."
+- **Kernel-Resident Lease Reaper**: (P0) Lifecycle management service performing real-time, kernel-level monitoring to revoke orphaned hardware leases upon abrupt subagent termination.
+- **Attestation Load Balancer (ALB)**: (P1) Mesh-wide arbiter for hardware requests, dynamically queuing and prioritizing TPM-bound attestation signals to mitigate "Attestation Storms."
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **Recursive Trust Tickets (RTT)** integration.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with the requirement for **Kernel-Resident Lease Reaping** for distributed stability.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
