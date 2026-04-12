@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Adaptive State Compression (ASC)**: (P0) Authoritative mediation service dynamically scaling BSH granularity based on link latency to neutralize tunneling overhead.
+- **Lock-Free Context Reconciliation Middleware**: (P0) Distributed coordination service utilizing Differential Reason-Hash (DRH) to resolve consensus forks without blocking teammate reasoning.
+- **Stitch-Resistant Memory Segmentation (SRMS) v2**: (P0) Advanced memory security utilizing "Cognitive Salt" and fragment-level intent redaction to prevent context re-composition from shared scratchpads (CVE-2026-92015 defense).
+- **Hardware-Attested Lease Scaling (HALS)**: (P1) Identity middleware broker for dynamic lease extensions based on reasoning confidence to reduce attestation fatigue.
+
+### Priority Shifts
+- **Lock-Free Mesh Coordination**: (Re-affirmed P0) Elevated with mandatory **DRH-compliant** reconciliation to resolve "Consensus Fragmentation" in high-density teams.
+- **Zero-Copy Memory-Mapped Transport**: (Re-affirmed P0) Designated as the primary infrastructure for **ASC-optimized** state handoffs.
