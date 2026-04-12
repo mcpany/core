@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Agentic Reinforcement Monitor (ARM)**: (P0) Authoritative "Reasoning Circuit Breaker" performing real-time analysis of cross-agent reasoning entropy to detect and neutralize hallucinatory feedback loops.
+- **Inter-Agent Capability Guard (IACG)**: (P0) Advanced security extension for the Mailbox Integrity Middleware enforcing fragment-level permission boundaries to prevent "Capability Bleed" exfiltration.
+- **Machine-Speed Auditability Bridge**: (P0) High-performance telemetry service providing sub-millisecond visibility into teammate mailbox operations for hivenet detection.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Elevated with mandatory **IACG** integration for fragment-level sovereignty.
+- **Blackboard Versioning Hub**: (Re-affirmed P0) Elevated with the requirement for **Consensus-Bound Intent Persistence** for high-trust anchors.
