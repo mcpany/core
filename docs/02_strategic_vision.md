@@ -1550,3 +1550,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+---
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Chapter-Bound Mission Sovereignty & Autonomous NHI Rotation
+**Context**: The stabilization of "Chapters" in Gemini CLI for interaction grouping and the rise of "Identity Squatting" in long-running autonomous swarms confirm that **Mission Governance** must be temporally granular and **Identity** must be self-rotating. As agent sessions extend into multi-day missions, the "Universal Agent Bus" must move from static token management to active **NHI Lifecycle Sovereignty**.
+**Strategic Pivot**:
+- **Chapter-Bound Mission Broker**: MCP Any will evolve to act as the authoritative host for "Mission Chapters." We will implement a brokering layer that cryptographically binds tool capabilities and context shards to specific, user-defined chapters, ensuring that intent-drift cannot bridge across distinct mission phases.
+- **Autonomous NHI Identity Rotation (ANIR)**: To neutralize "Identity Squatting," we are introducing ANIR. MCP Any will implement hardware-locked, task-triggered identity rotation for all Non-Human Identities, ensuring that subagent credentials expire automatically upon task completion or chapter transition.
+- **Just-In-Time (JIT) Capability Masking v2**: Supporting Gemini's JIT context discovery, we are upgrading the ZKD Proxy. Tool schemas will remain cryptographically masked and "Semantic-Invisible" until the exact moment of mission-root authorized discovery, neutralizing pre-flight mapping of the chapter-local toolset.
+- **Cross-Session Chapter Resumption**: To address Claude Code session resumption failures, we are evolving the MRCP. We will provide hardware-locked chapter recovery that survives environment reboots, ensuring mission-root anchors and teammate coordination fragments persist across physical session loss.
