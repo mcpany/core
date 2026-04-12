@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Dynamic Mesh Resilience (DMR) Hub**: (P0) Authoritative coordination service for re-sharding and migrating state between physical nodes upon subagent failure or coordination stall.
+- **Ephemeral Registry Hook (ERH) Provider**: (P0) Security middleware mandating session-locked discovery schemas and hooks to neutralize registry persistence exploits.
+- **Recursive Resource Reclamation (RRR) Manager**: (P1) Lifecycle management service for reclaiming unused token and reasoning budgets from dormant or non-convergent sub-missions.
+
+### Priority Shifts
+- **Lock-Free Mesh Coordination**: (Re-affirmed P0) Elevated with mandatory support for **DMR-compliant** state migration proofs to resolve "Cognitive Stall" in high-density teams.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning to counter "GC Fragility" in 2M+ token windows.

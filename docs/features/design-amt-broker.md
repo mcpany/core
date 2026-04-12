@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mitigating Tunneling Overhead
+**Context:** Today's market sync revealed a 15-20% MTTC performance tax in OpenClaw SNT, impacting real-time reasoning.
+**Architecture Adjustment:** * Introducing "Lightweight Mesh Handshakes" in Section 4.
+* Implementation of session-bound "Mesh Tickets" for sub-millisecond tunnel resumption.
+**Security Impact:** Maintains TPM-bound security while reducing coordination latency for high-frequency inter-node calls.

@@ -59,3 +59,9 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Cognitive Stall in Parallel Teams
+**Context:** Market feedback on Claude Code v3.2.0 identifies 5s+ wait cycles due to mailbox lock contention in horizontal swarms.
+**Architecture Adjustment:** * Transitioning from Git-based directory locking to CRDT-native Sharded Mailboxes in Section 4.
+* Implementing "Asynchronous Task Reclamation" to prevent "Ghost Task" locking.
+**Security Impact:** Neutralizes coordination DoS and improves swarm resilience during network partitions.
