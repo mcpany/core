@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Attested Resource Rebalancer (HARR)**: (P0) Authoritative budget arbiter utilizing hardware-attested urgency signals to dynamically re-allocate token and reasoning budgets.
+- **Monotonic Tunnel Nonce (MTN) Enforcer**: (P0) Security middleware mandating hardware-bound monotonic counters for all P2P tunnel calls to neutralize Shadow-Attestation Replay (SAR).
+- **Intent-Aware Shard migration (IASM) Service**: (P1) Performance optimization service proactively migrating context shards between distributed nodes based on real-time reasoning intent.
+- **Recursive Mission Exhaustion (RME) Monitor**: (P0) Stability monitoring service that detects infinite tool-calling loops and triggers HARR re-allocation policies.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **HARR-compliant** re-alignment support.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **MTN** integration.

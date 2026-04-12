@@ -838,6 +838,12 @@
 - [ ] **[P0] Multimodal Trace Auditor**: Forensic UI for reviewing MMS-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-21)
 - [ ] **[P0] Durable Session Explorer**: Visual workspace for reviewing hardware-locked continuity state across system reboots. (Added: 2026-07-21)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Mission Budget Rebalancer Hub**: (2026-07-25) Interactive UI for reviewing hardware-attested urgency signals and HARR re-allocation events.
+- [ ] **[P0] P2P Tunnel Integrity Monitor**: (2026-07-25) Real-time visualization of monotonic tunnel nonces and blocked replay attempts.
+- [ ] **[P1] Shard Migration Heatmap**: (2026-07-25) Visual tracker for intent-aware shard migration and MTTC performance gains.
+- [ ] **[P0] RME Loop Alert Center**: (2026-07-25) Forensic UI for visualizing recursive mission exhaustion events and budget drain.
+
 #### Upcoming (2026-07-23 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: (2026-07-23) Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts.
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
