@@ -1931,6 +1931,18 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Dynamic Shard Anchoring (DSA) Provider**: (P0) Authoritative attention broker for context shards utilizing real-time intent analysis to dynamically rotate mission-critical fragments into high-priority attention tiers.
+- **Ephemeral Teammate Identity (ETI) Manager**: (P0) Lifecycle security service issuing task-bound identity tokens that rotate every 5 tool calls to minimize compromised blast radius.
+- **Optimistic Mesh Governance (OMG) Middleware**: (P0) Performance-optimizing security service allowing hardware-attested "Lease Tickets" for speculative coordination.
+- **Semantic Integrity Proof (SIP) Validator**: (P0) Content attestation middleware requiring cryptographic proof that tool outputs match mission-root constraints.
+
+### Priority Shifts
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving to act as the primary enforcement point for the **DSA Provider**.
+- **NHI Lifecycle Governance Provider**: (Re-affirmed P0) Elevated with mandatory **ETI-compliant** task-bound rotation.
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
