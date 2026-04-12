@@ -843,6 +843,11 @@
 - [ ] **[P0] Blackboard Collision Manager**: (2026-07-23) Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions.
 - [ ] **[P0] Environment-Aware Provenance Tracker**: (2026-07-23) Forensic UI for visualizing reasoning traces bound to specific execution environments.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Stylometric Alignment Dashboard**: (2026-07-25) Visual indicator for SDM drift scores and long-term behavioral velocity.
+- [ ] **[P1] Neural Shard Explorer**: (2026-07-25) Visualizer for sub-symbolic context fragments and NSI-based retrieval hits.
+- [ ] **[P0] Attention Weighting Console**: (2026-07-25) UI for cryptographically assigning DIW weights to mission-root guardrails.
+
 #### Upcoming (2026-07-22 Evolution)
 - [ ] **[P0] Reasoning Provenance Inspector**: (2026-07-22) Visual debugger for verifying RPW-compliant watermarks and reasoning lineage.
 - [ ] **[P0] Dynamic Resource Budgeting Monitor**: (2026-07-22) Real-time visualization of ARR-triggered budget re-allocations between teammates.

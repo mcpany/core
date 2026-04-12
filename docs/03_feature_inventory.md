@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Stylometric Drift Monitor (SDM)**: (P0) Authoritative behavioral auditor tracking long-term stylometric velocity to detect "Slow-Motion Mimicry" attacks.
+- **Neural Shard Indexer (NSI) Adapter**: (P1) Sub-symbolic addressing service for the Universal Episodic Graph to improve context recovery accuracy.
+- **Dynamic Instruction Weighting (DIW) Bridge**: (P0) Security middleware allowing cryptographic attention-weighting for mission-root guardrails (Gemini CLI v0.60.0 compliance).
+
+### Priority Shifts
+- **Manifest-Based Reflection (MBR) Arbiter**: (Promoted to P0) Critical for neutralizing "Reflection Exhaustion" in high-density horizontal Agent Teams.
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as the primary mechanism for reclaiming tokens from stalled reflection loops.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
