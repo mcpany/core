@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Criteria Attestation Provider (CAP)**: (P0) Authoritative service issuing hardware-attested reasoning anchors (fixed decision shortcuts) to neutralize Reasoning Hijacking.
+- **Teammate Barrier Orchestrator (TBO)**: (P0) Kernel-mediated execution barriers providing epoch-based state synchronization for high-entropy horizontal coordination.
+- **Hardware-Locked Decision Paths (HLDP)**: (P0) Provance extension cryptographically binding an agent's internal reasoning steps to a pre-attested mission-root manifest.
+- **Ephemeral Mesh Tickets (EMT)**: (P1) Performance optimization for FPIR v2 utilizing zero-copy handoffs for secure mesh tunnels.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Elevated with mandatory **TBO** integration to resolve 5s+ coordination stalls in large teams.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now designated as the primary backend for the **EMT** performance suite.
