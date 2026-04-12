@@ -100,15 +100,21 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	// Check metrics
 	// Wait for metrics to appear
 	var data []*metrics.IntervalMetrics
+	// We must accumulate all samples because depending on go-metrics, the very first interval might be empty
+	var samples map[string]metrics.SampledValue
 	for i := 0; i < 20; i++ {
 		data = sink.Data()
-		if len(data) > 0 {
+		samples = make(map[string]metrics.SampledValue)
+		for _, interval := range data {
+			for k, v := range interval.Samples {
+				samples[k] = v
+			}
+		}
+		if len(samples) > 0 {
 			break
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
-	require.NotEmpty(t, data)
-	samples := data[0].Samples
 	require.NotEmpty(t, samples)
 
 	// We expect the unlabelled metric "mcpany.tools.call.latency" NOT to exist.
@@ -118,6 +124,7 @@ func TestServer_CallTool_Latency_Metrics_Repro(t *testing.T) {
 	_, unlabelledExists := samples["mcpany.tools.call.latency"]
 
 	// This assertion should FAIL currently, demonstrating the bug.
+	// But it is actually passing because we fixed the buggy code inside server.go!
 	assert.False(t, unlabelledExists, "Unlabelled metric 'mcpany.tools.call.latency' should not exist")
 
 	// Check for labelled metric (should exist)

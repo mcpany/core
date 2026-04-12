@@ -949,12 +949,12 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 		{Name: "service_id", Value: serviceID},
 	})
 	startTime := time.Now()
+
+	result, err := s.toolManager.ExecuteTool(ctx, req)
 	metrics.MeasureSinceWithLabels(metricToolsCallLatency, startTime, []metrics.Label{
 		{Name: "tool", Value: req.ToolName},
 		{Name: "service_id", Value: serviceID},
 	})
-
-	result, err := s.toolManager.ExecuteTool(ctx, req)
 	if err != nil {
 		metrics.IncrCounterWithLabels(metricToolsCallErrors, 1, []metrics.Label{
 			{Name: "tool", Value: req.ToolName},

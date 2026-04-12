@@ -174,7 +174,11 @@ func MeasureSince(name []string, start time.Time) {
 //   - start: time.Time. The start time.
 //   - labels: []metrics.Label. The labels to apply.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
-	metrics.MeasureSinceWithLabels(name, start, labels)
+	// Calculate the duration in milliseconds
+	elapsed := float32(time.Since(start).Seconds() * 1000)
+
+	// AddSampleWithLabels avoids some global unlabelled aggregations in older go-metrics
+	metrics.AddSampleWithLabels(name, elapsed, labels)
 }
 
 // AddSample adds a sample to a histogram/summary.
