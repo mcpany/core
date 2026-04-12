@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Resident Identity Hub (MRIH)**: (P0) Authoritative identity service for horizontal meshes issuing hardware-attested, session-bound tokens for secure teammate verification.
+- **Teammate Mailbox Integrity (TMI) Middleware**: (P0) Security service performing real-time semantic validation of inter-agent messages to neutralize "Mailbox Splicing."
+- **Mission-Root Continuity Broker (MRCB)**: (P0) Authoritative resumption hub for long-running headless swarms, maintaining mission-root sovereignty across rotations.
+- **Sovereign Discovery Proxy (SDP)**: (P0) Advanced discovery gateway mandating cryptographic capability masking until mission-bound handshake.
+
+### Priority Shifts
+- **Teammate-to-Teammate (T2T) Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TMI** integration.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Evolving into the **Sovereign Discovery Proxy (SDP)** for decentralized mesh support.
