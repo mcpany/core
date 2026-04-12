@@ -55,3 +55,7 @@ The Zero-Copy Memory Broker (ZCMB) addresses this by providing hardware-locked, 
 
 ## 7. Evolutionary Changelog
 * **2026-07-03:** Initial Document Creation.
+* **2026-07-25:** Evolution to Kinetic Memory Sovereignty.
+    * **Context:** Today's research on OpenClaw v3.7.0 reveals a shift toward "Kinetic State Handoffs" to eliminate the serialization tax in high-density meshes.
+    * **Architecture Adjustment:** Transitioning the ZCMB from local-only shared memory to an **RDMA-Aware Transport Adapter**. This enables zero-copy performance across physical device boundaries in the mesh.
+    * **Security Impact:** Introducing **Kernel-Level Syscall Gating (KLSG)** to the memory broker. This ensures that even with RDMA-level access, high-risk syscalls (e.g., `mmap`) are hardware-attested against the mission-root lifecycle.

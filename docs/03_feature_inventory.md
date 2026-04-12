@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Kernel-Level Syscall Gating (KLSG)**: (P0) Authoritative security service mandating hardware-attested justifications for high-risk syscalls during the mission lifecycle.
+- **Sybil-Resistant Collective Reputation (SRCR)**: (P0) Advanced identity middleware providing hardware-bound reputation fragments to neutralize sandbagging and poisoning attacks.
+- **RDMA-Aware Transport Adapter**: (P1) High-performance coordination extension for the ZCMB utilizing kinetic, zero-copy memory handoffs.
+- **Unified Cross-Registry Bidding (UCRB) Hub**: (P1) Orchestration service for unified task auctions across heterogeneous discovery registries (MCP, gRPC, A2A).
+
+### Priority Shifts
+- **Zero-Copy Memory Broker (ZCMB)**: (Re-affirmed P0) Elevated with mandatory support for **RDMA-Aware** kinetic handoffs.
+- **DCA Auction Broker**: (Re-affirmed P0) Evolving into the **UCRB Hub** to support cross-registry capability bidding.

@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Kernel-Level Syscall Gating (KLSG)**: Mandatory hardware-attested justification for high-risk OS-level operations (e.g., `ptrace`, `mmap`, `shm`) to prevent sandbox escapes. (Added: 2026-07-25)
+*   **[P0] Sybil-Resistant Collective Reputation (SRCR)**: Identity middleware providing hardware-bound reputation fragments to neutralize sandbagging and poisoning attacks. (Added: 2026-07-25)
+*   **[P1] RDMA-Aware Transport Adapter**: Implementation of kinetic, zero-copy memory handoffs utilizing Linux `memfd` for high-density local swarms. (Added: 2026-07-25)
+*   **[P1] Unified Cross-Registry Bidding (UCRB) Hub**: Authoritative auction broker for unified task bidding across MCP, gRPC, and A2A discovery registries. (Added: 2026-07-25)
