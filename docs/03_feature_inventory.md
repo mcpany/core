@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Topology Broker (ZKTB)**: (P0) Authoritative mesh management service utilizing hardware-attested "Virtual Hops" to hide physical node layout from agents.
+- **Cognitive Load-Aware Routing (CLAR) Service**: (P0) Dynamic task-placement middleware that routes subagent spawns to nodes with the highest available reasoning/token budgets.
+- **Hardware-Locked Node Identity (HLNI) Provider**: (P0) Advanced identity service mandating TPM-signed, hardware-bound certificates for all mesh-participating nodes.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **ZKTB-compliant** topology masking.
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Designated as the primary telemetry source for **CLAR-mediated** load balancing.
