@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-12] (Iteration 2) Updates
+
+### Proposed Additions
+- **Mission-Bound Hardware Leases (MBHL)**: (P0) Authoritative lease service issuing TPM-signed, task-bound capability grants that expire automatically post-mission.
+- **Privacy-Preserving Reason Proofs (PPRP)**: (P0) Identity middleware facilitating Zero-Knowledge proofs for reasoning paths to allow auditing without context exposure.
+- **Parametric Sandbox Sanitizer**: (P0) Advanced security layer for toolchains that semantically scans and isolates LLM-generated arguments before execution.
+
+### Priority Shifts
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Pre-Execution Metadata Attestation**.
+- **Settings Injection Guard**: (Re-affirmed P0) Designated as the primary enforcement point for **MBHL-validated** configuration overrides.
