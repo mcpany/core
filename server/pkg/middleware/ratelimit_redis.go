@@ -13,6 +13,15 @@ import (
 )
 
 var redisClientCreator = redis.NewClient
+// SetRedisClientCreatorForTests ...
+//
+// Summary: SetRedisClientCreatorForTests.
+//
+// Parameters:
+//   - params: arguments for SetRedisClientCreatorForTests.
+//
+// Returns:
+//   - returns value for SetRedisClientCreatorForTests.
 
 // SetRedisClientCreatorForTests allows injecting a mock Redis client creator for testing purposes.
 //
