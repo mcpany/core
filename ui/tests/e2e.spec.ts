@@ -94,7 +94,7 @@ test.describe('MCP Any UI E2E Tests', () => {
   });
 
   test('Webhooks page displays configuration', async ({ page }) => {
-    await page.goto('/settings/webhooks');
+    await page.goto('/webhooks');
     await expect(page.getByRole('heading', { name: 'Webhooks' })).toBeVisible();
 
     if (process.env.CAPTURE_SCREENSHOTS === 'true') {
