@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Middleware**: (P0) A secure, ephemeral execution environment for MCP discovery commands, preventing host-level "Ghost-Execution" exploits (Gemini CLI / OpenClaw CVE defense).
+- **Lock-Free Teammate Coordination (LFTC)**: (P0) Sharded, CRDT-based mailbox synchronization to eliminate "Mailbox Lock" bottlenecks in horizontal swarms (Claude Code Agent Teams).
+- **Argument-Level Semantic Validator (ALSV)**: (P0) Security middleware that performs real-time semantic analysis and escaping of command arguments to prevent shell injection and allowlist bypass.
+- **Task-Claim Integrity Provider**: (P0) Advanced security service for horizontal meshes mandating hardware-attested tokens before teammate task-claiming.
+
+### Priority Shifts
+- **Teammate Task-List Arbiter**: (Evolved to LFTC) Now designated as the primary mechanism for lock-free horizontal coordination.
+- **Discovery Sandbox Middleware**: (Promoted to P0) Critical requirement for neutralizing startup-time RCE in agent environments.

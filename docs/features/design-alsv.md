@@ -45,3 +45,10 @@ Recent vulnerabilities in OpenClaw (CVE-2026-32000, CVE-2026-22169) have shown t
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Shell-Fallback Exploits
+**Context**: Today's findings confirm that OpenClaw subagent routing is vulnerable to shell metacharacter injection via tool arguments, bypassing current allowlists.
+**Architecture Adjustment**:
+*   Mandating **Argument-Level Semantic Validation (ALSV)** for all command-based tools.
+*   Implementing real-time semantic analysis of command flags and shell metacharacters before execution.
+**Security Impact**: Mitigates unauthorized host-level command execution by rogue specialist agents attempting to bypass sandbox constraints.

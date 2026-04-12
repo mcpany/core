@@ -46,3 +46,10 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Coordination Latency
+**Context**: Recent market sync data from Claude Code "Agent Teams" reveals that global coordination locks are the primary bottleneck for parallel swarms, causing latencies of up to 2 seconds in high-density meshes.
+**Architecture Adjustment**:
+*   Introducing granular, task-bound mailbox shards utilizing **Conflict-Free Replicated Data Types (CRDTs)**.
+*   Deprecating the single global mailbox lock in favor of asynchronous state synchronization.
+**Security Impact**: Reduces the window for "Mailbox Injection" attacks by isolating teammate coordination into task-specific cryptographic shards.
