@@ -17,6 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Represents a tool in the MCP Any system.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
+ */
 export interface Tool {
   name: string;
   description: string;
@@ -25,22 +31,10 @@ export interface Tool {
 }
 
 /**
- * Summary: Document BuiltInTools
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * BuiltInTools contains the definitions and implementations of standard tools
- * provided by the server, such as calculator, echo, and system info.
+ * Summary: BuiltInTools contains the definitions and implementations of standard tools provided by the server.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export const BuiltInTools: Record<string, Tool> = {
   calculator: {

@@ -20,6 +20,12 @@
 
 
 
+/**
+ * Summary: Configuration options for an item in the marketplace.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];
@@ -27,21 +33,10 @@ export interface MarketplaceItemConfig {
 }
 
 /**
- * Summary: Document EnvVarDefinition
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * EnvVarDefinition type definition.
+ * Summary: Definition for an environment variable.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export interface EnvVarDefinition {
   name: string;
@@ -53,21 +48,10 @@ export interface EnvVarDefinition {
 }
 
 /**
- * Summary: Document MarketplaceItem
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * MarketplaceItem type definition.
+ * Summary: Item inside the marketplace.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export interface MarketplaceItem {
   id: string;
@@ -78,21 +62,10 @@ export interface MarketplaceItem {
 }
 
 /**
- * Summary: Document MARKETPLACE_ITEMS
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * The MARKETPLACE_ITEMS const.
+ * Summary: Registry of marketplace items.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {

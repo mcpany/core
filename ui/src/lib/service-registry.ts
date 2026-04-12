@@ -17,6 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Represents an item in the service registry.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
+ */
 export interface ServiceRegistryItem {
   id: string;
   name: string;
@@ -27,21 +33,10 @@ export interface ServiceRegistryItem {
 }
 
 /**
- * Summary: Document SERVICE_REGISTRY
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Registry of popular services with their default configurations.
+ * Summary: Registry of popular services with their default configurations.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export const SERVICE_REGISTRY: ServiceRegistryItem[] = [
   // --- Databases ---

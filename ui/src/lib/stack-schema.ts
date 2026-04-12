@@ -17,6 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: JSON Schema for validating stack configurations.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
+ */
 export const STACK_CONFIG_SCHEMA = {
   uri: "http://mcp-any/stack-config.json",
   fileMatch: ["*"],

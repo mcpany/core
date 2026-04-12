@@ -17,6 +17,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Represents the result of a diagnostic check.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
+ */
 export interface DiagnosticResult {
   category: "network" | "auth" | "configuration" | "protocol" | "unknown";
   title: string;
@@ -26,24 +32,10 @@ export interface DiagnosticResult {
 }
 
 /**
- * Summary: Document analyzeConnectionError
- *
- * Params:
- *   - Documented below.
- *
- * Returns:
- *   - Documented below.
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
- *
- * @param error - The raw error string received from the backend or network.
- * @returns A structured DiagnosticResult containing the category, severity, and suggested remediation.
+ * Summary: Analyzes a raw connection error string and categorizes it into a user-friendly diagnostic result.
+ * Parameters: error (string) - The raw error string received from the backend or network.
+ * Returns: DiagnosticResult - A structured DiagnosticResult containing the category, severity, and suggested remediation.
+ * Throws/Errors: None.
  */
 export function analyzeConnectionError(error: string): DiagnosticResult {
   const err = error.toLowerCase();

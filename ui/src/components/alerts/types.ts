@@ -17,42 +17,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+/**
+ * Summary: Defines the severity levels for alerts.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
+ */
 export type Severity = "critical" | "warning" | "info";
 /**
- * Summary: Document AlertStatus
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * AlertStatus type definition.
+ * Summary: Defines the status of an alert.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export type AlertStatus = "active" | "acknowledged" | "resolved";
 
 /**
- * Summary: Document Alert
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Alert type definition.
+ * Summary: Represents an alert.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 export interface Alert {
   id: string;
@@ -65,21 +49,10 @@ export interface Alert {
   source: string;
 }
 /**
- * Summary: Document AlertRule
- *
- * Params:
- *   - None
- *
- * Returns:
- *   - None
- *
- * Errors:
- *   - None
- *
- * Side Effects:
- *   - None
- *
- * Alert type definition.
+ * Summary: Represents a rule for triggering alerts.
+ * Parameters: None.
+ * Returns: None.
+ * Throws/Errors: None.
  */
 
 export interface AlertRule {
