@@ -88,7 +88,7 @@ func TestLazyMCPMiddlewareCache(t *testing.T) {
 
 	// Verify cache is populated
 	middleware.mu.RLock()
-	entry, found := middleware.cache["disk"]
+	_, found := middleware.cache["disk"]
 	middleware.mu.RUnlock()
 	if !found {
 		t.Fatalf("expected cache to be populated")
