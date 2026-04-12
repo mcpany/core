@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Mesh-Resident Handshake Attestation (MRHA)
+**Context:** The discovery of CVE-2026-32211 revealed that unauthenticated subagents can bypass transport-layer security to access remote tools.
+**Architecture Adjustment:** * Mandating hardware-attested handshake tokens (MRHA) for every tool call crossing mesh boundaries.
+* Integrating QUIC-SNT to reduce the 150ms+ coordination tax while maintaining per-call attestation.
+**Security Impact:** Prevents "Mesh Shadowing" and unauthenticated lateral tool-access by rogue subagents or compromised nodes.

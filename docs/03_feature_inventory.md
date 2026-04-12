@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Resident Handshake Attestation (MRHA) Provider**: (P0) Authoritative security service mandating hardware-attested tokens for every tool call in distributed meshes to neutralize auth-bypass vulnerabilities (CVE-2026-32211 defense).
+- **Mission-Bound Hardware Lease (MBHL) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases for high-privilege operations, ensuring automatic revocation upon task completion.
+- **Zero-Knowledge Auditability (ZKA) Hub**: (P1) Identity service leveraging recursive SNARKs to provide hardware-attested reasoning proofs without context exfiltration.
+- **QUIC-SNT Transport Adapter**: (P1) Performance-optimizing inter-node transport utilizing QUIC to reduce mesh coordination latency and support fast-path resumption.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **MBHL-integrated** lease persistence.
+- **T2T Encryption Bridge**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRHA** and **QUIC-SNT** support.
