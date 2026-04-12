@@ -5,6 +5,8 @@ package middleware
 
 import (
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -18,11 +20,18 @@ type LazyMCPConfig struct {
 	CacheTTL  int     `json:"cache_ttl"`
 }
 
+type cacheEntry struct {
+	result    *mcp.ListToolsResult
+	expiresAt time.Time
+}
+
 // LazyMCPMiddleware filters tools based on a simplistic similarity logic to prevent context pollution.
 //
 // Summary: Represents the middleware for filtering tools based on intent.
 type LazyMCPMiddleware struct {
 	config LazyMCPConfig
+	cache  map[string]cacheEntry
+	mu     sync.RWMutex
 }
 
 // NewLazyMCPMiddleware creates a new LazyMCPMiddleware.
@@ -43,6 +52,7 @@ type LazyMCPMiddleware struct {
 func NewLazyMCPMiddleware(config LazyMCPConfig) *LazyMCPMiddleware {
 	return &LazyMCPMiddleware{
 		config: config,
+		cache:  make(map[string]cacheEntry),
 	}
 }
 
@@ -68,8 +78,20 @@ func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string)
 		return res
 	}
 
-	var filtered []*mcp.Tool
 	intentLower := strings.ToLower(intent)
+
+	// Check cache
+	if m.config.CacheTTL > 0 {
+		m.mu.RLock()
+		entry, found := m.cache[intentLower]
+		m.mu.RUnlock()
+
+		if found && time.Now().Before(entry.expiresAt) {
+			return entry.result
+		}
+	}
+
+	var filtered []*mcp.Tool
 
 	for _, tool := range res.Tools {
 		// A naive substring check acts as a stand-in for the "similarity-based approach".
@@ -80,5 +102,17 @@ func (m *LazyMCPMiddleware) FilterTools(res *mcp.ListToolsResult, intent string)
 		}
 	}
 
-	return &mcp.ListToolsResult{Tools: filtered}
+	result := &mcp.ListToolsResult{Tools: filtered}
+
+	// Update cache
+	if m.config.CacheTTL > 0 {
+		m.mu.Lock()
+		m.cache[intentLower] = cacheEntry{
+			result:    result,
+			expiresAt: time.Now().Add(time.Duration(m.config.CacheTTL) * time.Second),
+		}
+		m.mu.Unlock()
+	}
+
+	return result
 }
