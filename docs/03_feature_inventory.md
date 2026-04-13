@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Contextual Ephemerality (CE) Gateway**: (P0) Authoritative shard rotator that automatically shards and rotates mission context based on reasoning-path depth to neutralize context-window flooding.
+- **Active Reasoning Interdiction (ARI) Hub v3**: (P0) Advanced security upgrade for the ARI Hub performing real-time stylometric analysis of internal monologues to block "Monologue Injection" exploits.
+- **Reflective Guardrail (RG) Accelerator**: (P1) Performance-optimizing security service providing hardware-attested mission constraints to reduce the MTTC of self-correction loops.
+- **Privacy-Preserving Monologue Sanitizer**: (P0) Semantic redaction service for specialist agent reasoning traces to prevent "Monologue Smearing" in shared mailboxes.
+
+### Priority Shifts
+- **Active Reasoning Interdiction (ARI) Hub**: (Re-affirmed P0) Evolving to v3 with mandatory **Monologue Injection** defense.
+- **Live Context Sharding Middleware**: (Re-affirmed P0) Now elevated with the requirement for **CE-compliant** automated shard rotation.

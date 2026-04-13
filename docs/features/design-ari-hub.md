@@ -87,3 +87,11 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - ARI v3: Monologue Injection Defense
+**Context:** Today's market sync revealed a new exploit pattern where compromised specialist agents "inject" malicious commands into their internal reasoning monologues, which are then re-ingested as user intent by supervisor agents.
+**Architecture Adjustment:**
+* Introducing the **Monologue Injection Mitigator (MIM)** in Section 4.
+* The ARI Hub will now perform real-time, **Stylometric Monologue Analysis** for all reasoning fragments before they are merged into the Blackboard.
+* Mandating **Reasoning-to-Intent Separation (RIS)**, where internal monologues are cryptographically isolated from the "Actionable Intent" fragments within the fragment structure.
+**Security Impact:** Mitigates the risk of supervisor agents being coerced into unauthorized actions by "Shadow Instructions" hidden in subagent thinking traces.
