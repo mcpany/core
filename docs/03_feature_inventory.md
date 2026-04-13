@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Semantic Egress Filtering (SEF) Engine**: (P0) Authoritative semantic firewall performing real-time, high-entropy analysis of agent outputs to detect and redact sensitive PII/IP before exfiltration.
+- **Supply-Chain Attestation Broker (SCAB)**: (P0) Advanced security service performing hardware-attested validation of all agent framework components and MCP extensions to neutralize poisoned library updates.
+- **Knowledge Manifest Manager**: (P0) Governance service for defining and enforcing TPM-signed "Knowledge Manifests" to restrict agent retrieval to authorized data scopes.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Knowledge-Manifest-compliant** retrieval scoping.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Designated as the primary enforcement point for **SCAB-compliant** component attestation in the discovery bus.

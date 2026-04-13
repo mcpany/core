@@ -43,5 +43,6 @@ As the Agent-to-Agent (A2A) ecosystem matures, the risk of "A2A Coercion" and un
 * **Observability:** Logs all handshake attempts (success/failure) and maps them to the Mission Audit Trail.
 
 ## 7. Evolutionary Changelog
+* **2026-07-25:** Standardized Handshake Provider as the mandatory floor for all A2A mesh communication. Integrated "Auth-before-Discovery" patterns for all MCP Any extensions to neutralize agentic social engineering.
 * **2026-04-25:** Added "Trust Persistence" section to address "Session Decay" in long-running reasoning chains. Introduced token refresh mechanisms linked to the Mission Intent.
 * **2026-04-24:** Initial Document Creation based on Gemini CLI v0.33.0 A2A security updates.
