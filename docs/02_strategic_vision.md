@@ -1550,3 +1550,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+## Strategic Evolution: [2026-04-13] (Iteration 2)
+### Focus: Headless Agency & Just-in-Time Context Discovery
+**Context**: The introduction of "Remote Control" and "Dispatch" in Claude Code, alongside Gemini CLI's move to `bubblewrap/seccomp` sandboxing and JIT Context Discovery, confirms that the Universal Agent Bus must now support **Persistent Headless Sessions** and **Dynamic Context Pruning**.
+**Strategic Pivot**:
+- **Persistent Headless Handoff**: MCP Any will evolve to support "Headless-First" missions, allowing agents to run as background workers with secure remote steering.
+- **JIT Context Discovery Adapter**: Adopting JIT patterns to fetch tool schemas and environment context on-demand based on reasoning intent.
+- **Bubblewrap Sandbox Integration**: Mandating `bubblewrap` and `seccomp` for all process-bound discovery and tool execution for kernel-level isolation.
+- **Remote-First Mission Continuity**: Implementing hardware-attested session resumption for headless agents to ensure sovereignty across operator disconnects.

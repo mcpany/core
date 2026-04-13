@@ -97,3 +97,11 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **A2A Authentication Proxy:** Introducing a mandatory authentication gate for the `/v1/a2a/propose` and `/v1/a2a/mailbox` endpoints in Section 4. The hub will now validate bearer tokens against a verified peer registry.
 * **Execution Identity Integration:** Extending the A2A Task Card in Section 4 to include a `sandbox_attestation` field, allowing agents running in gVisor to prove their environment integrity.
 **Security Impact:** Eliminates unauthenticated capability probes and provides a foundation for zero-trust inter-agent delegation in heterogeneous meshes.
+
+### Update: 2026-04-13 (Iteration 2) - Headless Delegation and Remote Control
+**Context:** Claude Code has introduced "Remote Control" and "Dispatch" workers, shifting the A2A landscape toward persistent, remotely steered headless sessions.
+**Architecture Adjustment:**
+* **Headless Mailbox Residency:** The hub acts as the "Remote Control" anchor for A2A workers, buffering signals until a remote controller connects.
+* **Dispatch Signal Mapping:** Mapping A2A task proposals to native "Dispatch" signals for on-demand worker lifecycle management.
+* **Persistent Lineage Verification:** Supporting multi-session headless handoffs for persistent mission-root intent.
+**Security Impact:** Secure, auditable bridge for remote steering of headless agent meshes.

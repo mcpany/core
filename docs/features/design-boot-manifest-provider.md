@@ -46,3 +46,11 @@ With the shift toward "Deterministic Environment Integrity," agents require a ve
 
 ## 7. Evolutionary Changelog
 * **2026-04-16:** Initial Document Creation.
+
+### Update: 2026-04-13 - Aligning with CLAW-10 and JIT Discovery
+**Context:** Today's market sync revealed the new "CLAW-10" enterprise readiness matrix and Gemini CLI's shift toward "Just-In-Time (JIT) Context Discovery."
+**Architecture Adjustment:**
+* **CLAW-10 Mapping:** Manifests now include a "Security Posture Attestation" fragment mapping integrity signals to CLAW-10 audit dimensions.
+* **JIT-Compatible Pinning:** Introducing "Partial Manifests" for JIT-discovered tools to allow dynamic hardware-attested pinning without reboots.
+* **Headless-First Binding:** TPM signatures updated to support "Remote Control" sessions for persistent headless integrity.
+**Security Impact:** Enhances enterprise auditability and secure dynamic tool discovery.

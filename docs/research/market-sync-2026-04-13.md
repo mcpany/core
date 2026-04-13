@@ -21,3 +21,18 @@
 1. **A2A Open Governance**: The protocol is now a public utility, demanding deeper integration within the Universal Agent Bus.
 2. **Enterprise Agent Governance (CLAW-10)**: There is a massive market for tools that bring "Shadow Agents" under central security control.
 3. **Deterministic Integrity**: Security is shifting from runtime monitoring to pre-execution attestation of the environmental state.
+
+## Daily Update: 2026-04-13 (Iteration 2)
+
+### Gemini CLI: Process Isolation and JIT Context
+- **Finding**: Introduced `SandboxManager` utilizing Linux `bubblewrap` and `seccomp` to isolate process-spawning tools. Implemented "Just-In-Time (JIT) Context Discovery" for filesystem tools to reduce context bloat.
+- **Significance**: Sets a new baseline for local execution security and context efficiency.
+
+### Claude Code: Remote Control and Background Workers
+- **Finding**: "Remote Control" allows connecting to running agent sessions headlessly. "Dispatch" enables running Claude Code as a background worker.
+- **Significance**: Signals a shift toward persistent, remotely steered agent infrastructure and headless automation.
+
+### Summary of New Findings
+1. **Sandbox Hardening**: Move to kernel-level isolation (`bubblewrap/seccomp`) is now standard for local tool execution.
+2. **Headless Agency**: Demand for persistent, remotely accessible agent sessions is rising.
+3. **JIT Context**: Context discovery is moving from pre-flight to on-demand to handle scaling.

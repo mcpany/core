@@ -272,6 +272,9 @@
 - [ ] **[P0] A2A Governance & Security Center**: UI for managing Linux Foundation compliant A2A security manifests and task brokering policies. (Added: 2026-04-13)
 - [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 - [ ] **[P0] Deterministic Boot Manifest Reviewer**: UI for reviewing and signing "Environment Integrity Manifests" during the deterministic boot sequence. (Added: 2026-04-13)
+- [ ] **[P0] Headless Worker Monitor**: Real-time visualization of background agent missions and remote steering. (Added: 2026-04-13)
+- [ ] **[P0] JIT Discovery Debugger**: Visual timeline of demand-based tool loading events. (Added: 2026-04-13)
+- [ ] **[P0] Bubblewrap Sandbox Status**: Kernel-level isolation indicator for discovery commands. (Added: 2026-04-13)
 
 #### Upcoming (2026-04-17 Evolution)
 - [ ] **[P0] Intent Arbitration Console**: Interactive deconstructor for expansion requests, highlighting potential "Smuggling" attempts. (Added: 2026-04-17)

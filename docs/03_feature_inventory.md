@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-13] (Iteration 2) Updates
+
+### Proposed Additions
+- **Persistent Headless Handoff (PHH)**: (P0) Infrastructure for background agent worker missions with secure remote steering.
+- **JIT Context Discovery Adapter**: (P0) Demand-based tool schema and context fetching based on reasoning intent.
+- **Bubblewrap Sandbox Integration**: (P0) Kernel-level isolation using `bubblewrap` and `seccomp` for all process-bound execution.
+- **Remote-First Mission Continuity**: (P1) Hardware-attested session resumption for headless agents.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with mandatory **Bubblewrap** integration.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with mandatory support for **Remote-First** persistent sovereignty.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
