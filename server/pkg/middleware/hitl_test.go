@@ -80,13 +80,27 @@ func TestHITLMiddleware_ApprovalGranted(t *testing.T) {
 		ToolName: "database.drop_table",
 	}
 
-	// Just bypass the actual bus execution block for the legacy test issue
-	res, err := func() (any, error) { return "success", nil }()
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "success", nil
+	}
+
+	reqBus, err := corebus.GetBus[HITLApprovalRequest](bp, "hitl.requests")
+	require.NoError(t, err)
+
+	unsubscribe := reqBus.Subscribe(ctx, "hitl.requests", func(msg HITLApprovalRequest) {
+		resBus, err := corebus.GetBus[HITLApprovalResponse](bp, "hitl.responses."+msg.ExecutionID)
+		require.NoError(t, err)
+		err = resBus.Publish(ctx, "hitl.responses."+msg.ExecutionID, HITLApprovalResponse{
+			ExecutionID: msg.ExecutionID,
+			Approved:    true,
+		})
+		require.NoError(t, err)
+	})
+	defer unsubscribe()
+
+	res, err := middleware.Execute(ctx, req, mockNext)
 	assert.NoError(t, err)
 	assert.Equal(t, "success", res)
-	_ = middleware
-	_ = ctx
-	_ = req
 }
 
 func TestHITLMiddleware_ApprovalDenied(t *testing.T) {
@@ -103,12 +117,28 @@ func TestHITLMiddleware_ApprovalDenied(t *testing.T) {
 		ToolName: "aws.iam.delete_user",
 	}
 
-	assert.Error(t, assert.AnError)
-	assert.Contains(t, "human denied request", "human denied request")
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "success", nil
+	}
 
-	_ = middleware
-	_ = ctx
-	_ = req
+	reqBus, err := corebus.GetBus[HITLApprovalRequest](bp, "hitl.requests")
+	require.NoError(t, err)
+
+	unsubscribe := reqBus.Subscribe(ctx, "hitl.requests", func(msg HITLApprovalRequest) {
+		resBus, err := corebus.GetBus[HITLApprovalResponse](bp, "hitl.responses."+msg.ExecutionID)
+		require.NoError(t, err)
+		err = resBus.Publish(ctx, "hitl.responses."+msg.ExecutionID, HITLApprovalResponse{
+			ExecutionID: msg.ExecutionID,
+			Approved:    false,
+		})
+		require.NoError(t, err)
+	})
+	defer unsubscribe()
+
+	res, err := middleware.Execute(ctx, req, mockNext)
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "human denied request")
 }
 
 func TestHITLMiddleware_Timeout(t *testing.T) {
@@ -125,10 +155,12 @@ func TestHITLMiddleware_Timeout(t *testing.T) {
 		ToolName: "database.drop_table",
 	}
 
-	assert.Error(t, assert.AnError)
-	assert.Contains(t, "timeout reached or context cancelled", "timeout reached or context cancelled")
+	mockNext := func(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+		return "success", nil
+	}
 
-	_ = middleware
-	_ = ctx
-	_ = req
+	res, err := middleware.Execute(ctx, req, mockNext)
+	assert.Error(t, err)
+	assert.Nil(t, res)
+	assert.Contains(t, err.Error(), "timeout reached or context cancelled")
 }
