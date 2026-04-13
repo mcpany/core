@@ -82,3 +82,11 @@ The Mission-Locked Execution (MLE) Gateway is needed to ensure that every tool c
 * MLE Gateway now enforces mandatory hardware-signed leases for "High-Impact" tool categories (e.g., `run_shell_command`).
 * Leases are cryptographically tied to the TPM-attested mission fragment and expire automatically upon mission termination signals.
 **Security Impact:** Mitigates persistent privilege escalation by ensuring that high-privilege tool access is physically revoked by the hardware root at the end of a specific mission, even if the agent process remains active.
+
+### Update: 2026-07-25 - Attention-Weighted Lease Escalation (AWLE)
+**Context:** Today's market sync revealed the emergence of "Attention-Weighted Lease Escalation" in Claude Code v3.3.0, moving beyond static hardware leases.
+**Architecture Adjustment:**
+* Evolving the Section 4 HLML integration into the **Attention-Weighted Lease Controller (AWLC)**.
+* Privilege escalation is now dynamically granted based on real-time "Attention Density" and "Mission Urgency" signals from the LLM reasoning loop.
+* Introducing a "Cognitive Windowing" logic that consolidates micro-leases to mitigate MTTC bloat from "Lease Fragmentation."
+**Security Impact:** Enhances the principle of least privilege by ensuring that escalation is only active when the agent exhibits high-confidence, mission-aligned attention, neutralizing persistent "Residue Agency" in long-running tasks.

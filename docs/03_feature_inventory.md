@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Neural Shard Resumption (NSR) Provider**: (P0) Authoritative coordination service for distributed neural states utilizing predictive attestation to facilitate sub-millisecond shard validation.
+- **Attention-Weighted Lease Controller (AWLC)**: (P0) Dynamic privilege management service that governs escalation based on real-time attention-density and mission-root alignment scores.
+- **Multi-Modal Reason Proof (MMRP) Validator**: (P1) Security service providing hardware-attested, zero-knowledge validation for visual and auditory reasoning fragments.
+- **Echo-Resistant Shard Isolation Middleware**: (P0) Stability middleware performing real-time entropy analysis to block semantic leakage during high-frequency shard handshakes.
+
+### Priority Shifts
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Evolving into the **AWLC** to support attention-weighted dynamic escalation.
+- **Neural Shard Handshake (NSH) Support**: (P0) Mandatory prerequisite for the **NSR Provider** to maintain parity with OpenClaw v3.7.
