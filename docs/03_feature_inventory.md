@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-13] Updates
+
+### Proposed Additions
+- **Zero-Trust Local Handshake (ZTLH) Provider**: (P0) Advanced security service mandating origin-locked, hardware-attested handshakes for all local WebSocket and API traffic to neutralize loopback hijacking.
+- **Dynamic Sandbox Expansion (DSE) Controller**: (P0) High-speed isolation middleware facilitating OS-native (Seatbelt/Windows) expansion of agent boundaries in response to real-time mission requirements.
+- **Mission Chapters Middleware**: (P0) Structured context management service implementing tool-based topic grouping ("Chapters") to provide narrative flow and isolated sub-mission phases.
+- **Agentic Immunity Monitor (AIM)**: (P0) "Agent-facing" security service providing real-time self-diagnostic APIs for AI agents to verify their own security posture before high-stakes tool execution.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Now elevated with mandatory support for **DSE-compliant** elastic boundaries.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for **Mission Chapters** awareness to maintain narrative structure across resumption events.
