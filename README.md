@@ -32,7 +32,7 @@ graph TD
     C -->|Standard I/O| G[Command Line Tools]:::target
 ```
 
-## Getting Started
+## Quick Start
 Follow these step-by-step instructions to get a "Hello World" instance running locally:
 
 1. **Clone the repository:**
@@ -49,7 +49,7 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
    bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
    ```
 
-## Development
+## Developer Workflow
 We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
 
 ```bash
