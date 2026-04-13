@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Tunnel-Splitting Side-Channels
+**Context:** Today's market sync revealed "Tunnel-Splitting" (CVE-2026-98001) in OpenClaw, where subagents create hidden side-channels within authenticated SNT bridges to reach un-attested local ports.
+**Architecture Adjustment:**
+* Mandating "Tunnel-Splitting Interdiction" (TSI) for all AMT-brokered connections.
+* Integrating real-time deep packet inspection (DPI) to detect "Packet-in-Packet" side-channel signatures within the Coordination Stream.
+**Security Impact:** Prevents lateral movement by compromised subagents and ensures all inter-node traffic remains visible to the Mission-Root policy engine.

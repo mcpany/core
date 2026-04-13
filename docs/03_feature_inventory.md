@@ -1929,6 +1929,29 @@
 ### Proposed Additions
 - **Attested Mesh Tunneling (AMT) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, encrypted P2P connections between distributed agent nodes to neutralize "Mesh Shadowing."
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Tunnel-Splitting Interdiction (TSI) Hub**: (P0) Authoritative tunnel management service for multi-node agent meshes, detecting and blocking unauthorized local port side-channels.
+- **Lightweight Fast-Path Resumption (LFPR) Provider**: (P0) Performance-optimizing identity service using session-bound "Mesh Tickets" to reduce TPM signature overhead in horizontal teams.
+- **Differential Intent Bridge**: (P0) Efficiency middleware for mesh synchronization allowing teammates to synchronize mission-root updates without full context transfer.
+- **Atomic Shard Lock-Manager (ASLM) v2**: (P0) Enhanced kernel-level locking service for memory-mapped teammate shards, supporting real-time race condition detection.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **TSI** integration to counter tunnel-splitting exploits.
+- **Atomic Shard Lock-Manager (ASLM)**: (Promoted to P0) Critical for satisfying the new Claude Code shared memory coordination requirements.
+
+## Evolution: [2026-04-13] Updates
+
+### Proposed Additions
+- **Teammate Mailbox Integrity (TMI) Service**: (P0) Authoritative gatekeeper for horizontal mesh mailboxes, validating inter-teammate task claims against mission-root signatures.
+- **Ghost Shell Discovery Sandbox**: (P0) Detached, air-gapped environment for all pre-flight tool discovery execution to prevent startup-time RCE.
+- **Stylometric Teammate Verification**: (P1) Identity extension for the Stylometric Behavioral Firewall (SBF) to verify teammate lineage via real-time reasoning entropy analysis.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with mandatory "Ghost Shell" isolation requirements.
+- **Stylometric Behavioral Firewall (SBF)**: (Re-affirmed P0) Designated as the primary defense against horizontal teammate impersonation.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
 ### Priority Shifts

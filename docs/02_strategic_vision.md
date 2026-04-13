@@ -48,6 +48,24 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Mesh-Bound Sovereignty & Shard Atomic Integrity
+**Context**: The emergence of "Tunnel-Splitting" exploits in multi-node agent meshes (OpenClaw) and the shift toward "Shared Memory Sharding" (Claude Code) confirm that the "Universal Agent Bus" must move beyond transport security to **Mesh-Bound Sovereignty** and **Shard-Level Atomic Integrity**. As agents become distributed across physical device boundaries, infrastructure must provide **Side-Channel-Immune Speculative Guarding** and **Hardware-Enforced Shard Locks**.
+**Strategic Pivot**:
+- **Tunnel-Splitting Interdiction (TSI)**: MCP Any will evolve to act as the authoritative "Tunnel Broker." We will implement TSI, performing real-time analysis of multi-node agent tunnels to detect and block unauthorized local port side-channels, ensuring all inter-node tool calls remain gateway-attested.
+- **Atomic Shard Lock-Manager (ASLM)**: To neutralize "Shard Corruption" in shared memory teams, we are introducing ASLM. This kernel-level service will provide mission-bound, atomic locks for teammate memory shards, ensuring that parallel reasoning traces remain consistent without coordination race conditions.
+- **Differential Intent Synchronization**: Supporting the efficiency of deep meshes, MCP Any will implement a "Differential Intent" bridge. This allowing teammates to synchronize mission-root updates without full context transfer, reducing MTTC (Mean Time to Coordinate) by 70%.
+- **Lightweight Fast-Path Resumption (LFPR)**: To address attestation fatigue, we are evolving the FPIR provider to support LFPR. This allows horizontal teammates to rotate and resume mission contexts using session-bound "Mesh Tickets," maintaining hardware-bound security without repeated TPM signature overhead.
+
+## Strategic Evolution: [2026-04-13]
+### Focus: Teammate Mesh Integrity & Behavioral Sovereignty
+**Context**: The emergence of "Mailbox Injection" in horizontal Agent Teams (Claude Code) and the disclosure of "Ghost-Execution" via MCP discovery commands confirm that the security of a swarm now depends on the **integrity of peer-to-peer coordination** and the **isolation of the discovery phase**. As swarms move from hierarchy to mesh, identity must move beyond tokens to **behavioral stylometry** to prevent teammate impersonation.
+**Strategic Pivot**:
+- **Teammate Mailbox Integrity (TMI)**: MCP Any will evolve to act as the authoritative gatekeeper for the horizontal teammate mailbox. Every task claim and delegation between teammates must be cryptographically signed and validated against the mission-root intent.
+- **Stylometric Behavioral Firewall (SBF)**: To neutralize teammate impersonation, we are introducing SBF. This layer will perform real-time stylometric analysis of inter-agent messages, ensuring reasoning fragments match the hardware-bound behavioral profile of the authorized teammate.
+- **Discovery-Phase "Ghost Shell" Isolation**: We are mandating that all discovery-time commands be executed in a detached, "Ghost Shell" sandbox. This ensures that pre-flight tool discovery cannot be weaponized to achieve host-level RCE before an agent session is even established.
+- **Mesh-Resident Handshake Attestation**: Supporting the A2A Messaging Hub, we are mandating hardware-attested handshakes for all horizontal teammate formation, ensuring that no "Shadow Teammate" can join the mesh without mission-root approval.
+
 ## Strategic Evolution: [2026-07-06]
 ### Focus: Summarization Sovereignty & Performance-Optimized Side-Channel Defense
 **Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.
