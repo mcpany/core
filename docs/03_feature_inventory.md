@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cross-Cloud AMT Broker**: (P0) Authoritative tunnel manager expanding AMT to support hardware-attested, encrypted P2P connections across disparate cloud providers.
+- **Recursive Lease Revocation (RLR) Service**: (P0) Advanced security service for the HLML Provider enabling parents to instantly terminate all nested subagent leases across the mesh.
+- **Fast-Path Mesh Resumption Provider**: (P0) Performance optimization service utilizing session-bound "Mesh Tickets" for sub-millisecond cloud tunnel resumption.
+- **Provenance Watermark Validator**: (P0) Identity middleware for verifying RPW-compliant reasoning path watermarks in multi-hop delegations.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Evolving to support **Cross-Cloud** secure orchestration.
+- **Hardware-Locked Mission Lease (HLML)**: (Re-affirmed P0) Elevated with mandatory support for **Recursive Revocation**.

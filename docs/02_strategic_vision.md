@@ -1550,3 +1550,12 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Cross-Cloud Mesh Sovereignty & Recursive Lease Governance
+**Context**: The expansion of OpenClaw's SNT to cross-cloud environments and the introduction of "Recursive Lease Revocation" in Claude Code confirm that the Universal Agent Bus must now provide multi-cloud secure tunneling and hierarchical privilege reclamation. Enterprise swarms are hit by attestation latency, demanding high-speed resumption of distributed mission roots.
+**Strategic Pivot**:
+- **Cross-Cloud Attested Mesh Tunneling (AMT)**: MCP Any will evolve its AMT Broker to support hardware-attested P2P tunnels across disparate cloud providers, ensuring mission-root sovereignty transcends local network boundaries.
+- **Recursive Lease Revocation (RLR)**: We are upgrading the HLML Provider to support recursive revocation. Parent agents will have the hardware-attested authority to instantly terminate all nested subagent leases across the distributed mesh.
+- **Provenance Watermark Validator**: Leveraging Gemini CLI's VRP, MCP Any will natively verify Reasoning-Path Watermarks (RPW), ensuring that every instruction in a multi-hop delegation is cryptographically anchored to its mission-root origin.
+- **Fast-Path Mesh Resumption**: To neutralize cross-node latency, we are evolving the mesh handshake to use session-bound "Mesh Tickets," allowing for sub-millisecond resumption of secure cloud tunnels.
