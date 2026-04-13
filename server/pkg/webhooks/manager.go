@@ -83,6 +83,12 @@ func (m *Manager) ListWebhooks() []*WebhookConfig {
 // Side Effects:
 //   - Updates the internal webhook map.
 //   - Generates an ID if one is not provided.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (m *Manager) AddWebhook(w *WebhookConfig) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -119,6 +125,12 @@ func (m *Manager) GetWebhook(id string) (*WebhookConfig, bool) {
 //
 // Side Effects:
 //   - Removes the webhook from the internal map.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (m *Manager) DeleteWebhook(id string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

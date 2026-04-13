@@ -115,12 +115,19 @@ func StartServer(addr string) error {
 
 // SetGauge sets the value of a gauge.
 //
-// Summary: Sets a gauge metric.
 //
-// Parameters:
 //   - name: string. The name of the gauge.
 //   - val: float32. The value to set.
 //   - labels: ...string. A list of labels to apply to the gauge.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func SetGauge(name string, val float32, labels ...string) {
 	var metricLabels []metrics.Label
 	if len(labels) > 0 {
@@ -133,69 +140,111 @@ func SetGauge(name string, val float32, labels ...string) {
 
 // IncrCounter increments a counter.
 //
-// Summary: Increments a counter metric.
 //
-// Parameters:
 //   - name: []string. The name of the counter (as a path).
 //   - val: float32. The amount to increment.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IncrCounter(name []string, val float32) {
 	metrics.IncrCounter(name, val)
 }
 
 // IncrCounterWithLabels increments a counter with labels.
 //
-// Summary: Increments a labeled counter metric.
 //
-// Parameters:
 //   - name: []string. The name of the counter (as a path).
 //   - val: float32. The amount to increment.
 //   - labels: []metrics.Label. The labels to apply.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func IncrCounterWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.IncrCounterWithLabels(name, val, labels)
 }
 
 // MeasureSince measures the time since a given start time and records it.
 //
-// Summary: Records latency metric.
 //
-// Parameters:
 //   - name: []string. The name of the metric (as a path).
 //   - start: time.Time. The start time.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func MeasureSince(name []string, start time.Time) {
 	metrics.MeasureSince(name, start)
 }
 
 // MeasureSinceWithLabels measures the time since a given start time and records it with labels.
 //
-// Summary: Records labeled latency metric.
 //
-// Parameters:
 //   - name: []string. The name of the metric (as a path).
 //   - start: time.Time. The start time.
 //   - labels: []metrics.Label. The labels to apply.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func MeasureSinceWithLabels(name []string, start time.Time, labels []metrics.Label) {
 	metrics.MeasureSinceWithLabels(name, start, labels)
 }
 
 // AddSample adds a sample to a histogram/summary.
 //
-// Summary: Adds a sample to a metric.
 //
-// Parameters:
 //   - name: []string. The name of the metric (as a path).
 //   - val: float32. The value to sample.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func AddSample(name []string, val float32) {
 	metrics.AddSample(name, val)
 }
 
 // AddSampleWithLabels adds a sample to a histogram/summary with labels.
 //
-// Summary: Adds a labeled sample to a metric.
 //
-// Parameters:
 //   - name: []string. The name of the metric (as a path).
 //   - val: float32. The value to sample.
 //   - labels: []metrics.Label. The labels to apply.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func AddSampleWithLabels(name []string, val float32, labels []metrics.Label) {
 	metrics.AddSampleWithLabels(name, val, labels)
 }

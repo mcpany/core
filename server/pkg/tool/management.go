@@ -305,6 +305,12 @@ func NewManager(bus *bus.Provider) *Manager {
 //
 // Side Effects:
 //   - Updates internal profile definitions and caches.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (tm *Manager) SetProfiles(enabled []string, defs []*configv1.ProfileDefinition) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -581,6 +587,12 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 //
 // Side Effects:
 //   - Appends middleware to the internal list.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 	tm.middlewares = append(tm.middlewares, middleware)
 }
@@ -596,6 +608,12 @@ func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
 //
 // Side Effects:
 //   - Updates the internal mcpServer reference.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (tm *Manager) SetMCPServer(mcpServer MCPServerProvider) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()
@@ -790,6 +808,12 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 //
 // Side Effects:
 //   - Stores service info in the internal map.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (tm *Manager) AddServiceInfo(serviceID string, info *ServiceInfo) {
 	if info.Config != nil {
 		var preHooks []PreCallHook
@@ -1202,6 +1226,12 @@ func (tm *Manager) ListMCPTools() []*mcp.Tool {
 // Side Effects:
 //   - Removes entries from the tools map and secondary indices.
 //   - Invalidates internal caches.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (tm *Manager) ClearToolsForService(serviceID string) {
 	tm.mu.Lock()
 	defer tm.mu.Unlock()

@@ -167,6 +167,12 @@ func (w *bodyLogWriter) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the status code on the writer.
 //   - Writes the header to the underlying http.ResponseWriter.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (w *bodyLogWriter) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return

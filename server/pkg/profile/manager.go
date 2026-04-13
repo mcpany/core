@@ -43,6 +43,15 @@ func NewManager(profiles []*configv1.ProfileDefinition) *Manager {
 //
 // Parameters:
 //   - profiles: []*configv1.ProfileDefinition. The new list of profiles.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (m *Manager) Update(profiles []*configv1.ProfileDefinition) {
 	newProfiles := make(map[string]*configv1.ProfileDefinition)
 	for _, p := range profiles {

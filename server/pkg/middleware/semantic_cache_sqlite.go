@@ -266,6 +266,12 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, key string, query []floa
 // Side Effects:
 //   - Removes items from memory.
 //   - Deletes rows from SQLite database.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (s *SQLiteVectorStore) Prune(ctx context.Context, key string) {
 	s.memoryStore.Prune(ctx, key)
 

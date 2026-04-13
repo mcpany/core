@@ -225,6 +225,12 @@ func (r *Redactor) RedactString(s string) string {
 //
 // Side Effects:
 //   - Modifies the map in place.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (r *Redactor) RedactStruct(v map[string]interface{}) {
 	if r == nil {
 		return

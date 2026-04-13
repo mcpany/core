@@ -58,6 +58,15 @@ func New(busProvider *bus.Provider, cfg *Config) *Worker {
 //
 // Parameters:
 //   - ctx: context.Context. The context for the worker.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (w *Worker) Start(ctx context.Context) {
 	w.wg.Add(1)
 	go w.startToolExecutionWorker(ctx)

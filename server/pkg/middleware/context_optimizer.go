@@ -226,6 +226,12 @@ func (w *responseBuffer) Write(b []byte) (int, error) {
 // Side Effects:
 //   - Sets the internal status code.
 //   - Checks content-type headers to determine if buffering is needed.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - None.
 func (w *responseBuffer) WriteHeader(statusCode int) {
 	if w.wroteHeader {
 		return
