@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Kernel-Level Intent Enforcement (KLIE)**: eBPF-based syscall interdiction to bind agent actions to hardware-attested manifests. (Added: 2026-07-25)
+*   **[P0] Epistemic Shard Pinning (ESP) Hub**: Hardware-attested metadata service for protecting high-certainty reasoning fragments. (Added: 2026-07-25)
+*   **[P0] Cross-Framework Reward Attestation (CFRA)**: Framework-neutral RL coordination broker for cross-swarm reward tokens. (Added: 2026-07-25)

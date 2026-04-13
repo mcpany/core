@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Kernel-Level Intent Enforcement (KLIE) Gateway**: (P0) Authoritative eBPF bridge utilizing syscall interdiction to bind agent actions to the hardware-attested mission manifest.
+- **Epistemic Shard Pinning (ESP) Hub**: (P0) Security service hosting hardware-attested metadata for high-certainty context fragments to prevent summarization erasure.
+- **Cross-Framework Reward Attestation (CFRA) Broker**: (P0) Coordination middleware facilitating framework-neutral RL reward tokens between specialists and primary agents.
+- **Stylometric Density Firewall**: (P0) Advanced extension for the SIV provider analyzing reasoning density and instruction-path entropy to neutralize Spectral Mimicry v2.
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Reasoning Density** analysis.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated to support **KLIE-compliant** intent persistence across process boundaries.
