@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Aggregate Mesh Attestation (AMA)**: (P0) Middleware for compressing multiple hardware-attested tokens into a single mesh-wide signature to neutralize "Handshake Fatigue."
+- **Entropy-Resistant Stylometry (ERS)**: (P0) Advanced SIV extension utilizing adversarial training patterns to neutralize linguistic noise injection attacks.
+- **Consensus-Based Environment Pinning (CBEP)**: (P0) Authoritative environment quorum service requiring teammate consensus on hardware-attested manifests.
+- **Atomic Scratchpad Arbiter (ASA)**: (P0) Kernel-level lock manager for shared team scratchpads providing mission-bound atomic write-access.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Elevated with mandatory **AMA** integration to reduce metadata overhead.
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Evolving into **ERS** to maintain confidence in long-running missions.

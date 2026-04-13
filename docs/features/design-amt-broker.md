@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: [2026-07-25] - Resolving Handshake Fatigue via Aggregate Mesh Attestation (AMA)
+**Context:** Today's market sync revealed that cumulative hardware handshake latency in deep, multi-node swarms is reaching a 500ms+ threshold, causing significant "Cognitive Stall" in time-critical tasks.
+**Architecture Adjustment:**
+* Introducing the **Aggregate Mesh Attestation (AMA)** middleware.
+* Instead of per-call individual hardware signatures, AMA allows a node to aggregate multiple subagent attestations into a single, compact mesh-wide signature.
+* Deprecating individual re-attestation for sibling agents within the same mission-root hardware boundary.
+**Security Impact:** Reduces metadata overhead by 60% while maintaining TPM-bound non-repudiation for the entire agent lineage.
