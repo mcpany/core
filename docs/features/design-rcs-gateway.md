@@ -46,3 +46,10 @@ The RCS Gateway provides a standardized infrastructure layer to ingest confidenc
 
 ## 7. Evolutionary Changelog
 * **2026-07-21:** Initial Document Creation.
+
+### Update: 2026-07-25 - Evolution to Epistemic Confidence Broker (ECB)
+**Context:** Today's research into "Epistemic Watermarking" and "Reflection Quorums" confirms that confidence scores must move from point-in-time checks to active coordination triggers.
+**Architecture Adjustment:**
+* Renaming the gateway to **Epistemic Confidence Broker (ECB)** in Section 4 to reflect its active orchestration role.
+* Adding a "Mirror-Intent Quorum" trigger: If the ECB detects a confidence score below mission thresholds, it now automatically initiates a quorum via the **TMIA** instead of a pure manual pause.
+**Security Impact:** Enables autonomous "Swarm Self-Correction" for low-confidence reasoning, reducing HITL bottlenecks while maintaining safety.
