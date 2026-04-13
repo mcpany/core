@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Lease Inheritance (RLI) Validator**: (P0) Authoritative security middleware enforcing mandatory propagation of hardware-bound mission leases to sub-processes to neutralize "Lineage Escape."
+- **Atomic Resource Handshake (ARH) Gateway**: (P0) High-performance coordination broker for hardware-bound trust tickets and pre-attested session identities across remote agent nodes.
+- **Attention-Locked Shard Persistence (ALSP)**: (P0) Advanced cognitive security middleware utilizing hardware-bound headers to protect mission-critical context shards from garbage collection.
+- **Cross-Framework Manifest Translator**: (P1) Interoperability service harmonizing hardware lease formats between disparate agent frameworks (e.g., Claude Code MBHL vs. OpenClaw ARH).
+
+### Priority Shifts
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Now elevated with mandatory **RLI** integration for sub-process spawning.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for **ARH-compliant** trust ticket brokering to reduce latency.
