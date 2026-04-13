@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Shard-Level Ephemeral Secret (SLES) Broker**: (P0) Authoritative secret management service providing hardware-attested, task-bound credentials cryptographically tied to context shards.
+- **Recursive Mission Reflection (RMR) Auditor**: (P0) Advanced alignment service mandating hardware-attested subagent self-reflection audits against the mission root.
+- **Attested Context-Shift Validator**: (P0) Security middleware implementing the CWSA standard to ensure the permanence of GC-Immune fragments during window shifts.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with the requirement for **Fast-Path Reflection Attestation** to reduce RMR overhead.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with mandatory **CWSA-compliant** shift validation.

@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Tunneling Latency with Fast-Path Mesh Tickets
+**Context:** Today's market sync revealed that mandatory P2P tunneling in OpenClaw is impacting sub-millisecond tool execution, leading to cognitive stalls in horizontal Agent Teams.
+**Architecture Adjustment:**
+* Introducing session-bound "Mesh Tickets" for fast-path resumption in Section 4.
+* Tickets are TPM-wrapped and allow nodes to bypass full RSA/mTLS handshakes for established node pairs within a verified mission scope.
+* Implementing monotonic ticket counters to prevent replay attacks during resumption.
+**Security Impact:** Reduces handshake overhead from 150ms+ to <5ms while maintaining absolute cryptographic isolation between missions.
