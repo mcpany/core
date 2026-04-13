@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Consensus Mesh Arbiter (CMA)**: (P0) Authoritative coordination service utilizing Vector Clocks and weighted voting to resolve state collisions in horizontal Agent Teams.
+- **Dynamic Context GC (DCGC) Provider**: (P0) Attention-aware garbage collection mechanism for preserving reasoning anchors during aggressive context pruning.
+- **Cognitive Boundary Enforcer (CBE)**: (P0) Kernel-level isolation service utilizing gVisor and DME to segment subagent reasoning paths.
+
+### Priority Shifts
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **DCGC** integration for lifecycle-aware context preservation.
+- **Distributed Memory Enclave (DME) Broker**: (Re-affirmed P0) Designated as the primary enforcement point for **CBE-compliant** reasoning isolation.
