@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-13] Updates
+
+### Proposed Additions
+- **Complexity-Aware Command Parser**: (P0) Advanced parser for the ALSV middleware mandating full-depth inspection of all shell subcommands, regardless of count, to neutralize complexity-threshold bypasses.
+- **Reasoning-Blind Tool Classifier (RBTC)**: (P0) Security middleware that automatically strips assistant reasoning traces from tool-call requests before classification, ensuring "Action-Only" governance.
+- **Async conversational Feedback Provider**: (P1) Telemetry extension supporting OpenClaw-RL v1.0, enabling background optimization of security policies based on live multi-turn interactions.
+
+### Priority Shifts
+- **Argument-Level Semantic Validator (ALSV)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Complexity-Aware** parsing to counter CVE-2026-complexity.
+- **Federated Swarm Identity (FSI) Provider**: (Re-affirmed P0) Evolving to support **Session-Rotated Identity Fragments** for swarm resilience.

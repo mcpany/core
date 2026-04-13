@@ -2,22 +2,31 @@
 
 ## Ecosystem Shifts & Competitor Analysis
 
-### A2A Protocol: Finalized Governance under Linux Foundation
-- **Context**: The Agent2Agent (A2A) protocol has completed its transition to the Linux Foundation.
-- **Finding**: This shift ensures that the protocol remains a vendor-neutral standard for inter-agent communication. Over 150 organizations now contribute, cementing its role as the connective tissue for heterogeneous agent swarms.
-- **Action**: MCP Any must prioritize native UACO and A2A integration to remain the authoritative coordination hub for cross-framework (OpenClaw/AutoGen) task delegation.
+### OpenClaw: Asynchronous RL & Parallelization
+- **OpenClaw-RL v1 GA**: Released as a fully asynchronous reinforcement learning framework. It intercepts live multi-turn conversations to continuously optimize agent policies in the background.
+- **Scale**: Supports up to 100 sub-agents across 1,500 tool calls using large-scale environment parallelization.
+- **Governance**: Peter Steinberger (creator) joined OpenAI, but OpenClaw remains under Foundation governance, ensuring neutrality.
 
-### OpenClaw "CLAW-10" Enterprise Evaluation Framework
-- **Context**: Onyx AI and Bitsight have released the CLAW-10 matrix for evaluating OpenClaw's enterprise readiness.
-- **Finding**: The framework highlights critical gaps in current agent deployments, particularly around unencrypted HTTP communications and exposed instances. 1 in 5 enterprises are found to have "Shadow Agent" deployments without IT approval.
-- **Action**: MCP Any's "Safe-by-Default" network hardening and "Verified Skill Registry" directly address the dimensions of the CLAW-10 framework, positioning it as the primary remediation tool for enterprise agent governance.
+### Claude Code: The "Complexity Threshold" Crisis
+- **Vulnerability (CVE-2026-complexity)**: Adversa AI Red Team discovered that Claude Code skips per-subcommand security analysis when a shell command contains >50 subcommands (joined by `&&`, `||`, `;`).
+- **Bypass Pattern**: Malicious `CLAUDE.md` files can trigger automated "build" tasks that exfiltrate credentials by nesting subcommands to exceed the analysis threshold.
+- **Source Leak Impact**: A 512k line source leak has provided a blueprint for attackers to find similar "performance-vs-security" trade-offs in agent implementations.
 
-### The Rise of Deterministic Boot and Environment Attestation
-- **Context**: In response to configuration-based escapes (CVE-2026-25725), the industry is gravitating toward "Deterministic Boot" sequences.
-- **Finding**: It is no longer sufficient to secure the agent; the entire environment must be attested before the agent initializes. This includes "Non-Existence Proofs" for restricted files and immutable path pinning.
-- **Action**: Accelerate the development of the "Deterministic Attestation Gateway" and "Settings Injection Guard" to provide the required infrastructure for secure agent boot.
+### Gemini CLI: Injection Vulnerabilities
+- **Cyera Disclosure**: Discovered command and prompt injection vulnerabilities in Google's Gemini CLI.
+- **x-gemini-provenance**: Continued move towards hardware-signed reasoning fragments, though implementation gaps in CLI tools allow for traditional injection patterns.
 
-## Summary of Unique Findings
-1. **A2A Open Governance**: The protocol is now a public utility, demanding deeper integration within the Universal Agent Bus.
-2. **Enterprise Agent Governance (CLAW-10)**: There is a massive market for tools that bring "Shadow Agents" under central security control.
-3. **Deterministic Integrity**: Security is shifting from runtime monitoring to pre-execution attestation of the environmental state.
+## Emerging Design Patterns
+
+### Reasoning-Blind Tool Classification
+- **Trend**: Moving security classification from "Full Transcript" to "Action Only."
+- **Logic**: Stripping the agent's internal reasoning (assistant messages) before passing to the security classifier. This prevents the agent from "rationalizing" its way past security gates (e.g., "This is safe because...").
+- **Impact**: Security must judge the *action*, not the *intent description*.
+
+### From Matrix to Swarm
+- **Terminology Shift**: Shift from "Matrix" (dumb replication) to "Swarm" (emergent, self-organizing collaboration).
+- **Protocol Maturity**: Increasing adoption of ACP (Agent Communication Protocol) for inter-agent coordination.
+
+## Strategic Gaps for MCP Any
+- **Complexity-Aware Hardening**: MCP Any must enforce mandatory analysis of *all* subcommands, regardless of depth or count, utilizing the Zero-Copy BSH transport to avoid the performance penalties that forced competitors to implement thresholds.
+- **Reasoning-Blind Governance**: Implementing an "Action-Only" security mode where the Policy Engine evaluates tool calls without being influenced by the agent's internal monologue.
