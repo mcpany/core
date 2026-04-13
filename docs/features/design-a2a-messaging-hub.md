@@ -97,3 +97,10 @@ With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, i
 * **A2A Authentication Proxy:** Introducing a mandatory authentication gate for the `/v1/a2a/propose` and `/v1/a2a/mailbox` endpoints in Section 4. The hub will now validate bearer tokens against a verified peer registry.
 * **Execution Identity Integration:** Extending the A2A Task Card in Section 4 to include a `sandbox_attestation` field, allowing agents running in gVisor to prove their environment integrity.
 **Security Impact:** Eliminates unauthenticated capability probes and provides a foundation for zero-trust inter-agent delegation in heterogeneous meshes.
+
+### Update: 2026-04-13 - Standardized Agent Channels & Reliable Dispatch
+**Context:** Today's ecosystem sync revealed Claude Code's move toward "Dispatch" for reliable workflows and "Channels" for structured communication, addressing the coordination stall and noise in deep swarms.
+**Architecture Adjustment:**
+*   **Structured Pub/Sub Channels**: Integrating the **Agent Channel Broker** into the Hub's delivery pipeline. Agents can now subscribe to filtered event streams (e.g., `mission.*`) instead of relying on linear task proposals.
+*   **Restartable Dispatch Traces**: Implementing the **Workflow Dispatch Monitor (WDM)** logic within the stateful mailbox. All A2A transactions are now part of a signed dispatch trace that allows mission-root resumption after subagent failure.
+**Security Impact**: Neutralizes "Coordination Noise" and provides a deterministic audit trail for asynchronous agent actions, preventing supply chain metadata poisoning.

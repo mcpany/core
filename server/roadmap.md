@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-13 Evolution)
+*   **[P0] Agent Channel Broker**: Asynchronous pub/sub bus for structured inter-agent event delivery. (Added: 2026-04-13)
+*   **[P0] Workflow Dispatch Monitor (WDM)**: Reliable state persistence for restartable multi-agent workflows. (Added: 2026-04-13)
+*   **[P0] Deterministic Policy Engine (DPE)**: Hardware-attested ruleset enforcement to prevent supply chain abuse. (Added: 2026-04-13)

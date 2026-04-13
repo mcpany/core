@@ -21,3 +21,22 @@
 1. **A2A Open Governance**: The protocol is now a public utility, demanding deeper integration within the Universal Agent Bus.
 2. **Enterprise Agent Governance (CLAW-10)**: There is a massive market for tools that bring "Shadow Agents" under central security control.
 3. **Deterministic Integrity**: Security is shifting from runtime monitoring to pre-execution attestation of the environmental state.
+
+---
+
+## Ecosystem Updates: 2026-04-13 Integration Cycle
+
+### 1. Claude Code: "Dispatch" & "Channels"
+- **Finding**: Claude Code Q1 2026 updates introduced "Dispatch" for managing reliable, observable, and restartable agent workflows. Additionally, "Channels" was introduced as a pub/sub mechanism for structured communication between agents.
+- **Context**: Moves agent coordination from simple linear sessions to an event-driven model where agents can subscribe to specific intent or state updates.
+- **Significance**: Confirms the "Universal Agent Bus" must evolve to support asynchronous message brokering and structured pub/sub channels to remain the core infrastructure layer.
+
+### 2. OpenClaw: Supply Chain Abuse & Deterministic Policies
+- **Finding**: Recent reports highlight significant adversarial risks in OpenClaw, specifically around supply chain abuse and exploitable vulnerabilities like CVE-2026-25253.
+- **Context**: The community is pivoting toward "Deterministic Policy Engines" that validate tool calls against strict rulesets, rather than relying solely on LLM internal alignment.
+- **Significance**: Validates MCP Any's strategic focus on Zero Trust and the need for **Pre-Execution Injection Shielding** and **Hardware-Attested Boot Manifests**.
+
+## Autonomous Agent Pain Points
+- **Reliability of Handoffs**: Agents often "lose the thread" in complex multi-step workflows. Claude's "Dispatch" addresses this by making workflows restartable, highlighting a gap in universal infrastructure for workflow state persistence.
+- **Coordination Noise**: Without structured channels, agents in a swarm often over-communicate or pollute the shared context window with coordination metadata.
+- **Supply Chain Trust**: Growing "Cloned Repository" attacks confirm that implicit trust in local project configurations is a major failure point.

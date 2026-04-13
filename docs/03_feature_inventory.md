@@ -8,6 +8,14 @@
 - **Environment-Aware Provenance (EAP) Provider**: (P0) Identity middleware cryptographically binding reasoning fragments to hardware-attested environment IDs (e.g., Container IDs) to neutralize Trace Replay attacks.
 - **Mission-Root Conflict Resolver (MRCR)**: (P0) Kernel-level arbiter for the Blackboard resolving conflicting state mutations from parallel teammates using priority-weighted mission-root rules.
 
+## Evolution: [2026-04-13] Updates
+
+### Proposed Additions
+- **Agent Channel Broker**: (P0) Authoritative pub/sub bus for agents allowing structured subscription to mission intents and state updates.
+- **Workflow Dispatch Monitor (WDM)**: (P0) High-reliability service for maintaining signed dispatch traces, enabling restartable agent workflows.
+- **Asynchronous Message Integrity Provider**: (P0) Security middleware mandating signed channel communication validated against mission-root intents.
+- **Deterministic Policy Engine (DPE)**: (P0) Advanced policy enforcer utilizing hardware-attested rulesets to override LLM reasoning for high-risk tool calls.
+
 ### Priority Shifts
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **EAP-compliant** environment binding.
 - **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning.
