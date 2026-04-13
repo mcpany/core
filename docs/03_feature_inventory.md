@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cascading Failure Circuit Breaker (CFCB)**: (P0) Authoritative "Safety Fuse" for the mesh, monitoring inter-agent tool chains to isolate failing specialists and prevent system-wide collapse (ASI08 defense).
+- **Reflection Alignment Monitor (RAM)**: (P0) Stability middleware performing real-time semantic analysis of subagent "Success Signals" against the mission manifest to block "Reflection Drift."
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Promoted from P1 to P0) Critical for neutralizing "Tunneling Overhead" and coordination stall in trusted meshes.
+- **Cascading Failure Circuit Breaker (CFCB)**: (New P0) Designated as a mandatory requirement for high-density Agent Teams to counter ASI08 risks.
