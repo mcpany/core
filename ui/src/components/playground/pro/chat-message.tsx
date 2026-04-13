@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import vs2015 from 'react-syntax-highlighter/dist/esm/styles/hljs/vs2015';
 import { useState, useEffect, lazy, Suspense } from "react";
 import { SmartResultRenderer } from "./smart-result-renderer";
+import { JsonView } from "@/components/ui/json-view";
 import { estimateTokens, formatTokenCount } from "@/lib/tokens";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useTheme } from "next-themes";
@@ -227,24 +228,8 @@ export function ChatMessage({ message, onReplay, onRetry }: ChatMessageProps) {
                          )}
                     </CardHeader>
                     <CardContent className="p-0">
-                         <div className="relative group/code">
-                            <SyntaxHighlighter
-                                language="json"
-                                style={vs2015}
-                                customStyle={{ margin: 0, padding: '1rem', fontSize: '12px', background: 'rgba(0,0,0,0.4)' }}
-                                wrapLines={true}
-                                wrapLongLines={true}
-                            >
-                                {JSON.stringify(message.toolArgs, null, 2)}
-                            </SyntaxHighlighter>
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                className="absolute right-2 top-2 h-6 w-6 opacity-0 group-hover/code:opacity-100 transition-opacity bg-muted/20 hover:bg-muted/50 text-white"
-                                onClick={() => copyToClipboard(JSON.stringify(message.toolArgs, null, 2))}
-                            >
-                                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                            </Button>
+                         <div className="relative group/code bg-[rgba(0,0,0,0.4)]">
+                            <JsonView data={message.toolArgs} smartTable={true} maxHeight={400} defaultExpandedLevel={2} />
                         </div>
                     </CardContent>
                 </Card>
