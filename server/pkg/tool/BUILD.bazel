@@ -64,6 +64,7 @@ go_library(
 go_test(
     name = "tool_test",
     srcs = [
+        "callable_test.go",
         "argument_injection_bypass_test.go",
         "argument_injection_plus_test.go",
         "awk_bash_injection_security_test.go",
