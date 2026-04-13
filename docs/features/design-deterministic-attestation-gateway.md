@@ -61,3 +61,10 @@ The persistent threat from project-local configuration vulnerabilities (CVE-2025
 * **Hardware-Locked Boot:** Section 4 now includes a requirement for TPM-bound signatures on all project-local hooks and security-critical settings.
 * **Binding Logic:** The gateway will now refuse to attest to a manifest if sensitive hooks are not cryptographically bound to the local machine's TPM, neutralizing the risk of "Payload Smuggling" in malicious repo clones.
 **Security Impact:** Moves the trust boundary from the software manifest to the hardware, ensuring that security policies cannot be bypassed even if the manifest file itself is compromised or replaced.
+
+### Update: 2026-11-02 - Extension Hook Governance
+**Context:** Gemini CLI v26.0 introduced packaged hooks, creating a new "Invisible Execution" vector where agent extensions can bypass standard sandbox mounts.
+**Architecture Adjustment:**
+* Extending the **Deterministic Boot Manifest** in Section 4 to include mandatory attestation and SHA-256 hash-validation for all extension-resident hooks.
+* Introducing an **Extension Hook Security Validator** that intercepts hook loading and compares them against the user-attested baseline before granting execution permission.
+**Security Impact:** Prevents malicious or compromised extensions from injecting unauthorized instructions or exfiltration logic during the reasoning loop pre-flight phase.

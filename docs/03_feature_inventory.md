@@ -187,6 +187,17 @@
 - **Recursive Context Protocol**: Standardized headers for subagent inheritance.
 - **Shared KV Store**: Embedded SQLite "Blackboard" tool for agents.
 
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Asynchronous RL Telemetry Sink**: (P0) High-fidelity, non-blocking telemetry middleware to export reasoning traces and feedback tokens for background policy optimization.
+- **Extension Hook Security Validator**: (P0) Attestation service for packaged extension hooks (Gemini CLI v26.0 compatibility), performing hash-validation before pre-flight execution.
+- **Parallel Teammate Synchronization Layer**: (P0) Advanced coordination mechanism utilizing Conflict-Free Replicated Data Types (CRDTs) to eliminate mailbox lock bottlenecks in horizontal swarms.
+
+### Priority Shifts
+- **Parallel Team Coordination Hub**: (Re-affirmed P0) Evolving toward lock-free CRDT synchronization to resolve 5s+ coordination stalls.
+- **Deterministic Attestation Gateway**: (Re-affirmed P0) Elevated with mandatory validation for packaged extension hooks.
+
 ## Evolution: [2026-03-20] Updates
 
 ### Proposed Additions
