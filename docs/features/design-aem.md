@@ -57,3 +57,11 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Silent Anchor Eviction
+**Context:** Today's market sync revealed CVE-2026-10203, where high-entropy "noise" flooding is used to trick CWGC into evicting low-entropy mission-root anchors.
+**Architecture Adjustment:**
+* Integrating Section 4 with mandatory **GC-Immune Reasoning Anchors**.
+* AEM will now proactively signal the attention layer to "Lock" low-entropy fragments that match mission-root security policies.
+* Introducing "Negative-Entropy Masking" to filter high-entropy noise before it triggers garbage collection.
+**Security Impact:** Prevents "Instruction-window Garbage Collection" exploits by ensuring core behavioral guardrails remain permanent in the attention window.

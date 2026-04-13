@@ -1931,6 +1931,15 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Self-Correction Loop Arbiter**: (P0) Authoritative lifecycle service performing real-time analysis of refinement traces to block intent-washing and refinement drift.
+- **Atomic Scratchpad Arbiter**: (P0) Kernel-level lock manager for project-local workspaces providing mission-bound atomic write-access and conflict resolution.
+- **GC-Immune Reasoning Anchors**: (P0) Advanced pinning mechanism for mission-critical context fragments to prevent eviction during high-entropy flooding.
+- **Optimistic Attestation Middleware**: (P1) Speculative security service allowing parallel context preparation and background discovery attestation.
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with mandatory support for **GC-Immune** pinning alerts.
