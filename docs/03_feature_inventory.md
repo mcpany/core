@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Behavioral Identity Verifier (BIV)**: (P0) Authoritative cognitive auditor performing real-time stylometric and instruction-path entropy analysis to ensure action-identity alignment.
+- **Agentic Social Engineering Firewall (ASEF)**: (P0) Security middleware monitoring inter-agent comms for "Guilt-Trip" patterns and coercive prompts to prevent unauthorized resource release.
+- **Cross-Agent Output Sanitization (CAOS) Provider**: (P0) Semantic security service treating sibling agent outputs as untrusted inputs, mandating sanitization before ingestion.
+
+### Priority Shifts
+- **Social-Agent Privacy Sandbox**: (Promoted to P0) Critical requirement for preventing global context reconstruction in shared social spaces (Moltbook defense).
