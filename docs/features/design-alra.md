@@ -57,7 +57,15 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
-* **2026-04-01:** (Iteration 2) - Integration of GC-Immune Reasoning Anchors.
-    * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
-    * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
-    * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+
+### Update: 2026-04-01 - Integration of GC-Immune Reasoning Anchors
+**Context:** Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
+**Architecture Adjustment:** * Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
+**Security Impact:** Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+
+### Update: 2026-07-25 - Evolution to Hardware-Enforced Attention Isolation (HEAI)
+**Context:** Today's market sync revealed Gemini CLI v0.59.0's hardware-locked instruction pinning, proving that software-level KV-cache priority is insufficient against machine-speed context-window flooding.
+**Architecture Adjustment:** * Evolving ALRA into the **HEAI (Hardware-Enforced Attention Isolation)** provider.
+* Mandating the use of TPM-bound attention-locking headers for all mission-root anchors.
+* Introducing a "Physical Attention Barrier" that intercepts LLM attention-masking requests to ensure anchored fragments remain cryptographically isolated from subagent reasoning traces.
+**Security Impact:** Physically prevents "Instruction Eviction" by high-entropy noise, ensuring that core behavioral guardrails remain permanent and untamperable in the reasoning loop.

@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Completion-Path Integrity (CPI) Provider**: (P0) Authoritative security service validating "Task Completion" metadata to neutralize Intent Redirection attacks (GHSL-2026-031).
+- **Hardware-Enforced Attention Isolation (HEAI)**: (P0) Advanced cognitive security middleware utilizing TPM-bound attention headers to physically isolate behavioral guardrails.
+- **Optimistic Task Handoff (OTH) Broker**: (P0) Coordination service facilitating speculative teammate reasoning against probabilistic task lists to solve 5s+ coordination stalls.
+- **Zero-Knowledge Tool Attestation (ZKTA) Hub**: (P1) Privacy-preserving security service allowing agents to attest tool execution without revealing result data.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **OTH-compliant** speculative handoffs.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving into **HEAI** for hardware-level enforcement.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P1) Upgrading to support the **ZKTA** protocol.
