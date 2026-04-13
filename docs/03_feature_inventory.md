@@ -707,6 +707,17 @@
 - **Settings Injection Guard**: (P0) Active interception and validation layer for project-local agent configurations (e.g., `.claude/settings.json`) to neutralize configuration-based RCE and exfiltration.
 - **Non-Existence Proof Generator**: (P0) Extension for the Deterministic Attestation Gateway to provide signed proofs of the absence of sensitive/malicious files in the project environment.
 
+## Evolution: [2026-04-13] Updates
+
+### Proposed Additions
+- **CLAW-10 Compliance Mapper**: (P1) Middleware that maps MCP Any's internal security state to the CLAW-10 Enterprise Evaluation Matrix for automated compliance reporting.
+- **Deterministic Boot Manifest Provider**: (P0) Core service that generates and signs "Environment Integrity Manifests" to fulfill deterministic boot requirements for high-security agent environments.
+- **Anti-Squatting Discovery Guard**: (P0) Security middleware that prevents "Registry Squatting" by mandating cryptographically bound session handshakes for all local loopback tool discovery.
+
+### Priority Shifts
+- **A2A Messaging Hub**: (Re-affirmed P0) Evolving to support the finalized Linux Foundation open governance model for inter-agent task brokering.
+- **Settings Injection Guard**: (Re-affirmed P0) Promoted as the primary defense against "Shadow Agent" configuration overrides identified in recent enterprise audits.
+
 ### Priority Shifts
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Non-Existence Proofs as a mandatory "Deterministic Boot" prerequisite.
 - **A2A Interoperability Layer**: (Re-affirmed P0) Transitioning from a bridge to a full Messaging Hub.

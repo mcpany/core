@@ -495,6 +495,7 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)
 *   **[P1] CLAW-10 Compliance Mapper**: Automation layer for mapping system state to the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 *   **[P0] Deterministic Boot Manifest Provider**: Core service for generating and signing environment integrity manifests. (Added: 2026-04-13)
+*   **[P0] Anti-Squatting Discovery Guard**: Session-bound handshake provider for local tool discovery to prevent registry shadowing. (Added: 2026-04-13)
 
 #### Upcoming (2026-04-17 Evolution)
 *   **[P0] Reactive Intent Arbitration Hub**: Advanced RIG extension for recursive deconstruction and validation of expansion requests. (Added: 2026-04-17)

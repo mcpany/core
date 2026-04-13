@@ -272,6 +272,7 @@
 - [ ] **[P0] A2A Governance & Security Center**: UI for managing Linux Foundation compliant A2A security manifests and task brokering policies. (Added: 2026-04-13)
 - [ ] **[P1] CLAW-10 Compliance Dashboard**: Interactive matrix for visualizing system compliance with the CLAW-10 Enterprise Evaluation Matrix. (Added: 2026-04-13)
 - [ ] **[P0] Deterministic Boot Manifest Reviewer**: UI for reviewing and signing "Environment Integrity Manifests" during the deterministic boot sequence. (Added: 2026-04-13)
+- [ ] **[P0] Discovery Conflict Resolver**: Security dashboard for reviewing blocked "Shadow Registry" attempts and managing tool handshakes. (Added: 2026-04-13)
 
 #### Upcoming (2026-04-17 Evolution)
 - [ ] **[P0] Intent Arbitration Console**: Interactive deconstructor for expansion requests, highlighting potential "Smuggling" attempts. (Added: 2026-04-17)
