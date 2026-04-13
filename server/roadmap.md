@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Speculative Shard Orchestration (SSO)**: Authoritative predictive lock-broker to neutralize mesh coordination stalls. (Added: 2026-07-25)
+*   **[P0] Lineage-Bound Lease (LBL) Enforcer**: Mandatory cryptographic lineage signing for high-privilege tool calls. (Added: 2026-07-25)
+*   **[P0] Attention-Prioritized GC (APGC)**: Advanced context management protecting mission-critical anchors from eviction. (Added: 2026-07-25)
+*   **[P0] Atomic Shard Lock-Manager (ASLM) v2**: Speculative "Truth Buffers" for hardware-locked state reasoning. (Added: 2026-07-25)

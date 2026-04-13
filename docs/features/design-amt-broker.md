@@ -37,6 +37,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
         subgraph Node A (Laptop)
             A[Agent] --> B[AMT Broker]
             B --> C[TPM Attestation]
+            G[Speculative Prefetcher] -.->|Pre-warm| B
         end
         subgraph Node B (Workstation)
             D[AMT Broker] --> E[Local MCP Server]
@@ -44,8 +45,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
         end
         B <==>|Attested P2P Tunnel| D
     ```
+* **Speculative Tunnel Prefetcher:** A background service that monitors the agent's internal monologue and intent fragments. Upon detecting a high-probability remote tool requirement, it pre-emptively triggers a hardware-attested handshake to establish a P2P tunnel, reducing MTTC.
 * **APIs / Interfaces:**
-    * `amt.EstablishTunnel(remoteNodeID, missionToken) -> TunnelID`: Initiates a hardware-attested tunnel.
+    * `amt.EstablishTunnel(remoteNodeID, missionToken, lineageProof) -> TunnelID`: Initiates a hardware-attested tunnel with mandatory lineage signing.
     * `amt.InvokeRemote(tunnelID, toolCall) -> Result`: Securely executes a tool over the tunnel.
     * `amt.ResumeTunnel(meshTicket) -> TunnelID`: Fast-path resumption using session-bound trust.
 * **Data Storage/State:**
@@ -62,3 +64,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Tunneling Latency via Speculative Resumption
+**Context:** Today's market sync revealed that mandatory P2P tunnels in OpenClaw are introducing significant latency, impacting sub-millisecond tool execution. Simultaneously, the "Lease-Shadowing" exploit pattern (CVE-2026-10293) requires more granular lineage validation during tunnel establishment.
+**Architecture Adjustment:**
+* Speculative Tunnel Prefetching: Introducing a background pre-warming service in Section 4 that utilizes real-time intent analysis to establish attested tunnels *before* the remote tool call is issued.
+* Lineage-Bound Handshake (LBH): Upgrading the `amt.EstablishTunnel` interface to mandate a cryptographically signed "Lineage Proof," ensuring that the remote node can verify the complete parentage of the subagent before granting tunnel access.
+**Security Impact:** Prevents "Lease-Shadowing" where a subagent might inherit parent hardware leases without explicit mission-root re-attestation, while maintaining high performance.

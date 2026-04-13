@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative Shard Orchestration (SSO) Broker**: (P0) Authoritative coordination service utilizing real-time intent analysis to pre-emptively lock context shards for parallel teammates.
+- **Lineage-Bound Lease (LBL) Enforcer**: (P0) Security middleware mandating that every high-privilege tool call carry a cryptographically signed proof of the complete reasoning lineage (CVE-2026-10293 defense).
+- **Attention-Prioritized Garbage Collection (APGC) Manager**: (P0) Advanced context-management service utilizing hardware-bound attention masks to protect mission-critical anchors from CWGC.
+- **Atomic Shard Lock-Manager (ASLM) v2**: (P0) Stability upgrade providing hardware-locked "Truth Buffers" for speculative reasoning against pending state updates.
+
+### Priority Shifts
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Designated as a critical dependency for **SSO-mediated** parallel coordination.
+- **Command Traceability Provider (CTP)**: (Re-affirmed P0) Elevated with mandatory support for **LBL-compliant** lineage signing.
