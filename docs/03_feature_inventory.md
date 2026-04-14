@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Fast-Path Mesh Resumption (FPMR) Provider**: (P0) Authoritative coordination service issuing hardware-bound "Mesh Tickets" for sub-millisecond inter-node tunnel resumption.
+- **Lock-Free Mesh Coordination (LFMC) Hub**: (P0) High-performance coordination architecture utilizing Conflict-Free Replicated Data Types (CRDTs) to eliminate "Cognitive Stall" in distributed swarms.
+- **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity across the mesh without context exposure.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **FPMR** integration to neutralize tunneling overhead.
+- **CRDT-Native Mailbox Hub**: (Re-affirmed P0) Designated as the primary implementation mechanism for the new **Lock-Free Mesh Coordination (LFMC)** standard.

@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Performance Optimization for Multi-Hop Tunneling
+**Context:** Today's market sync revealed that "Tunneling Overhead" remains a primary barrier to sub-millisecond tool execution in distributed meshes (e.g., OpenClaw FPMR).
+**Architecture Adjustment:**
+* Deprecating per-call full cryptographic handshakes in Section 4.
+* Introducing **Fast-Path Mesh Resumption (FPMR)** utilizing hardware-bound "Mesh Tickets."
+* Implementing session-bound trust persistence that allows for sub-100ms tunnel resumption across distributed nodes.
+**Security Impact:** Reduces "Resumption Fatigue" while maintaining TPM-locked origin sovereignty across the mesh.
