@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Supporting Multi-Hop Relay Attestation
+**Context:** Today's market sync revealed OpenClaw SNT v3.6.2 introduced "Relay Attestation" for devices behind complex NATs.
+**Architecture Adjustment:**
+* Extending Section 4 to support "Relay Handshake Tokens."
+* Introducing `amt.EstablishRelayTunnel(relayNodeID, targetNodeID)` for multi-hop P2P coordination.
+**Security Impact:** Ensures mission-root sovereignty is maintained through verified peer relays, neutralizing "Shadow Relay" exploits.

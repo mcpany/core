@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Mesh-Aware Deadlock Resolver (MADR)**: Authoritative arbiter for shared project workspaces resolving circular lock dependencies. (Added: 2026-07-25)
+*   **[P1] Multimodal Proof Validator (MPV)**: Zero-Knowledge proof broker for attesting the integrity of non-textual reasoning traces. (Added: 2026-07-25)
+*   **[P0] Multi-Hop Attested Tunneling (MHAT)**: Support for hardware-attested relay nodes to maintain mesh sovereignty across complex NAT boundaries. (Added: 2026-07-25)
+*   **[P0] Recursive Lease Lineage Validator**: mandatory verification of the complete chain of hardware leases back to the mission-root. (Added: 2026-07-25)

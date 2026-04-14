@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Aware Deadlock Resolver (MADR)**: (P0) Authoritative arbiter for shared project workspaces (scratchpads) resolving circular lock dependencies between disparate specialist agents.
+- **Multimodal Proof Validator (MPV)**: (P1) Authoritative proof broker for attesting the integrity of non-textual reasoning traces (SVG/UI-diffs) utilizing Zero-Knowledge proofs.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT)**: (Re-affirmed P0) Elevated with mandatory support for **MHAT-compliant** multi-hop relay attestation.
+- **Hardware-Locked Mission Lease (HLML)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Recursive Lease Verification**.
