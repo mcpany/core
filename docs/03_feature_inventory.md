@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Adaptive Node Quarantining (ANQ) Hub**: (P0) Authoritative swarm health broker utilizing real-time reasoning entropy scoring to automatically isolate mesh nodes exhibiting "Instruction-Path Drift."
+- **State-Bound Identity (SBI) Provider**: (P0) Core identity service mandating cryptographic binding of hardware leases to project-local environment hashes (git state + diffs) to neutralize post-attestation environment tampering.
+- **Multimodal Reasoning Provenance (MRP) Validator**: (P0) Advanced provenance layer facilitating Zero-Knowledge proofs for non-textual fragments (SVG, Audio), providing verifiable cognitive lineage for multi-modal swarms.
+- **Intent-Aware Speculative Sharding (IASS)**: (P1) Performance-optimizing extension for sharded meshes that pre-attests and loads sibling shards based on predicted next-hop mission intent.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Now designated as the primary enforcement engine for the **ANQ Hub**.
+- **Hardware-Locked Configuration Anchor (HLCA)**: (Re-affirmed P0) Elevated with the requirement for mandatory **SBI-compliant** workspace pinning.
+- **Multimodal State Entanglement (MSE) Provider**: (Re-affirmed P0) Now elevated with the requirement for **MRP-compliant** semantic proofs.

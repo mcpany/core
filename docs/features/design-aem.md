@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration with ANQ Hub
+**Context:** Today's market sync revealed the need for autonomous isolation of nodes exhibiting high reasoning entropy.
+**Architecture Adjustment:**
+* Evolving AEM from a passive monitor to the primary trigger for the **Adaptive Node Quarantining (ANQ) Hub**.
+* Implementing "Instruction-Path Drift" detection thresholds.
+**Security Impact:** Enables machine-speed containment of cognitive hijacking in remote mesh nodes.
