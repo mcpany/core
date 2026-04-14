@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Consensus Deadlock Resolver (CDR)**: (P0) Authoritative coordination service providing mission-aligned tie-breaking policies and automated state rollbacks for stalled teammate reflection quorums.
+- **ARE-Header Sovereignty Enforcer**: (P0) Security middleware mandating real-time, hardware-attested validation and pinning of reasoning-effort headers to prevent sub-process hijacking.
+- **Always-on Attestation (AOA) Manager**: (P1) Identity service facilitating continuous, low-latency hardware attestation for inter-teammate coordination fragments across the mission lifecycle.
+
+### Priority Shifts
+- **Autonomous Intent Reconciliation (AIR) Hub**: (Re-affirmed P0) Elevated with mandatory support for **Reflective Trace Sanitization** to block negotiated constraint exfiltration.
+- **Hardware-Locked Attention Persistence (HLAP)**: (Re-affirmed P0) Designated as the primary enforcement mechanism for **ARE-Header Pinning**.
