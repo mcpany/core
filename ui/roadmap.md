@@ -3,6 +3,9 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Reasoning-Effort Control Dashboard**: UI for managing adaptive thinking effort and token budgets across providers. (Added: 2026-04-14)
+- [ ] **[P1] Dynamic Sandbox Visualizer**: Real-time map of ephemeral Git worktrees and worktree-resident teammates. (Added: 2026-04-14)
+- [ ] **[P0] Universal Registry Explorer**: Unified browser for npm, ClawHub, and Gemini tool registries. (Added: 2026-04-14)
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)

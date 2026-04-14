@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-14] (Iteration 2) Updates
+
+### Proposed Additions
+- **Adaptive Thinking Proxy**: (P0) Authoritative intelligence-cost broker providing a unified abstraction for `x-gemini-reasoning-effort` and Claude's "effort" controls.
+- **Dynamic Sandbox Federation**: (P1) Orchestration service for the lifecycle of ephemeral, hardware-attested Git worktrees in multi-agent swarms.
+- **Universal Skill Bridge (USB)**: (P0) Infrastructure to dynamically import and re-map skills from fragmented registries (ClawHub, npm) into a single discovery bus.
+- **Cascading Chain Validator**: (P0) Security middleware enforcing semantic validation and cryptographic signing of parent-to-child agent instructions.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Elevated with mandatory **Adaptive Thinking Proxy** integration for cross-provider effort governance.
+- **Project-Local Snapshot (PLSS) Sync**: (Re-affirmed P0) Designated as the primary infrastructure for **Sandbox Federation** recovery triggers.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

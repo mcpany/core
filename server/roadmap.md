@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-04-14 Evolution)
+*   **[P0] Adaptive Thinking Proxy**: Unified reasoning effort and cost control for Claude/Gemini. (Added: 2026-04-14)
+*   **[P1] Dynamic Sandbox Federation**: Ephemeral Git-worktree orchestration for parallel swarms. (Added: 2026-04-14)
+*   **[P0] Universal Skill Bridge**: Dynamic mapping of fragmented tool registries (ClawHub/npm). (Added: 2026-04-14)
+*   **[P0] Cascading Chain Validator**: Semantic and cryptographic integrity for parent-child agent instructions. (Added: 2026-04-14)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
