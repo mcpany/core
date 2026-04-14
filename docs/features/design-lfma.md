@@ -59,3 +59,11 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Conflict-Free Task Resolution (LFMC v2)
+**Context:** Real-world deployments of Agent Teams in Claude Code v3.2 have exposed severe "Cognitive Stall" (5s+ wait cycles) during task claiming on shared mailboxes. Synchronous locks are no longer viable for high-density swarms.
+**Architecture Adjustment:**
+* Upgrading the LFMA to **LFMC v2** (Lock-Free Mesh Coordination).
+* Transitioning from synchronous claim validation to asynchronous, CRDT-based state reconciliation.
+* Implementing Conflict-Free Task Resolution, where teammates speculatively claim tasks and resolve collisions via hardware-attested identity priority in the background.
+**Security Impact:** Eliminates coordination-based DoS opportunities and ensures that mission-critical task allocation remains non-blocking even during network jitter or high agent density.

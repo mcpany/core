@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Fast-Path Mesh Resumption (FPMR)**: (P0) Performance-optimizing security middleware for the AMT Broker utilizing session-bound "Mesh Tickets" to reduce tunneling overhead.
+- **Lock-Free Mesh Coordination (LFMC) v2**: (P0) CRDT-based extension for the Lock-Free Mesh Arbiter (LFMA) enabling asynchronous, conflict-free task resolution to neutralize 5s+ coordination stalls.
+- **Hardware-Locked Lease (MBHL) Provider**: (P0) Advanced security service issuing TPM-signed, mission-bound capability leases that automatically expire upon task completion.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **FPMR** integration to solve mesh performance bottlenecks.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving into **LFMC v2** to support high-density parallel Agent Teams.
