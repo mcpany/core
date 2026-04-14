@@ -1934,3 +1934,10 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-14] (Iteration 2) Updates
+
+### Proposed Additions
+- **Verifiable Task Delegation (VTD) Engine**: (P0) Authoritative safety-proof broker that generates cryptographically signed attestations for inter-agent delegations by cross-referencing reputation and intent.
+- **Hardware-Attested Boot (HAB) Provider**: (P0) Core security service utilizing TPM/Secure Enclave to enforce "Deterministic Boot" manifests and neutralize project-local hook injections.
+- **Context Sidecar Orchestration (CSO) Adapter**: (P1) Standardized interface for hosting OpenClaw-compatible ContextEngines as secure sidecars to maintain intent-bound state across frameworks.

@@ -54,3 +54,10 @@ As agent swarms grow in complexity, the "Manual Review Bottleneck" (where 44% of
 *   **Context-Aware Scoring:** The `EvaluationService` is being updated to optionally mount "Context Sidecars" during evaluation. This allows the DAL to perform safety proofs against the *actual* state the subagent will receive, not just the task description.
 *   **Shadow Fragment Detection:** Integrating a WASM-based "State Sanitizer" directly into the evaluation pipeline to detect hidden instructions in Binary State Handoffs.
 **Security Impact:** Prevents "Side-Channel Intent Hijacking" where a subagent is coerced into an unsafe action via malicious context fragments that appear benign to traditional evaluators.
+
+### Update: 2026-04-14 (Iteration 2) - Reputation-Based Proof Automation
+**Context:** Today's market sync confirmed that 44% of users manually review handoffs due to a "Trust Gap" in autonomous delegation.
+**Architecture Adjustment:**
+*   **VTD Integration:** The DAL is being evolved into the core of the new "Verifiable Task Delegation" (VTD) Engine.
+*   **Automated Proof Generation:** Introducing a "Reputation-Bound" automatic signing mode where low-risk delegations for agents with a Reputation Score > 0.95 can bypass manual HITL reviews.
+**Security Impact:** Reduces "Approval Fatigue" while maintaining Zero-Trust through hardware-attested reputation quorums.

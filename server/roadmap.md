@@ -490,6 +490,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Delegation Attestation Layer (DAL)**: Core security service for evaluating A2A task proposals and generating "Safety Proofs." (Added: 2026-04-14)
 *   **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway to require hardware signatures for project-local hooks. (Added: 2026-04-14)
 *   **[P1] Context Sidecar Adapter**: Middleware to synchronize state with external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added: 2026-04-14)
+*   **[P0] Verifiable Task Delegation (VTD) Engine**: Authoritative safety-proof broker for inter-agent delegations. (Added: 2026-04-14)
+*   **[P0] Hardware-Attested Boot (HAB) Provider**: Core service for TPM-bound deterministic boot manifests. (Added: 2026-04-14)
+*   **[P1] Context Sidecar Orchestration (CSO) Adapter**: Standardized interface for hosting OpenClaw ContextEngine plugins. (Added: 2026-04-14)
 
 #### Upcoming (2026-04-13 Evolution)
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)
