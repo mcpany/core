@@ -62,3 +62,8 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25: Integration of Mesh-Level Intent Portability (MLIP)**
+    * **Context:** Today's research on OpenClaw v3.7.0 confirmed the emergence of MLIP for low-latency mission migration.
+    * **Architecture Adjustment:** * Deprecating mandatory per-hop intent re-attestation in `EstablishTunnel` (Section 4).
+    * * Introducing MLIP-signed "Intent Fragments" that travel with the task payload, allowing the receiving node to verify lineage without a synchronous callback to the origin.
+    * **Security Impact:** Reduces "Cognitive Stall" in distributed meshes while maintaining hardware-bound non-repudiation.

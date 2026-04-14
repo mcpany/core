@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Level Intent Portability (MLIP) Gateway**: (P0) Authoritative intent carrier utilizing hardware-attested fragments for cross-framework migration without re-attestation.
+- **Sub-Cognitive Sanitization (SCS) Pipeline**: (P0) Mailbox integrity layer performing real-time redaction of sensitive reasoning artifacts from teammate coordination streams.
+- **Reactive Resource Governance (RRG) Controller**: (P0) Dynamic resource management service proactively throttling token/reasoning budgets based on real-time path utility.
+
+### Priority Shifts
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with mandatory support for **MLIP-compliant** intent migration.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Elevated with mandatory **SCS** pipeline integration.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

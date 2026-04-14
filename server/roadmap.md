@@ -212,6 +212,11 @@
 *   **[P0] CI/CD Cache Integrity Guard (CCIG)**: Mandatory cryptographic signing and verification for all build caches. (Added: 2026-07-08)
 *   **[P0] Action-Chain Sovereignty Monitor (ACSM)**: Real-time validation of agent workflow sequences against mission-root intents. (Added: 2026-07-08)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Mesh-Level Intent Portability (MLIP) Gateway**: implementation of hardware-attested intent fragments for cross-framework mission continuity. (Added: 2026-07-25)
+*   **[P0] Sub-Cognitive Sanitization (SCS) Pipeline**: real-time redaction of sensitive reasoning artifacts from inter-agent coordination streams. (Added: 2026-07-25)
+*   **[P0] Reactive Resource Governance (RRG) Controller**: cost-aware budgeting middleware for dynamic throttling of low-utility reasoning branches. (Added: 2026-07-25)
+
 #### Upcoming (2026-06-27 Evolution)
 *   **[P0] Zero-Knowledge Discovery (ZKD) Proxy**: Authoritative discovery gateway implementing ZK-Capability Proofs for pre-flight masking. (Added: 2026-06-27)
 *   **[P0] CRDT-Native Mailbox Sharding**: Transition to full CRDT-native mailbox shards for lock-free horizontal scaling. (Added: 2026-06-27)
