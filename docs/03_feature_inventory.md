@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-14] (Iteration 2) Updates
+
+### Proposed Additions
+- **Non-Linear Policy Validator (NLPV)**: (P0) Authoritative local enforcement service for exhaustive command pipeline validation that doesn't scale with token costs. Addresses "Complexity Threshold" bypasses.
+- **Enterprise-Bound Identity (EBI) Gateway**: (P0) Framework-neutral identity broker to mitigate vendor-specific token blocks and provide unified NHI governance across LLM providers.
+- **Complexity-Immune Validation Gates**: (P0) Enforcement middleware that mandates "Complete-Validation-or-Deny" for all tool calls, neutralizing performance-for-security tradeoffs.
+
+### Priority Shifts
+- **Policy Firewall**: (Re-affirmed P0) Elevated with mandatory integration for **NLPV** exhaustive scanning.
+- **A2A Messaging Hub**: (Re-affirmed P0) Designated as the primary integration point for **EBI** federated tokens.
