@@ -3,6 +3,8 @@
 ## Status: Active Development
 
 ### Universal Agent Bus (New Strategic Priorities)
+- [ ] **[P0] Advisor-Executor Interaction Trace**: Visualize strategic guidance fragments injected into executor streams. (Added: 2026-07-25)
+- [ ] **[P0] Inter-Agent Message Audit Log**: Security dashboard for reviewing hardware-attested communication between agents. (Added: 2026-07-25)
 - [ ] **[P0] Global Agent Activity Map**: Dynamic, glowing map showing agent activity globally.
 - [ ] **[P0] Recursive Context Dashboard**: Visualize state inheritance and session tokens across agent swarms. (Added: 2026-02-23)
 - [ ] **[P0] Multi-Agent Session Timeline**: Visual tracking of agent handoffs and shared tool state. (Added: 2026-02-24)

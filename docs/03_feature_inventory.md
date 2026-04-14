@@ -1934,3 +1934,9 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Advisor-Executor Coordination (AEC) Middleware**: (P0) Authoritative coordination service synchronizing strategic guidance from high-intelligence models with fast executor models.
+- **Inter-Agent Communication Security (IACS) Layer**: (P0) Advanced security service mandating hardware-attested identity and intent-validation for inter-agent messaging to prevent communication-based compromises.

@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Advisor-Guided Tunneling
+**Context:** Today's market sync revealed the benefits of heterogeneous model architectures (Advisor-Executor pairs).
+**Architecture Adjustment:** * Integrating AEC Middleware hooks into the AMT handshake process.
+* Allowing Advisor models to provide "Pre-Flight Strategic Justification" for inter-node tunnels.
+**Security Impact:** Enhances zero-trust posture by requiring strategic justification from a high-intelligence model before establishing cross-node tunnels for autonomous specialist agents.
