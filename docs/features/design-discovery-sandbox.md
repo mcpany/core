@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-03-24 (Iteration 2) - Neutralizing cliPath Command Injection
+**Context:** Today's market sync revealed CVE-2026-25593 in OpenClaw, where unauthenticated local clients could set unsafe `cliPath` values via `config.apply`, leading to RCE during discovery.
+**Architecture Adjustment:**
+* Moving all `cliPath` and executable resolution logic into the Isolated Discovery Environment.
+* Implementing "Path Pinning" where the sandbox only recognizes executables from a hardware-attested baseline.
+**Security Impact:** Prevents configuration-based command injection and ensures that discovered tools are invoked using verified binaries.

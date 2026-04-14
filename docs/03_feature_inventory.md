@@ -3,12 +3,16 @@
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
+- **Headless Session Sovereignty (HSS)**: (P0) Authoritative persistence service providing hardware-attested sovereignty anchors for headless and background agent sessions.
+- **Hardware-Bound Origin Validation (HBOV)**: (P0) Identity middleware mandating cryptographic binding of session tokens to the controller's hardware identity to neutralize origin spoofing.
+- **WebView Integrity Shield (WIS)**: (P0) Security middleware performing real-time, origin-locked policy enforcement on all WebView-mediated tool calls.
 - **Agentic Entropy Monitor (AEM)**: (P0) Authoritative coherence service performing real-time analysis of subagent reasoning entropy to block semantic drift.
 - **GC-Immune Reasoning Anchors**: (P0) Advanced pinning mechanism for mission-critical context fragments to prevent eviction during aggressive context-window garbage collection.
 - **Environment-Aware Provenance (EAP) Provider**: (P0) Identity middleware cryptographically binding reasoning fragments to hardware-attested environment IDs (e.g., Container IDs) to neutralize Trace Replay attacks.
 - **Mission-Root Conflict Resolver (MRCR)**: (P0) Kernel-level arbiter for the Blackboard resolving conflicting state mutations from parallel teammates using priority-weighted mission-root rules.
 
 ### Priority Shifts
+- **Discovery-Phase Sandbox Middleware**: (Re-affirmed P0) Designated as the primary defense against CVE-2026-25593 (OpenClaw cliPath RCE).
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **EAP-compliant** environment binding.
 - **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning.
 

@@ -22,3 +22,19 @@
 
 ## Unique Today
 * The collision of **horizontal coordination** (Claude) and **discovery-time exploits** (Gemini) creates a "Sovereign Teammate" crisis. If discovery is compromised, the entire horizontal mesh is poisoned before the first task is even claimed.
+
+---
+
+## Strategic Iteration: 2026-03-24 (Iteration 2)
+
+### 5. OpenClaw: cliPath Command Injection (CVE-2026-25593)
+* **Findings**: Disclosed unauthenticated RCE via unsafe `cliPath` values in `config.apply`. Malicious values are used during command discovery, leading to command injection with gateway user privileges.
+* **Implication for MCP Any**: We must mandate **Isolated Discovery Environments** where even executable resolution and path validation occur within the zero-trust sandbox, preventing host-level injection.
+
+### 6. Gemini CLI / Chrome: WebView Hijacking (CVE-2026-0628)
+* **Findings**: "Glic Jack" vulnerability in Chrome's Gemini Live panel. Malicious extensions could hijack the `chrome://glic` WebView to access local files and hardware.
+* **Implication for MCP Any**: Infrastructure must move beyond simple local trust. We are introducing **Hardware-Bound Origin Validation (HBOV)** and the **WebView Integrity Shield (WIS)** to ensure only verified, hardware-attested controllers can command the gateway.
+
+### 7. Claude Code: Headless Agent Management
+* **Findings**: Introduction of "Remote Control" and "Dispatch" modes. Agents can now run as persistent background workers, untethered from the initiating terminal.
+* **Implication for MCP Any**: This requires **Headless Session Sovereignty (HSS)**. We must provide persistent, hardware-attested "Sovereignty Anchors" that allow secure controller re-attachment without risking session hijacking.

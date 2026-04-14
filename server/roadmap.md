@@ -131,6 +131,9 @@
 *   **[P0] Lock-Free Teammate Coordination (LFTC)**: CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-03-24)
 *   **[P0] Argument-Level Semantic Validator (ALSV)**: Deep-inspection for command arguments to prevent shell-fallback exploits. (Added: 2026-03-24)
 *   **[P0] Task-Claim Integrity Provider**: Hardware-attested tokens for horizontal mesh task claiming. (Added: 2026-03-24)
+*   **[P0] Headless Session Sovereignty (HSS)**: Authoritative persistence service providing hardware-attested sovereignty anchors for background agent sessions. (Added: 2026-03-24)
+*   **[P0] Hardware-Bound Origin Validation (HBOV)**: Identity middleware mandating cryptographic binding of session tokens to the controller's hardware identity. (Added: 2026-03-24)
+*   **[P0] WebView Integrity Shield (WIS)**: Real-time, origin-locked policy enforcement on all WebView-mediated tool calls to prevent extension-based hijacks. (Added: 2026-03-24)
 
 #### Upcoming (2026-07-07 Evolution)
 *   **[P0] CI/CD Cache Integrity Guard**: Mandatory cryptographic signing and verification for all agent-accessible build caches. (Added: 2026-07-07)

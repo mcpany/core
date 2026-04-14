@@ -9,6 +9,15 @@
 - **Argument-Level Semantic Validation (ALSV)**: To neutralize the shell-fallback and allowlist bypass vulnerabilities seen in OpenClaw, we are mandating ALSV for all command-based tools. MCP Any will perform real-time, semantic analysis of command arguments, blocking any use of unauthorized flags or shell metacharacters.
 - **Teammate Task-Claim Integrity**: We are implementing "Auth-before-Claim" for all teammate coordination. Teammates must provide a hardware-attested mission-root token before claiming tasks from the shared mailbox, ensuring that a compromised specialist agent cannot "hijack" unauthorized work.
 
+## Strategic Evolution: [2026-03-24] (Iteration 2)
+### Focus: Headless Sovereignty & Multi-Origin Trust Persistence
+**Context**: The launch of Claude Code's "Remote Control" and the discovery of the "Glic Jack" WebView hijack (CVE-2026-0628) confirm that the "Universal Agent Bus" must now move beyond session-bound trust. We must protect the **integrity of the controller origin** and provide **sovereign management for headless sessions**. As agents move to background "Dispatch" modes, the risk of "Origin Spoofing" demands that infrastructure provides **Hardware-Bound Origin Validation**.
+**Strategic Pivot**:
+- **Hardware-Bound Origin Validation (HBOV)**: MCP Any will evolve to mandate HBOV for all remote-control and dispatch-mode connections. We will implement session-bound tokens that are cryptographically tied to the controller's hardware identity, neutralizing cross-site bridging and extension-based hijacks.
+- **Headless Session Sovereignty (HSS)**: Supporting the transition to background workers, we are introducing HSS. This service provides a persistent, hardware-attested "Sovereignty Anchor" for headless agents, ensuring they remain bound to the mission-root intent even when the primary controller disconnects.
+- **WebView Integrity Shield (WIS)**: To neutralize WebView-based exfiltration (e.g., CVE-2026-0628), we are mandating WIS for all UI-integrated agents. MCP Any will perform real-time, origin-locked policy enforcement on all WebView-mediated tool calls, ensuring extensions cannot bridge into the agent's control plane.
+- **Dispatch-Mode State Pinning**: We are implementing "State Pinning" for all background agents. State and capabilities are cryptographically locked to the specific dispatch-origin, ensuring that a "Remote Control" session from an unauthorized origin cannot hijack a long-running background task.
+
 ## Mission Statement
 MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
 
