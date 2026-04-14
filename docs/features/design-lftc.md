@@ -46,3 +46,10 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-04-14 - Formalizing Auth-before-Claim Task Integrity
+**Context:** Today's analysis of Claude Code "Agent Teams" reveals that unauthenticated task claiming in horizontal meshes leads to "Teammate Hijacking" where a compromised specialist can block the mission root.
+**Architecture Adjustment:**
+* Introducing mandatory hardware-attested mission tokens for the `ClaimTask` API.
+* Implementing monotonic fragment counters for the CRDT state to prevent "Mailbox Echo Poisoning."
+**Security Impact:** Ensures that only teammates with a verified lineage back to the hardware-attested mission root can mutate the shared task list.

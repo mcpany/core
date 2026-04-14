@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-14 - Mandating Hardware-Attested Discovery Quarantines
+**Context:** The persistence of CVE-2026-0628 exploits confirms that isolated execution alone is insufficient if the resulting schema can still poison the reasoning loop.
+**Architecture Adjustment:**
+* Transitioning "Discovery Quarantine" from recommended to mandatory for all project-local tool discovery.
+* Integration with the **Task-Claim Integrity Provider** to ensure only authorized missions can release discovered tools from quarantine.
+**Security Impact:** Provides a definitive break in the "Ghost-Execution" chain by requiring human-in-the-loop or hardware-attested approval before any discovered tool is visible to the agent.
