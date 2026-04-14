@@ -24,3 +24,6 @@
 ## Security & Vulnerability Scan
 * **CVE-2026-25253 (OpenClaw):** Local loopback RCE via browser-origin hijacking remains a persistent threat for unhardened gateways.
 * **Credential Exfiltration:** Silent redirection of API traffic via base-URL overrides is becoming a common "stealth" attack pattern.
+* **Audit Failure (April 2026):** Adversa AI reports 93% of agent frameworks rely on unscoped keys, with **0% providing per-agent identity**.
+* **Memory Control Flow Attacks:** Researchers achieved a 90%+ success rate in hijacking agent workflows via poisoned memory entries on GPT-5 mini and Claude Sonnet 4.5.
+* **Indirect Prompt Injection:** Unit 42 telemetry identified 22 distinct techniques currently being actively weaponized against AI agents in the wild.

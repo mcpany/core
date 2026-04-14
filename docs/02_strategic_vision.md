@@ -886,6 +886,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-04-14]
+### Focus: Infrastructure-Level Identity & Memory Control Flow Defense
+**Context**: The Adversa AI April 2026 audit reveals a catastrophic gap in agent framework security: 93% of frameworks rely on unscoped keys, and **0% provide per-agent identity**. Furthermore, the emergence of **Memory Control Flow Attacks**—with a 90%+ success rate against GPT-5 and Claude 4.5—confirms that logical isolation is insufficient. We must now protect the **cognitive execution path** and provide **hardware-bound identity sovereignty** for every subagent in the mesh.
+**Strategic Pivot**:
+- **Hardware-Bound Per-Agent Identity (HPAI)**: MCP Any will evolve to act as the authoritative "Identity Mint" for the swarm. We will implement HPAI, issuing unique, TPM-backed identity tokens to every subagent. This ensures that every tool call and state mutation is non-repudiably linked to a specific, hardware-attested agent instance, neutralizing the "Unscoped Key" epidemic.
+- **Memory-Safe Reasoning Buffers (MSRB)**: To neutralize memory control flow hijacking, we are introducing MSRB. This layer will provide canary-monitored, cryptographically isolated memory regions for agent reasoning traces. Any attempt to "poison" memory entries to hijack workflow logic will trigger an immediate hardware-level interdiction.
+- **Indirect Injection Shield (IIS)**: Supporting the sovereignty of the reasoning path, we are evolving the sanitization layer to counter the 22 new weaponized indirect prompt injection techniques identified by Unit 42. MCP Any will perform recursive, semantic deconstruction of all external metadata before it enters the agent's attention window.
+- **Per-Agent Attribution Ledger**: We are mandating that all high-trust meshes utilize the HPAI ledger. Every instruction will be cryptographically attributed to its originating subagent identity, providing a deterministic audit trail that survives framework handoffs and mission resumptions.
+
+## Strategic Evolution: [2026-04-14] (v2)
 ### Focus: Pluggable Context Interoperability & Verifiable Task Delegation
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the completion of the A2A governance transition mark a shift from "Infrastructure Connectivity" to "Intelligent State Mediation." Simultaneously, the persistence of configuration-based RCEs (CVE-2026-25725) proves that the environment itself is a weaponized input.
 **Strategic Pivot**:

@@ -487,6 +487,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Social-Agent Privacy Sandbox**: Middleware to prevent context reconstruction in shared multi-agent social spaces. (Added: 2026-04-07)
 
 #### Upcoming (2026-04-14 Evolution)
+*   **[P0] Hardware-Bound Per-Agent Identity (HPAI)**: Issuance of unique, TPM-backed identity tokens to every subagent instance to neutralize unscoped keys. (Added: 2026-04-14)
+*   **[P0] Memory-Safe Reasoning Buffers (MSRB)**: Implementation of canary-monitored, isolated memory regions for agent reasoning to prevent control flow hijacking. (Added: 2026-04-14)
 *   **[P0] Delegation Attestation Layer (DAL)**: Core security service for evaluating A2A task proposals and generating "Safety Proofs." (Added: 2026-04-14)
 *   **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway to require hardware signatures for project-local hooks. (Added: 2026-04-14)
 *   **[P1] Context Sidecar Adapter**: Middleware to synchronize state with external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added: 2026-04-14)

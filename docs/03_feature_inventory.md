@@ -690,6 +690,8 @@
 ## Evolution: [2026-04-14] Updates
 
 ### Proposed Additions
+- **Hardware-Bound Per-Agent Identity (HPAI)**: (P0) Authoritative identity service issuing TPM-backed unique tokens to every subagent instance to neutralize unscoped key risks.
+- **Memory-Safe Reasoning Buffers (MSRB)**: (P0) Advanced memory security layer providing canary-monitored, isolated regions for agent reasoning to prevent control flow hijacking.
 - **Context Sidecar Adapter**: (P1) Middleware that synchronizes state with external Context Engines (like OpenClaw v2026.3.7) via their native plugin interfaces, ensuring consistent "Intent-Bound" context across frameworks.
 - **Delegation Attestation Layer**: (P0) A core security service that evaluates A2A task proposals against historical reputation and local policy to generate "Safety Proofs," reducing manual oversight requirements.
 - **TPM-Bound Configuration Boot**: (P0) Extension of the Deterministic Boot Manifest to require hardware-bound (TPM) signatures for all project-local hooks and settings, neutralizing "Cloned Repository" attack vectors.
