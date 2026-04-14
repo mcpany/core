@@ -24,3 +24,19 @@
 ## Security & Vulnerability Scan
 * **CVE-2026-25253 (OpenClaw):** Local loopback RCE via browser-origin hijacking remains a persistent threat for unhardened gateways.
 * **Credential Exfiltration:** Silent redirection of API traffic via base-URL overrides is becoming a common "stealth" attack pattern.
+
+---
+
+## Update: 2026-04-14 (Iteration 2) - Discovery & Supply Chain Crisis
+
+### 1. OpenClaw Discovery-Phase RCE (CVE-2026-25593)
+A critical Remote Code Execution (RCE) vulnerability was disclosed in OpenClaw's command discovery mechanism. The vulnerability stems from an unsanitized `cliPath` parameter being passed to a shell execution context during the tool discovery phase. This allows attackers to execute arbitrary commands with gateway user privileges by injecting malicious paths into configuration files.
+
+### 2. ClawHub Supply Chain Crisis
+Independent audits of the ClawHub skill registry have revealed that approximately 20% of the 10,700+ available skills are malicious. Typosquatting and automated campaigns have successfully injected command-execution payloads into high-ranking skills. This confirms that "Implicit Marketplace Trust" is a failed model.
+
+### 3. Claude Code "Agent Teams" Horizontal Expansion
+Claude Code has officially moved away from hierarchical subagent models toward horizontal "Agent Teams." This shift emphasizes the need for lock-free coordination (e.g., CRDT-based mailboxes) and cross-framework state synchronization.
+
+### 4. Deterministic Environment Integrity
+The industry is converging on "Deterministic Boot" and "Full-State Manifests" as the primary defense against environment-escape vulnerabilities like CVE-2026-25593.

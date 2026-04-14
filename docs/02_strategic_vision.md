@@ -886,6 +886,14 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ---
 
 ## Strategic Evolution: [2026-04-14]
+### Focus: Discovery-Phase Sovereignty & Supply-Chain Hardening
+**Context**: The disclosure of CVE-2026-25593 (OpenClaw `cliPath` RCE) and the saturation of ClawHub with malicious skills (one in five) prove that the "Pre-Flight" phase is the new primary attack vector. Security must now extend to the very moment an agent *discovers* a tool. Simultaneously, the industry pivot toward "Agent Teams" horizontal coordination requires a move from synchronous locks to sharded, lock-free state synchronization.
+**Strategic Pivot**:
+- **Discovery-Phase Sandbox Isolation**: MCP Any will evolve to treat all discovery-time execution (e.g., `discoveryCommand`, `cliPath` probing) as high-risk events. We will implement "Isolated Discovery Environments" where discovery logic is executed in an ephemeral, zero-trust sandbox before any tool is exposed to the primary agent.
+- **Consensus-Based Skill Attestation (CBSA)**: To counter ClawHub supply chain attacks, we are introducing CBSA. High-risk tool grafts and marketplace discovery will require multi-agent signatures and behavioral profiling before being promoted to the "Trusted" tier of the Universal Agent Bus.
+- **Lock-Free Teammate Coordination (LFTC)**: Supporting the efficiency of horizontal swarms, we are introducing LFTC. This service will host granular, task-bound mailbox shards utilizing Conflict-Free Replicated Data Types (CRDTs) for the shared task list, ensuring non-blocking performance.
+- **Deterministic Boot Manifests**: We are mandating the generation of a hardware-attested "Environment Integrity Manifest" before any agent execution begins. This provides a deterministic proof of the project-local state, including non-existence proofs for restricted configuration hooks.
+
 ### Focus: Pluggable Context Interoperability & Verifiable Task Delegation
 **Context**: The stabilization of OpenClaw's `ContextEngine` and the completion of the A2A governance transition mark a shift from "Infrastructure Connectivity" to "Intelligent State Mediation." Simultaneously, the persistence of configuration-based RCEs (CVE-2026-25725) proves that the environment itself is a weaponized input.
 **Strategic Pivot**:

@@ -490,6 +490,10 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Delegation Attestation Layer (DAL)**: Core security service for evaluating A2A task proposals and generating "Safety Proofs." (Added: 2026-04-14)
 *   **[P0] TPM-Bound Configuration Boot**: Extension of the attestation gateway to require hardware signatures for project-local hooks. (Added: 2026-04-14)
 *   **[P1] Context Sidecar Adapter**: Middleware to synchronize state with external frameworks (e.g., OpenClaw ContextEngine) via native APIs. (Added: 2026-04-14)
+*   **[P0] Discovery-Phase Sandbox Isolation**: Ephemeral, zero-trust execution environment for all discovery-time commands to neutralize CVE-2026-25593. (Added: 2026-04-14)
+*   **[P0] Consensus-Based Skill Attestation (CBSA) Hub**: Multi-agent security quorum for marketplace tool discovery. (Added: 2026-04-14)
+*   **[P0] Lock-Free Teammate Coordination (LFTC)**: Sharded, CRDT-based mailbox synchronization for horizontal swarms. (Added: 2026-04-14)
+*   **[P0] Deterministic Boot Manifest Provider**: Hardware-attested security service generating Full-State Manifests for deterministic agent execution. (Added: 2026-04-14)
 
 #### Upcoming (2026-04-13 Evolution)
 *   **[P0] A2A Open-Governance Integration**: Implementation of the finalized Linux Foundation A2A security manifest and task brokering model. (Added: 2026-04-13)

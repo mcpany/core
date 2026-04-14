@@ -8,6 +8,14 @@
 - **Environment-Aware Provenance (EAP) Provider**: (P0) Identity middleware cryptographically binding reasoning fragments to hardware-attested environment IDs (e.g., Container IDs) to neutralize Trace Replay attacks.
 - **Mission-Root Conflict Resolver (MRCR)**: (P0) Kernel-level arbiter for the Blackboard resolving conflicting state mutations from parallel teammates using priority-weighted mission-root rules.
 
+## Evolution: [2026-04-14] Updates
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Isolation**: (P0) Ephemeral, zero-trust execution environment for all discovery-time commands (e.g., `discoveryCommand`, `cliPath` probes) to neutralize CVE-2026-25593.
+- **Consensus-Based Skill Attestation (CBSA) Hub**: (P0) Multi-agent security quorum for marketplace tool discovery, requiring independent behavioral profiling and signatures before promotion to the trusted bus.
+- **Lock-Free Teammate Coordination (LFTC)**: (P0) Sharded, CRDT-based mailbox synchronization service to resolve coordination stalls in horizontal Agent Teams.
+- **Deterministic Boot Manifest Provider**: (P0) Hardware-attested security service generating "Environment Integrity Manifests" (including non-existence proofs) as a mandatory prerequisite for agent execution.
+
 ### Priority Shifts
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **EAP-compliant** environment binding.
 - **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning.

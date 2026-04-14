@@ -1,6 +1,6 @@
 # Design Doc: Hardware-Attested Boot Manifest Provider
 **Status:** Draft
-**Created:** 2026-04-16
+**Created:** 2026-04-10
 
 ## 1. Context and Scope
 With the shift toward "Deterministic Environment Integrity," agents require a verifiable proof that their execution environment (configurations, hooks, local files) is exactly as intended before they boot. The Hardware-Attested Boot Manifest Provider (HABMP) bridges the gap between the Pre-Flight Sandbox Validator and the local TPM. It generates the final, cryptographically bound "Golden Image" of the environment that the agent runtime must verify before execution.
@@ -46,3 +46,10 @@ With the shift toward "Deterministic Environment Integrity," agents require a ve
 
 ## 7. Evolutionary Changelog
 * **2026-04-16:** Initial Document Creation.
+
+### Update: 2026-04-14 - Hardening against cliPath Injection (CVE-2026-25593)
+**Context:** Today's disclosure of the OpenClaw `cliPath` RCE confirms that the boot manifest must attest to the absolute integrity of all configuration-defined binary paths.
+**Architecture Adjustment:**
+* Integrating "Hardware-Attested Binary Fingerprinting" into the boot manifest. All paths defined in discovery configurations (like `cliPath`) must match a TPM-signed hash.
+* Extending "Non-Existence Proofs" to cover potential shadow-binary locations that could be used for hijacking configuration-defined paths.
+**Security Impact:** Prevents RCE by ensuring that even if a configuration is modified, the binaries it points to must be pre-attested by the hardware root.

@@ -46,3 +46,11 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-04-14 - Resolving Mailbox Lock Congestion
+**Context:** Today's market research reveals that horizontal Agent Teams (e.g., Claude Code) are experiencing significant coordination stalls due to synchronous state locks on shared task lists.
+**Architecture Adjustment:**
+* Formally deprecating synchronous state locks in Section 4.
+* Transitioning to a fully sharded, CRDT-based mailbox architecture.
+* Introducing "Priority-Aware Coordination" where urgent mission-root interrupts bypass standard CRDT merge cycles.
+**Security Impact:** Reduces the coordination attack surface by isolating teammate state shards and prevents "Denial of Coordination" attacks via lock exhaustion.
