@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-14] (Iteration 2) Updates
+
+### Proposed Additions
+- **VTD Confidence Scoring**: (P0) Authoritative delegation service utilizing hardware-attested justifications and real-time reasoning confidence to bridge the enterprise trust gap.
+- **Ghost-Handshake Interceptor (GHI)**: (P0) Security middleware for the SRM and MRCP providers that monitors and interdicts unauthorized mission-root initiation signals.
+- **Durable Intent-Bound Continuity**: (P1) Lifecycle extension for the MRCP providing hardware-locked state recovery across framework-neutral handoffs.
+
+### Priority Shifts
+- **Verifiable Task Delegation (VTD)**: (Re-affirmed P0) Elevated with mandatory support for **Confidence-Based Escalation (CBE)**.
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Now elevated with the requirement for **Durable Intent-Bound Continuity**.

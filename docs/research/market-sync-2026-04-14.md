@@ -24,3 +24,10 @@
 ## Security & Vulnerability Scan
 * **CVE-2026-25253 (OpenClaw):** Local loopback RCE via browser-origin hijacking remains a persistent threat for unhardened gateways.
 * **Credential Exfiltration:** Silent redirection of API traffic via base-URL overrides is becoming a common "stealth" attack pattern.
+
+## Iteration 2: Unique Findings (Sync 14:00 UTC)
+
+### Deep Mesh Sovereignty
+* **Finding:** Emergence of "Ghost Handshakes" where subagents attempt to initiate new mission roots without parent attestation.
+* **Pain Point:** Lack of "Justification Artifacts" for autonomous delegation is the primary reason for the 44% manual review bottleneck.
+* **Trend:** Shift toward "Confidence-Based Escalation" where agents self-report uncertainty to trigger human intervention.
