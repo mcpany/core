@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Hardware-Accelerated Attestation Cache (HAAC)**: Recursive inheritance of hardware signatures to neutralize "Attestation Tax". (Added: 2026-07-25)
+*   **[P0] Risk-Adaptive Jitter (RAJ) Middleware**: Dynamic scaling of monotonic jitter based on task-card sensitivity. (Added: 2026-07-25)
+*   **[P0] Zero-Knowledge Mission Discovery (ZKMD)**: Pre-flight capability masking via hardware-attested ZK-proofs. (Added: 2026-07-25)

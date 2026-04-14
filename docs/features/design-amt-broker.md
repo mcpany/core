@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: [2026-07-25] - Resolving Attestation Latency via RAC
+**Context**: Today's market sync revealed that OpenClaw v3.7.0 has successfully implemented "Recursive Attestation Caching" (RAC) to combat the "Attestation Tax" in deep meshes.
+**Architecture Adjustment**:
+- **Inherited Trust Chains**: Implementing a "Hardware-Accelerated Attestation Cache" within the AMT Broker.
+- **RAC Integration**: Allowing sub-nodes to reuse parent hardware signatures for a 300ms "Trust Window" without re-triggering full TPM handshakes.
+- **Fast-Path Mesh Resumption**: Utilizing session-bound "Mesh Tickets" for sub-millisecond tunnel resumption, neutralizing the 200ms+ overhead identified in previous benchmarks.
+**Security Impact**: Maintains absolute sovereignty while matching the execution speed of un-attested meshes.

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Accelerated Attestation Cache (HAAC)**: (P0) Authoritative trust service implementing Recursive Attestation Caching (RAC) to allow subagents to inherit parent signatures, neutralizing the 200ms+ attestation tax in deep meshes.
+- **Zero-Latency Mission Handshake**: (P0) Performance optimization for the AMT Broker utilizing session-bound "Mesh Tickets" to achieve sub-millisecond tunnel resumption across distributed nodes.
+- **Risk-Adaptive Jitter (RAJ) Middleware**: (P0) Advanced side-channel defense dynamically scaling timing variations based on task-card sensitivity and mission-root trust levels.
+- **Dynamic Attention Balancing (DAB) Arbiter**: (P0) Cognitive governance service that monitors specialist agent entropy to dynamically adjust attention-locking (HLAM/ALRA) and prevent constraint suppression.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Evolving into **ZKMD** with the requirement for hardware-attested ZK-proofs for pre-flight capability masking.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **Zero-Latency Mission Handshakes**.
