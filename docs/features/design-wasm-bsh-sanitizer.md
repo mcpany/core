@@ -75,3 +75,11 @@ MCP Any will implement a **WASM-BSH State Sanitizer** that executes state transf
 *   Mandating **Protobuf Schema Hardening**. All BSH fragments must conform to a hardware-signed Protobuf schema. The WASM sanitizer performs byte-level structural validation against the schema without intermediate deserialization.
 *   Introducing **Kernel-Mediated Handoffs**. MCP Any now acts as the authoritative broker for FD-passing. Once a shard is sanitized, its file descriptor is passed to the recipient agent via UNIX domain sockets, ensuring zero-copy memory ingestion.
 **Security Impact**: Eliminates TOCTOU (Time-of-Check to Time-of-Use) vulnerabilities in shared memory and reduces state-transfer latency to sub-millisecond levels.
+
+### Update: 2026-07-25 - Neutralizing Ghost Fragment Exploits (CVE-2026-10203)
+**Context:** Today's market sync revealed a new exploit pattern where dormant instructions are injected into shared memory shards.
+**Architecture Adjustment:**
+* Introducing **Continuous State Re-validation (CSR)**.
+* The WASM-BSH sanitizer now performs recursive scanning of all memory fragments upon every mission-state transition, rather than just at the point of handoff.
+* This ensures that "dormant" payloads are detected before they can be triggered by a sibling agent.
+**Security Impact:** Mitigates the risk of side-channel state injection in persistent shared memory meshes.

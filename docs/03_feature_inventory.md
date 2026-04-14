@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Neural Shard Attestation (NSA) Broker**: (P0) Authoritative model validation service facilitating hardware-attested proofs of model weight integrity for local agents.
+- **Kernel-Mediated Budget Pinning (KMBP)**: (P0) Advanced resource governance layer utilizing OS-level primitives (cgroups/sandbox-exec) to enforce hardware-attested budgets.
+- **Continuous State Re-validation (CSR)**: (P0) Security middleware for shared memory shards that re-validates fragments upon mission-state transitions to detect dormant "Ghost Fragments."
+- **Declarative GC-Immunity Middleware**: (P0) Policy engine allowing users to define declarative rules for pinning reasoning anchors against aggressive context-window pruning.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **KMBP** integration for OS-level enforcement.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Elevated with mandatory support for **Declarative CWPP-compliant** pruning policies.
