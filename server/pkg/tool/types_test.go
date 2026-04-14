@@ -684,3 +684,64 @@ func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
 		assert.Contains(t, err.Error(), "path traversal attempt detected")
 	}
 }
+
+
+func TestIsVulnerableToSchemes(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name     string
+		command  string
+		expected bool
+	}{
+		{"ImageMagick convert", "convert", true},
+		{"ImageMagick mogrify path", "/usr/bin/mogrify", true},
+		{"FFmpeg ffmpeg", "ffmpeg", true},
+		{"FFmpeg ffprobe path", "/usr/local/bin/ffprobe", true},
+		{"Git", "git", true},
+		{"Generic echo", "echo", false},
+		{"Generic curl", "curl", false},
+		{"Python", "python", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := isVulnerableToSchemes(tt.command)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestCheckForDangerousSchemes(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name     string
+		val      string
+		hasError bool
+	}{
+		{"No scheme", "just-some-text", false},
+		{"Allowed HTTP", "http://example.com", false},
+		{"Allowed HTTPS", "https://example.com", false},
+		{"Dangerous file scheme", "file:///etc/passwd", true},
+		{"Dangerous gopher scheme", "gopher://example.com", true},
+		{"Dangerous php scheme", "php://filter/read", true},
+		{"Dangerous ImageMagick scheme mvg", "mvg:/tmp/test.mvg", true},
+		{"Dangerous FFmpeg scheme concat", "concat:file1.txt|file2.txt", true},
+		{"Git ext scheme", "ext::sh -c", true},
+		{"Case insensitive scheme", "FILE:///etc/passwd", true},
+		{"Scheme with valid chars", "my-scheme+1.0://test", false}, // Assuming it's not in the blocklist
+		{"Invalid scheme pattern", "no-scheme:but-colon", false},
+		{"Text with colon", "some valid text: more text", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := checkForDangerousSchemes(tt.val)
+			if tt.hasError {
+				assert.Error(t, err)
+				assert.Contains(t, err.Error(), "dangerous scheme detected")
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}

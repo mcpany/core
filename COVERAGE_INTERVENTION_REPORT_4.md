@@ -1,0 +1,6 @@
+# Coverage Intervention Report
+
+* **Target:** `server/pkg/tool/types.go`
+* **Risk Profile:** This component parses and filters arguments and inputs before feeding them to sub-processes or command-line wrappers. Specifically, the functions `isVulnerableToSchemes` and `checkForDangerousSchemes` are high-risk since they defend against injection flaws via pseudo-protocols (e.g. `file://`, `gopher://`, `php://`) that tools like FFmpeg or ImageMagick often parse directly, enabling Local File Inclusion (LFI), Server-Side Request Forgery (SSRF), or Remote Code Execution (RCE). The lack of coverage here created a blind spot where regressions wouldn't be caught.
+* **New Coverage:** Added strict table-driven test coverage inside `server/pkg/tool/types_test.go` to explicitly guard paths inside `isVulnerableToSchemes` and `checkForDangerousSchemes`. Testing confirms the correct blockage of malicious schemes (`ext::`, `php://`, `mvg:/`, `concat:` etc.) and correct identification of susceptible binaries (like `convert`, `ffprobe`, `git`). It also ensures innocent binaries (`echo`, `curl`) and generic protocols (`http`, `https`) fall through as intended, mitigating false-positives while preserving safety.
+* **Verification:** Confirmed that `bazelisk test //server/pkg/tool:tool_test`, `make test`, and `make lint` passed cleanly.
