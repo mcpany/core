@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Dispatch-Aware Task Arbiter (DATA)**: (P0) Authoritative coordination service utilizing CRDT-based non-blocking state to resolve conflicts across parallel dispatch lanes.
+- **ACP-Native Coordination Bridge**: (P0) Protocol-native service representing legacy MCP and UACO tasks as first-class ACP messages for OpenClaw mesh compatibility.
+- **Pre-Flight Environment Attestation (PEA) Provider**: (P0) Advanced security service mandating hardware-attestation of the entire browser/CLI environment before tool exposure.
+
+### Priority Shifts
+- **Lock-Free Mesh Arbiter (LFMA)**: (Re-affirmed P0) Evolving into **DATA** to support channel-bound coordination in Claude Code teams.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **Fast-Path ACP** optimization to reduce coordination tax.

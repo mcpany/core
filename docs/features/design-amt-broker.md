@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Fast-Path ACP Tunneling
+**Context:** Today's market sync revealed that mandatory P2P tunnels in the OpenClaw SNT standard are introducing significant "Coordination Tax" (50ms+) for high-frequency tool loops.
+**Architecture Adjustment:**
+*   **Fast-Path Resumption:** Implementing "Tunnel Tickets" that allow for sub-millisecond tunnel resumption by caching hardware-attested trust states for a specific mission session.
+*   **ACP Optimization:** The Broker now natively understands ACP (Agent Communication Protocol) headers, allowing for "Pre-Flight Routing" where tool calls are validated and routed before the full payload is decrypted.
+**Security Impact:** Reduces the window of exposure for unauthenticated handshake attempts while maintaining cryptographic sovereignty across the mesh.
