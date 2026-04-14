@@ -1,5 +1,15 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-14] Updates
+
+### Proposed Additions
+- **Ephemeral Discovery Sandbox**: (P0) Ephemeral, zero-trust execution environment for all discovery-time commands (e.g., `discoveryCommand`) to neutralize startup-time RCE.
+- **Context-File Integrity Attestation (CFIA)**: (P0) Security service mandating hardware-attested hash-based signatures for all project-local natural language context files (e.g., `GEMINI.md`) before ingestion.
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Elevated with the requirement for CRDT-native mailbox sharding to resolve 2s+ coordination stalls in high-density horizontal Agent Teams.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning to counter instruction eviction in 1M+ token windows.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

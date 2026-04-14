@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-14 - Ephemeral Discovery Sandbox & Hardware-Attested Manifests
+**Context:** Emerging research identifies `discoveryCommand` as a critical startup-time RCE vector. Malicious project-local configurations can execute code during the tool discovery phase before the primary agent sandbox is fully bound.
+**Architecture Adjustment:**
+*   Implementing **Isolated Discovery Environments** where all discovery logic is executed in an ephemeral, zero-trust sandbox.
+*   Introducing **Hardware-Attested Discovery Manifests**: The results of the sandboxed discovery are cryptographically signed by a local TPM/Secure Enclave before being exposed to the agent.
+**Security Impact:** Neutralizes pre-flight RCE by ensuring that untrusted repository-local hooks cannot access the host machine or exfiltrate data during the tool discovery process.

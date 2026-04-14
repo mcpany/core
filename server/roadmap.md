@@ -374,6 +374,11 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-04-14 Evolution)
+*   **[P0] Context-File Integrity Attestation (CFIA)**: Mandate hardware-attested, hash-based signatures for all project-local context files before ingestion. (Added: 2026-04-14)
+*   **[P0] Ephemeral Discovery Sandbox**: Isolate all discovery-time command execution in zero-trust, network-restricted environments. (Added: 2026-04-14)
+*   **[P0] Lock-Free Teammate Coordination (LFTC)**: Transition to CRDT-native mailbox sharding to resolve coordination stalls in Agent Teams. (Added: 2026-04-14)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)

@@ -46,3 +46,10 @@ As AI agents evolve from hierarchical subagents to horizontal "Agent Teams" (e.g
 
 ## 7. Evolutionary Changelog
 * **2026-03-24:** Initial Document Creation.
+
+### Update: 2026-04-14 - Resolving Coordination Stall in Agent Teams
+**Context:** Claude Code's "Agent Teams" research preview has exposed 2s+ coordination stalls in git-based locking for horizontal swarms.
+**Architecture Adjustment:**
+*   Deprecating git-based mailbox locks in favor of **CRDT-Native Mailbox Sharding**.
+*   Introducing **Conflict-Free Replicated Data Types (CRDTs)** for the shared task list to ensure non-blocking task claiming.
+**Security Impact:** Reduces the coordination surface and eliminates race conditions that lead to "Teammate Mailbox Splicing" vulnerabilities.
