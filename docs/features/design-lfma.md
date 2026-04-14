@@ -59,3 +59,4 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+*   **2026-07-25:** Added support for Deterministic Conflict Arbitration (DCA). Introduced priority-weighted voting for CRDT task claiming to resolve high-density mailbox collisions.
