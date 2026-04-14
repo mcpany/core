@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Structural Environment Sanitizer (SES)**: (P0) Advanced security service performing real-time semantic analysis and sanitization of environment metadata (CVE-2026-27001 defense).
+- **Mesh-Resident Handshake Authority (MRHA)**: (P0) Core identity service issuing hardware-attested, cross-node mission tokens to support Sovereign Node Tunneling.
+- **Dynamic Mesh Routing Firewall**: (P1) Performance-optimizing security middleware that adjusts mesh encryption strength based on real-time tool risk scoring.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **SES-sanitized** metadata transport.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P1) Designated as the primary provider for **ZKP-based** reasoning integrity certificates.
