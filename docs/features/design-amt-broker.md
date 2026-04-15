@@ -62,3 +62,4 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Added support for Lightweight Tunnel Resumption (LTR). Integrated session-bound trust tickets to reduce MTTC in high-frequency multi-node swarms, neutralizing "Tunneling Overhead" detected in Gemini CLI market analysis.

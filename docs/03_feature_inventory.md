@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Predictive Mesh Coordination (PMC) Hub**: (P0) Authoritative swarm trajectory service utilizing real-time intent analysis to proactively re-shard state and pre-allocate resources.
+- **Hardware-Locked Attention Anchors (HLAA)**: (P0) Cognitive security middleware cryptographically pinning mission-critical instructions to hardware-locked attention tiers to prevent GC eviction.
+- **Lightweight Tunnel Resumption (LTR) Middleware**: (P0) Performance-optimizing extension for the AMT broker utilizing session-bound trust tickets and hardware-attested resumption tokens.
+- **Risk-Adaptive Quorum Scaling (RAQS)**: (P0) Dynamic security middleware adjusting quorum size based on real-time tool risk scores and swarm reasoning confidence.
+
+### Priority Shifts
+- **Fast-Path Mesh Resumption**: (Re-affirmed P0) Elevated with the requirement for mandatory **LTR-compliant** trust tickets.
+- **Quorum-Bound Summarization (QBS) Hub**: (Re-affirmed P0) Now elevated with the requirement for **RAQS** integration to prevent consensus exhaustion in high-density teams.
