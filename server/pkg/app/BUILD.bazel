@@ -112,6 +112,7 @@ go_test(
     name = "app_test",
     srcs = [
         "api_alerts_test.go",
+        "api_alignment_test.go",
         "api_audit_test.go",
         "api_auth_test.go",
         "api_collection_apply_test.go",
