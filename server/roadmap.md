@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Tunnel Integrity Monitor (TIM)**: Authoritative service for fragment-level verification of P2P tunneled traffic. (Added: 2026-07-25)
+*   **[P0] Non-Blocking Mesh Resync (NBMR)**: High-speed coordination protocol for rapid state reconciliation during node failover. (Added: 2026-07-25)
+*   **[P1] Differential Reasoning Guard (DRG)**: Privacy middleware utilizing noise-injection to protect reasoning proofs from inference. (Added: 2026-07-25)
+*   **[P0] Task-Bound Ephemeral Enclaves (TBEE)**: Hardware-enclave bound physical isolation for individual high-privilege tasks. (Added: 2026-07-25)

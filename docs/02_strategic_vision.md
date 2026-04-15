@@ -1550,3 +1550,13 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Tunnel Integrity & Non-Blocking State Resync
+**Context**: The discovery of "Tunnel-Splicing" exploits in OpenClaw's SNT and the significant "Resync Latency" during mesh re-sharding in AutoGen confirm that mesh security must be fragment-aware and coordination must be non-blocking. Simultaneously, the rise of "Inference Attacks" on reasoning proofs demands that infrastructure moves from simple Zero-Knowledge proofs to **Differential Reasoning Privacy**.
+
+**Strategic Pivot**:
+- **Tunnel Integrity Monitor (TIM)**: MCP Any will evolve to act as the authoritative "Splicing Guard." We will implement TIM, performing fragment-level semantic verification of all traffic within P2P tunnels to neutralize "Tunnel-Splicing" injections before they reach the reasoning engine.
+- **Non-Blocking Mesh Resync (NBMR)**: To neutralize "Resync Stalls," we are introducing NBMR. This service will host high-speed state reconciliation protocols that allow parallel teammates to resume mission-root contexts during node failover without global coordination locks.
+- **Differential Reasoning Guard (DRG)**: Supporting the DRP standard, MCP Any will implement the DRG. This layer will utilize noise-injection during proof generation to prevent inference attacks on reasoning steps, ensuring that external auditors cannot probe private mission-root constraints.
+- **Task-Bound Ephemeral Enclaves (TBEE)**: We are mandating TBEE for all high-privilege operations. MCP Any will utilize hardware-bound (TPM) enclaves to physically isolate memory regions for individual tasks, preventing cross-task state leakage even within the same mission branch.

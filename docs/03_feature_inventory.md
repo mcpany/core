@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Tunnel Integrity Monitor (TIM)**: (P0) Authoritative service for detecting splice-injection in P2P tunnels via fragment-level verification.
+- **Non-Blocking Mesh Resync (NBMR)**: (P0) High-speed state reconciliation service for sharded meshes during node failover to neutralize coordination stalls.
+- **Differential Reasoning Guard (DRG)**: (P1) Privacy service utilizing noise-injection to neutralize inference attacks on reasoning proofs.
+- **Task-Bound Ephemeral Enclaves (TBEE)**: (P0) Hardware-enclave bound isolation service for individual tasks within a mission branch.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **TIM** integration to counter "Tunnel-Splicing" exploits.
+- **Dynamic Mesh Resilience (DMR) Hub**: (Re-affirmed P0) Now elevated with the requirement for **NBMR-compliant** non-blocking state synchronization.

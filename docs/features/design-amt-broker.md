@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Tunnel-Splicing Injections
+**Context:** Today's market sync revealed a new "Tunnel-Splicing" exploit pattern where malicious subagents can inject unauthorized command fragments into authenticated P2P tunnels during the handshake race condition.
+**Architecture Adjustment:**
+* Introducing the **Tunnel Integrity Monitor (TIM)** middleware in Section 4.
+* TIM performs real-time, fragment-level semantic verification of all traffic within the tunnel, ensuring it perfectly matches the mission-root manifest.
+* Deprecating "Whole-Tunnel" trust in favor of "Fragment-Level" hardware attestation.
+**Security Impact:** Mitigates unauthorized command execution and lateral movement by compromised subagents within the P2P mesh.
