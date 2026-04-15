@@ -61,3 +61,10 @@ LOWA is a mandatory security layer for MCP Any that enforces session-bound authe
 
 ## 7. Evolutionary Changelog
 *   **2026-05-22:** Initial Document Creation.
+
+### Update: 2026-07-25 - Hardening against Browser-Resident Hijacks
+**Context:** Today's market sync revealed the "Glic Jack" (CVE-2026-0628) exploit, proving that browser side panels are high-privilege surfaces prone to unauthorized tool execution.
+**Architecture Adjustment:**
+* Integrating LOWA with the new Glic-Jack Defense (GJD) middleware.
+* Mandating out-of-band (OOB) hardware attestation for any local tool call initiated from a browser-resident surface, even if a valid session token is present.
+**Security Impact:** Prevents hijacked browser panels from silently commanding the gateway using pre-authorized session tokens.
