@@ -203,6 +203,12 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] ZK-Mesh Discovery Dashboard**: UI for reviewing ZK-Capability Proofs and unmasking schemas after mission-handshake. (Added: 2026-07-25)
+- [ ] **[P0] Multi-Modal Trace Auditor**: Forensic UI for reviewing RMMD-sanitized SVG and Audio reasoning fragments. (Added: 2026-07-25)
+- [ ] **[P0] Semantic Lifecycle Monitor**: Real-time visualizer for RARR-based budget reclamation and mission-completion signals. (Added: 2026-07-25)
+- [ ] **[P0] Mesh Handshake Auditor**: Dashboard for tracking hardware-attested mesh identities and inter-node sovereignty events. (Added: 2026-07-25)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)

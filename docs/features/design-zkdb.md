@@ -57,3 +57,10 @@ The Zero-Knowledge Discovery Broker (ZKDB) evolves the discovery process by mand
 
 ## 7. Evolutionary Changelog
 * **2026-07-01:** Initial Document Creation.
+
+### Update: 2026-07-25 - Zero-Knowledge Mesh Discovery (ZKMD)
+**Context:** Today's research from the OpenClaw security collective identifies "Capability Mapping" as a primary reconnaissance vector. Even masked schemas release tool existence, informing rogue subagents of high-value targets.
+**Architecture Adjustment:**
+* Transitioning from "Masked Schemas" to "Cryptographic Invisibility."
+* Implementing ZK-Capability Proofs where agents prove possession of a skill (e.g., SQL) without revealing the tool's existence until a mission-bound handshake.
+**Security Impact:** Prevents pre-flight reconnaissance and reconnaissance-driven prompt injection by keeping the host's high-value toolset invisible to unauthorized mesh peers.

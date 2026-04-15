@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Zero-Knowledge Mesh Discovery (ZKMD)**: Mandate ZK-capability proofs to ensure cryptographic invisibility of host toolsets until mission-bound handshakes. (Added: 2026-07-25)
+*   **[P0] Recursive Multi-Modal Deconstruction (RMMD)**: Advanced semantic deconstruction of SVG/Audio fragments to neutralize CVE-2026-92104. (Added: 2026-07-25)
+*   **[P0] Reasoning-Aware Resource Reclamation (RARR)**: Semantic lifecycle monitoring to forcefully reclaim budgets from "Resource Squatting" subagents. (Added: 2026-07-25)
+*   **[P0] Mesh-Resident Handshake Attestation (MRHA)**: Implementation of hardware-attested mesh identity for cross-node sovereignty. (Added: 2026-07-25)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)

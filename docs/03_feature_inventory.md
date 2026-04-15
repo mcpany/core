@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Zero-Knowledge Mesh Discovery (ZKMD)**: (P0) Authoritative discovery gateway implementing cryptographic capability masking until a mission-bound handshake is completed.
+- **Recursive Multi-Modal Deconstruction (RMMD)**: (P0) Advanced upgrade for the MIB performing real-time semantic deconstruction of SVG reasoning traces and audio metadata to neutralize CVE-2026-92104.
+- **Reasoning-Aware Resource Reclamation (RARR)**: (P0) Semantic lifecycle monitoring service that forcefully reclaims reasoning budgets based on mission-completion signals rather than process exits.
+- **Mesh-Resident Handshake Attestation (MRHA)**: (P0) Security middleware mandating hardware-attested mesh identity for all inter-node discovery and delegation.
+
+### Priority Shifts
+- **Multi-modal Integrity Bridge (MIB)**: (Re-affirmed P0) Elevated with mandatory support for **RMMD-compliant** visual deconstruction.
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Designated as the primary interface for the new **ZKMD** standard.
+- **Active Subagent Reaper**: (Re-affirmed P0) Evolving to support the **RARR** semantic reclamation patterns.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

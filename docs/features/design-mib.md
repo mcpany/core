@@ -42,3 +42,11 @@ The discovery of "Multi-modal Trace Injection" (Context Smuggling via SVG, CSS, 
 
 ## 7. Evolutionary Changelog
 * **2026-05-21:** Initial Document Creation (Upgraded from Semantic Integrity Bridge).
+
+### Update: 2026-07-25 - Recursive Multi-Modal Deconstruction (RMMD)
+**Context:** The disclosure of CVE-2026-92104 reveals a critical vulnerability where imperative instructions hidden in SVG XML metadata or Audio reasoning traces bypass text-only sanitizers.
+**Architecture Adjustment:**
+* Upgrading the MIB to perform **Recursive Deconstruction** of visual and audio fragments.
+* Moving from "Surface Scanning" to "Semantic Tree Analysis" for non-textual data.
+* Mandating the removal of all `comment`, `metadata`, and `script` tags from SVG traces before teammate re-ingestion.
+**Security Impact:** Neutralizes "Visual Logic Injection" side-channels, ensuring that subagents cannot be coerced via hidden multimodal instructions.

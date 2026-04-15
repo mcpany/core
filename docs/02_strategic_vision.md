@@ -48,6 +48,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Zero-Knowledge Capability Sovereignty & Multi-Modal Reasoning Integrity
+**Context**: The emergence of "Discovery Reconnaissance" (mapping host toolsets via unmasked capability schemas) and the disclosure of the "Multi-Modal Logic Injection" exploit (CVE-2026-92104) confirm that transport security is no longer sufficient. We must now protect the **cryptographic invisibility** of host capabilities and provide **recursive deconstruction** for visual reasoning traces. As swarms become more autonomous, "Thinking Loops" demand **Reasoning-Aware Resource Reclamation** to prevent economic stall.
+**Strategic Pivot**:
+- **Zero-Knowledge Mesh Discovery (ZKMD)**: MCP Any will evolve to mandate ZK-capability proofs. Tool schemas and "Agent Cards" will remain cryptographically masked until a hardware-bound mission handshake is verified, preventing rogue subagents from mapping the host's high-value toolsets.
+- **Recursive Multi-Modal Deconstruction**: To neutralize "Logic Injection" via visual side-channels, we are upgrading the MIB. This layer will perform real-time, semantic deconstruction of SVG reasoning traces and audio metadata, ensuring that "Invisible" imperative instructions cannot be re-ingested by the teammate mesh.
+- **Reasoning-Aware Resource Reclamation (RARR)**: Supporting the economic stability of horizontal swarms, MCP Any will implement RARR. We will move beyond simple process heartbeats to semantic "Mission-Completion" monitors that forcefully reclaim token and reasoning budgets from specialist agents who attempt to "squat" in refinement loops.
+- **Mesh-Resident Handshake Attestation (MRHA)**: To counter "Mesh Shadowing," we are mandating MRHA for all inter-node bridges. No capability discovery or task delegation will be accepted unless it is cryptographically bound to a hardware-attested mesh identity, ensuring absolute mission-root sovereignty across distributed nodes.
+
+---
+
 ## Strategic Evolution: [2026-07-06]
 ### Focus: Summarization Sovereignty & Performance-Optimized Side-Channel Defense
 **Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.
