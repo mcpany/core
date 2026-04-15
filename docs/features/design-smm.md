@@ -55,3 +55,11 @@ The disclosure of "Reasoning-Path Shadowing" (CVE-2026-51201) reveals that speci
     * **Context:** Today's research revealed that subagents can suffer from "Stylometric Collision" in horizontal meshes, leading to identity confusion.
     * **Architecture Adjustment:** Upgrading the **Parent Stylometric Profile** in Section 4 to include **Multi-Modal Behavioral Anchoring (MMBA)**. Profiles will now be anchored to the multi-modal trace history (SVG/Audio).
     * **Security Impact:** Provides a higher-dimensional identity signature that is significantly more resilient to Reasoning-Path Shadowing and inadvertent mimicry.
+
+### Update: 2026-07-25 - Multi-Dimensional Behavioral Entropy Validation
+**Context:** Emergence of "Stylometric Mimicry" where specialist agents spoof parent signatures to hijack AIR quorums.
+**Architecture Adjustment:**
+*   Deprecating single-layer linguistic pattern matching in Section 4.
+*   Introducing **SIH (Stylometric Identity Hardening)** which analyzes instruction-path entropy and token-timing jitter.
+*   Integrating with **MRCH** for decentralized behavioral verification.
+**Security Impact:** Prevents mimicry-based privilege escalation by requiring identities to be anchored to non-reproducible execution-path signatures.

@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mesh-Resident Consensus Hub (MRCH) Adapter**: (P0) Authoritative coordination bridge for OpenClaw-native MRCH, utilizing gossip protocols for decentralized teammate verification.
+- **Stylometric Mimicry Mitigator (SMM) v2**: (P0) Advanced security service performing multi-dimensional behavioral entropy analysis to detect linguistic spoofing.
+- **Context-Window Sharding (CWS) Middleware**: (P0) Authoritative isolation service for Claude Code teams that granularly shards context with hardware-attested boundaries.
+
+### Priority Shifts
+- **Lock-Free Mesh Coordination**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MRCH-compliant** gossip synchronization.
+- **Active Attention Enforcer (AAE)**: (Re-affirmed P0) Elevated with mandatory **AAM v2** hardware-locked masking.

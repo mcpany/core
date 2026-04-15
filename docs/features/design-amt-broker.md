@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Consensus-Bound Routing & Mimicry Defense
+**Context:** Today's market sync revealed a new exploit pattern where subagents mimic parent stylometry to bypass tunnel-level security gates.
+**Architecture Adjustment:**
+*   Integrating the **Mesh-Resident Consensus Hub (MRCH)** into the routing logic.
+*   Mandating a multi-agent consensus quorum (Gossip-based) before any AMT tunnel is established for high-privilege tool calls.
+**Security Impact:** Mitigates Stylometric Mimicry by requiring collective teammate attestation rather than relying on a single agent's linguistic identity.
