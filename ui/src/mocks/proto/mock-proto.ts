@@ -397,3 +397,13 @@ export const Credential = {};
  * Mock type for Authentication used in tests.
  */
 export const Authentication = {};
+
+/**
+ * Mock enum for APIKeyAuth_Location used in tests.
+ */
+export enum APIKeyAuth_Location {
+  UNSPECIFIED = 0,
+  HEADER = 1,
+  QUERY = 2,
+  COOKIE = 3,
+}
