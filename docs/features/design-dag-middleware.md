@@ -59,3 +59,10 @@ The Dynamic Attention Gating (DAG) Middleware acts as a cognitive stability laye
 
 ## 7. Evolutionary Changelog
 * **2026-06-13:** Initial Document Creation. Introducing Dynamic Attention Gating to counter Reasoning Entropy Exhaustion (REE) attacks.
+
+### Update: 2026-07-25 - Supporting 2M+ Context Scaling
+**Context:** Today's market sync revealed that Gemini CLI has transitioned to 2M+ token context windows. This scale significantly increases the surface area for REE attacks.
+**Architecture Adjustment:**
+*   **High-Entropy Pruning**: Upgrading the Entropy Analyzer in Section 4 to perform recursive, chunk-based analysis for ultra-large context windows.
+*   **Mission-Root Pinning v2**: Implementing mandatory attention reinforcement for the mission-root fragment every 500k tokens to prevent eviction due to attention-dilution.
+**Security Impact**: Ensures cognitive stability even when processing massive datasets or long-running coordination traces.

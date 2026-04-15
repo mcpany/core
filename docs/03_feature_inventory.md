@@ -1931,6 +1931,14 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Ephemeral Registry Hook (ERH) Provider**: (P0) Authoritative discovery service mandating session-locked, single-use discovery tokens to neutralize registry squatting.
+- **Atomic Scratchpad Arbiter**: (P0) Kernel-level coordination service providing mission-bound atomic write-access to shared project-local workspaces.
+- **Hardware-Locked Identity Resumption (HLIR)**: (P1) Identity service brokering hardware-bound trust renewals to prevent "Identity Decay" in long-running missions.
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+- **Dynamic Attention Gating (DAG) Middleware**: (Re-affirmed P0) Evolving to v2 with mandatory high-entropy pruning for 2M+ context windows.

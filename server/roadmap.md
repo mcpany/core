@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Ephemeral Registry Hook (ERH) Provider**: Authoritative discovery service mandating session-locked, single-use discovery tokens to neutralize registry squatting. (Added: 2026-07-25)
+*   **[P0] Atomic Scratchpad Arbiter**: Kernel-level coordination service providing mission-bound atomic write-access to shared project-local workspaces. (Added: 2026-07-25)
+*   **[P0] Dynamic Attention Gating (DAG) v2**: High-entropy semantic pruning middleware for 2M+ token context windows. (Added: 2026-07-25)
+*   **[P1] Hardware-Locked Identity Resumption (HLIR)**: Trust renewal service to prevent "Identity Decay" in long-running autonomous missions. (Added: 2026-07-25)

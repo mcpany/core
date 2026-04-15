@@ -58,3 +58,10 @@ Claude Code v3.0 has introduced "Agent Teams" that collaborate via a shared proj
 *   **Echo-Immune Fragments**: Mandating monotonic, hardware-bound timestamps for all workspace writes in Section 4.
 *   **Temporal Sharding**: Introducing mission-phase scoped shards, ensuring that fragments from terminated sub-tasks are cryptographically invalidated for future reasoning steps.
 **Security Impact**: Prevents "State Stuttering" and ensures that the swarm maintains a single, forward-moving mission mainline.
+
+### Update: 2026-07-25 - Kernel-Mediated Atomic Synchronization
+**Context:** Claude Code v3.2 has encountered performance bottlenecks with user-space scratchpad locking in horizontal teams.
+**Architecture Adjustment:**
+*   **Atomic Scratchpad Arbiter**: Introducing a kernel-level arbiter in Section 4 that utilizes OS-native file locking (flock/fcntl) for sharded scratchpad fragments.
+*   **Mission-Bound Write-Access**: The arbiter now validates the writer's Mission Root token before granting an atomic lock, ensuring that only authorized teammates can mutate the collaborative state.
+**Security Impact**: Eliminates teammate race conditions and provides a hardware-attested barrier against "Scratchpad Pollution."
