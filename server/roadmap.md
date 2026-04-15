@@ -374,6 +374,12 @@ These features represent the next logical steps for the product, focusing on Ent
 - **Protocol Implementation**: `server/pkg/mcpserver` cleanly separates protocol details from business logic.
 - **Documentation**: The project has excellent documentation coverage for most features.
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Recursive Mission Root (RMR) Orchestrator**: authoritative lineage mint for nested swarms issuing sub-tokens with parent-restricted constraints. (Added: 2026-07-25)
+*   **[P0] CAR Integrity Validator**: real-time security service for validating context-aware routing metrics and neutralizing route hijacking. (Added: 2026-07-25)
+*   **[P1] Blackboard QoS Manager**: priority-weighted state mutation arbiter to resolve "Swarm-Lock" contention in high-density teams. (Added: 2026-07-25)
+*   **[P1] Hierarchical Token Collator**: summarization hub extension for reconciling overlapping context shards in nested hierarchies. (Added: 2026-07-25)
+
 #### Upcoming (2026-04-01 Evolution)
 *   **[P0] Agentic Entropy Monitor (AEM)**: Implementation of real-time reasoning entropy scoring and coherence-based interdiction. (Added: 2026-04-01)
 *   **[P0] GC-Immune Reasoning Anchors**: Advanced context pinning to prevent eviction of mission-root anchors during aggressive context-window GC. (Added: 2026-04-01)

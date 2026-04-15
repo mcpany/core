@@ -9,6 +9,15 @@
 - **Argument-Level Semantic Validation (ALSV)**: To neutralize the shell-fallback and allowlist bypass vulnerabilities seen in OpenClaw, we are mandating ALSV for all command-based tools. MCP Any will perform real-time, semantic analysis of command arguments, blocking any use of unauthorized flags or shell metacharacters.
 - **Teammate Task-Claim Integrity**: We are implementing "Auth-before-Claim" for all teammate coordination. Teammates must provide a hardware-attested mission-root token before claiming tasks from the shared mailbox, ensuring that a compromised specialist agent cannot "hijack" unauthorized work.
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Recursive Mission Sovereignty & Contention-Aware Mesh Governance
+**Context**: The emergence of "Recursive Mission Roots" (RMR) in Claude Code and the introduction of "Context-Aware Routing" (CAR) in OpenClaw confirm that the "Universal Agent Bus" must now move beyond session-bound trust to **nested, lineage-aware sovereignty** and **collision-resistant routing**. Simultaneously, "Swarm-Lock" events in large meshes reveal that stability now depends on the **priority-aware atomicity** of state mutations on the Blackboard.
+**Strategic Pivot**:
+- **Recursive Mission Root (RMR) Orchestrator**: MCP Any will evolve to act as the authoritative "lineage mint" for nested swarms. We will implement RMR, issuing cryptographically bound sub-mission tokens that inherit and explicitly restrict parent mission constraints, ensuring absolute sovereignty across deep, multi-hop delegations.
+- **CAR Integrity Validator**: To neutralize "Route Hijacking" via spoofed semantic density, we are introducing the CAR Validator. This layer will perform real-time, hardware-attested validation of routing metrics, ensuring that tool calls are only diverted to verified, mission-aligned listeners.
+- **Blackboard QoS Manager**: Supporting the stability of high-density Agent Teams, MCP Any will implement a Quality-of-Service (QoS) manager for the Shared KV Store. This service will utilize priority-weighted mission-root rules to resolve "Swarm-Lock" contention, ensuring that safety-critical updates take precedence over background reasoning traces.
+- **Hierarchical Token Collator**: To counter "Intent Fragmentation" during aggressive context compaction, we are evolving the summarization hub to support Hierarchical Token Collation. This ensures that overlapping state fragments between nested teammates are reconciled according to the hierarchical mission-root priority.
+
 ## Mission Statement
 MCP Any aims to be the indispensable core infrastructure layer for all AI agents, subagents, and swarms. It provides a universal adapter and gateway that standardizes how agents interact with tools, manage context, and enforce security policies.
 

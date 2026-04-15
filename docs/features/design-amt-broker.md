@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** **Resolving Route Hijacking in Distributed Meshes**
+    - **Context:** Today's market sync revealed "Route Hijacking" risks in OpenClaw's CAR, where spoofed density metrics divert calls to rogue listeners.
+    - **Architecture Adjustment:**
+        - Integrated **CAR Integrity Validator** into the AMT Broker's connection logic.
+        - Mandating hardware-attested validation of semantic density metrics before tunnel establishment.
+    - **Security Impact:** Prevents a compromised subagent from using CAR to bypass origin-locked listeners via metric spoofing.

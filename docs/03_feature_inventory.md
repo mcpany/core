@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Mission Root (RMR) Orchestrator**: (P0) Authoritative lineage mint for nested swarms, issuing cryptographically bound sub-mission tokens that inherit and restrict parent constraints.
+- **CAR Integrity Validator**: (P0) Real-time security service performing hardware-attested validation of Context-Aware Routing metrics to neutralize route hijacking.
+- **Blackboard QoS Manager**: (P1) Priority-weighted Quality-of-Service manager for the Shared KV Store to resolve "Swarm-Lock" contention in high-density meshes.
+- **Hierarchical Token Collator**: (P1) Advanced summarization middleware reconciling overlapping context fragments between nested teammates according to mission-root priority.
+
+### Priority Shifts
+- **Recursive Intent Delegation (RID) Validator**: (Re-affirmed P0) Elevated with mandatory support for **RMR-compliant** nested swarm attestation.
+- **Subagent Routing Firewall**: (Re-affirmed P0) Elevated with mandatory integration of the **CAR Integrity Validator**.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

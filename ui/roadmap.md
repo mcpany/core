@@ -203,6 +203,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Recursive Mission Root (RMR) Visualizer**: Interactive hierarchical tracer for sub-mission tokens and inherited constraints. (Added: 2026-07-25)
+- [ ] **[P0] CAR Routing Map**: Real-time visualization of tool-call routing based on semantic density, with hijacking alerts. (Added: 2026-07-25)
+- [ ] **[P1] Blackboard QoS Dashboard**: Monitor for KV contention spikes and priority-weighted mutation resolution. (Added: 2026-07-25)
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)
