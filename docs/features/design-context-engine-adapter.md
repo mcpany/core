@@ -53,3 +53,11 @@ The release of OpenClaw v2026.3.7-beta.1's "ContextEngine" has introduced a stan
 * Integrating the **Action-Chain Sovereignty Monitor (ACSM)** into the ContextEngine lifecycle.
 * Mandatory validation of state-transition sequences against the mission-root manifest before plugin-mediated context updates.
 **Security Impact:** Prevents malicious subagents from using pluggable context hooks to "chain" unauthorized system actions at machine speed.
+
+### Update: 2026-07-25 - Universal Sidecar Sovereignty
+**Context:** The stabilization of OpenClaw v2026.3.7's plugin interface and the emergence of "Smart Agent Fragmentation" demand a move toward active **Context Engine Plugin Brokerage**.
+**Architecture Adjustment:**
+* Introducing the **Context Engine Plugin Broker (CEPB)** within the adapter.
+* Implementation of "Fragment-Level Alignment Heartbeats" to ensure pluggable strategies remain anchored to the mission root.
+* Support for GPT-5.4 optimized state handoffs, utilizing binary delta-sync for large context shards.
+**Security Impact:** Neutralizes "Strategy Hijacking" where a compromised plugin could attempt to "Ghost" mission-root anchors during compaction.

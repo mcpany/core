@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Compliance-Bound Governance (CBG)**: (P0) Authoritative compliance service providing hardware-attested, non-repudiable audit logs for EU AI Act traceability.
+- **Context Engine Plugin Broker (CEPB)**: (P0) Core orchestration service formalizing the hosting of framework-neutral context sidecars and "Smart Agent Fragmentation" mitigation.
+- **Trace-Aware Action Provenance Provider**: (P0) Security middleware cryptographically linking system actions to verified reasoning fragments to neutralize "Shadow Actions."
+
+### Priority Shifts
+- **Context Engine Plugin Adapter**: (Promoted from P1 to P0) Now elevated to a critical requirement for supporting the new **CEPB** architecture and OpenClaw v2026.3.7 compatibility.
+- **MissionAuditTrail (Observability)**: (Re-affirmed P0) Elevated with mandatory support for **CBG-compliant** legal attestation.
