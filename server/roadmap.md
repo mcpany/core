@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Memory-Mapped Intent Barriers (MMIB)**: authoritative host for kernel-mediated intent barriers utilizing shared-memory regions. (Added: 2026-07-25)
+*   **[P0] Dynamic Consent Relay (DCR)**: cryptographic consent-chaining middleware facilitating hardware-attested relaying of user approval. (Added: 2026-07-25)
+*   **[P0] Mirror-Splice Firewall (MSF)**: cognitive security middleware for cryptographic validation of background recovery buffers. (Added: 2026-07-25)
+*   **[P1] Step-Up Mission Attestation**: dynamic hardware-bound re-verification service based on Agentic Entropy triggers. (Added: 2026-07-25)

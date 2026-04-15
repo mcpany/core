@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Memory-Mapped Intent Barriers (MMIB) Broker**: (P0) Authoritative host for kernel-mediated intent barriers utilizing shared-memory regions for lock-free, atomic coordination in high-density horizontal swarms.
+- **Dynamic Consent Relay (DCR) Middleware**: (P0) Advanced security service facilitating hardware-attested "relaying" of user consent tokens across subagent boundaries to neutralize approval fatigue.
+- **Mirror-Splice Firewall (MSF)**: (P0) Cognitive security middleware performing real-time, high-entropy scanning of background recovery buffers (Semantic Mirroring) to prevent unauthorized instruction injection.
+- **Step-Up Mission Attestation**: (P1) High-entropy stability service dynamically requiring hardware-bound re-verification when Agentic Entropy Scores signal potential intent divergence.
+
+### Priority Shifts
+- **Multi-Hop Trust Persistence**: (Re-affirmed P0) Elevated with the requirement for mandatory **DCR-compliant** consent relaying across deep meshes.
+- **Active Intent Alignment**: (Re-affirmed P0) Elevated with the requirement for mandatory **MSF-compliant** scanning of background recovery buffers.
