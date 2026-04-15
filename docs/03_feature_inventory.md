@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Temporal Mesh Resumption (TMR) Gateway**: (P0) Authoritative temporal broker utilizing MRT-compliant session tokens to facilitate sub-millisecond mission resumption across distributed nodes.
+- **ZK-Lease Provider**: (P0) Security service brokering hardware-attested, zero-knowledge capability proofs to reduce the compute overhead of ZKLV generation.
+- **Monotonic Reasoning Attestation (MRA) Provider**: (P0) Identity service cryptographically binding reasoning fragments to monotonic counters to neutralize "Replay-as-Delegation" attacks.
+
+### Priority Shifts
+- **Federated Consensus Hub**: (Re-affirmed P0) Elevated with the requirement for mandatory **MNQH-compliant** multi-node signal aggregation.
+- **Privacy-Preserving Audit (PPA) Hub**: (Promoted from P1 to P0) Critical for providing hardware-attested reasoning proofs without context exposure, aligning with Claude Code v3.3.0 ZKLV standards.
