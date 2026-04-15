@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Tunnel-Splitting Interceptor (TSI)**: (P0) Authoritative security service mandating Recursive Origin Validation for all tool calls within P2P mesh tunnels to prevent lateral network movement.
+- **Biometric-Bound Identity (BBI) Provider**: (P1) Identity middleware providing hardware-attested tokens that require physical biometric re-attestation (BBSA-compliant).
+- **Leased Biometric Attestation (LBA) Manager**: (P1) Performance-optimizing service for managing time-bound, hardware-locked biometric leases to reduce coordination latency.
+
+### Priority Shifts
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Elevated with mandatory support for **Entropy-Aware Behavioral Signal Analysis (EABSA)** to neutralize Probabilistic Intent Masking (PIM).
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Designated as the primary enforcement point for the new **Tunnel-Splitting Interceptor (TSI)**.

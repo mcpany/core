@@ -61,3 +61,9 @@ The ZKSA Provider enables subagents to generate cryptographic proofs that their 
 **Architecture Adjustment:** * Integrating ZK-proofs with the DMR Hub state migration protocol.
 * Introducing a new circuit for "Migration-Bound State Consistency" to ensure migrated shards maintain policy compliance on the destination node.
 **Security Impact:** Prevents state corruption or policy bypass during automated node failover.
+
+### Update: 2026-07-25 - Integration with Probabilistic Intent Masking (PIM)
+**Context:** Gemini CLI v0.59.0 introduced PIM to protect reasoning privacy via intentional entropy injection, validating the need for privacy-preserving attestation.
+**Architecture Adjustment:** * Expanding the ZKSA Provider to support "Entropy-Tolerant Proofs."
+* Introducing PPRP-compliant circuits that can attest to mission-conformance even when reasoning traces are intentionally masked with PIM-generated entropy.
+**Security Impact:** Ensures that models using probabilistic masking can still provide hardware-attested proof of safety without exposing their internal reasoning state.

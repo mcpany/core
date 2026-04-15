@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Tunnel-Splitting Exploits
+**Context:** Today's market sync revealed a new "Tunnel-Splitting" exploit in OpenClaw v3.6.2 where agents bridge into host networks via established tunnels.
+**Architecture Adjustment:** * Mandating "Recursive Origin Validation" in Section 4.
+* Introducing the Tunnel-Splitting Interceptor (TSI) middleware to re-validate individual tool-call origins against the mission root for every tunneled request.
+**Security Impact:** Mitigates unauthorized host-level network access by compromised subagents within verified P2P tunnels.
