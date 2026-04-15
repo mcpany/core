@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-15] Updates
+
+### Proposed Additions
+- **Process-Bound NHI Provider**: (P0) Authoritative identity service issuing hardware-bound tokens tied to the execution process, ensuring sovereignty for headless agents.
+- **Discovery-Phase Injection Shield**: (P0) Ephemeral sandbox extension for the PNTD provider that validates discovery-time commands (e.g., `discoveryCommand`) to prevent Ghost-Execution.
+- **Dynamic Boundary Negotiator**: (P1) Lifecycle middleware allowing agents to request attested expansions of their sandbox scope (e.g., for parallel Git worktrees).
+- **Narrative Continuity Broker**: (P1) Shared state service leveraging the "Chapters" standard to maintain mission intent across process restarts and sub-sessions.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with mandatory **Injection-Shielding** for all project-local tool discovery.
+- **NHI Lifecycle Governance Provider**: (Re-affirmed P0) Now elevated with the requirement for **Process-Bound Identity** support for headless CI/CD missions.

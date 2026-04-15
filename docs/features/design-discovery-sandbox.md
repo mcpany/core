@@ -50,3 +50,10 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-15 - Headless Discovery Shielding
+**Context:** Today's research on headless agent shifts (Claude Code Remote Control) and "Ghost-Execution" confirms that discovery-phase security must be process-aware and persistent.
+**Architecture Adjustment:**
+* Introducing "Process-Bound Discovery Tokens" that bind tool metadata fetched during the pre-flight phase to the specific PID of the discovering agent.
+* Implementing "Asynchronous Injection Scanning" for discovery commands in headless CI/CD environments.
+**Security Impact:** Prevents "Session Hijacking" where a rogue process attempts to claim discovery results from an authorized headless mission.
