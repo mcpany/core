@@ -51,3 +51,10 @@ The March 2026 Oasis Security report revealed that OpenClaw's implicit trust of 
     *   **Context:** Today's market sync revealed a new exploit where recursive symlinks in project-local configs allow sandbox escape.
     *   **Architecture Adjustment:** Introducing the `Inode-Aware Symlink Validator` into the configuration discovery pipeline.
     *   **Security Impact:** Prevents filesystem traversal outside of the project root by resolving all symlinks and validating target inodes against an "Approved Root" registry before any file I/O or tool discovery occurs.
+
+### Update: 2026-07-25 - WebSocket Session Pinning (CVE-2026-25253 Defense)
+**Context:** Market synchronization revealed advanced exploitation patterns for the WebSocket Hijack vulnerability, where malicious browser scripts exploit implicit local trust to command AI agents.
+**Architecture Adjustment:**
+*   **Origin-Bound Session Pinning**: Introducing a mandatory cryptographic binding between the agent session token and the initiating browser/CLI `Origin`.
+*   **Session-Migration Interdiction**: Any attempt to use a session token from a different origin or after a header mismatch will trigger immediate session termination and hardware-attested re-authentication.
+**Security Impact:** Neutralizes CVE-2026-25253 by ensuring that even if a token is exfiltrated, it is unusable outside the verified, origin-locked context.

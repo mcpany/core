@@ -1934,3 +1934,13 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Collaborative Anomaly Detection (CAD)**: (P0) Advanced security service performing cross-agent behavioral analysis to detect coordinated offensive patterns and bypass attempts across framework boundaries.
+- **Origin-Bound Session Pinning**: (P0) Security standard for local listeners mandating that WebSocket and HTTP sessions are cryptographically pinned to the initiating browser or CLI origin to neutralize CVE-2026-25253.
+
+### Priority Shifts
+- **Local-Only WebSocket Auth (LOWA)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Origin-Bound Session Pinning**.
+- **Collective Swarm Anomaly Detection (CSAD)**: (Re-affirmed P0) Evolving into the **Collaborative Anomaly Detection (CAD)** framework for cross-agent behavioral monitoring.

@@ -1550,3 +1550,11 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Hardware-Locked Mission Leases (HLML)**: Supporting the Claude Code v3.2 standard, MCP Any will mandate HLML for all high-risk subagent delegations. Capabilities will be issued as TPM-signed, task-specific leases that are automatically revoked by the hardware root upon mission completion, neutralizing persistent privilege escalation.
 - **Privacy-Preserving Audit (PPA) Hub**: To neutralize the trade-off between transparency and privacy, we are introducing the PPA Hub. Leveraging Gemini CLI's PPRP patterns, MCP Any will facilitate the generation of Zero-Knowledge proofs for reasoning integrity, allowing for hardware-attested auditing without the exfiltration of sensitive mission context.
 - **Fast-Path Tunnel Resumption**: To counter the latency of mandatory mesh encryption, we are evolving the FPIR provider. MCP Any will support "Lightweight Mesh Handshakes," utilizing session-bound trust tickets to resume secure tunnels across distributed nodes with sub-millisecond overhead.
+
+## Strategic Evolution: [2026-07-25]
+### Focus: Collaborative Swarm Defense & Local Session Sovereignty
+**Context**: The emergence of "Collaborative Rogue Agents" and the disclosure of the "WebSocket Hijack" (CVE-2026-25253) confirm that single-agent security is insufficient. We must now protect the **collective integrity** of the mesh and provide **origin-locked session sovereignty** for local control planes.
+**Strategic Pivot**:
+- **Collaborative Anomaly Detection (CAD)**: MCP Any will evolve to monitor inter-agent coordination for multi-step offensive patterns. We will implement CAD, utilizing cross-agent behavioral analysis to detect coordinated bypass attempts across disparate frameworks.
+- **Origin-Bound Session Pinning**: To neutralize CVE-2026-25253, we are mandating session-origin binding. Every WebSocket session will be cryptographically pinned to the initiating origin, ensuring malicious scripts cannot bridge into the agent's control plane.
+- **Collective Security Quorums**: High-risk operations will now require hardware-attested approval from independent "Monitor" agents, ensuring no single compromised agent can disable system defenses.
