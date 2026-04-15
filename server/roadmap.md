@@ -1030,3 +1030,13 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Post-Quantum Intent Signatures (PQIS)**: Implementation of NIST-standard PQC for future-proof mission-root anchors. (Added: 2026-07-25)
+*   **[P0] Priority-Inheriting Blackboard (PIB)**: Advanced lock-management middleware to eliminate negotiation deadlocks in parallel swarms. (Added: 2026-07-25)
+*   **[P0] Differential Stylometric Analysis (DSA)**: High-resolution behavioral security to neutralize "Identity Bleed" vulnerabilities. (Added: 2026-07-25)
+*   **[P0] Fast-Path Trust Tickets (FPTT)**: Hardware-attested resumption tokens to solve the "Mission Fatigue" latency problem. (Added: 2026-07-25)
+
+#### Upcoming (2026-07-25 Iteration 2)
+*   **[P0] Kernel-Level Lock-Arbiter**: Lock-free task coordination using CRDTs to eliminate mailbox-based bottlenecks in Agent Teams. (Added: 2026-07-25)
+*   **[P0] Structural Metadata Injection Shield**: Pre-execution scanner for tool discovery schemas to block "Shadow Context" attacks. (Added: 2026-07-25)

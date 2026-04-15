@@ -52,3 +52,10 @@ The Cyera Research report (2026) on Gemini CLI vulnerabilities has highlighted t
 * Integrating ALSV into the Pre-Hook phase of the Command Adapter.
 * Transitioning from simple allowlisting to "Binary Security Profiles" that define authorized flags and value patterns.
 **Security Impact:** Prevents flag-based hijacking (e.g., `--compress-program`) and eliminates shell-fallback injection vectors.
+
+### Update: 2026-07-25 - Neutralizing Structural Metadata Injections
+**Context:** Today's market sync revealed that attackers are shifting from tool-call arguments to the tool discovery phase, utilizing malicious instructions in tool descriptions and schemas (Shadow Context Injection) to hijack agent reasoning.
+**Architecture Adjustment:**
+* Mandating structural validation for all JSON-RPC schemas and tool metadata during the discovery phase.
+* Implementing a "Structural Sanitizer" that strips imperative instructions from high-trust fields before they are exposed to the LLM.
+**Security Impact:** Prevents "Inference-Time Exploitation" where an agent is coerced by its own tool definitions into unauthorized behavior.

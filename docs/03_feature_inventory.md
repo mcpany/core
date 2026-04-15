@@ -1934,3 +1934,26 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Post-Quantum Intent Signatures (PQIS) Provider**: (P0) Authoritative security service implementing NIST-standard quantum-resistant algorithms for mission-root anchors.
+- **Priority-Inheriting Blackboard (PIB) Arbiter**: (P0) Advanced state management service that implements priority-inheritance protocols to prevent negotiation deadlocks.
+- **Differential Stylometric Analysis (DSA) Middleware**: (P0) Behavioral security extension for the SIV provider that performs contrastive reasoning analysis to prevent stylometric collision.
+- **Fast-Path Trust Ticket (FPTT) Broker**: (P0) Performance-optimizing identity service providing hardware-attested trust tickets for low-latency mission resumption.
+
+### Priority Shifts
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Evolving into the **PIB Arbiter** to support priority-aware conflict resolution.
+- **Stylometric Identity Verifier (SIV)**: (Re-affirmed P0) Elevated with mandatory **DSA** integration to counter Identity Bleed.
+
+## Evolution: [2026-07-25] (Iteration 2) Updates
+
+### Proposed Additions
+- **Kernel-Level Lock-Arbiter**: (P0) High-performance coordination service utilizing CRDT-based task claiming to resolve mailbox-based coordination stalls in Agent Teams.
+- **Structural Metadata Injection Shield**: (P0) Pre-execution scanning layer for tool discovery metadata and configuration hooks to block "Shadow Context" injections (Gemini CLI defense).
+- **Cross-Framework A2A Handshake Provider**: (P1) Security middleware mandating hardware-attested handshakes for inter-vendor agent coordination (MCP/A2A consolidation).
+
+### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Designated as the primary enforcement point for the new **Kernel-Level Lock-Arbiter**.
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Elevated with mandatory **Structural Metadata** scanning to counter discovery-time exploits.
