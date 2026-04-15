@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Attested Action-Chain (HAAC) Validator**: (P0) Authoritative workflow notary service that cryptographically binds agent action sequences to a hardware-attested mission root to prevent supply-chain hijacking.
+- **Zero-Trust Metadata Schema (ZTMS) Sanitizer**: (P0) Advanced security service performing semantic deconstruction of discovery-time metadata to neutralize "Agent Card Poisoning."
+- **Lock-Free Consensus Arbiter (LFCA)**: (P0) Sharded coordination service utilizing CRDTs for teammate synchronization to eliminate "Cognitive Stall" in horizontal swarms.
+- **Zero-Knowledge Metadata Proofs (ZKMP)**: (P1) Identity extension for the PPA Hub allowing agents to attest to metadata-bound capabilities without context exposure.
+
+### Priority Shifts
+- **Action-Chain Sovereignty Monitor (ACSM)**: (Re-affirmed P0) Elevated with mandatory **HAAC-compliant** workflow notary integration.
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Evolving into the **ZTMS Sanitizer** for deep semantic deconstruction of discovery schemas.
