@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Fragment-Level Hash-Chaining (FLHC) Provider**: (P0) Authoritative security service mandating cryptographic hash-chaining for all shared teammate reasoning fragments to neutralize "Fragment Splicing" exploits.
+- **Optimistic Interdiction Gateway (OIG)**: (P0) High-performance coordination middleware allowing speculative execution of low-risk tool calls during asynchronous sovereignty attestation.
+- **Trust-Seeded Migration Provider**: (P0) Advanced identity service issuing hardware-attested trust seeds for low-latency cross-device agent migration.
+- **Team-wide Inode Consistency Enforcer**: (P0) Security extension for the DAIP middleware ensuring mesh-wide Inode pinning and "Global Truth" for shared configurations.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **Trust-Seeded** migration paths.
+- **Atomic Reasoning Integrity (ARI) Validator**: (Re-affirmed P0) Evolving to act as the primary interface for **FLHC-compliant** fragment verification.
