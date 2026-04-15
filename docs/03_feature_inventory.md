@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Sovereign Shard Migration (SSM) Hub**: (P0) Authoritative coordination service for hardware-attested migration of "Entangled State Shards" between heterogeneous nodes.
+- **Teammate Reflection Quorum (TRQ) Broker**: (P0) Distributed verification service mandating hardware-attested cross-verification of internal monologues between parallel teammates.
+- **Salience-Salted Attention Masking (SSAM) Provider**: (P0) Advanced cognitive security middleware adding mission-bound "Cognitive Salt" to every shard-level attention mask (CVE-2026-94002 defense).
+- **Economic Value-of-Thought (EVoT) Attestation Provider**: (P1) Resource management service providing hardware-attested reconciliation of reasoning effort with real-time token costs.
+
+### Priority Shifts
+- **Distributed Memory Enclave (DME) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **SSM-compliant** shard migration support.
+- **Active Intent Alignment (AIA) Broker**: (Re-affirmed P0) Evolving to act as the primary coordination backend for the **TRQ Broker**.
+- **Hardware-Locked Attention Masking (HLAM)**: (Re-affirmed P0) Elevated with mandatory **SSAM** salting to neutralize attention-density probes.
