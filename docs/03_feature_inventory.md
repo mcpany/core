@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Trust-Token Aggregation Hub**: (P0) Performance-optimizing service for multi-node meshes allowing multiple inter-node tool calls to be batched into a single hardware-attested session.
+- **Hardware-Locked Attention Mask (HLAM) Provider**: (P0) Cognitive security service mandating GC-immune pinning of mission-root anchors at the LLM attention layer.
+- **Asynchronous Mesh Conflict Resolver**: (P0) Authoritative coordination service for horizontal Agent Teams utilizing priority-weighted mission-root rules to resolve task-bidding deadlocks in the background.
+- **Mesh-Resident Token Validator**: (P0) Security middleware facilitating sub-millisecond, mesh-local session token rotation and verification to neutralize "Attestation Replay" attacks.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Trust-Token Aggregation** to mitigate tunneling overhead.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Evolving into **HLAM** for hardware-guaranteed immunity against context garbage collection.
