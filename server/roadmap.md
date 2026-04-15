@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Plan-Mode Verification Middleware (PVN)**: Authoritative auditing service performing hardware-attested validation of agent-generated mission plans before execution. (Added: 2026-07-25)
+*   **[P0] Universal Episodic Graph (UEG)**: Authoritative storage middleware evolving the Shared KV Store into a hardware-attested graph database for durable mission persistence. (Added: 2026-07-25)
+*   **[P1] Epistemic Attestation Service**: Identity service issuing hardware-signed "Confidence Proofs" for state mutations to counter silent hallucination. (Added: 2026-07-25)
+*   **[P1] Multi-Node Mesh Sovereignty (MNMS) Bridge**: Orchestration middleware providing hardware-attested identity fragments that persist across multi-node agent migrations. (Added: 2026-07-25)

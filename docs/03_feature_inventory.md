@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Plan-Mode Verification Middleware (PVN)**: (P0) Authoritative auditing service performing hardware-attested validation of agent-generated mission plans before execution.
+- **Universal Episodic Graph (UEG) Memory Broker**: (P0) Authoritative storage middleware evolving the Shared KV Store into a hardware-attested graph database for durable mission persistence.
+- **Epistemic Attestation Service**: (P1) Identity service issuing hardware-signed "Confidence Proofs" for state mutations to counter silent hallucination.
+- **Multi-Node Mesh Sovereignty (MNMS) Bridge**: (P1) Orchestration middleware providing hardware-attested identity fragments that persist across multi-node agent migrations.
+
+### Priority Shifts
+- **Plan-Mode Verification Middleware (PVN)**: (Designated P0) Critical for neutralizing "Plan-Level Injection" in terminal-based agents.
+- **Universal Episodic Graph (UEG)**: (Re-affirmed P0) Elevated with mandatory hardware-attested lineage for cross-node persistence.
