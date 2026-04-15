@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-15 Iteration 2)
+*   **[P0] Per-Agent Identity Mint (PAIM)**: Authoritative identity service for frameworks lacking native scoped authorization. (Added: 2026-04-15)
+*   **[P0] Memory Integrity Guard (MIG)**: Real-time reasoning memory protection via semantic hash-chaining. (Added: 2026-04-15)
+*   **[P1] Zero-Trust Framework Adapter**: Retroactive identity injection for OpenClaw, CrewAI, and AutoGen. (Added: 2026-04-15)

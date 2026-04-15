@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-15] (Iteration 2) Updates
+
+### Proposed Additions
+- **Per-Agent Identity Mint (PAIM)**: (P0) Authoritative identity service issuing hardware-attested tokens to subagents in frameworks that lack native scoped authorization.
+- **Memory Integrity Guard (MIG)**: (P0) Real-time reasoning memory protection performing semantic hash-chaining of the "chain-of-thought" to prevent control-flow hijacking.
+- **Zero-Trust Framework Adapter**: (P1) Security bridge that injects PAIM-based identity into existing framework interactions (e.g., OpenClaw, CrewAI) to retroactively secure unscoped API keys.
+
+### Priority Shifts
+- **Identity-Bound Discovery (IBD)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PAIM** token validation.
+- **Semantic Integrity Bridge**: (Evolved to MIG) Now designated as the primary defense against "Memory Control-Flow" attacks.
