@@ -1931,6 +1931,14 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Intent-Aware Mesh Balancer (IAMB)**: (P0) Authoritative traffic architect dynamically routing tool calls across hardware-attested tunnels based on mission priority.
+- **Synthetic Context Sidecar (SCS) Broker**: (P0) Coordination service facilitating TCWS-compliant "Context Synthesis" to reduce redundant mission-root instructions.
+- **Attention-to-Noise (AtN) Ratio Controller**: (P0) Cognitive security middleware monitoring semantic entropy to mask low-utility noise and preserve behavioral guardrails.
+- **Hardware-Attested State Replay (HASR) Validator**: (P0) Debugging service facilitating TPM-signed execution logs for deterministic, graft-resistant session replays.
+
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.

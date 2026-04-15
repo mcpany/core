@@ -62,3 +62,9 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Intent-Aware Load Balancing (IALB)
+**Context:** Today's market sync revealed OpenClaw v3.6.2's implementation of IALB to prevent coordination stalls.
+**Architecture Adjustment:** * Integrating Intent-Aware Mesh Balancer (IAMB) logic into Section 4.
+* Prioritizing tool calls across sharded AMT tunnels based on semantic intent headers.
+**Security Impact:** Ensures high-priority mission reasoning fragments are never throttled by background telemetry, preserving mission-root sovereignty.
