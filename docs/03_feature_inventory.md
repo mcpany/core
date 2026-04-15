@@ -1934,3 +1934,27 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Predictive Mesh Handshaker (PMH)**: (P0) Advanced extension for the AMT Broker that speculative warms P2P handshakes based on task probability to neutralize coordination latency.
+- **Universal Hardware-Lease Provider (UHLP)**: (P0) Authoritative broker for lease interoperability, translating framework-specific TPM-signed leases (e.g., Claude Code MBHL) into a unified mission-bound manifest.
+- **Coherence Anchor Enforcer (CAE)**: (P0) Stability service utilizing GC-Immune pinning to prevent mission-root eviction and "Coherence Collapse" in high-density swarms.
+- **Speculative Shard Prefetcher**: (P1) Optimization service that pre-loads context shards into high-speed buffers based on PMH task signals.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory support for **PMH-compliant** speculative warming.
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Designated as the primary enforcement mechanism for the **Coherence Anchor Enforcer (CAE)**.
+
+## Evolution: [2026-07-26] Updates
+
+### Proposed Additions
+- **Atomic Truth Reconciliation (ATR) Hub**: (P0) Authoritative knowledge arbiter utilizing hardware-attested "Truth Tables" to ensure epistemic isolation and consistency.
+- **Universal Lease Relay (ULR) Middleware**: (P0) Security middleware facilitating depth-invariant propagation of hardware-attested capability leases across multi-hop delegations.
+- **Active Logic Anchoring (ALA)**: (P0) Pre-reasoning anchor provider that cryptographically binds behavioral seeds to neutralize context-injected instructions.
+- **Predictive Shard Warmer**: (P1) Optimization service that pre-attests and hydrates truth shards based on speculative task signals.
+
+### Priority Shifts
+- **Universal Hardware-Lease Provider (UHLP)**: (Re-affirmed P0) Elevated with mandatory support for **ULR-compliant** multi-hop propagation.
+- **Coherence Anchor Enforcer (CAE)**: (Re-affirmed P0) Elevated with the requirement for **ALA-compliant** pre-reasoning seeds.

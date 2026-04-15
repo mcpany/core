@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+    ### Update: 2026-07-25 - Predictive Mesh Handshaking (PMH)
+    **Context:** Today's market sync revealed OpenClaw v3.6.2 testing "Predictive Tunneling" to reduce coordination latency.
+    **Architecture Adjustment:**
+    *   Introducing speculative handshake warming in Section 4.
+    *   AMT Broker will now pre-attest remote nodes based on upcoming task probability signals from the Universal Episodic Graph.
+    **Security Impact:** Reduces "Cognitive Stall" without bypassing hardware-attested handshakes; maintains zero-trust while improving MTTC.
