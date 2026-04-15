@@ -1829,3 +1829,82 @@ func TestHandleSecretDetail_Put_InvalidJSON(t *testing.T) {
 		t.Errorf("Expected 400 Bad Request, got %d", w.Code)
 	}
 }
+
+func TestReadBodyWithLimit(t *testing.T) {
+	t.Run("UnderLimit", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader("hello"))
+		w := httptest.NewRecorder()
+
+		body, err := readBodyWithLimit(w, req, 10)
+		assert.NoError(t, err)
+		assert.Equal(t, []byte("hello"), body)
+	})
+
+	t.Run("OverLimit", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader("hello world"))
+		w := httptest.NewRecorder()
+
+		body, err := readBodyWithLimit(w, req, 5)
+		assert.Error(t, err)
+		assert.Nil(t, body)
+
+		var maxBytesErr *http.MaxBytesError
+		assert.True(t, errors.As(err, &maxBytesErr))
+		assert.Equal(t, http.StatusRequestEntityTooLarge, w.Code)
+	})
+}
+
+func TestCheckFilesystemAccess(t *testing.T) {
+	tempDir := t.TempDir()
+
+	t.Run("Exists", func(t *testing.T) {
+		assert.NoError(t, checkFilesystemAccess(tempDir))
+	})
+
+	t.Run("NotExists", func(t *testing.T) {
+		assert.Error(t, checkFilesystemAccess(filepath.Join(tempDir, "nonexistent")))
+	})
+}
+
+func TestCheckCommandAvailability(t *testing.T) {
+	t.Run("Empty", func(t *testing.T) {
+		assert.Error(t, checkCommandAvailability("", ""))
+	})
+
+	t.Run("InPath", func(t *testing.T) {
+		// 'ls' should be available in standard unix-like environments
+		assert.NoError(t, checkCommandAvailability("ls", ""))
+	})
+
+	t.Run("NotInPath", func(t *testing.T) {
+		assert.Error(t, checkCommandAvailability("nonexistentcommandthatshouldnotexist123", ""))
+	})
+
+	t.Run("AbsoluteExists", func(t *testing.T) {
+		// Use a common executable like /bin/sh
+		if _, err := os.Stat("/bin/sh"); err == nil {
+			assert.NoError(t, checkCommandAvailability("/bin/sh", ""))
+		}
+	})
+
+	t.Run("AbsoluteNotExists", func(t *testing.T) {
+		assert.Error(t, checkCommandAvailability("/path/to/nonexistent/executable", ""))
+	})
+
+	t.Run("WorkDirValid", func(t *testing.T) {
+		tempDir := t.TempDir()
+		assert.NoError(t, checkCommandAvailability("ls", tempDir))
+	})
+
+	t.Run("WorkDirInvalid", func(t *testing.T) {
+		tempDir := t.TempDir()
+		assert.Error(t, checkCommandAvailability("ls", filepath.Join(tempDir, "nonexistent")))
+	})
+
+	t.Run("WorkDirIsFile", func(t *testing.T) {
+		tempDir := t.TempDir()
+        file := filepath.Join(tempDir, "file.txt")
+        os.WriteFile(file, []byte("test"), 0644)
+		assert.Error(t, checkCommandAvailability("ls", file))
+	})
+}
