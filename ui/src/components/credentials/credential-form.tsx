@@ -175,18 +175,24 @@ export function CredentialForm({ initialData, onSuccess }: CredentialFormProps) 
         // Better to use form values
         // Reuse logic from onSubmit
         const values = form.getValues()
-        const auth: Authentication = {}
+        const auth: any = {}
         if (values.authType === "api_key") {
-            auth.apiKey = {
-                paramName: values.apiKeyParamName || "X-API-Key",
-                in: parseInt(values.apiKeyLocation || "0") as APIKeyAuth_Location,
-                value: { plainText: values.apiKeyValue || "", validationRegex: "" },
-                verificationValue: ""
+            auth.api_key = {
+                param_name: values.apiKeyParamName || "X-API-Key",
+                in: parseInt(values.apiKeyLocation || "0"),
+                value: { plain_text: values.apiKeyValue || "", validation_regex: "" },
+                verification_value: ""
             }
         } else if (values.authType === "bearer_token") {
-             auth.bearerToken = { token: { plainText: values.bearerToken || "", validationRegex: "" } }
+            auth.bearer_token = {
+                token: { plain_text: values.bearerToken || "", validation_regex: "" }
+            }
         } else if (values.authType === "basic_auth") {
-            auth.basicAuth = { username: values.basicUsername || "", password: { plainText: values.basicPassword || "", validationRegex: "" }, passwordHash: "" }
+            auth.basic_auth = {
+                username: values.basicUsername || "",
+                password: { plain_text: values.basicPassword || "", validation_regex: "" },
+                password_hash: ""
+            }
         } else if (values.authType === "oauth2") {
              // For OAuth2, test connection might mean using the stored token?
              // Or verifying the config?
