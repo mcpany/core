@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Pre-emptive Resumption Tickets
+**Context:** Market sync revealed that 150ms+ P2P handshake latency is impacting high-frequency distributed swarms.
+**Architecture Adjustment:** * Introducing "Speculative Resumption Tickets" (SRT).
+* Brokers will now pre-emptively mint and rotate SRTs during node idle phases.
+* Section 4 API updated to include `amt.SpeculateTicket(remoteNodeID)`.
+**Security Impact:** Reduces the "Coordination Tax" without weakening the Zero-Trust origin binding, as SRTs are still hardware-attested and mission-bound.

@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Ephemeral Enclave Isolation (EEI) Manager**: (P0) Authoritative coordination service for hardware-locked (TPM/SEP) sub-mission enclaves.
+- **Context-Inception Firewall (CIF)**: (P0) Security middleware performing recursive, hardware-attested lineage checks to neutralize CVE-2026-11025.
+- **Speculative Resumption Ticket Provider**: (P1) Efficiency service speculatively minting trust tickets during idle phases to reduce AMT latency.
+
+### Priority Shifts
+- **Autonomous Lease Reaper**: (Promoted from P1 to P0) Critical for ensuring zero-residue sovereignty in ephemeral enclaves.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with the requirement for **Speculative Resumption Ticket** support.
