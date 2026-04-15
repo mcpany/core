@@ -1924,6 +1924,19 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Attestation Batching Hub (ABH)**: (P0) Authoritative security service aggregating multiple task-level hardware signatures into session-bound proofs to neutralize "Attestation Fatigue."
+- **Authoritative Shard Manifest (ASM) Provider**: (P0) Advanced state-governance service mandating pre-declaration of all context shards during mission initialization to prevent "Ghost Shard Hijacking."
+- **Reflective Intent Validator (RIV) Middleware**: (P0) Real-time monitoring service for subagent self-reflection cycles, ensuring alignment with the hardware-attested mission manifest.
+- **Speculative Drift Guard (SDG)**: (P0) Stability middleware providing "Soft-Attestation" confidence scores for speculative reasoning to prevent hallucination cascades.
+
+### Priority Shifts
+- **Zero-Knowledge Discovery Broker (ZKDB)**: (Re-affirmed P0) Elevated with mandatory **ABH** integration to reduce discovery-phase latency.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **CAP-compliant** semantic anchoring.
+
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

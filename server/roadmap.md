@@ -1025,6 +1025,12 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Adaptive Resource Reclamation (ARR) Service**: high-speed budgeting middleware for real-time token/reasoning re-allocation between teammates. (Added: 2026-07-22)
 *   **[P0] Manifest-Based Reflection (MBR) Arbiter**: authoritative service for validating subagent self-reflection against hardware-attested manifests. (Added: 2026-07-22)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Attestation Batching Hub (ABH)**: Distributed security service aggregating multiple task-level hardware signatures to neutralize "Attestation Fatigue." (Added: 2026-07-25)
+*   **[P0] Authoritative Shard Manifest (ASM)**: Pre-declaration middleware for context shards to prevent "Ghost Shard Hijacking." (Added: 2026-07-25)
+*   **[P0] Reflective Intent Validator (RIV)**: Real-time monitoring of subagent self-reflection against mission-bound hardware leases. (Added: 2026-07-25)
+*   **[P0] Speculative Drift Guard (SDG)**: Stability middleware providing Soft-Attestation confidence scores to prevent hallucination cascades. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-24 Evolution)
 *   **[P0] Attested Mesh Tunneling (AMT) Broker**: Implementation of hardware-attested, encrypted P2P tunnels for multi-node agent mesh support. (Added: 2026-07-24)
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)

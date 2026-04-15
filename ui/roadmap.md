@@ -203,6 +203,11 @@
 - [ ] **[P0] Optimistic Loading Debugger**: (2026-04-05) Visual timeline of speculative vs. attested tool loading events.
 - [ ] **[P1] RL Feedback Stream Viewer**: (2026-04-05) Real-time telemetry dashboard for monitoring RL training data export.
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Attestation Batching Monitor**: (2026-07-25) Real-time visualization of hardware signature batching and latency savings.
+- [ ] **[P0] Shard Manifest Reviewer**: (2026-07-25) UI for reviewing pre-declared mission shards and flagging "Ghost Shard" attempts.
+- [ ] **[P0] Speculative Confidence Heatmap**: (2026-07-25) Real-time tracker for SDG "Soft-Attestation" scores across speculative branches.
+
 #### Upcoming (2026-04-01 Evolution)
 - [ ] **[P0] Agentic Entropy Scoreboard**: Real-time dashboard for visualizing subagent reasoning entropy and coherence alerts. (Added: 2026-04-01)
 - [ ] **[P0] GC-Immune Anchor Visualizer**: Visual indicator for pinned reasoning anchors and protection status against CWGC. (Added: 2026-04-01)
