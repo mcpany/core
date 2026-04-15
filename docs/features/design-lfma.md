@@ -59,3 +59,10 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Resolving Swarm Coordination Stall
+**Context**: Today's research revealed that parallel "Swarms" (e.g., Claude Code Agent Teams) suffer from 5s+ wait cycles due to synchronous mailbox locks.
+**Architecture Adjustment**:
+* Deprecating global mailbox locks in favor of **Task-Bound CRDT Shards**.
+* Introducing **Optimistic Task Claiming** where agents can speculatively execute sub-tasks while the LFMA performs background conflict resolution.
+**Security Impact**: HAIR (Hardware-Attested Identity Rotation) is now mandatory for every CRDT mutation to prevent "Shadow Claiming" by malicious subagents.
