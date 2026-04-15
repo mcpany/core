@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Semantic Utility Monitor**: (P0) Authoritative service for the R-GC Broker that calculates real-time "Semantic Utility" scores for sharded context fragments.
+- **Mesh Shadowing Interceptor**: (P0) Security extension for the AMT Hub that detects and blocks unauthorized inter-node "Shadow Handshakes" over local tunnels.
+- **Ephemeral Registry Token (ERT) Provider**: (P0) Identity service issuing session-locked, one-time discovery schemas to neutralize Registry Persistence exploits.
+
+### Priority Shifts
+- **Reasoning-Aware Garbage Collection (R-GC) Broker**: (Promoted from P1 to P0) Critical for neutralizing "State Squatting" in high-density meshes.
+- **Hierarchical Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **Recursive Fragment Signing** (Gemini v2 compliance).
+- **Attention-Splicing Firewall (ASF)**: (Re-affirmed P0) Designated as the primary defense against CVE-2026-91023 stylistic mimicry.

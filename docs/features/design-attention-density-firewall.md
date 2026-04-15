@@ -62,3 +62,11 @@ The **Attention-Density Firewall (ADF)** is a cognitive security middleware for 
 *   Integrating the **Attention-Splicing Firewall (ASF)** submodule into Section 4.
 *   Introducing "Stylistic Confidence Weighting" to detect mimicry-based instruction injection following noise bursts.
 **Security Impact:** Prevents sophisticated subagents from evicting parent instructions while simultaneously spoofing high-trust reasoning signatures.
+
+### Update: [2026-07-25] - Neutralizing Optimistic Attention-Splicing
+**Context:** Today's research confirms that "Optimistic Context Merging" is a primary vector for Attention-Splicing (CVE-2026-91023), where stylistic mimicry is hidden in low-entropy "Noise Fragments."
+**Architecture Adjustment:**
+*   Implementing **Entropy-Aware Attention Filtering** as a mandatory pre-merge gate.
+*   All coordination fragments must now carry a "Semantic Utility" score from the R-GC Broker before being admitted to the attention window.
+*   Throttling subagents that utilize "Stylistic Collisions" to probe parent attention maps.
+**Security Impact:** Hardens the optimistic coordination path against reasoning hijacking, ensuring that MTTC optimizations do not compromise mission sovereignty.

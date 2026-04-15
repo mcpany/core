@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: [2026-07-25] - Mesh Shadowing Defense
+**Context:** Today's research revealed Mesh Shadowing (GTG-2026-102), where subagents bypass origin-locking via un-encrypted local tunnels.
+**Architecture Adjustment:**
+*   Implementing the **Mesh Shadowing Interceptor** within the AMT Hub.
+*   Mandating that all P2P tunnels established via AMT are cryptographically bound to the hardware-attested user session.
+*   Interdicting any "Shadow Handshake" attempt that lacks a verified AMT provenance token.
+**Security Impact:** Prevents unauthorized cross-node tool execution and lateral movement within the agent mesh.

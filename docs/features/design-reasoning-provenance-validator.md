@@ -52,3 +52,11 @@ The Reasoning Provenance Validator acts as the authoritative verification engine
 
 ## 7. Evolutionary Changelog
 * **2026-06-29:** Initial Document Creation.
+
+### Update: [2026-07-25] - Gemini v2 Hierarchical Provenance
+**Context:** Gemini CLI v0.50.0 has finalized the x-gemini-provenance-v2 standard for recursive fragment signing.
+**Architecture Adjustment:**
+*   Upgrading the Validator to support **Recursive Fragment Signing**.
+*   Every reasoning step is now validated as cryptographically linked to its immediate predecessor, forming a "Reasoning Blockchain."
+*   Mandating hardware-enclave signatures for every reasoning fragment in high-trust missions.
+**Security Impact:** Enables granular, recursive accountability across infinite delegation hops, neutralizing "Logic Grafting" in deep swarms.
