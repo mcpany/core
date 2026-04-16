@@ -1344,6 +1344,9 @@
 ## Evolution: [2026-04-16] Updates
 
 ### Proposed Additions
+- **GNAP-Native Adapter**: (P1) Bridge for Git-resident agents that translates GNAP task files into bus-resident coordination messages.
+- **Memory-Silo Bridge (MSB)**: (P1) Standardization service for exporting and importing agent memory from proprietary IDE silos (Windsurf, Cursor) to the MCP Any Blackboard.
+- **Versioned Intent Lineage (VIL) Provider**: (P0) Security extension for the SRM Provider that versions intent mutations and allows for mission-level intent rollbacks.
 - **Reactive Intent Gateway (RIG)**: (P0) Security middleware that mediates agent "Boundary Expansion" requests, validating them against the Root Mission Intent to prevent Intent Smuggling.
 - **Resident Integrity Monitor (RIM)**: (P1) Background service that performs continuous, hardware-bound sandbox attestation to detect post-boot environment drift or tampering.
 - **Self-Healing Consensus Hub**: (P0) A coordination service that provides a standardized interface for swarm state reconciliation, leveraging MAQ for authoritative "Truth Brokering."
@@ -1351,6 +1354,7 @@
 ### Priority Shifts
 - **Deterministic Attestation Gateway**: (Re-affirmed P0) Expanded to include Resident Integrity Monitor for continuous lifecycle protection.
 - **TPM-Bound Configuration Boot**: (Re-affirmed P0) Now considered the prerequisite foundation for RIG-mediated boundary expansions.
+
 
 ## Evolution: [2026-04-15] Updates
 

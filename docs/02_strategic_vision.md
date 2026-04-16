@@ -941,6 +941,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Leased Trust Orchestration**: We are adopting the LFTA (Low-Frequency Trust Attestation) model as a core infrastructure utility. MCP Any will act as a "Trust Lease Broker," allowing sessions to maintain a high-strength security posture across a burst of tool calls without repeated hardware signature overhead.
 - **Continuous Sandbox Integrity Monitoring**: Transitioning from point-in-time attestation to a "Continuous Resident Monitor" (RIM). This provides hardware-bound proofs that the agent's environment remains immutable throughout the lifecycle of the mission, neutralizing "Delayed Payload" escapes.
 
+## Strategic Evolution: [2026-04-16] (Iteration 2)
+### Focus: Git-Native Coordination & Cross-Memory Silo Interop
+**Context**: The emergence of GNAP (Git-Native Agent Protocol) and IDE-resident memory silos (Windsurf Cascade) mark a shift toward "Asynchronous Agent Mesh" architectures. Coordination is no longer strictly real-time or bus-centric; it must now survive "Air-Gapped" git-based handoffs and bridge proprietary memory silos to maintain mission-root continuity.
+**Strategic Pivot**:
+- **GNAP-Native Adapter**: MCP Any will evolve to act as a bridge for Git-resident agents. We will implement a GNAP-compliant watcher that translates git-based task files into Universal Agent Bus coordination messages, enabling seamless collaboration between real-time and asynchronous agents.
+- **Memory-Silo Bridge (MSB)**: To neutralize the risk of "Context Amnesia" in IDE-specific environments, we are introducing the MSB. This service provides a standardized export/import schema for agent memory, allowing mission-critical state to migrate from IDE silos (like Windsurf) to the hardware-attested MCP Any Blackboard.
+- **Versioned Intent Lineage (VIL)**: Supporting the demand for "Intent Rollbacks," we are evolving the SRM provider to support VIL. Every intent mutation will be versioned and cryptographically linked, allowing swarms to revert to a "Sanity Checkpoint" of the *intent* itself, not just the resulting state.
+- **Air-Gapped Attestation Relays**: To support restricted environments, MCP Any will implement "Stateless Attestation Relays" that can carry hardware-bound security proofs across non-persistent network boundaries (e.g., via sneaker-net or high-latency git-pulls).
+
 ## Strategic Evolution: [2026-04-16]
 ### Focus: Reactive Intent Governance & Self-Healing Swarm Integrity
 **Context**: The emergence of "Reactive Intent" (RI) and "Sandbox Persistence Proofs" marks a shift from static pre-execution attestation to dynamic, lifecycle-wide governance. Swarms now require the ability to safely expand their boundaries in response to environment feedback while maintaining a deterministic proof of environment integrity.
@@ -948,6 +957,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Reactive Intent Gateway (RIG)**: MCP Any will evolve to include a RIG middleware. This layer will mediate "Boundary Expansion" requests from agents, ensuring that dynamic intent modifications are cryptographically signed and validated against a "Root Mission Intent" to prevent "Intent Smuggling."
 - **Continuous Sandbox Attestation**: We are moving beyond "Hardware-Locked Boot" to "Resident Integrity Monitoring." MCP Any will implement periodic hardware-bound checks to ensure the agent's execution sandbox hasn't drifted or been compromised *after* the initial boot.
 - **Self-Healing Consensus Hub**: To mitigate "Consensus Drift," MCP Any will act as the authoritative "Truth Broker" for swarm self-correction. It will provide a standardized interface for agents to reconcile their internal monologue with the global mission state, backed by MAQ (Multi-Agent Quorum) attestation.
+
 
 ## Strategic Evolution: [2026-04-15]
 ### Focus: Universal Context Interoperability & Hardware-Locked Environment Integrity

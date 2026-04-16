@@ -285,8 +285,11 @@
 - [ ] **[P1] Persistence Proof Explorer**: Security dashboard for verifying shared hardware-bound SPP signals across a swarm. (Added: 2026-04-18)
 
 #### Upcoming (2026-04-16 Evolution)
+- [ ] **[P1] GNAP Task Watcher**: Visual status monitor for Git-resident agents and asynchronous task files. (Added: 2026-04-16)
+- [ ] **[P1] Memory Export/Import Wizard**: UI for bridging IDE memory silos (Windsurf, Cursor) to MCP Any. (Added: 2026-04-16)
+- [ ] **[P0] Intent Versioning Explorer**: Interactive timeline for visualizing and rolling back agent intents. (Added: 2026-04-16)
 - [ ] **[P0] Reactive Intent Dashboard**: Visual workspace for reviewing and approving agent "Boundary Expansion" requests. (Added: 2026-04-16)
-- [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
+- [ ] **[P0] Resident Integrity Status Widget**: Real-time indicator for continuous sandbox attestation and hardware-bound health. (Added: 2026-04-16)
 - [ ] **[P0] Swarm Truth Explorer**: Authorization UI for swarm self-healing and mission state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-21 Evolution)

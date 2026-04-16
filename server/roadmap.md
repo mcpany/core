@@ -509,8 +509,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] Unified Persistence Proof Broker**: Shared attestation utility for swarm-wide sandbox integrity proofs. (Added: 2026-04-18)
 
 #### Upcoming (2026-04-16 Evolution)
+*   **[P1] GNAP-Native Adapter**: Git-based task file translator for asynchronous agent coordination. (Added: 2026-04-16)
+*   **[P1] Memory-Silo Bridge (MSB)**: Standardization service for exporting/importing agent memory from IDE silos. (Added: 2026-04-16)
+*   **[P0] Versioned Intent Lineage (VIL)**: Security extension for versioning intent mutations and enabling intent rollbacks. (Added: 2026-04-16)
 *   **[P0] Reactive Intent Gateway (RIG)**: Middleware to mediate and sign agent "Boundary Expansion" requests, preventing Intent Smuggling. (Added: 2026-04-16)
-*   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16 - Promoted to P0 on 2026-04-17)
+*   **[P0] Resident Integrity Monitor (RIM)**: Service for continuous, hardware-bound sandbox attestation to detect post-boot environment drift. (Added: 2026-04-16)
 *   **[P0] Self-Healing Consensus Hub**: Autoritative "Truth Broker" for swarm self-correction, leveraging MAQ for state reconciliation. (Added: 2026-04-16)
 
 #### Upcoming (2026-04-21 Evolution)

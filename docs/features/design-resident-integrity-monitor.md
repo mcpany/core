@@ -47,3 +47,10 @@ Hardware-Attested Boot (TPM) ensures an agent starts in a clean environment, but
 * **2026-04-17:** Initial Document Creation.
 * **2026-04-18:** Optimization for "Resident Persistence Proofs" inspired by Claude Code's latest stability updates. Introducing a "Unified Persistence Broker" pattern to allow swarm-wide sharing of hardware-bound integrity signals, reducing the per-agent attestation tax.
 * **2026-04-19:** Integration with Distributed Trust Leases (LFTA). RIM now acts as the authoritative "Lease Guard," providing the continuous hardware-attestation signals required to maintain LFTA token validity. Detection of any integrity drift (e.g., config hook modification) now triggers an immediate global revocation of all active trust leases.
+
+### Update: 2026-04-16 - Countering Delayed Payload Attacks
+**Context:** Today's market sync confirmed that attackers are moving from "Boot-Time" exploits to "Runtime Drifts" once hardware-attestation has passed.
+**Architecture Adjustment:**
+* Introducing randomized hardware-attestation sweeps in Section 3.
+* Mandatory "Sandbox Persistence Proof" (SPP) requirement for all A2A task authorizations.
+**Security Impact:** Neutralizes "Symlink-Race" and "Metadata Hijacking" exploits that occur after the agent has been running for 10+ minutes.
