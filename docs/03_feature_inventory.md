@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative State Arbiter (SSA)**: (P0) Authoritative commit broker utilizing speculation-aware atomic rollbacks for the Blackboard to resolve coordination stalls.
+- **HAIF-Compliant Mesh Router**: (P0) Advanced networking extension for the AMT Broker facilitating hardware-attested identity fragment propagation across untrusted nodes.
+- **DAP-v3 Attention Adapter**: (P0) Cognitive security service implementing Gemini's Dynamic Attention Pinning to prevent eviction of "Immutable" guardrails.
+- **Stylometric State Validator**: (P0) Security extension for the Atomic Scratchpad Guard ensuring that writes match authorized agent behavioral signatures.
+
+### Priority Shifts
+- **Atomic State Rollback Middleware**: (Re-affirmed P0) Elevated with mandatory **SSA** integration to support speculative coordination.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with mandatory **HAIF-compliance** for zero-trust mesh routing.
