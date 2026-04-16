@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Swarm-Local Consensus (SLC) Broker**: (P0) Authoritative coordination service facilitating peer-voted quorums for tool results, neutralizing the supervisor bottleneck.
+- **Reasoning-Responsive Resource Allocation (RRRA) Controller**: (P0) Advanced economic security service that dynamically reallocates mesh budgets based on real-time reasoning entropy.
+- **Shared Teammate Scratchpad (STS) Arbiter**: (P0) Kernel-level lock manager for sharded, volatile teammate workspaces, ensuring atomic write-access and conflict resolution.
+
+### Priority Shifts
+- **Distributed Consensus Hub (DCH)**: (Re-affirmed P0) Designated as the primary enforcement point for **SLC-compliant** swarm quorums.
+- **Adaptive Resource Reclamation (ARR) Service**: (Re-affirmed P0) Evolving to support the new **RRRA-based** budget prioritization.

@@ -2,6 +2,7 @@
 filegroup(
     name = "docs",
     srcs = [
+        "market-sync-2026-07-25.md",
         "evolution-2026-07-12-streaming.md",
         "interop_blueprint.md",
     ],

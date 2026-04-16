@@ -62,3 +62,6 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** SLC-Enhanced Resumption
+    * **Context:** Today's research on OpenClaw v3.7.0 revealed that "Swarm-Local Consensus" (SLC) can be used to pre-attest mesh handshakes.
+    * **Architecture Adjustment:** Evolving the `amt.ResumeTunnel` to support SLC-validated "Pre-Flight Tickets," allowing for sub-100ms resumption across distributed nodes.
