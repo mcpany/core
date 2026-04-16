@@ -1,31 +1,25 @@
 ## Executive Summary
-A "Truth Reconciliation Audit" was performed against 10 distinct, algorithmically sampled feature documentation files across the UI and backend logic to verify exact alignment with the product roadmap. The overall health of the sampled features is strong (9/10), with correct, modern implementations securely matching documentation logic.
+The Truth Reconciliation Audit was performed across the MCP Any documentation, codebase, and Roadmap to ensure perfect sync. We algorithmically selected 10 distinct documentation files (UI and Server features, configuration, overhaul details). Out of the 10 files audited, we found that 9 correctly align with the implementation and the Roadmap.
 
-However, one significant discrepancy representing **Roadmap Debt** was discovered: The **Agent Chain Tracer (A2A)** documented under the Universal Agent Bus features (`ui/docs/features/universal_agent_bus.md`) lacked proper testing for its implemented trace fetching and seeding. The divergence was aggressively remediated by engineering the proper test suites to ensure the trace visualization correctly integrated with `useTraces` hooks and backend seed configurations.
+We identified a bug in the `mcpctl` CLI where the `mcpctl init` command was implemented (`server/cmd/mcpctl/init.go`) to satisfy Roadmap requirement #36 ("Interactive `mcp init` CLI"), but was never bound to the root command in `main.go`. This resulted in the CLI not exposing the wizard, creating a divergence between the documented/roadmap feature and the runnable code. We have fixed this.
 
 ## Verification Matrix
+
 | Document Name | Status | Action Taken | Evidence |
 | :--- | :--- | :--- | :--- |
-| `ui/docs/features/universal_agent_bus.md` | **Roadmap Debt** | **Code Fix** | Authored robust unit tests `AgentChainTracer` and integration logic testing `useTraces` hook and the backend DB seeding logic (`api_traces_seed_test.go`). |
-| `ui/docs/features/playground.md` | **Verified** | None | `ui/src/components/playground/` accurately reflects live logic. |
-| `ui/docs/features/services.md` | **Verified** | None | `ui/src/app/upstream-services/` properly handles service connections and states. |
-| `ui/docs/features/stack-composer.md` | **Verified** | None | `ui/src/app/stacks/` handles config-as-code visualizations. |
-| `server/docs/features/shared_kv_store.md` | **Doc Drift** | **Doc Update** | Fixed `server/docs/features/shared_kv_store.md` to remove `enabled` / `isolation_level` and accurately match `BlackboardStore`. |
-| `server/docs/features/hitl.md` | **Verified** | None | Real-time active alerts table and API interactions map to `server/pkg/middleware/hitl.go`. |
-| `server/docs/features/recursive_context.md` | **Verified** | None | Recursive context implementation properly inherits logic inside `server/pkg/middleware/recursive_context.go`. |
-| `server/docs/features/granular_scopes.md` | **Doc Drift** | **Doc Update** | Updated the `roles` mapping inside `server/docs/features/granular_scopes.md` to match the exact string tokens specified in `server/pkg/middleware/scopes.go`. |
-| `ui/docs/features/dashboard.md` | **Verified** | None | Re-verified system overview drag-and-drop dashboard maps successfully to UI structure. |
-| `server/docs/features/context_optimizer.md` | **Verified** | None | `server/pkg/middleware/context_optimizer.go` fully truncates response size context. |
-| `server/docs/features/lazy-mcp.md` | **Code Debt** | **Code Fix** | Addressed prior codebase debt where `cache_ttl` was missing. Verified `CacheTTL` struct mapping and unit tests in `lazy_mcp.go`. |
+| `ui/docs/features/playground.md` | Match | Verified UI elements | Playground has "Console", JSON mode, and History controls |
+| `ui/docs/features/hitl.md` | Match | Verified UI elements | `hitl/page.tsx` contains the Approvals dashboard |
+| `ui/docs/features/log-search-highlighting.md` | Match | Verified UI elements | `log-stream.tsx` correctly handles regex string highlighting |
+| `server/docs/features/hitl.md` | Match | Verified Backend API | `middleware/hitl.go` correctly intercepts and suspends executions |
+| `server/docs/features/context_optimizer.md` | Match | Verified Backend API | `middleware/context_optimizer.go` correctly enforces `max_chars` truncations |
+| `server/docs/features/mcpctl.md` | Match | Verified CLI functions | `cmd/mcpctl` implements `validate` and `doctor` commands |
+| `ui/docs/features/native_file_upload_playground.md` | Match | Verified UI elements | `universal-schema-form.tsx` uses `FileInput` for base64 file payloads |
+| `server/docs/features/webhooks/sidecar.md` | Match | Verified Service topology | `cmd/webhooks/main.go` implements the standard webhook sidecar handler |
+| `server/docs/UI_OVERHAUL.md` | Match | Verified UI elements | Pages for Dashboard, Profiles, Middleware, etc. are complete |
+| `server/docs/features/wasm.md` | Match | Verified Implementation | `pkg/wasm/runtime.go` acts as a placeholder as described in the Roadmap |
 
 ## Remediation Log
-
-**Agent Chain Tracer (A2A) (Roadmap Debt)**
-The `ui/docs/features/universal_agent_bus.md` describes a visual timeline of multi-agent handoffs and message passing. The core frontend codebase and `seedTraces()` was present but entirely untested, representing a dangerous failure in codebase reliability.
-
-*   **Backend Testing Engineered:** Authored the `api_traces_seed_test.go` testing suite to effectively validate `seedTraces()`. Verified `mid.GetHistory()` successfully populates an audit log with realistic mock inputs.
-*   **Frontend Testing Engineered:** Designed and deployed `agent-chain-tracer.test.tsx` utilizing `vitest` and `testing-library` to properly validate visual components. The test correctly executes mock outputs mapping the component behavior against the `useTraces` data payload structures.
-*   **Code Quality:** Maintained strict typing and verified correct rendering mappings.
+- **Case B (Roadmap Debt):** The Roadmap explicitly requires an "Interactive `mcp init` CLI" (#36) to reduce configuration errors. The source file `init.go` existed but was not registered in `cmd/mcpctl/main.go`. We resolved this drift by adding `rootCmd.AddCommand(newInitCmd())` to the CLI's command registry so the capability is fully exposed to users.
 
 ## Security Scrub
-The remediation code and audit details have been aggressively scrubbed. No live endpoints, internal subnets, credentials, user IDs, or API tokens exist within the PR logic or documentation. All seeded identifiers are securely mocked and strictly local to the testing infrastructure.
+No PII, secrets, or internal IP addresses are included in this PR description.

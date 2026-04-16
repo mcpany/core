@@ -6,87 +6,99 @@ package main
 import (
 	"bytes"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInitCmd_HTTP(t *testing.T) {
-	cmd := newInitCmd()
+func TestInitCmd(t *testing.T) {
+	// Create a temporary directory to avoid overwriting existing files
+	tempDir, err := os.MkdirTemp("", "mcpctl-test")
+	assert.NoError(t, err)
+	defer os.RemoveAll(tempDir)
 
-	// Simulate user input
-	input := "test-http-api\n1\nhttp://example.com/api\n"
-	cmd.SetIn(bytes.NewBufferString(input))
+	outFile := tempDir + "/mcp.yaml"
 
-	var stdout bytes.Buffer
-	cmd.SetOut(&stdout)
+	cmd := newRootCmd()
 
-	tmpDir := t.TempDir()
-	outPath := filepath.Join(tmpDir, "mcp.yaml")
-	cmd.SetArgs([]string{"--output", outPath})
+	// Capture output
+	b := bytes.NewBufferString("")
+	cmd.SetOut(b)
 
-	err := cmd.Execute()
+	// Simulate user input for choice 1 (HTTP)
+	inBuf := bytes.NewBufferString("test-service\n1\nhttp://example.com\n")
+	cmd.SetIn(inBuf)
+
+	cmd.SetArgs([]string{"init", "--output", outFile})
+	err = cmd.Execute()
 	assert.NoError(t, err)
 
-	content, err := os.ReadFile(outPath)
+	// Verify output
+	assert.Contains(t, b.String(), "Success! Generated configuration saved to")
+
+	// Read generated file
+	content, err := os.ReadFile(outFile)
 	assert.NoError(t, err)
 	yamlStr := string(content)
 
-	assert.Contains(t, yamlStr, "name: test-http-api")
+	assert.Contains(t, yamlStr, "name: test-service")
 	assert.Contains(t, yamlStr, "http_service:")
-	assert.Contains(t, yamlStr, "address: http://example.com/api")
+	assert.Contains(t, yamlStr, "address: http://example.com")
 }
 
 func TestInitCmd_GRPC(t *testing.T) {
-	cmd := newInitCmd()
+	tempDir, err := os.MkdirTemp("", "mcpctl-test")
+	assert.NoError(t, err)
+	defer os.RemoveAll(tempDir)
 
-	// Simulate user input
-	input := "test-grpc-api\n2\nlocalhost:50051\n"
-	cmd.SetIn(bytes.NewBufferString(input))
+	outFile := tempDir + "/mcp.yaml"
 
-	var stdout bytes.Buffer
-	cmd.SetOut(&stdout)
+	cmd := newRootCmd()
+	b := bytes.NewBufferString("")
+	cmd.SetOut(b)
 
-	tmpDir := t.TempDir()
-	outPath := filepath.Join(tmpDir, "mcp.yaml")
-	cmd.SetArgs([]string{"--output", outPath})
+	// Simulate user input for choice 2 (gRPC)
+	inBuf := bytes.NewBufferString("test-grpc\n2\nlocalhost:9090\n")
+	cmd.SetIn(inBuf)
 
-	err := cmd.Execute()
+	cmd.SetArgs([]string{"init", "--output", outFile})
+	err = cmd.Execute()
 	assert.NoError(t, err)
 
-	content, err := os.ReadFile(outPath)
+	content, err := os.ReadFile(outFile)
 	assert.NoError(t, err)
 	yamlStr := string(content)
 
-	assert.Contains(t, yamlStr, "name: test-grpc-api")
+	assert.Contains(t, yamlStr, "name: test-grpc")
 	assert.Contains(t, yamlStr, "grpc_service:")
-	assert.Contains(t, yamlStr, "address: localhost:50051")
+	assert.Contains(t, yamlStr, "address: localhost:9090")
 	assert.Contains(t, yamlStr, "use_reflection: true")
 }
 
-func TestInitCmd_Command(t *testing.T) {
-	cmd := newInitCmd()
+func TestInitCmd_Stdio(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "mcpctl-test")
+	assert.NoError(t, err)
+	defer os.RemoveAll(tempDir)
 
-	// Simulate user input
-	input := "test-cmd-api\n3\npython3\napp.py arg1\n"
-	cmd.SetIn(bytes.NewBufferString(input))
+	outFile := tempDir + "/mcp.yaml"
 
-	var stdout bytes.Buffer
-	cmd.SetOut(&stdout)
+	cmd := newRootCmd()
+	b := bytes.NewBufferString("")
+	cmd.SetOut(b)
 
-	tmpDir := t.TempDir()
-	outPath := filepath.Join(tmpDir, "mcp.yaml")
-	cmd.SetArgs([]string{"--output", outPath})
+	// Simulate user input for choice 3 (Stdio)
+	inBuf := bytes.NewBufferString("test-stdio\n3\npython3\napp.py arg1\n")
+	cmd.SetIn(inBuf)
 
-	err := cmd.Execute()
+	cmd.SetArgs([]string{"init", "--output", outFile})
+	err = cmd.Execute()
 	assert.NoError(t, err)
 
-	content, err := os.ReadFile(outPath)
+	content, err := os.ReadFile(outFile)
 	assert.NoError(t, err)
 	yamlStr := string(content)
 
-	assert.Contains(t, yamlStr, "name: test-cmd-api")
+	assert.Contains(t, yamlStr, "name: test-stdio")
 	assert.Contains(t, yamlStr, "mcp_service:")
 	assert.Contains(t, yamlStr, "stdio_connection:")
 	assert.Contains(t, yamlStr, "command: python3")
@@ -95,27 +107,28 @@ func TestInitCmd_Command(t *testing.T) {
 }
 
 func TestInitCmd_Defaults(t *testing.T) {
-	cmd := newInitCmd()
+	tempDir, err := os.MkdirTemp("", "mcpctl-test")
+	assert.NoError(t, err)
+	defer os.RemoveAll(tempDir)
+
+	outFile := tempDir + "/mcp.yaml"
+
+	cmd := newRootCmd()
+	b := bytes.NewBufferString("")
+	cmd.SetOut(b)
 
 	// Simulate empty inputs
-	input := "\n\n\n"
-	cmd.SetIn(bytes.NewBufferString(input))
+	inBuf := bytes.NewBufferString("\n\n\n")
+	cmd.SetIn(inBuf)
 
-	var stdout bytes.Buffer
-	cmd.SetOut(&stdout)
-
-	tmpDir := t.TempDir()
-	outPath := filepath.Join(tmpDir, "mcp.yaml")
-	cmd.SetArgs([]string{"--output", outPath})
-
-	err := cmd.Execute()
+	cmd.SetArgs([]string{"init", "--output", outFile})
+	err = cmd.Execute()
 	assert.NoError(t, err)
 
-	content, err := os.ReadFile(outPath)
+	content, err := os.ReadFile(outFile)
 	assert.NoError(t, err)
 	yamlStr := string(content)
 
-	// Defaults to my-service and HTTP type (1)
 	assert.Contains(t, yamlStr, "name: my-service")
 	assert.Contains(t, yamlStr, "http_service:")
 }
