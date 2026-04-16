@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-11-02] Updates
+
+### Proposed Additions
+- **Teammate-Aware Safety Hooks (TASH)**: (P0) Authoritative identity service for horizontal swarms, mandating teammate-ID in all safety hook payloads to enable differentiated policies.
+- **Inbox Integrity Attestation (IIA)**: (P0) Security middleware for inter-teammate coordination, mandating cryptographic validation of all mailbox messages against the mission-root.
+- **Memory Integrity Verification (MIV)**: (P0) Distributed scanning service for agent memory shards to detect and purge poisoned belief systems and "Sleeper Agent" instructions.
+- **Terminal Workspace Sovereignty (TWS)**: (P1) Infrastructure for persistent, stateful terminal agent sessions, ensuring environment integrity and command lineage.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Evolving into **IIA** to counter teammate-to-teammate instruction injection.
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **MIV-compliant** memory scanning.

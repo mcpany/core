@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-11-02 Evolution)
+* **[P0] Teammate-Aware Safety Hooks (TASH)**: Mandatory inclusion of hardware-attested teammate identity and role in safety hook payloads. (Added: 2026-11-02)
+* **[P0] Inbox Integrity Attestation (IIA)**: Cryptographic validation of inter-teammate coordination messages against mission-root authority. (Added: 2026-11-02)
+* **[P0] Memory Integrity Verification (MIV)**: Background scanning service for the Blackboard to detect and purge poisoned instructions and sleeper agents. (Added: 2026-11-02)
+* **[P1] Terminal Workspace Sovereignty (TWS)**: Infrastructure for persistent, stateful terminal sessions with environment integrity. (Added: 2026-11-02)

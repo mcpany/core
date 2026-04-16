@@ -47,3 +47,11 @@ With the rise of "Agent Teams" (Claude Code) and swarms, agents now coordinate v
     *   **Context:** Market research revealed "Intent Leakage" patterns where subagents probe parent mission-root constraints.
     *   **Architecture Adjustment:** Upgrading the IAMG from a simple signature verifier to an "Intent-Bound Mailbox Middleware." It now includes an entropy-based monitoring layer to detect and block probing requests that attempt to reveal mission-root boundaries.
     *   **Security Impact:** Prevents a compromised subagent from coercing a parent into revealing private system-level constraints via reasoning traces.
+
+### Update: 2026-11-02 - Transition to Inbox Integrity Attestation (IIA)
+**Context:** Today's market sync revealed a critical social engineering vector in horizontal meshes (Claude Code Agent Teams) where compromised teammates instruct siblings to execute dangerous commands, bypassing lineage checks.
+**Architecture Adjustment:**
+* Deprecating simple signature verification in favor of **Inbox Integrity Attestation (IIA)**.
+* Introducing a "Message Provenance Manifest" that must be attached to every inter-teammate coordination fragment.
+* Mandatory validation of the "Instruction Lineage" to ensure a command received via the inbox originated from a human-authorized mission root, not just a peer agent.
+**Security Impact:** Mitigates the "Teammate Coercion" attack pattern where peer-to-peer trust is weaponized to bypass tool-gating.

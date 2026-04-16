@@ -54,3 +54,11 @@ The `Shared KV Store` (Blackboard) is a core tool in MCP Any that allows multipl
 * **Read-Only Shared State**: By default, shared state from a parent is read-only for subagents unless explicit "Write" capabilities are granted via the policy engine.
 * **Automatic Cleanup**: Intent-bound data is automatically purged when the parent session expires, preventing long-term state leakage.
 **Security Impact**: Prevents "Cross-Agent State Poisoning," ensuring that compromised or misbehaving subagents cannot influence the execution of the parent or other specialized agents.
+
+### Update: 2026-11-02 - Integration with Memory Integrity Verification (MIV)
+**Context:** Disclosure of "Memory Injection" (Lakera AI) and "Sleeper Agent" vulnerabilities confirms that persistent state isolation is insufficient.
+**Architecture Adjustment:**
+* Extending the Blackboard to support **MIV-compliant** integrity scanning.
+* Implementing a "State Verification Sidecar" that periodically re-attests the semantic alignment of keys against the Mission Root.
+* Introducing "Shadow-Snapshotting" to allow the MIV service to scan memory without locking active agent reasoning loops.
+**Security Impact:** Detects and neutralizes "Sleeper" instructions injected via third-party data sources before they can be activated by the agent.
