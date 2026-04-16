@@ -206,6 +206,11 @@
 *   **[P0] Lock-Free Sharded Mailbox Hub**: High-speed, non-blocking teammate coordination using CRDT-based mailbox shards. (Added: 2026-06-24)
 *   **[P1] Zero-Knowledge Discovery (ZKD) Proxy**: Cryptographic capability masking for agent tool schemas until mission-bound handshake. (Added: 2026-06-24)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] OpenShell Policy Adapter**: Local coordination middleware for enforcing NVIDIA OpenShell policy guardrails. (Added: 2026-07-25)
+*   **[P0] Risk-Adaptive Auto-Execution Gate**: High-speed security service for automating safe tool calls based on transcript risk. (Added: 2026-07-25)
+*   **[P1] Automated Permission Profiler**: Scanning service for proposing optimized allowlists for project-local configurations. (Added: 2026-07-25)
+
 #### Upcoming (2026-07-08 Evolution)
 *   **[P0] Zero-Trust Agent Identity Hub**: Authoritative local identity service issuing hardware-attested, mesh-resident tokens. (Added: 2026-07-08)
 *   **[P0] Autonomous Service Mesh Gateway**: Secure, authenticated transport and discovery layer for mesh-based coordination. (Added: 2026-07-08)

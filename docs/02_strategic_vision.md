@@ -409,6 +409,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Policy-Driven Autonomy & Semantic Injection Shielding
+**Context**: The release of NVIDIA NemoClaw with its policy-based OpenShell runtime and the introduction of "Auto Mode" in Claude Code v4.7 confirm that the industry is moving toward **Automated Tool Execution** backed by **Local Policy Enforcement**. Simultaneously, the disclosure of critical command injection vulnerabilities in Gemini CLI reinforces that assuming local environment safety is a fatal flaw. MCP Any must now provide the infrastructure for autonomous action while maintaining a Zero-Trust shield against structural metadata poisoning.
+**Strategic Pivot**:
+- **OpenShell Policy Integration**: MCP Any will evolve to act as a bridge for NVIDIA OpenShell. We will implement the OpenShell Policy Adapter, allowing users to enforce fine-grained, compute-aware behavioral guardrails locally, ensuring that agents operate within strictly defined resource and security boundaries.
+- **Risk-Adaptive Auto-Execution Gate**: Supporting the shift toward reduced approval friction, we are introducing the Risk-Adaptive Auto-Execution Gate. This layer will utilize input-layer prompt-injection probes and output-layer transcript classifiers to automatically authorize low-risk tool calls while escalating high-privilege actions for hardware-attested user approval.
+- **Injection-Shielding Hardening**: To neutralize the injection patterns seen in Gemini CLI, we are mandating the use of the Injection-Shielding Middleware for all extension and tool-discovery paths. MCP Any will perform real-time semantic scanning of command arguments and tool schemas to block unauthorized shell metacharacters and imperative documentation-layer instructions.
+- **Automated Permission Profiling**: We are implementing a proactive permission scanner that monitors agent transcripts to propose optimized allowlists for project-local configurations, mirroring the `/less-permission-prompts` pattern to reduce approval fatigue without compromising the Zero-Trust perimeter.
+
+---
+
 ## Strategic Evolution: [2026-02-24]
 ### Focus: Standardizing Multi-Agent Coordination & Heterogeneous Transport
 **Context**: Today's findings show that as agents become more specialized (OpenClaw's multi-agent refinement) and transport layers more varied (Claude's HTTP/Stdio mix), MCP Any must evolve from a simple proxy to a sophisticated coordination hub.

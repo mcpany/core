@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **OpenShell Policy Adapter**: (P0) Authoritative local coordination middleware for enforcing NVIDIA OpenShell policy-based behavioral guardrails.
+- **Risk-Adaptive Auto-Execution Gate**: (P0) High-speed security service utilizing transcript classification and injection probes to automate safe tool calls and escalate high-risk actions.
+- **Automated Permission Profiler**: (P1) Proactive scanning service for proposing optimized allowlists for project-local configurations based on agent interaction history.
+
+### Priority Shifts
+- **Structural Metadata Sanitizer (SMS)**: (Re-affirmed P0) Elevated with the requirement for mandatory scanning of tool discovery paths to neutralize Gemini CLI-style command injections.
+- **Injection-Shielding Middleware**: (Re-affirmed P0) Designated as the primary enforcement point for all extension-path and discovery-time semantic validation.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions

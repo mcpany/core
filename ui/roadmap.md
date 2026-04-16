@@ -209,6 +209,11 @@
 - [ ] **[P0] Environment-Aware Trace Inspector**: Forensic UI for verifying reasoning traces bound to specific execution environments. (Added: 2026-04-01)
 - [ ] **[P0] Blackboard Conflict Manager**: Visual arbiter for resolving concurrent state mutations and reviewing MRCR decisions. (Added: 2026-04-01)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] OpenShell Policy Monitor**: (2026-07-25) Visualizer for NVIDIA OpenShell local policy enforcement and resource constraints.
+- [ ] **[P0] Auto-Execution Risk Visualizer**: (2026-07-25) Dashboard for real-time risk scores, automated decisions, and MFA escalation status.
+- [ ] **[P1] Permission Proposal Interface**: (2026-07-25) Interactive workspace for reviewing and approving optimized project-local allowlists.
+
 #### Upcoming (2026-07-08 Evolution)
 - [ ] **[P0] Mesh Identity Manager**: (2026-07-08) UI for reviewing and approving hardware-attested, mesh-resident agent identities.
 - [ ] **[P0] Service Mesh Topology Monitor**: (2026-07-08) Real-time visualization of authenticated inter-agent communication channels and mesh health.
