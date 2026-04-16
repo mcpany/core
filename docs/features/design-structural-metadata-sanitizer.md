@@ -59,3 +59,11 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
 ## 7. Evolutionary Changelog
 * **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via Metadata Injection (SDMI) vulnerability.
 * **2026-06-15:** Added **WASM-Hook Behavioral Profiling** to counter PR "Logic Bombs." SMS now performs mandatory, sandboxed behavioral profiling of AI-generated configuration hooks before they are deemed "Loadable."
+
+### Update: 2026-07-25 - Description-Level Instruction Shield (DLIS)
+**Context:** Snyk's "ToxicSkills" report confirms that "Tool Poisoning" via hidden imperative commands in tool descriptions is bypassing existing transport security.
+**Architecture Adjustment:**
+*   Implementing **DLIS** within the sanitization pipeline.
+*   Tool descriptions and metadata are now subject to recursive semantic deconstruction.
+*   Mandatory stripping of imperative verbs and natural-language "hooks" before metadata is exposed to the LLM context window.
+**Security Impact:** Neutralizes indirect prompt injection and description-based RCE by ensuring tool metadata is purely descriptive and never executable.

@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Tenant Isolation Guard (TIG)**: (P0) Authoritative isolation service providing hardware-attested boundaries for enterprise tenants to prevent context-echoing.
+- **Description-Level Instruction Shield (DLIS)**: (P0) Security middleware performing real-time semantic deconstruction of tool descriptions to neutralize "ToxicSkills" poisoning.
+- **Verified Remote Handshake (VRH) Provider**: (P0) Advanced security service mandating multi-factor, hardware-bound handshakes for remote capability discovery.
+
+### Priority Shifts
+- **Structural Metadata Sanitizer**: (Re-affirmed P0) Elevated with mandatory support for **DLIS-compliant** description shielding.
+- **Zero-Knowledge State Attestation (ZKSA) Provider**: (Re-affirmed P0) Designated as a critical component of the **Tenant Isolation Guard** for verifying boundary integrity.
