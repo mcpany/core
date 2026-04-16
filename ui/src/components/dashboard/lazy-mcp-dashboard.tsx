@@ -8,6 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+/**
+ * Summary: LazyMcpDashboard provides a UI component for lazy loading MCP tools.
+ *
+ * Parameters:
+ *   - None.
+ *
+ * Returns:
+ *   - JSX.Element: The rendered dashboard component.
+ *
+ * Errors:
+ *   - None.
+ */
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<{name: string, score: number}[]>([]);
