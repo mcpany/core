@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Predictive Tunnel Resumption (PTR)**: Intent-driven mesh optimization pre-warming hardware-attested tunnels before remote execution. (Added: 2026-07-25)
+*   **[P0] Active Attention Refresh (AAR) Controller**: authoritative service for periodic re-injection of TPM-signed anchors into the KV-cache. (Added: 2026-07-25)
+*   **[P0] Dynamic Conflict Prioritization (DCP)**: hardware-attested "Mission Urgency" tokens for resolving circular teammate dependencies. (Added: 2026-07-25)
+*   **[P0] Mesh-Ticket Replay Shield**: mandatory monotonic hardware-bound nonces for session-resumption tickets. (Added: 2026-07-25)

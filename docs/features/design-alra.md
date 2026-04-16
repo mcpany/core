@@ -61,3 +61,7 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
     * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
     * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
     * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+* **2026-07-25:** Evolution to Active Attention Refresh (AAR).
+    * Context: Today's market sync confirmed that passive GC-immunity is insufficient against high-entropy noise attacks.
+    * Architecture Adjustment: Introducing the AAR Controller to periodically re-inject TPM-signed mission-root anchors into the KV-cache.
+    * Security Impact: Strengthens "Attention Sovereignty" by ensuring parent intent remains physically present in the model's active attention window regardless of subagent noise density.

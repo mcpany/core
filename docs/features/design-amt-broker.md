@@ -62,3 +62,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+* **2026-07-25:** Evolution to Predictive Tunnel Resumption (PTR).
+    * Context: Today's market sync revealed OpenClaw's PTR standard for neutralizing MTTC latency.
+    * Architecture Adjustment: Upgrading the Fast-Path resumption logic to include intent-driven pre-warming. The Broker will now proactively establish tunnels based on predicted tool needs from the SRM provider.
+    * Security Impact: Introduces "Mesh-Ticket Replay Shield" mandating hardware-bound monotonic nonces for all resumption tickets to prevent replay-based mesh shadowing.
