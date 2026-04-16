@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Intent-Aware Mesh Router (IAMR)**: (P0) Authoritative traffic control service dynamically prioritizing P2P tunnel bandwidth based on mission-root confidence scores.
+- **Shard-Ghosting Interceptor (SGI)**: (P0) Advanced security service performing hardware-attested zeroing of memory-enclave shards upon branch pruning (CVE-2026-99103 defense).
+- **Recursive Lease Propagation (RLP) Hub**: (P0) Infrastructure for cryptographically propagating hardware-attested mission leases to nested sub-processes and remote worker nodes.
+
+### Priority Shifts
+- **Active Subagent Reaper**: (Re-affirmed P0) Elevated with mandatory **SGI** integration for shard-level cleanup and hardware-attested termination proofs.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **IAMR** traffic shaping integration.

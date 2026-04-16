@@ -70,3 +70,11 @@ The Active Subagent Reaper is a mandatory lifecycle management layer in MCP Any 
 * Implementing hardware-attested "Termination Proofs" to ensure absolute resource reclamation.
 * Integrating with the **Recursive Resource Reclamation (RRR)** Manager to automatically sink orphaned token budgets.
 **Security Impact:** Eliminates the risk of side-channel state pollution and unmonitored compute consumption by compromised or orphaned specialist agents.
+
+### Update: 2026-07-25 - Shard-Ghosting Defense via Memory-Enclave Zeroing
+**Context:** The disclosure of the "Shard-Ghosting" exploit (CVE-2026-99103) confirms that logical isolation is insufficient for shared memory enclaves.
+**Architecture Adjustment:**
+* Introducing the **Shard-Ghosting Interceptor (SGI)** into the reaper lifecycle.
+* Mandating hardware-attested "Secure Shard Zeroing" as a prerequisite for lease invalidation.
+* Ensuring that physical memory shards are cleared of all residual reasoning fragments before being returned to the pool or accessed by sibling agents.
+**Security Impact:** Neutralizes side-channel state exfiltration via residual memory in shared enclaves.

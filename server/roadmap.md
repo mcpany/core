@@ -1030,3 +1030,8 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Intent-Aware Mesh Router (IAMR)**: Authoritative traffic control service for multi-node meshes, prioritizing bandwidth by reasoning confidence. (Added: 2026-07-25)
+*   **[P0] Shard-Ghosting Interceptor (SGI)**: Security service for hardware-attested zeroing of shared memory shards upon lease termination. (Added: 2026-07-25)
+*   **[P0] Recursive Lease Propagation (RLP) Hub**: Infrastructure for propagating hardware-attested mission leases across nested process boundaries and nodes. (Added: 2026-07-25)

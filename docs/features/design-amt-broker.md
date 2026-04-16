@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Intent-Aware Traffic Shaping
+**Context:** Today's market sync on OpenClaw v3.7.0 revealed that distributed swarms are experiencing mesh congestion.
+**Architecture Adjustment:**
+* Introducing the **Intent-Aware Mesh Router (IAMR)** as a core component of the AMT Broker.
+* Implementing dynamic bandwidth prioritization based on mission-root confidence scores (from the SRM provider).
+* Speculative sub-branches with low confidence are now automatically throttled to preserve mainline coordination latency.
+**Security Impact:** Prevents "Packet Storm" DoS attacks from rogue or runaway sub-processes across the mesh.
