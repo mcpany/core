@@ -11,6 +11,12 @@
 
 ### Status: Active Development
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] PAM (Pre-computed Attention Mask) Broker**: Authoritative broker for hardware-bound attention masking based on mission-root manifests. (Added: 2026-07-25)
+*   **[P0] Reflection-Budget Controller (RBC)**: Governance middleware enforcing hardware-attested limits on subagent self-correction turns. (Added: 2026-07-25)
+*   **[P0] Entropy-Aware Weighting (EAW) Middleware**: Epistemic security service for dynamic semantic weighting of context fragments. (Added: 2026-07-25)
+*   **[P0] Circular Bidding Arbiter (CBA)**: Kernel-level arbiter for the UACO bidding bus to resolve parallel teammate deadlocks. (Added: 2026-07-25)
+
 #### Upcoming (2026-02-23 Evolution)
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.

@@ -409,6 +409,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Cognitive Attention Sovereignty & Reflection-Loop Governance
+**Context**: The emergence of "Attention Leakage" in high-density meshes (OpenClaw ESP) and the disclosure of "Reflection Storms" in horizontal Agent Teams (Claude Code) confirm that protecting the transport and state is no longer sufficient. We must now protect the **cognitive focus** of the model and provide **active governance for self-correction loops**. As context windows scale to 2M+, the "Universal Agent Bus" must move from passive isolation to active **Attention Masking** and **Reflection-Budget Enforcement**.
+**Strategic Pivot**:
+- **PAM (Pre-computed Attention Mask) Broker**: MCP Any will evolve to act as the authoritative broker for Gemini-style attention masking. We will pre-calculate hardware-bound attention masks based on the mission-root manifest, ensuring that subagents cannot "see" irrelevant or distracting context shards during high-density reasoning.
+- **Reflection-Budget Controller (RBC)**: To neutralize "Token Storms" and infinite self-correction loops, we are introducing the RBC. This layer will enforce hardware-attested limits on the number of "Refinement" or "Correction" turns a subagent can take before mandating mission-root re-alignment or supervisor escalation.
+- **Entropy-Aware Weighting (EAW)**: Supporting the "Epistemic Sovereignty" pillar, MCP Any will implement EAW. This middleware will dynamically adjust the semantic "weight" of retrieved fragments, ensuring that hardware-attested mission-root instructions maintain permanent dominance over high-entropy RAG noise.
+- **Circular Bidding Arbiter (CBA)**: To counter "Agentic Deadlock" in horizontal swarms, MCP Any will act as a kernel-level arbiter for the UACO bidding bus. We will implement the CBA to proactively identify circular task dependencies and apply priority-weighted resolution to break deadlocks in lock-free meshes.
+
+---
+
 ## Strategic Evolution: [2026-02-24]
 ### Focus: Standardizing Multi-Agent Coordination & Heterogeneous Transport
 **Context**: Today's findings show that as agents become more specialized (OpenClaw's multi-agent refinement) and transport layers more varied (Claude's HTTP/Stdio mix), MCP Any must evolve from a simple proxy to a sophisticated coordination hub.

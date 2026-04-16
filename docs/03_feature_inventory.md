@@ -1924,6 +1924,18 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **PAM (Pre-computed Attention Mask) Broker**: (P0) Authoritative broker for hardware-bound attention masking, pre-calculating masks based on mission-root manifests to ensure cognitive focus.
+- **Reflection-Budget Controller (RBC)**: (P0) Governance middleware enforcing hardware-attested limits on subagent self-correction turns to prevent "Reflection Storms" and token exhaustion.
+- **Entropy-Aware Weighting (EAW) Middleware**: (P0) Epistemic security service that dynamically adjusts the semantic weight of context fragments to ensure mission-root dominance.
+- **Circular Bidding Arbiter (CBA)**: (P0) Kernel-level arbiter for the UACO bidding bus that proactively identifies and resolves circular task dependencies in horizontal meshes.
+
+### Priority Shifts
+- **Mission-Root Conflict Resolver (MRCR)**: (Re-affirmed P0) Designated as the primary reconciliation engine for the new **Reflection-Budget** and **Circular Bidding** patterns.
+- **Active Attention Enforcer (AAE)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **PAM-compliant** attention masking.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
