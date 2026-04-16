@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reasoning-Responsive Resource Allocation (RRRA) v2 Adapter**: (P0) Authoritative governance service that dynamically scales compute/token budgets based on real-time reasoning intensity signals.
+- **Entanglement Shard Sanitizer (ESS)**: (P0) High-entropy security middleware that performs real-time sanitization of state handoffs to neutralize "Environmental Residue" leakage in P2P tunnels.
+- **Attention-Splicing Firewall (ASF)**: (P1) Cognitive security middleware that performs stylometric analysis to detect and block subagent "Noise Fragments" from hijacking the attention window.
+
+### Priority Shifts
+- **Reasoning-Budget Firewall (RBF)**: (Re-affirmed P0) Now elevated with the requirement for mandatory **RRRA v2** integration.
+- **Kernel-Resident Trace Scrubber**: (Promoted to P0) Critical for neutralizing environment leakage in distributed Agent Teams.
