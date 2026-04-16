@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Semantic Hash-Chained Mailbox**: (P0) Coordination transport requiring every message in a shared teammate mailbox to be cryptographically chained to its predecessor's semantic state.
+- **System-Level Attention Anchor (SLAA)**: (P0) Extension for the HAAL provider utilizing hardware-locked headers to prioritize MCP Any security policies in the LLM context window.
+- **Reasoning-as-a-Service (RaaS) Quota Manager**: (P1) Resource management service for "Thinking Tools" that enforces per-tool reasoning budgets.
+
+### Priority Shifts
+- **Logic-Grafting Interceptor (LGI)**: (Re-affirmed P0) Elevated with mandatory support for **Semantic Hash-Chained Mailbox** fragments.
+- **Zero-Knowledge Discovery (ZKD) Proxy**: (Re-affirmed P0) Elevated to support **PNTD-compliant** similarity-based masking.

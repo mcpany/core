@@ -61,3 +61,10 @@ Attention-Locked Reasoning Anchors (ALRA) provide a hardware-bound mechanism to 
     * Context: Gemini CLI v0.57.0's CWGC introduces a risk of "Silent Anchor" eviction.
     * Architecture Adjustment: Mandating GC-Immune status for all ALRA-pinned mission-root fragments.
     * Security Impact: Neutralizes "GC Fragility" where behavioral guardrails are lost during aggressive token cleanup.
+
+### Update: 2026-07-25 - System-Level Attention Anchor (SLAA) Support
+**Context:** Today's market sync revealed that Gemini CLI has introduced "System-Level Attention Anchors" to prevent mission-root eviction in 1M+ token windows.
+**Architecture Adjustment:**
+* Introducing **System-Level Attention Anchors (SLAA)** in Section 4.
+* These anchors utilize the hardware-bound `x-gemini-attention-lock` headers to prioritize MCP Any's security policies and mission-root intents at the highest tier of the model's KV-cache.
+**Security Impact:** Ensures that gateway-enforced security policies cannot be shadowed or evicted by high-entropy noise from specialist subagents, maintaining absolute sovereignty over the reasoning loop.

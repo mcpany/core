@@ -87,3 +87,11 @@ The Active Reasoning Interdiction (ARI) Hub evolves the existing validator into 
 * Integrating the **Reasoning Provenance Validator** into the Hash-Chain Validator in Section 4.
 * Upgrading the Semantic Consistency Engine to perform **Step-Level Provenance Checks**, ensuring that every internal reasoning step in a fragment is cryptographically signed and hash-chained.
 **Security Impact:** Prevents subagents from "grafting" malicious reasoning steps inside a seemingly valid fragment, providing 100% visibility into the cognitive path.
+
+### Update: 2026-07-25 - Semantic Hash-Chained Mailbox Integration
+**Context:** Today's market sync revealed that "Agent Teams" are vulnerable to "Mailbox Splicing" in horizontal meshes.
+**Architecture Adjustment:**
+* Introducing the **Semantic Hash-Chained Mailbox** in Section 4.
+* Every message in the shared teammate mailbox must now be cryptographically chained to the semantic hash of its predecessor's state.
+* The ARI Hub will act as the authoritative sequencer for these mailbox shards.
+**Security Impact:** Neutralizes "Mailbox Splicing" by ensuring that an out-of-order or unauthorized task injection will trigger a hash-chain mismatch and immediate interdiction.

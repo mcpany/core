@@ -55,3 +55,10 @@ The Zero-Knowledge Discovery (ZKD) Proxy evolves the discovery process by mandat
 
 ## 7. Evolutionary Changelog
 * **2026-06-27:** Initial Document Creation.
+
+### Update: 2026-07-25 - PNTD-Compliant Similarity Masking
+**Context:** Today's market sync revealed that OpenClaw has transitioned to Protocol-Neutral Task Discovery (PNTD), which increases the risk of "Shadow Capability Mapping."
+**Architecture Adjustment:**
+* Upgrading the ZKD Proxy to support **PNTD-Compliant Similarity Masking** in Section 4.
+* Capability "Cards" will now be served as high-dimensional semantic embeddings rather than plaintext schemas. Agents can verify skill-alignment via similarity search without ever seeing the parameter definitions until the mission handshake is complete.
+**Security Impact:** Eliminates the ability for malicious subagents to scrape sensitive tool metadata during the discovery phase while maintaining full semantic searchability for the primary agent.
