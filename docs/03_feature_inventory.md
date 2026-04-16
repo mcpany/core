@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Optimistic Context Hub (OCH)**: (P0) Speculative coordination service allowing agents to reason against pending context fragments while background quorums perform verification.
+- **Hierarchical Intent Lease (HIL) v2 Provider**: (P0) Advanced security service implementing hardware-locked lease inheritance for pooled missions, restricting sub-leases to verified manifest subsets.
+- **Reasoning Entropy Jitter (REJ) Provider**: (P0) Behavioral security middleware that dynamically varies reasoning entropy to neutralize stylometric side-channel mapping.
+
+### Priority Shifts
+- **Hierarchical Intent Lease (HIL) Broker**: (Evolved to HIL v2) Now designated as the primary mechanism for managing pooled mission security.
+- **Optimistic Quorum Gateway**: (Re-affirmed P0) Elevated with the requirement for mandatory **OCH** integration to resolve semantic deadlocks.
