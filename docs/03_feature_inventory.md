@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Universal Commerce Adapter (UCA)**: (P0) Authoritative bridge for UCP-compliant tool execution, providing hardware-attested "Transaction-Bound Gating" for autonomous procurement.
+- **Episodic Mesh Sharding (EMS)**: (P0) Governance middleware supporting Gemini-style "Chapters" by hosting hardware-attested episodic shards for efficient context-window management.
+- **Teammate Lateral-Movement Guard (TLMG)**: (P0) Semantic security layer for the Mailbox Integrity Middleware that blocks coordination messages designed to coerce specialists into lateral privilege escalation.
+- **Regulatory Attribution Engine (RAE)**: (P0) Authoritative compliance service providing hardware-attested, non-repudiable audit trails for EU AI Act (Aug 2026) transparency requirements.
+
+### Priority Shifts
+- **Universal Episodic Graph (UEG) Memory Broker**: (Re-affirmed P0) Elevated with mandatory support for **EMS-compliant** episodic sharding.
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with the requirement for mandatory **TLMG** semantic inspection.
