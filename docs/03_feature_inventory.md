@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reasoning-Enclave Sharding (RES) Broker**: (P0) Authoritative enclave manager utilizing hardware-locked memory shards (TPM/SEP) to physically isolate specialist reasoning.
+- **Inode-Aware Session Binding (IASB)**: (P0) Advanced security standard cryptographically binding session tokens to project-local filesystem Inodes to neutralize "Clone-and-Exfiltrate" attacks.
+- **Dynamic Attention Reinforcer (DAR)**: (P0) Cognitive security service monitoring "Attention Entropy" and dynamically re-injecting mission-root anchors in 1M+ token windows.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Hardware-Accelerated Enclave Resumption** to neutralize the RES coordination tax.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Evolved to DAR) Designated as the primary defense against instruction eviction in deep meshes.
