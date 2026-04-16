@@ -51,6 +51,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 * **Data Storage/State:**
     * **Mesh Identity Registry:** Distributed ledger or local cache of verified node hardware fingerprints.
     * **Tunnel Session Store:** In-memory tracking of active tunnels and their mission-bound authorization.
+    * **Pre-attested Shard Caches:** To mitigate heterogeneous tunnel latency, the Broker maintains encrypted, TPM-bound local caches of frequently accessed mission shards, verified via periodic background consensus.
 
 ## 5. Alternatives Considered
 * **Standard WireGuard/Tailscale Tunnels:** Rejected because they provide network-layer access without agentic mission-binding. A compromised subagent could use the tunnel for unauthorized lateral movement.
@@ -62,3 +63,8 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+### Update: 2026-07-25 - Resolving Heterogeneous Tunnel Latency
+**Context:** Today's market sync revealed 150ms+ spikes during hardware-attested handshakes across disparate enclave types (e.g., SEP to SGX).
+**Architecture Adjustment:** * Introducing **Pre-attested Shard Caches** in Section 4.
+* Leveraging local, TPM-bound encrypted storage for frequently migrated context fragments to enable optimistic resumption.
+**Security Impact:** Reduces "Attestation Tax" without compromising Zero Trust, utilizing probabilistic buffers for speculative reasoning until full attestation is confirmed.

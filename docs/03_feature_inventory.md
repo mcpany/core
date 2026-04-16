@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Optimistic Mesh Resumption (OMR) Hub**: (P0) Authoritative resumption broker utilizing hardware-locked "Pre-attested Shard Caches" to facilitate speculative mission resumption across heterogeneous enclaves.
+- **Hardware-Attested Intent Budgeting (HAIB) Middleware**: (P1) Resource management layer for enforcing TPM-bound "Budget Tickets" across multi-cloud meshes to ensure cross-node economic sovereignty.
+- **Cross-Enclave Intent Continuity (CEIC) Provider**: (P0) Advanced security service providing framework-neutral attestation translation to maintain mission-root token strength across disparate secure enclaves.
+
+### Priority Shifts
+- **Fast-Path Mesh Resumption**: (Promoted from P1 to P0) Critical for neutralizing "Heterogeneous Tunnel Latency" spikes in multi-node Agent Teams.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with the requirement for mandatory **Reflection-Aware** pinning to counter CWRL-driven guardrail eviction.
