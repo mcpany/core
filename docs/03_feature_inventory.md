@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reasoning-Aware Mesh Router (RAMR)**: (P1) Dynamic routing engine that optimizes P2P tunnel selection based on real-time reasoning complexity and tool risk.
+- **Collaborative Scratchpad Attestation (CSA) Hub**: (P0) CRDT-native synchronization service for shared workspaces, providing hardware-attested, lock-free state reconciliation.
+- **Zero-Trust Intent Propagation (ZTIP) Middleware**: (P0) Security middleware cryptographically isolating environment fragments between parent and sub-agents.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated to support **Risk-Adaptive Attestation** depths to counter Attestation Fatigue.
+- **Atomic Scratchpad Guard (ASG)**: (Re-affirmed P0) Designated as the primary enforcement point for **CSA-compliant** collaborative edits.
