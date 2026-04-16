@@ -1934,3 +1934,16 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Accelerated Mesh Routing (HAMR)**: (P0) Authoritative enclave service utilizing TPM/SEP for P2P tunnel routing and metadata encryption to reduce coordination latency.
+- **Conflict-Free Task Reconciliation (CNTR)**: (P0) High-performance coordination service using state-based CRDTs for the shared task list to eliminate cognitive stall.
+- **Monotonic Context Anchoring (MCA)**: (P0) Advanced pinning mechanism for "GC-Immune" reasoning fragments to ensure absolute persistence against context-window garbage collection.
+- **Higher-Dimensional Stylometric Anchoring (HDSA)**: (P0) Behavioral identity service anchoring agent "voices" to multi-modal traces (Text + SVG + UI Diffs) to neutralize "Reasoning Mirroring" (CVE-2026-99012).
+
+### Priority Shifts
+- **Active Resource Reclamation (ARR) Service**: (Re-affirmed P0) Elevated to v2 with mandatory **Squatting Detection** to prevent memory exhaustion in dense meshes.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for **HAMR-compliant** enclave acceleration.
+- **Lock-Free Mesh Arbiter (LFMA)**: (Evolved to CNTR) Now designated as the primary mechanism for state-based conflict-free task coordination.

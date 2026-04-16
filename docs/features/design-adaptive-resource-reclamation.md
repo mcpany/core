@@ -48,3 +48,11 @@ The Adaptive Resource Reclamation (ARR) Service provides a mesh-wide mechanism t
 
 ## 7. Evolutionary Changelog
 * **2026-07-23:** Initial Document Creation.
+
+### Update: 2026-07-25 - Squatting Detection & Memory Reclamation
+**Context:** Today's market research revealed "Resource Squatting" as a primary cause of memory exhaustion in dense meshes.
+**Architecture Adjustment:**
+* Upgrading ARR to **v2** with mandatory **Squatting Detection**.
+* Extending reclamation from tokens/reasoning-time to include **Shared Memory Shards** and **Blackboard Keys**.
+* Implementing "Forceful Recall" triggers that fire immediately upon sub-mission termination or intent drift detection.
+**Security Impact:** Prevents specialist agents from exfiltrating state by "squatting" on memory after their authorized mission phase has ended.

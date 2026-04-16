@@ -59,3 +59,11 @@ The Lock-Free Mesh Arbiter (LFMA) is designed to provide a decentralized, non-bl
 
 ## 7. Evolutionary Changelog
 *   **2026-05-31:** Initial Document Creation.
+
+### Update: 2026-07-25 - Transition to Conflict-Free Task Reconciliation (CNTR)
+**Context:** Today's research into Claude Code's CFTR confirms the necessity of state-based CRDTs for non-blocking horizontal coordination.
+**Architecture Adjustment:**
+* Evolving the CRDT implementation from simple LWW-Element-Sets to **State-Based Reconciliation**.
+* Introducing the **CNTR (Conflict-Free Task Reconciliation)** service as the primary coordination bus.
+* Implementing hardware-attested "Resolution Priority" based on mission-root intent fragments.
+**Security Impact:** Prevents "Teammate Hijacking" via timestamp manipulation by requiring hardware-locked monotonic counters for all CRDT merge operations.
