@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing Mesh-Shadowing via SHI
+**Context:** Today's market sync revealed a new class of "Shadow Handshake" exploits in distributed meshes.
+**Architecture Adjustment:**
+- Mandating the integration of the **Shadow-Handshake Interceptor (SHI)** middleware for all AMT-based tunnels.
+- SHI will interdict any agency-initiation signals that are not explicitly authorized by a hardware-attested mission root.
+**Security Impact:** Mitigates unauthorized privilege escalation and lateral movement across disparate agent nodes.

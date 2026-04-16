@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reasoning-Responsive Memory Broker (RRMB)**: (P0) Authoritative context arbiter for multi-node swarms utilizing semantic importance scoring for R-AGC compliance.
+- **Multi-Node Workspace Orchestrator**: (P0) Coordination service providing a hardware-attested virtualized view of distributed file systems for MNWO support.
+- **Attention-Locked Memory Segmentation (ALMS)**: (P0) Cognitive security middleware cryptographically masking non-relevant context fragments at the attention layer.
+- **Shadow-Handshake Interceptor (SHI)**: (P0) Security middleware for AMT tunnels monitoring and interdicting unauthorized agency-initiation signals.
+
+### Priority Shifts
+- **GC-Immune Reasoning Anchors**: (Re-affirmed P0) Now designated as the primary enforcement mechanism for **RRMB-compliant** semantic importance scoring.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **SHI** integration to neutralize mesh-shadowing.
