@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Evolution to Recursive Mesh Attestation (RMA)
+**Context**: Today's market sync revealed that OpenClaw MHAC now supports multi-hop attestation. Simple P2P tunneling is no longer sufficient for deep meshes.
+**Architecture Adjustment**:
+*   Evolving AMT Broker into the **Recursive Mesh Attestation (RMA) Broker**.
+*   Introducing hardware-attested lineage tokens to maintain identity provenance through intermediate relays.
+*   Implementing multi-hop session resumption to minimize cumulative handshake latency.
+**Security Impact**: Eliminates the "Relay Trust Gap," ensuring that intermediate nodes cannot modify or spoof agent intents.

@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Mesh Attestation (RMA) Broker**: (P0) Authoritative tunnel manager facilitating hardware-attested, multi-hop P2P connections while maintaining identity provenance through intermediate relays.
+- **Segregated State Lease (SSL) Provider**: (P0) Advanced state isolation service that cryptographically binds scratchpads and task lists to active hardware leases, neutralizing "State Ghosting."
+- **Federated Reason Verification (FRV) Hub**: (P0) Consensus broker requiring multi-agent quorums to attest to reasoning alignment with mission-root constraints before mesh commitment.
+- **Optimistic Lease Resumption Middleware**: (P1) Performance-optimizing service allowing speculative access to restricted shards during background lease renewals.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Evolving into the **RMA Broker** to support multi-hop identity provenance.
+- **Hardware-Locked Mission Lease (HLML) Provider**: (Re-affirmed P0) Elevated with mandatory **SSL-compliant** state segregation.
