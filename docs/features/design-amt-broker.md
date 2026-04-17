@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Addressing Trust Ticket Hijacking (CVE-2026-95001)
+**Context:** Recent ecosystem research revealed that static, session-bound "Mesh Tickets" are vulnerable to interception and replay attacks (CVE-2026-95001).
+**Architecture Adjustment:**
+* Introducing the **Trust Ticket Rotation (TTR) Provider**.
+* Deprecating long-lived mesh tickets in favor of monotonic, per-handoff rotated tokens.
+* Mandating hardware-attested sequence counters for all ticket-based tunnel resumptions.
+**Security Impact:** Prevents ticket-hijacking exfiltration and lateral movement in distributed meshes by ensuring each ticket is single-use and cryptographically bound to a specific coordination fragment.

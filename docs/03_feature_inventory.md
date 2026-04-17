@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Speculative Intent Shield (SIS)**: (P0) Authoritative predictive gatekeeper providing isolated speculative buffers forpredicted tool calls to prevent un-attested state corruption.
+- **Neural Context Sanitizer (NCS)**: (P0) High-entropy semantic security middleware performing real-time analysis of compressed context kernels during decompression to neutralize neural instruction injection.
+- **Trust Ticket Rotation (TTR) Provider**: (P0) Advanced security service for the AMT Broker mandating monotonic, per-handoff rotation of trust tickets to neutralize CVE-2026-95001.
+
+### Priority Shifts
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Elevated with mandatory support for **Session-Bound Task Delegation** to mitigate handshake fatigue in high-density meshes.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Elevated with the requirement for mandatory **TTR** integration to counter ticket hijacking.
