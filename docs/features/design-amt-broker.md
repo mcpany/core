@@ -62,3 +62,11 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Integration of Mesh-Resident Identity & Mandatory Handshakes
+**Context**: The release of OpenClaw v3.6.1 confirms that Sovereign Node Tunneling (SNT) is the new standard for distributed agents. However, unauthenticated tunnel creation remains a high-risk vector for lateral movement.
+**Architecture Adjustment**:
+*   Mandating the use of **Mesh-Resident Identity Attestation** for all inter-node handshakes.
+*   Integrating the **Mission-Bound Hardware Lease (MBHL)** Provider to ensure that tunnels are only established for authorized, task-specific remote tool calls.
+*   Introducing "Lightweight Mesh Handshakes" to resume tunnels using session-bound trust tickets, neutralizing the latency overhead identified in early SNT implementations.
+**Security Impact**: Ensures that distributed meshes maintain absolute mission-root sovereignty across device boundaries, preventing "Mesh Shadowing" and unauthorized lateral tool execution.

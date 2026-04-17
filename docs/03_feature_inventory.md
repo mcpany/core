@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Mission-Bound Hardware Lease (MBHL) Provider**: (P0) Authoritative security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
+- **Sovereign P2P Tunnel Broker**: (P0) Core mesh coordination service facilitating hardware-attested, encrypted P2P connections between distributed agent nodes.
+- **Fast-Path Mesh Handshake Provider**: (P1) Performance-optimizing middleware providing session-bound trust tickets for sub-millisecond mesh tunnel resumption.
+
+### Priority Shifts
+- **Privacy-Preserving Audit (PPA) Hub**: (Promoted to P0) Critical for satisfying the new Gemini CLI v0.58.0 PPRP requirements and neutralizing the privacy-transparency trade-off.
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **Mission-Bound Hardware Lease** integration.
