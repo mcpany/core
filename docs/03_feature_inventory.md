@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-17] Updates
+
+### Proposed Additions
+- **Syscall-Level Behavioral Monitor (SLBM)**: (P0) authoritative kernel-resident service utilizing eBPF signals to monitor tool behavior and block malicious syscall patterns.
+- **Agent-Facing Defensive Manifests (AFDM) Provider**: (P1) Identity service issuing cryptographically signed security checklists that agents ingest to self-verify environment safety.
+- **LanceDB Vector Memory Adapter**: (P1) Authoritative storage middleware providing native support for cloud-backed persistent vector memory, aligning with OpenClaw v3.5.
+- **Agentic Verification Monologue (AVM) Auditor**: (P0) Compliance middleware mandating a hardware-attested reasoning step for security-aware intent validation.
+
+### Priority Shifts
+- **Shared KV Store (Blackboard)**: (Re-affirmed P0) Evolving to support **LanceDB-native** vector sharding for persistent episodic memory.
+- **Consensus Tool Validation Hub**: (Re-affirmed P0) Now elevated with the requirement for mandatory **AVM** audit trails.

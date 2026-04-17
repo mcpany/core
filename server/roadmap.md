@@ -1030,3 +1030,9 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-17 Evolution)
+*   **[P0] Syscall-Level Behavioral Monitor (SLBM)**: authoritative kernel-resident service utilizing eBPF signals to monitor tool behavior. (Added: 2026-04-17)
+*   **[P1] Agent-Facing Defensive Manifests (AFDM)**: Implementation of cryptographically signed security checklists for agent ingestion. (Added: 2026-04-17)
+*   **[P1] LanceDB Vector Memory Adapter**: Native support for cloud-backed persistent vector memory for episodic state. (Added: 2026-04-17)
+*   **[P0] Agentic Verification Monologue (AVM) Auditor**: Mandatory hardware-attested reasoning step for security intent validation. (Added: 2026-04-17)
