@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Swarm Heartbeat (RSH) Hub**: (P0) Authoritative coherence service facilitating hardware-attested heartbeats where subagents report reasoning entropy and intent-alignment.
+- **Contextual Lease Handoff (CLH) Provider**: (P0) High-speed trust service allowing peer-to-peer lease migration within a verified mission scope to neutralize delegation latency.
+- **Attention-Locked Context Pinning Middleware**: (P0) Cognitive security layer implementing the `x-gemini-attention-lock` standard for hardware-bound anchor protection.
+- **State-Fragment Collision Resolver**: (P0) Consensus middleware resolving conflicting state mutations between teammates before sharded mailbox synchronization.
+
+### Priority Shifts
+- **Agentic Entropy Monitor (AEM)**: (Re-affirmed P0) Elevated with mandatory support for **RSH-compliant** heartbeat ingestion.
+- **Multi-Hop Persistence Relay (MHPR)**: (Re-affirmed P0) Designated as a critical dependency for the new **CLH-based** peer handoffs.
