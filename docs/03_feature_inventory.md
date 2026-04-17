@@ -674,6 +674,18 @@
 ---
 ---
 
+## Evolution: [2026-04-17] (Iteration 2) Updates
+
+### Proposed Additions
+- **Remote Control Bridge (RCB)**: (P0) Authoritative gateway for hardware-attested remote steering of headless agent sessions.
+- **Asynchronous Rollout Collector (ARC)**: (P1) High-speed telemetry sink for RL reasoning traces and conversation feedback to support background policy optimization.
+- **Enclave-Isolated Execution (EIE) Manager**: (P0) Security middleware mandating SSH-based sandboxing and enclave isolation for all marketplace-sourced skills.
+- **Plan-Mode Verification Gateway**: (P0) Semantic validator for agent-generated execution plans, ensuring mission-root boundary compliance before commit.
+
+### Priority Shifts
+- **Verified Skill Registry**: (Re-affirmed P0) Now elevated with the requirement for mandatory **EIE** integration.
+- **Telemetry Provider**: (Evolved to ARC) Now designated as the primary sink for high-frequency RL rollout collection.
+
 ## Evolution: [2026-04-17] Updates
 
 ### Proposed Additions

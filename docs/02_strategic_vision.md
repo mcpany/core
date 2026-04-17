@@ -123,6 +123,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-04-17] (Iteration 2)
+### Focus: Headless Remote Agency & Asynchronous Policy Governance
+**Context**: The emergence of "Remote Control" in Claude Code and the rise of "Hybrid RL" in OpenClaw-RL mark a shift from terminal-bound tools to **Distributed Infrastructure Components**. As agents move to headless servers and background dispatch workers, the "Universal Agent Bus" must move beyond local proxying to provide **Remote-Attested Steering** and **Non-Blocking Telemetry**. The security frontier now includes the integrity of the remote handoff and the privacy of the asynchronous feedback loop.
+**Strategic Pivot**:
+- **Remote Control Bridge (RCB)**: MCP Any will evolve to act as the secure gateway for headless agent sessions. We will implement the RCB, facilitating hardware-attested remote steering that allows users to monitor and intervene in background agent processes without persistent terminal connections.
+- **Asynchronous Rollout Collector (ARC)**: Supporting the continuous improvement of RL-driven agents, we are introducing the ARC. This service will act as a high-speed, privacy-preserving sink for reasoning traces and conversation feedback, enabling background policy optimization without adding latency to the agent's primary intent loop.
+- **Enclave-Isolated Execution (EIE)**: To counter the "Marketplace Rug-Pull" risks highlighted by the shift to curated hubs, we are mandating EIE for all third-party skills. MCP Any will utilize SSH-based sandboxes and secure enclaves to ensure that imported tools cannot access the host filesystem or network beyond their attested manifest.
+- **Plan-Mode Verification Gateway**: Leveraging patterns from Gemini CLI, we are implementing a "Pre-Commit Plan Validator." MCP Any will perform semantic analysis of an agent's "Execution Plan" before any state mutations are authorized, ensuring that autonomous subagents remain within mission-root safety boundaries.
+
+---
+
 ## Strategic Evolution: [2026-05-17]
 ### Focus: Cross-Framework Swarm Orchestration & Transport-Layer Session Integrity
 **Context**: The official launch of Claude Code "Agent Teams" and the stabilization of OpenClaw's `ContextEngine` v2026.3.7 signal a transition from single-framework agents to "Heterogeneous Swarms." Simultaneously, the discovery of "Team Ghosting" in parallel coordination and Gemini CLI's move toward authenticated A2A discovery confirm that identity must be cryptographically bound to the transport session itself.

@@ -57,3 +57,10 @@ The Agentic Entropy Monitor (AEM) provides a cross-framework observability and e
 
 ## 7. Evolutionary Changelog
 * **2026-04-01:** Initial Document Creation.
+
+### Update: 2026-04-17 (Iteration 2) - Entropy Monitoring for Remote Control Sessions
+**Context:** The shift toward headless agency (RCB) and background worker dispatch requires that entropy monitoring persists across session handovers. Today's research confirms that subagent drift is most likely to occur during periods of low human oversight (e.g., long-running background tasks).
+**Architecture Adjustment:**
+* Integrating AEM with the **Remote Control Bridge (RCB)**.
+* Implementing "Steering-Aware Normalization" where human interventions in a remote session reset the entropy baseline, allowing the subagent to continue with a "Cognitive Refresher."
+**Security Impact:** Prevents rogue background agents from exploiting the lack of real-time terminal monitoring to bypass mission constraints.

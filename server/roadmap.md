@@ -118,6 +118,11 @@
 *   **[P0] Local-Loopback Rate Limiter**: Mandatory throttling for all loopback traffic to neutralize browser-based brute-force attacks. (Added: 2026-03-17)
 *   **[P0] Origin-Locked Session Bridge**: Hardened session management binding tokens to cryptographically verified origins. (Added: 2026-03-17)
 
+#### Upcoming (2026-04-17 Evolution - Iteration 2)
+*   **[P0] Remote Control Bridge (RCB)**: Authoritative gateway for hardware-attested remote steering of headless agent sessions. (Added: 2026-04-17)
+*   **[P1] Asynchronous Rollout Collector (ARC)**: High-speed telemetry sink for RL reasoning traces and conversation feedback. (Added: 2026-04-17)
+*   **[P0] Enclave-Isolated Execution (EIE)**: Security middleware mandating SSH-based sandboxing and enclave isolation for third-party skills. (Added: 2026-04-17)
+
 #### Upcoming (2026-03-23 Evolution)
 *   **[P0] Proof-of-Intent (PoI) Validator**: Middleware implementing UACO v1.7 headers to bind tool calls to cryptographically signed intents. (Added: 2026-03-23)
 *   **[P0] Multi-Signature Skill Attestation**: Security mechanism for dynamic skill grafting to prevent "Skill-Squatting." (Added: 2026-03-23)
