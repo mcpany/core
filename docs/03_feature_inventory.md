@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Role-Based Context Distillation (RBCD) Provider**: (P0) Authoritative distillation service performing role-aware context pruning while mandating instruction shielding for mission-root anchors.
+- **Hardware-Attested Intent Forking (HAIF) Gateway**: (P0) High-performance forking service utilizing "Fork Leases" to reduce TPM attestation latency for parallel sub-missions.
+- **Conflict-Free Replicated Memory (CFRM) Sync**: (P0) Shared state middleware utilizing CRDTs to enable lock-free state replication across horizontal teammate swarms.
+- **Anti-Eviction Instruction Shield**: (P0) Security middleware ensuring core behavioral guardrails remain cryptographically pinned during aggressive context distillation.
+
+### Priority Shifts
+- **Reasoning-Aware Redaction (RAR) Engine**: (Re-affirmed P0) Elevated with mandatory support for **RBCD-compliant** role-based pruning.
+- **Recursive Intent Delegation (RID) Validator**: (Re-affirmed P0) Designated as the primary enforcement point for **HAIF-compliant** intent forking.
