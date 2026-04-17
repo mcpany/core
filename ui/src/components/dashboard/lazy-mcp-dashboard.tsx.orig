@@ -8,15 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-/**
- * Component that provides a lazy-loaded MCP dashboard for the user.
- *
- * @summary Renders the Lazy MCP Dashboard interface.
- * @param {} props - Component props.
- * @returns {React.ReactElement} The dashboard component.
- * @throws {Error} None.
- * @sideEffects None.
- */
 export function LazyMcpDashboard() {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<{name: string, score: number}[]>([]);
