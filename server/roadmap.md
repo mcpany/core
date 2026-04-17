@@ -1030,3 +1030,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P0] Hardware-Locked Mission Lease (HLML) Provider**: Advanced security middleware for issuing TPM-signed, task-bound capability leases. (Added: 2026-07-24)
 *   **[P1] Privacy-Preserving Audit (PPA) Hub**: Zero-Knowledge proof broker for hardware-attested reasoning path auditing. (Added: 2026-07-24)
 *   **[P0] Fast-Path Mesh Resumption**: Performance optimization using session-bound "Mesh Tickets" for sub-millisecond tunnel resumption. (Added: 2026-07-24)
+
+#### Upcoming (2026-04-17 Evolution)
+*   **[P0] Mesh-Resident Identity Attestation (MRIA) Hub**: Authoritative mesh-local identity service for secure P2P tunnels and multi-node handoffs. (Added: 2026-04-17)
+*   **[P0] Hardware-Locked Mission Leases (HLML) Provider**: Lifecycle-bound privilege service for TPM-signed, task-specific capability leases. (Added: 2026-04-17)
+*   **[P0] Lock-Free Teammate Coordination (LFTC) Hub**: CRDT-based mailbox synchronization to eliminate coordination bottlenecks in Agent Teams. (Added: 2026-04-17)
+*   **[P0] GC-Immune Reasoning Anchor Manager**: Advanced context-pinning to prevent instruction eviction during aggressive context GC. (Added: 2026-04-17)
+*   **[P0] NHI Lifecycle Governance Provider**: (Promoted to P0) Task-bound identity rotation and revocation for distributed meshes. (Updated: 2026-04-17)
+*   **[P0] Unified Transport Layer (Async Tasks)**: Native support for MCP 2025-11-25 async Tasks and improved SSE recovery. (Updated: 2026-04-17)

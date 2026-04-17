@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-04-17] Updates
+
+### Proposed Additions
+- **Mesh-Resident Identity Attestation (MRIA) Hub**: (P0) Authoritative mesh-local identity service issuing hardware-attested tokens that persist across P2P tunnels and multi-node handoffs.
+- **Hardware-Locked Mission Leases (HLML) Provider**: (P0) Lifecycle-bound privilege service that issues TPM-signed tool leases that expire automatically upon task completion (Claude Code MBHL defense).
+- **Lock-Free Teammate Coordination (LFTC) Hub**: (P0) Sharded, CRDT-based mailbox synchronization service to eliminate "Mailbox Lock" bottlenecks in horizontal Agent Teams.
+- **GC-Immune Reasoning Anchor Manager**: (P0) Advanced context-pinning middleware that marks mission-root fragments as immune to aggressive context garbage collection.
+
+### Priority Shifts
+- **NHI Lifecycle Governance Provider**: (Promoted from P1 to P0) Critical for managing task-bound identity rotation in long-running distributed meshes.
+- **Unified Transport Layer**: (Re-affirmed P0) Now elevated with the requirement for native support for **MCP async Tasks** and SSE disconnect recovery.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

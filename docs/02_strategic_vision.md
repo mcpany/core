@@ -1,5 +1,16 @@
 # Strategic Vision: MCP Any
 
+## Strategic Evolution: [2026-04-17]
+### Focus: Mesh-Resident Identity & Long-Running Task Sovereignty
+**Context**: The maturation of OpenClaw's SNT and Claude Code's MBHL confirm that security must move from the point-of-call to the **entire mesh lifecycle**. Simultaneously, the adoption of MCP async Tasks demands that the Universal Agent Bus provides **non-blocking coordination** and **hardware-locked lease persistence** for long-running workflows. The persistent "Cognitive Stall" and "Instruction Eviction" in deep meshes prove that we must move beyond simple bridging to active **Attention Governance** and **Lock-Free Coordination**.
+**Strategic Pivot**:
+- **Mesh-Resident Identity Attestation (MRIA)**: MCP Any will evolve to act as the authoritative "Mesh Identity Mint." We will implement MRIA, issuing hardware-attested, session-bound identity tokens that persist across P2P tunnels and multi-node handoffs, neutralizing the "Implicit Local Trust" gap.
+- **Hardware-Locked Mission Leases (HLML)**: Supporting the MBHL standard, MCP Any will implement HLML for all high-privilege tool calls. Capabilities will be issued as TPM-signed, task-specific leases that expire automatically upon task completion, neutralizing persistent privilege escalation in long-running missions.
+- **Lock-Free Teammate Coordination (LFTC)**: To resolve the "Cognitive Stall" in horizontal Agent Teams, we are introducing LFTC. This service will host granular, task-bound mailbox shards utilizing CRDTs to ensure non-blocking task claiming and state synchronization between teammates.
+- **GC-Immune Reasoning Anchors**: To counter "Instruction Eviction" in 1M+ token windows, we are mandating ALRA-compliant pinning. Specific mission-root fragments will be marked as "GC-Immune," ensuring that core behavioral guardrails remain permanent in the attention window.
+
+---
+
 ## Strategic Evolution: [2026-03-24]
 ### Focus: Horizontal Coordination & Discovery-Phase Sovereignty
 **Context**: The emergence of "Agent Teams" in horizontal swarms and the discovery of "Settings-as-Shell" exploits in Gemini CLI and OpenClaw confirm that the "Universal Agent Bus" must now move beyond simple tool proxying. We must now protect the **discovery phase** itself and provide **non-blocking coordination** for parallel teammates. As agents move from linear sessions to horizontal teammate meshes, the security frontier is no longer just the "tool," but the **Inbox** where agents coordinate and the **Manifest** that defines their discovery.
