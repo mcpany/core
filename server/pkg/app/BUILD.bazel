@@ -11,6 +11,7 @@ go_library(
         "api_alignment.go",
         "api_audit.go",
         "api_auth.go",
+        "api_blackboard.go",
         "api_credential.go",
         "api_discovery.go",
         "api_extra.go",
