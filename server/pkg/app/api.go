@@ -78,6 +78,9 @@ func (a *Application) createAPIHandler(store storage.Storage) http.Handler {
 	mux.HandleFunc("/system/status", a.handleSystemStatus)
 	mux.HandleFunc("/discovery/status", a.handleDiscoveryStatus)
 	mux.HandleFunc("/discovery/trigger", a.handleDiscoveryTrigger)
+	// TODO: Use the actual blackboard store instance when initialized on Server.
+	// For the UI, we return the handler logic but we need to inject the global blackboard instance.
+	mux.HandleFunc("/blackboard/keys", a.handleBlackboardKeys())
 	mux.HandleFunc("/audit/logs", a.handleAuditLogs)
 	mux.HandleFunc("/audit/export", a.handleAuditExport)
 	mux.HandleFunc("/validate", a.handleValidate())

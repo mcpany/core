@@ -61,4 +61,19 @@ func TestBlackboardStore(t *testing.T) {
 	if val != "value2" {
 		t.Errorf("expected 'value2', got '%s'", val)
 	}
+
+	// Test GetAll
+	err = store.Set(ctx, "agent2", "key2", "value3")
+	if err != nil {
+		t.Fatalf("failed to set value for agent2: %v", err)
+	}
+
+	entries, err := store.GetAll(ctx)
+	if err != nil {
+		t.Fatalf("failed to get all values: %v", err)
+	}
+
+	if len(entries) != 2 {
+		t.Errorf("expected 2 entries, got %d", len(entries))
+	}
 }

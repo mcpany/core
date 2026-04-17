@@ -125,6 +125,64 @@ func (s *BlackboardStore) Set(ctx context.Context, agentID, key, value string) e
 	return err
 }
 
+// BlackboardEntry represents a single entry in the blackboard.
+//
+// Summary: Represents a single entry in the blackboard.
+type BlackboardEntry struct {
+	AgentID string `json:"agentId"`
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Intent  string `json:"intent"`
+}
+
+// GetAll retrieves all values from the blackboard.
+//
+// Summary: Retrieves all values from the blackboard.
+//
+// Parameters:
+//   - ctx (context.Context): The context for the request.
+//
+// Returns:
+//   - []BlackboardEntry: The retrieved entries.
+//   - error: An error if the values cannot be retrieved.
+//
+// Errors:
+//   - Returns an error if the database query fails.
+//
+// Side Effects:
+//   - Executes a SELECT query on the database.
+func (s *BlackboardStore) GetAll(ctx context.Context) ([]BlackboardEntry, error) {
+	rows, err := s.db.QueryContext(ctx, "SELECT agent_id, key, value FROM blackboard")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var entries []BlackboardEntry
+	for rows.Next() {
+		var entry BlackboardEntry
+		if err := rows.Scan(&entry.AgentID, &entry.Key, &entry.Value); err != nil {
+			return nil, err
+		}
+		// Try to infer intent from key or value for display purposes, or set default
+		// Since intent isn't in the schema, we'll set it to a default value based on key to match the UI expectation
+		if entry.Key == "session_token" {
+			entry.Intent = "auth"
+		} else if entry.Key == "last_query" {
+			entry.Intent = "database_read"
+		} else {
+			entry.Intent = "shared_state"
+		}
+		entries = append(entries, entry)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return entries, nil
+}
+
 // Close closes the database connection.
 //
 // Summary: Closes the underlying database connection.
