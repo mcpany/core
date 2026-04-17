@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Recursive Intent Pruning (RIP) Hub**: (P0) Authoritative execution monitor that forcefully collapses divergent subagent reasoning branches based on parent-intent signals.
+- **Federated Scratchpad Arbiter (FSA)**: (P0) Distributed lock-manager and semantic validator for synchronizing shared team scratchpads across Sovereign Node Tunnels.
+- **Multimodal Intent Anchoring (MMIA) Provider**: (P0) Advanced pinning mechanism for visual and audio context fragments to prevent instruction eviction in multimodal swarms.
+- **Speculative Shadowing Interceptor**: (P0) Security middleware mandating pre-commit semantic verification for all tool calls initiated within speculative reasoning branches.
+
+### Priority Shifts
+- **Active Subagent Reaper**: (Re-affirmed P0) Evolving into the **RIP Hub** to support hardware-attested branch termination.
+- **Atomic Scratchpad Arbiter**: (Re-affirmed P0) Elevated with the requirement for **Federated Synchronization** across distributed agent nodes.
