@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Narrative Continuity Controller (NCC)**: (P0) Authoritative coordination service that synchronizes narrative "Chapters" and task-bound context fragments across disparate subagent frameworks.
+- **Hivenet Interdiction Mesh (HIM)**: (P0) Real-time, cross-agent behavioral analysis service for detecting coordinated "Hivenet" attacks and performing sub-millisecond capability revocation.
+- **Effort-Responsive Discovery (ERD)**: (P1) Resource management middleware that dynamically scales tool schema complexity based on the agent's signaled reasoning effort (e.g., Opus 4.7 xhigh).
+- **CWF-Resistant Anchor Pinning**: (P0) Advanced cognitive security service utilizing hardware-bound attention-locking to protect security anchors from Context-Window Flooding (CWF) attacks.
+
+### Priority Shifts
+- **Subagent Lineage Explorer**: (Re-affirmed P0) Elevated with mandatory support for **Narrative Continuity** tracking.
+- **Swarm-Aware Rate Limiter**: (Evolved to HIM) Now designated as the primary defense against machine-speed coordinated attacks.
