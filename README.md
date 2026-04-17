@@ -2,7 +2,38 @@
 
 ## Elevator Pitch
 **What is this?** MCP Any is the Universal Adapter for AI agents.
+
 **Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+
+## Quick Start
+Follow these exact commands to get a "Hello World" instance running locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/mcpany/core.git
+cd core
+
+# Install dependencies (ensure bazelisk and make are in PATH)
+# macOS/Linux (assuming homebrew):
+# brew install bazelisk make
+
+# Run the app (Hello World example)
+bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+```
+
+## Developer Workflow
+We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
+
+```bash
+# Run the test suite to ensure no code logic breaks
+make test
+
+# Run the linter to verify formatting and documentation conventions
+make lint
+
+# Build the main binary
+bazelisk build //server/cmd/mcpany
+```
 
 ## Architecture
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
@@ -30,37 +61,6 @@ graph TD
     C -->|Protobuf/Reflection| E[gRPC Service]:::target
     C -->|GraphQL Schema| F[GraphQL Endpoint]:::target
     C -->|Standard I/O| G[Command Line Tools]:::target
-```
-
-## Getting Started
-Follow these step-by-step instructions to get a "Hello World" instance running locally:
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/mcpany/core.git
-   cd core
-   ```
-
-2. **Ensure dependencies:**
-   Make sure you have `bazelisk` and `make` installed and available in your `PATH`.
-
-3. **Run a Hello World example:**
-   ```bash
-   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
-   ```
-
-## Development
-We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
-
-```bash
-# Run the test suite to ensure no code logic breaks
-make test
-
-# Run the linter to verify formatting and documentation conventions
-make lint
-
-# Build the main binary
-bazelisk build //server/cmd/mcpany
 ```
 
 ## Configuration

@@ -6,6 +6,15 @@
 // Type declarations for react-syntax-highlighter ESM sub-path imports
 declare module 'react-syntax-highlighter/dist/esm/prism-light' {
   import { ComponentType } from 'react';
+  /**
+   * Summary: Declaration for SyntaxHighlighterProps.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export interface SyntaxHighlighterProps {
     language?: string;
     style?: Record<string, unknown>;
@@ -25,6 +34,15 @@ declare module 'react-syntax-highlighter/dist/esm/prism-light' {
 
 declare module 'react-syntax-highlighter/dist/esm/light' {
   import { ComponentType } from 'react';
+  /**
+   * Summary: Declaration for SyntaxHighlighterProps.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export interface SyntaxHighlighterProps {
     language?: string;
     style?: Record<string, unknown>;
@@ -60,15 +78,60 @@ declare module 'react-syntax-highlighter/dist/esm/languages/hljs/bash' { const v
 declare module 'react-syntax-highlighter/dist/esm/languages/hljs/plaintext' { const v: unknown; export default v; }
 
 declare module 'react-syntax-highlighter/dist/esm/styles/prism' {
+  /**
+   * Summary: Declaration for vscDarkPlus.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export const vscDarkPlus: Record<string, unknown>;
+  /**
+   * Summary: Declaration for oneDark.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export const oneDark: Record<string, unknown>;
   const styles: Record<string, Record<string, unknown>>;
   export default styles;
 }
 
 declare module 'react-syntax-highlighter/dist/esm/styles/hljs' {
+  /**
+   * Summary: Declaration for docco.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export const docco: Record<string, unknown>;
+  /**
+   * Summary: Declaration for dark.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export const dark: Record<string, unknown>;
+  /**
+   * Summary: Declaration for vs2015.
+   *
+   * Parameters: None
+   *
+   * Returns: None
+   *
+   * Errors: None
+   */
   export const vs2015: Record<string, unknown>;
   const styles: Record<string, Record<string, unknown>>;
   export default styles;

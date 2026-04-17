@@ -20,6 +20,15 @@
 
 
 
+/**
+ * Summary: Interface defining the configuration fields of a marketplace item.
+ *
+ * Parameters: None
+ *
+ * Returns: None
+ *
+ * Errors: None
+ */
 export interface MarketplaceItemConfig {
   command: string;
   args: string[];

@@ -108,4 +108,13 @@ export const SkillService = {
   },
 };
 
+/**
+ * Summary: Re-exports Skill type for consumers to strongly type skill entities.
+ *
+ * Parameters: None
+ *
+ * Returns: The typed interface for a Skill.
+ *
+ * Errors: None
+ */
 export type { Skill };

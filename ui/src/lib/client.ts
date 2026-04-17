@@ -61,6 +61,15 @@ export interface UpstreamServiceConfig extends Omit<BaseUpstreamServiceConfig, '
 
 // Re-export generated types
 export type { ToolDefinition, ResourceDefinition, PromptDefinition, Credential, Authentication, ProfileDefinition, ServiceProvenance, CommandLineUpstreamService };
+/**
+ * Summary: Re-exports API registration types to simplify consumer imports.
+ *
+ * Parameters: None
+ *
+ * Returns: The typed interfaces from proto.
+ *
+ * Errors: None
+ */
 export type { ListServicesResponse, GetServiceResponse, GetServiceStatusResponse, ValidateServiceResponse } from '@proto/api/v1/registration';
 
 /**
