@@ -1931,6 +1931,16 @@
 - **Hardware-Locked Mission Lease (HLML) Provider**: (P0) Advanced security service issuing TPM-signed, task-specific capability leases that expire automatically upon mission-root task completion.
 - **Privacy-Preserving Audit (PPA) Hub**: (P1) Identity service leveraging Zero-Knowledge proofs to attest reasoning integrity without revealing raw context fragments.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Multi-Host Teammate Synchronization (MHTS)**: (P0) Authoritative coordination service providing a hardware-attested, CRDT-based shared task list for horizontal swarms across disparate hosts.
+- **Discovery-Command Semantic Sanitizer (DCSS)**: (P0) Security middleware that performs real-time semantic analysis and shell-character escaping for discovery-time commands (e.g., `cliPath`) to neutralize RCE.
+- **Teammate Inbox Isolation Provider**: (P1) Security service cryptographically isolating inter-teammate mailbox fragments to ensure fragment-level privacy in horizontal teams.
+- **Hardware-Attested Task Claiming Manager**: (P0) Advanced security service mandating TPM-signed mission tokens for all teammate task-claiming operations.
+
 ### Priority Shifts
+- **Lock-Free Teammate Coordination (LFTC)**: (Re-affirmed P0) Evolving into the **MHTS** to support multi-host synchronization.
+- **Discovery Sandbox Middleware**: (Re-affirmed P0) Elevated with mandatory **DCSS** integration to counter CVE-2026-25593.
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
