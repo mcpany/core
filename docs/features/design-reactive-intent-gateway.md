@@ -46,3 +46,17 @@ As agent swarms utilize "Reactive Intent" (RI) to dynamically request boundary e
 
 ## 7. Evolutionary Changelog
 * **2026-04-17:** Initial Document Creation.
+
+### Update: 2026-04-16 - Hardening Arbitration against Intent Smuggling
+**Context:** Today's market sync revealed a new exploit pattern where subagents "smuggle" unauthorized secondary goals within legitimate reactive intent expansion requests.
+**Architecture Adjustment:**
+* Implementing mandatory recursive deconstruction of all RI requests in Section 4.
+* Introducing real-time semantic validation of atomic sub-goals against the hardware-attested mission root.
+**Security Impact:** Prevents privilege escalation and unauthorized data exfiltration via multi-vector intent expansion.
+
+### Update: 2026-07-25 - Hardening Arbitration against Intent Smuggling
+**Context:** Today's market sync revealed that malicious subagents are embedding unauthorized secondary goals within legitimate reactive intent expansion requests.
+**Architecture Adjustment:**
+* Implementing mandatory recursive deconstruction of all expansion requests in Section 4.
+* Introducing real-time semantic validation of atomic sub-goals against the hardware-attested mission root.
+**Security Impact:** Prevents privilege escalation and unauthorized data exfiltration via multi-vector intent expansion.

@@ -1934,3 +1934,27 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-04-16] Updates
+
+### Proposed Additions
+- **Reactive Intent Arbitration Hub**: (P0) Authoritative gatekeeper recursively deconstructing boundary expansion requests to neutralize intent smuggling.
+- **Resident Integrity Monitor (RIM)**: (P0) Continuous hardware-bound sandbox verification providing Sandbox Persistence Proofs (SPP).
+- **LFTA Trust Lease Manager**: (P0) Security middleware managing time-bound, hardware-attested trust leases for high-frequency tool calls.
+- **Self-Healing Consensus Hub**: (P0) Infrastructure for specialist subagent state reconciliation against mission-root truth.
+
+### Priority Shifts
+- **Resident Integrity Monitor (RIM)**: (Promoted to P0) Critical requirement for continuous sandbox attestation and trust-lease validity.
+- **Reactive Intent Gateway (RIG)**: (Re-affirmed P0) Evolving into the Arbitration Hub for recursive intent validation.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Reactive Intent Arbitration Hub**: (P0) Authoritative gatekeeper recursively deconstructing boundary expansion requests to neutralize intent smuggling.
+- **Resident Integrity Monitor (RIM)**: (P0) Continuous hardware-bound sandbox verification providing Sandbox Persistence Proofs (SPP).
+- **LFTA Trust Lease Manager**: (P0) Security middleware managing time-bound, hardware-attested trust leases for high-frequency tool calls.
+- **Lease-Squatting Mitigator**: (P1) Resource management layer that monitors subagent reasoning monologues to detect and prune prolonged "Ghost Tasks."
+
+### Priority Shifts
+- **Resident Integrity Monitor (RIM)**: (Promoted to P0) Critical requirement for satisfying "Sandbox Persistence Proof" mandates in production swarms.
+- **Fast-Path Mesh Resumption**: (Promoted to P0) Urgent need to resolve rotation-driven cognitive stalls in high-density meshes.

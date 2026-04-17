@@ -47,3 +47,17 @@ Hardware-Attested Boot (TPM) ensures an agent starts in a clean environment, but
 * **2026-04-17:** Initial Document Creation.
 * **2026-04-18:** Optimization for "Resident Persistence Proofs" inspired by Claude Code's latest stability updates. Introducing a "Unified Persistence Broker" pattern to allow swarm-wide sharing of hardware-bound integrity signals, reducing the per-agent attestation tax.
 * **2026-04-19:** Integration with Distributed Trust Leases (LFTA). RIM now acts as the authoritative "Lease Guard," providing the continuous hardware-attestation signals required to maintain LFTA token validity. Detection of any integrity drift (e.g., config hook modification) now triggers an immediate global revocation of all active trust leases.
+
+### Update: 2026-04-16 - Integration with LFTA Trust Leases
+**Context:** Today's market sync revealed that Gemini CLI is pushing LFTA to solve the "Attestation Tax." Resident integrity is now a prerequisite for short-term trust leases.
+**Architecture Adjustment:**
+* Evolving RIM to act as the authoritative provider of hardware-bound "Lease Tokens."
+* Integrating kernel-level file-watchers with the LFTA Trust Lease Manager in Section 4.
+**Security Impact:** Enables sub-millisecond tool execution while maintaining continuous hardware-attested environment sovereignty.
+
+### Update: 2026-07-25 - Integration with LFTA Trust Leases
+**Context:** Today's market sync revealed that Gemini CLI is scaling LFTA to solve the "Attestation Tax." Resident integrity is now a prerequisite for short-term trust leases.
+**Architecture Adjustment:**
+* Evolving RIM to act as the authoritative provider of hardware-bound "Lease Tokens."
+* Integrating kernel-level file-watchers with the LFTA Trust Lease Manager in Section 4.
+**Security Impact:** Enables sub-millisecond tool execution while maintaining continuous hardware-attested environment sovereignty.
