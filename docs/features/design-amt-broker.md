@@ -46,6 +46,7 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
     ```
 * **APIs / Interfaces:**
     * `amt.EstablishTunnel(remoteNodeID, missionToken) -> TunnelID`: Initiates a hardware-attested tunnel.
+    * `amt.SetIngressFilter(tunnelID, intentPolicy)`: (Added 2026-07-25) Configures a CMIS filter on a specific tunnel endpoint to prevent lateral pivot.
     * `amt.InvokeRemote(tunnelID, toolCall) -> Result`: Securely executes a tool over the tunnel.
     * `amt.ResumeTunnel(meshTicket) -> TunnelID`: Fast-path resumption using session-bound trust.
 * **Data Storage/State:**
@@ -62,3 +63,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Neutralizing the Bridgehead Pivot
+**Context:** Today's market research revealed the "Bridgehead Pivot" vulnerability where compromised nodes use AMT tunnels to laterally move into peer meshes.
+**Architecture Adjustment:**
+* **Introducing Cross-Mesh Intent Scoper (CMIS):** Section 4 is updated to include a "Scope Ingress Filter" on AMT tunnel endpoints.
+* **Recursive Intent Enforcement:** Remote tool calls must now carry a hardware-signed "Federation Token" that limits the caller to the specific mission-root intents authorized during the initial handshake.
+**Security Impact:** Prevents a compromised external mesh node from accessing local Blackboard shards or tools that were not explicitly scoped for the federated mission.

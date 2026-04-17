@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cross-Mesh Intent Scoper (CMIS)**: (P0) Authoritative federation gatekeeper enforcing mission-root constraints across attested AMT tunnels to prevent "Bridgehead Pivot" lateral movement.
+- **ZK-Reasoning Proof (ZKRP) Broker**: (P0) Privacy-preserving attestation service for generating and verifying Zero-Knowledge proofs of agent reasoning paths (Gemini v1.0 standard).
+- **Hardware-Attested Cache Invalidation (HACI)**: (P0) Security middleware cryptographically linking capability caches to hardware revocation lists to neutralize "Capability Ghosting."
+- **Multi-Domain Conflict Resolver (MDCR)**: (P0) Kernel-level arbiter for federated Blackboard states resolving mutation collisions across disparate mesh domains.
+
+### Priority Shifts
+- **Attested Mesh Tunneling (AMT) Broker**: (Re-affirmed P0) Now elevated with the requirement for mandatory **CMIS** integration to counter lateral pivot exploits.
+- **Privacy-Preserving Audit (PPA) Hub**: (Re-affirmed P1) Designated as the primary verification backend for the new **ZKRP Broker**.
