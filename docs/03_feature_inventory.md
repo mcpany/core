@@ -1924,6 +1924,17 @@
 - **Adaptive Resource Reclamation (ARR) Service**: (P0) High-speed budgeting middleware that re-allocates reasoning/token budgets between teammates based on task urgency.
 - **Manifest-Based Reflection (MBR) Arbiter**: (P0) Authoritative coordination service mandating that subagent self-reflection cycles align with the mission-root manifest.
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Privacy-Preserving Reason Proof (PPRP) Validator**: (P0) Authoritative audit service utilizing Zero-Knowledge proofs to verify reasoning integrity without exposing raw context.
+- **Remote Dispatch Attestation Provider**: (P0) Advanced security service issuing TPM-signed, mission-bound leases (MBHL) for Claude Code style background workers.
+- **Social-Agent Shadow Interceptor**: (P1) Security extension for CSAD Hub monitoring inter-agent social interactions for unauthorized information coercion.
+
+### Priority Shifts
+- **Mesh-Resident Identity Hub**: (Re-affirmed P0) Elevated from FSI Provider to support distributed, low-latency verification in multi-node SNT meshes.
+- **Cognitive Truth Attestation Hub**: (Re-affirmed P0) Designated as the primary integration point for **PPRP-compliant** auditability.
+
 ## Evolution: [2026-07-24] Updates
 
 ### Proposed Additions
