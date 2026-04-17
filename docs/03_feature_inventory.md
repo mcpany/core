@@ -1934,3 +1934,15 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Cross-Framework Attestation Broker (CFAB)**: (P0) Authoritative translation service for hardware-attested intents between OpenClaw (SNT) and Claude Code (MBHL) formats.
+- **Hardware-Attestation Load Balancer (HALB)**: (P0) Advanced resource management service dynamically batching and prioritizing hardware-signing requests across multiple enclaves.
+- **Zero-Knowledge Capability Verification (ZKCV) Provider**: (P0) Security middleware implementing Gemini-compliant ZK-proofs for skill verification without full identity rotation.
+- **Long-Haul Intent Reinforcement (LHIR) Service**: (P1) Stability middleware for the MRCP provider periodically re-injecting hardware-attested intent anchors into long-running swarms.
+
+### Priority Shifts
+- **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Elevated with the requirement for mandatory **LHIR-compliant** intent re-injection.
+- **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now designated as the primary interface for **ZKCV-optimized** peer verification.
