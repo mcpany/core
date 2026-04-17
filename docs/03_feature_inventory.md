@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Passive Metadata Sanitizer (PMS)**: (P0) Authoritative middleware for real-time semantic analysis of agent-ingested platform metadata (GitHub, Slack) to neutralize "Comment and Control" instruction injection.
+- **Scope-Constrained Token Rotation (SCTR)**: (P0) Identity security service ensuring rotation tokens never exceed parent scope (defense against CVE-2026-32922).
+- **Attention-Anchor Pinning (AAP) Provider**: (P0) Cognitive stability service dynamically re-injecting core instructions into 1M+ token windows to prevent instruction eviction.
+
+### Priority Shifts
+- **Mailbox Integrity Middleware**: (Re-affirmed P0) Now elevated with mandatory **Intent-Splicing Defense** for horizontal teams.
+- **Metadata Sanitization Gateway (MSG)**: (Re-affirmed P0) Evolving into the **PMS** with specific support for passive platform inputs.

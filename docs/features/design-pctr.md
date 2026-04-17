@@ -51,3 +51,10 @@ PCTR provides the core infrastructure to validate that any rotation event result
 **Architecture Adjustment**: * Integrating GIMM (Ghost Intent Mirroring Mitigator) into the rotation pre-check pipeline.
 * Mandating stylometric entropy validation for all rotation request reasonings.
 **Security Impact**: Prevents "Mirror-based" privilege escalation by ensuring that rotation requests exhibit unique, lineage-verified behavioral signatures.
+
+### Update: [2026-07-25] - Transition to Scope-Constrained Token Rotation (SCTR)
+**Context**: The emergence of "Comment and Control" attacks and refined analysis of CVE-2026-32922 confirm that simple subsetting is insufficient without hardware-enclave (TPM) lineage proofs.
+**Architecture Adjustment**: * Formalizing SCTR as the mandatory rotation standard.
+* Requiring TPM-signed monotonic counters to be embedded in all rotation tokens to prevent replay-based escalation.
+* Implementing a "Maximum Cumulative Authority" check that prevents a chain of rotations from eventually exceeding the original mission-root scope through semantic drift.
+**Security Impact**: Provides absolute cryptographic certainty that no subagent can ever exceed its parent's authority, even across infinite rotation cycles.

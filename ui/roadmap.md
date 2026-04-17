@@ -691,6 +691,11 @@
 - [ ] **[P0] CFIA v2 Signing Workspace**: Interactive UI for human-in-the-loop hashing and hardware-signing of context files. (Added: 2026-06-29)
 - [ ] **[P1] FPIR Lease Monitor**: Dashboard for tracking fast-path identity resumption leases and teammate rotation latency. (Added: 2026-06-29)
 
+#### Upcoming (2026-07-25 Evolution)
+- [ ] **[P0] Passive Metadata Scrubbing Log**: (2026-07-25) Security dashboard for reviewing redacted platform metadata and C2 alerts.
+- [ ] **[P0] SCTR Lineage Proof Viewer**: (2026-07-25) Visualizer for hardware-attested token rotation paths and scope subsetting.
+- [ ] **[P0] Attention Reinforcement Heatmap**: (2026-07-25) Forensic UI for visualizing anchor strength and dynamic pinning events in 1M+ token windows.
+
 #### Upcoming (2026-03-23 Evolution - v2)
 - [x] **[P0] A2A Auth Status Dashboard**: (2026-03-23) Visualize authenticated inter-agent handshakes and peer-to-peer security status.
 - [ ] **[P1] Usage Quota Dashboard**: (2026-03-23) Real-time visualization of mission budget consumption and quota burn rates.

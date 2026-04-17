@@ -218,6 +218,11 @@
 *   **[P0] Multi-Signature Skill Attestation (MSSA)**: Mandatory auditor attestation for dynamic tool grafting and high-risk skill installation. (Added: 2026-06-27)
 *   **[P1] Reasoning Path Integrity (RPI) Validator**: Support for ARE v1.8 hardware-signed reasoning fragments and semantic hash-chaining. (Added: 2026-06-27)
 
+#### Upcoming (2026-07-25 Evolution)
+*   **[P0] Passive Metadata Sanitizer (PMS)**: Authoritative gateway for scrubbing passive platform metadata (GitHub/Slack) to neutralize C2 injection. (Added: 2026-07-25)
+*   **[P0] Scope-Constrained Token Rotation (SCTR)**: Mandatory TPM-signed lineage proofs for token rotation to prevent privilege escalation. (Added: 2026-07-25)
+*   **[P0] Attention-Anchor Pinning (AAP)**: Cognitive stability service to prevent instruction eviction in 1M+ token windows. (Added: 2026-07-25)
+
 ## 2. Top 10 Recommended Features
 
 These features represent the next logical steps for the product, focusing on Enterprise Readiness, Safety, and Developer Experience.
