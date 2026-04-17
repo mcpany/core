@@ -62,3 +62,10 @@ The Attested Mesh Tunneling (AMT) Broker is required to provide hardware-atteste
 
 ## 7. Evolutionary Changelog
 * **2026-07-24:** Initial Document Creation.
+
+### Update: 2026-07-25 - Distributed Pruning Consistency
+**Context:** Today's market sync revealed the introduction of MAC-GC in OpenClaw, addressing context desync in distributed meshes.
+**Architecture Adjustment:**
+- Integrating **Mesh-Aware Garbage Collection (MAGC)** into the AMT lifecycle.
+- Tunnels now carry "Pruning Quorum" signals to ensure context consistency across distributed nodes.
+**Security Impact:** Prevents "Mission-Root Erasure" exfiltration where critical guardrails are pruned on one node but still required by remote teammates.

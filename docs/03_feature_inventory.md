@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Epistemic Uncertainty Broker (EUB)**: (P0) Authoritative confidence service that intercepts model uncertainty signals (EUM) to trigger supervisor escalations.
+- **Attested Reflection Middleware (ARM)**: (P0) Kernel-level arbiter for teammate self-correction requiring hardware-attested reasoning proofs to break reflection deadlocks.
+- **Mesh-Aware Garbage Collection (MAGC) Manager**: (P1) Distributed coordination service for synchronizing context pruning across multi-node agent meshes.
+
+### Priority Shifts
+- **Reasoning Confidence Scoring (RCS) Gateway**: (Re-affirmed P0) Evolving into the **EUB** to support standardized EUM header ingestion.
+- **Manifest-Based Reflection (MBR) Arbiter**: (Re-affirmed P0) Now elevated with the requirement for mandatory **ARM-compliant** attestation.
