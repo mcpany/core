@@ -624,7 +624,7 @@ func TestCommandTool_Execute_PathTraversal_Args(t *testing.T) {
 	}.Build()
 
 	callDef := configv1.CommandLineCallDefinition_builder{
-		Args: []string{"{{arg}}"},
+		Args:       []string{"{{arg}}"},
 		Parameters: []*configv1.CommandLineParameterMapping{mapping},
 	}.Build()
 
@@ -682,5 +682,58 @@ func TestCommandTool_Execute_PathTraversal_Env(t *testing.T) {
 	_, err := cmdTool.Execute(context.Background(), req)
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(), "path traversal attempt detected")
+	}
+}
+
+func TestCheckFindInjection(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		val      string
+		base     string
+		hasError bool
+	}{
+		{"safe_file.txt", "find", false},
+		{"-name 'foo'", "find", false},
+		{"-exec rm -rf / \\;", "find", true},
+		{"-EXEC echo hi", "find", true},
+		{"-execdir cat {} \\;", "find", true},
+		{"-ok cat {} \\;", "find", true},
+		{"-okdir cat {} \\;", "find", true},
+		{"-delete", "find", true},
+		{"-exec rm -rf / \\;", "grep", false}, // Only applied to find
+	}
+	for _, tt := range tests {
+		err := checkFindInjection(tt.val, tt.base)
+		if tt.hasError {
+			assert.Error(t, err, "expected error for val: %s", tt.val)
+		} else {
+			assert.NoError(t, err, "unexpected error for val: %s", tt.val)
+		}
+	}
+}
+
+func TestCheckSQLKeywords(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		val      string
+		hasError bool
+	}{
+		{"valid_username", false},
+		{"OR 1=1", true},
+		{"UNION SELECT", true},
+		{"-- comment", true},
+		{"DROP TABLE", true},
+		{"admin' --", true},
+		{"admin' OR '1'='1", true},
+		{"wordORanother", false}, // inside word boundary
+		{"DROP", true},
+	}
+	for _, tt := range tests {
+		err := checkSQLKeywords(tt.val)
+		if tt.hasError {
+			assert.Error(t, err, "expected error for val: %s", tt.val)
+		} else {
+			assert.NoError(t, err, "unexpected error for val: %s", tt.val)
+		}
 	}
 }
