@@ -278,6 +278,8 @@
 - [ ] **[P0] Sandbox Persistence Monitor**: Real-time visual tracker for RIM heartbeats and hardware state hashes. (Added: 2026-04-17)
 - [ ] **[P1] Trust Lease Manager UI**: Dashboard for monitoring active LFTA trust leases and their expiration status. (Added: 2026-04-17)
 - [ ] **[P0] Swarm Consensus Inspector**: Visualizer for comparing subagent monologues against the mission-root to detect consensus drift. (Added: 2026-04-17)
+- [ ] **[P0] Metadata Poisoning Monitor**: (2026-04-17) Real-time visualization of SMS-sanitized tool definitions and redacted instructions.
+- [ ] **[P1] Loading Sandbox Auditor**: (2026-04-17) Visual tracker for IFI-sandboxed initialization events and blocked system calls.
 
 #### Upcoming (2026-04-18 Evolution)
 - [ ] **[P0] Continuous Sandbox Policy Monitor**: Real-time visualization of sandbox boundary compliance and drift alerts. (Added: 2026-04-18)

@@ -502,6 +502,11 @@ These features represent the next logical steps for the product, focusing on Ent
 *   **[P1] LFTA Trust Lease Manager**: Security middleware for managing low-frequency trust attestation leases in deep swarms. (Added: 2026-04-17)
 *   **[P0] Swarm Consensus Alignment Broker**: Authority for periodic state reconciliation to prevent swarm consensus drift. (Added: 2026-04-17)
 
+#### Upcoming (2026-04-17 Evolution - Part 2)
+*   **[P0] Structural Metadata Sanitizer (SMS)**: Semantic scanner for discovery-time schemas and agent cards to block "Adversarial Descriptions". (Added: 2026-04-17)
+*   **[P1] Init-Function Isolation (IFI)**: Pre-flight "Loading Sandbox" to profile MCP server initialization and neutralize init-phase RCE. (Added: 2026-04-17)
+*   **[P0] Metadata Argument Scanner**: Extension of ALSV to perform semantic validation on non-executable fields like branch names. (Added: 2026-04-17)
+
 #### Upcoming (2026-04-18 Evolution)
 *   **[P0] Continuous Sandbox Policy Verifier**: Real-time validation of sandbox boundaries against resident security policy. (Added: 2026-04-18)
 *   **[P0] LFTA Trust Lease Manager**: Scalable trust-lease management for high-frequency agent tool calls (Promoted to P0 on 2026-04-18).

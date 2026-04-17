@@ -941,6 +941,15 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 - **Leased Trust Orchestration**: We are adopting the LFTA (Low-Frequency Trust Attestation) model as a core infrastructure utility. MCP Any will act as a "Trust Lease Broker," allowing sessions to maintain a high-strength security posture across a burst of tool calls without repeated hardware signature overhead.
 - **Continuous Sandbox Integrity Monitoring**: Transitioning from point-in-time attestation to a "Continuous Resident Monitor" (RIM). This provides hardware-bound proofs that the agent's environment remains immutable throughout the lifecycle of the mission, neutralizing "Delayed Payload" escapes.
 
+## Strategic Evolution: [2026-04-17] (Part 2)
+### Focus: Structural Metadata Sovereignty & Loading-Phase Immunity
+**Context**: The emergence of "Agent Card Poisoning" and the "Hackerbot-Claw" init-phase exploits confirm that security must now extend backward to the **pre-flight loading phase**. Attackers are now targeting the moment an agent *reads* about a tool or *loads* its logic, before execution logic even begins. Simultaneously, the OpenAI Codex branch-name exploit re-affirms that any metadata ingested by an agent is an active prompt injection vector.
+**Strategic Pivot**:
+- **Structural Metadata Sanitizer (SMS)**: MCP Any will evolve to treat all discovery-time schemas and agent cards as high-risk, untrusted content. We will implement the SMS to perform real-time, semantic deconstruction of discovery metadata, blocking "Adversarial Descriptions" before they are ingested by the primary reasoning engine.
+- **Init-Function Isolation (IFI)**: To neutralize initialization-time RCE, we are introducing IFI. All MCP servers and agent plugins will be loaded in an ephemeral, deeply instrumented "Loading Sandbox" to profile behavior and intercept unauthorized system calls during the `init()` phase.
+- **Argument-Level Semantic Validation (ALSV) for Metadata**: We are expanding ALSV to cover all ingested metadata fields (e.g., branch names, usernames, repo titles). MCP Any will perform semantic scanning on these fields to ensure they do not contain embedded instructions or shell metacharacters.
+- **Pre-Flight Behavioral Baseline**: We are mandating that all new tools undergo a "Burn-In" period in the Ghost Shell during their first discovery, establishing a behavioral baseline for their loading phase before they are exposed to the active mission scope.
+
 ## Strategic Evolution: [2026-04-16]
 ### Focus: Reactive Intent Governance & Self-Healing Swarm Integrity
 **Context**: The emergence of "Reactive Intent" (RI) and "Sandbox Persistence Proofs" marks a shift from static pre-execution attestation to dynamic, lifecycle-wide governance. Swarms now require the ability to safely expand their boundaries in response to environment feedback while maintaining a deterministic proof of environment integrity.

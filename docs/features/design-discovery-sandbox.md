@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-04-17 - Loading-Phase Init Isolation (IFI)
+**Context:** Today's market sync revealed the "Hackerbot-Claw" campaign exploiting poisoned `init()` functions in Go-based agent components to achieve RCE during module loading.
+**Architecture Adjustment:**
+* Introducing **Init-Function Isolation (IFI)** within the loading sandbox.
+* All agent plugins and MCP server binaries will be loaded in a "Pre-Execution Profile" mode, where initialization side-effects are monitored in an ephemeral, deeply instrumented sandbox before they are allowed to register capabilities.
+* Mandatory blocking of all network and filesystem write calls during the initialization phase.
+**Security Impact:** Prevents "Hackerbot-Claw" style RCE that bypasses execution-time gating by triggering during the `import` or `load` phase.

@@ -8,6 +8,14 @@
 - **Environment-Aware Provenance (EAP) Provider**: (P0) Identity middleware cryptographically binding reasoning fragments to hardware-attested environment IDs (e.g., Container IDs) to neutralize Trace Replay attacks.
 - **Mission-Root Conflict Resolver (MRCR)**: (P0) Kernel-level arbiter for the Blackboard resolving conflicting state mutations from parallel teammates using priority-weighted mission-root rules.
 
+## Evolution: [2026-04-17] (Part 2) Updates
+
+### Proposed Additions
+- **Structural Metadata Sanitizer (SMS)**: (P0) Security middleware that performs real-time semantic deconstruction and sanitization of discovery-time schemas to block "Adversarial Descriptions" (Agent Card Poisoning defense).
+- **Init-Function Isolation (IFI) Sandbox**: (P1) Ephemeral Loading Sandbox for profiling MCP server and plugin initialization behavior, neutralizing init-phase RCE (Hackerbot-Claw defense).
+- **Metadata Argument Validator**: (P0) Extension for ALSV that performs semantic scanning on non-executable metadata fields like branch names and repo titles to neutralize prompt injection.
+- **Pre-Flight Behavioral Baseline**: (P1) Mandatory "Burn-In" profiling in the Ghost Shell for new tools during their first discovery to establish a loading-phase baseline.
+
 ### Priority Shifts
 - **Reasoning Provenance Validator**: (Re-affirmed P0) Elevated with mandatory support for **EAP-compliant** environment binding.
 - **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Elevated with mandatory **GC-Immune** pinning.

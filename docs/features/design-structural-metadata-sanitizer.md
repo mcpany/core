@@ -59,3 +59,10 @@ The Structural Metadata Sanitizer (SMS) treats all tool structural metadata as u
 ## 7. Evolutionary Changelog
 * **2026-06-14:** Initial Document Creation. Addressing the Shadow-Discovery via Metadata Injection (SDMI) vulnerability.
 * **2026-06-15:** Added **WASM-Hook Behavioral Profiling** to counter PR "Logic Bombs." SMS now performs mandatory, sandboxed behavioral profiling of AI-generated configuration hooks before they are deemed "Loadable."
+
+### Update: 2026-04-17 - Resolving Agent Card Poisoning
+**Context:** Today's market sync revealed a new exploit pattern in A2A discovery metadata where adversarial instructions are embedded in "Agent Cards."
+**Architecture Adjustment:**
+* Treating all structural metadata (descriptions, schemas, examples) as high-entropy untrusted content.
+* Introducing real-time semantic deconstruction of discovery metadata to block "Adversarial Descriptions" before LLM ingestion.
+**Security Impact:** Prevents "Structural Metadata Sovereignty" bypasses where agents are coerced by peer-provided tool definitions.
