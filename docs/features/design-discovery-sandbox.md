@@ -50,3 +50,11 @@ The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has high
 * Mandating "Isolated Discovery Environments" for all project-local configurations.
 * Introducing a "Discovery Quarantine" where tool schemas are held until a hardware-attested user signal is received.
 **Security Impact:** Neutralizes startup-time RCE in cloned repositories and prevents "Context Poisoning" during the discovery phase.
+
+### Update: 2026-07-25 - Formalizing Discovery-Phase Sandbox Isolation (DPSI)
+**Context:** Recent market trends confirm that "Settings-as-Shell" vulnerabilities are widespread across agent frameworks.
+**Architecture Adjustment:**
+* Implementing DPSI (Discovery-Phase Sandbox Isolation) as a mandatory middleware.
+* Discovery commands now execute in a zero-network, read-only filesystem environment.
+* Introducing signed "Negative Discovery Attestation" (NDA) proving no unauthorized hooks were executed.
+**Security Impact:** Neutralizes discovery-time RCE and ensures that project-local settings cannot compromise the host during pre-flight tool mapping.

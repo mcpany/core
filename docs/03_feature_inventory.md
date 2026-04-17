@@ -1,5 +1,17 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Discovery-Phase Sandbox Isolation (DPSI)**: (P0) Ephemeral, zero-trust execution environment for all pre-flight discovery logic to neutralize "Settings-as-Shell" exploits.
+- **Lock-Free Mesh Coordination (LFMC)**: (P0) High-speed coordination service utilizing CRDT-based mailbox shards to eliminate coordination locks in horizontal teammate meshes.
+- **Hardware-Attested Skill Provenance Provider**: (P0) Advanced discovery service mandating hardware signatures and Inode lineage for all tool metadata.
+- **Zero-Trust T2T Tunneling Middleware**: (P0) Authenticated transport layer for inter-teammate coordination, cryptographically bound to the mission root.
+
+### Priority Shifts
+- **Discovery Sandbox Middleware**: (Evolved to DPSI) Elevated to mandatory P0 to counter discovery-time RCE in Gemini CLI.
+- **Lock-Free Sharded Mailbox Hub**: (Evolved to LFMC) Re-affirmed as the primary solution for horizontal teammate meshes.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions

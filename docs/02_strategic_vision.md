@@ -48,6 +48,17 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 
 ---
 
+## Strategic Evolution: [2026-07-25]
+### Focus: Discovery Sovereignty & High-Speed Lock-Free Mesh Coordination
+**Context**: The emergence of "Discovery-as-an-Attack-Vector" in Gemini CLI and the performance ceilings of git-based coordination in Claude Code Agent Teams confirm that the "Universal Agent Bus" must move beyond simple tool proxying. We must now protect the **pre-flight discovery phase** and provide **lock-free, sub-millisecond coordination** for horizontal teammate meshes. The industry is shifting from "Reactive Tool Gating" to "Proactive Discovery Sandboxing" and "CRDT-based Shared State."
+**Strategic Pivot**:
+- **Discovery-Phase Sandbox Isolation (DPSI)**: MCP Any will evolve to treat all discovery-time execution (e.g., `discoveryCommand`) as high-risk events. We will implement DPSI, executing discovery logic in an ephemeral, zero-trust sandbox before any tool is exposed to the primary agent, neutralizing "Settings-as-Shell" exploits.
+- **Lock-Free Mesh Coordination (LFMC)**: To resolve the 2s+ coordination stall seen in git-based teammate meshes, we are introducing LFMC. This service will host granular, task-bound mailbox shards utilizing Conflict-Free Replicated Data Types (CRDTs) to ensure parallel teammates can synchronize state without global coordination locks.
+- **Hardware-Attested Skill Provenance**: Leveraging the shift toward curated marketplaces (ClawHub), we are mandating "Provenance-First Discovery." No tool will be exposed in the discovery bus unless its structural metadata and Inode lineage are signed by an attested hardware authority.
+- **Zero-Trust T2T (Teammate-to-Teammate) Tunneling**: Supporting the maturity of Claude Code teammate meshes, MCP Any will implement authenticated T2T tunnels. This ensures that peer-to-peer coordination fragments are cryptographically bound to a verified mission root, preventing "Mailbox Splicing" by rogue subagents.
+
+---
+
 ## Strategic Evolution: [2026-07-06]
 ### Focus: Summarization Sovereignty & Performance-Optimized Side-Channel Defense
 **Context**: The official integration of Quorum-Bound Summarization (QBS) in OpenClaw and the introduction of Adaptive Jitter Profiles (AJP) in Gemini CLI reveal that **State Integrity** must now be consensus-driven and **Security Latency** must be risk-aware. As MTTC (Mean Time to Coordinate) becomes the primary performance bottleneck, the "Universal Agent Bus" must move beyond static safety gates to active **Optimistic Summarization** and **Intent-Aware Jitter**.
