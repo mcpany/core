@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "eap",
+    srcs = ["eap.go"],
+    importpath = "mcpany/src/eap",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "eap_test",
+    srcs = ["eap_test.go"],
+    embed = [":eap"],
+)

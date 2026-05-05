@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "aem",
+    srcs = ["aem.go"],
+    importpath = "mcpany/src/aem",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "aem_test",
+    srcs = ["aem_test.go"],
+    embed = [":aem"],
+)

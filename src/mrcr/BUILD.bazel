@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "mrcr",
+    srcs = ["mrcr.go"],
+    importpath = "mcpany/src/mrcr",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "mrcr_test",
+    srcs = ["mrcr_test.go"],
+    embed = [":mrcr"],
+)

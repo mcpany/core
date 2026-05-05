@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "gc_immune",
+    srcs = ["gc_immune.go"],
+    importpath = "mcpany/src/gc_immune",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "gc_immune_test",
+    srcs = ["gc_immune_test.go"],
+    embed = [":gc_immune"],
+)
