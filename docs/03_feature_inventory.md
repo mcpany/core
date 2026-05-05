@@ -1934,3 +1934,14 @@
 ### Priority Shifts
 - **Fast-Path Identity Resumption (FPIR)**: (Re-affirmed P0) Now elevated with the requirement for **Lightweight Mesh Handshake** support to reduce AMT latency.
 - **Mission-Root Continuity Provider (MRCP)**: (Re-affirmed P0) Evolving to act as the primary persistence layer for **HLML-validated** lease states.
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Hardware-Anchored Multimodal Pinner (HAMP)**: (P0) Advanced memory management middleware that cryptographically binds non-textual (SVG, Audio) reasoning metadata to hardware-attested mission-roots, granting them GC-Immune status to prevent Context Smearing.
+- **Non-Blocking Capability Speculator (NBCS)**: (P0) Coordination service providing background, speculative tool discovery and attestation, eliminating the 2s+ coordination stall during dynamic capability grafting.
+- **Entropy-Aware Attention Shield (EAAS)**: (P0) Cognitive security service that monitors reasoning entropy and cryptographically filters attention manipulation attempts to neutralize Attention-Window Flooding (AWF).
+
+### Priority Shifts
+- **Speculative Zero-Knowledge Discovery (SZKD) Engine**: (Re-affirmed P0) Elevated with mandatory **NBCS** integration to achieve zero-latency capability loading.
+- **Attention-Locked Reasoning Anchors (ALRA)**: (Re-affirmed P0) Designated as the primary backend for the **EAAS** defense mechanism.
