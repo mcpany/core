@@ -73,13 +73,13 @@ func init() {
 				),
 				mkTemplate(
 					"a2a-status-monitor",
-					"A2A Auth Status Monitor",
+					"A2A Auth Status Monitor (Gold Standard)",
 					`{
   "type": "object",
   "title": "Status Monitor Configuration",
   "properties": {}
 }`,
-					"mcpany-a2a-monitor --dashboard",
+					"mcpany-a2a-monitor --dashboard --cryptographic-validation --simulate-handoffs --hz 60",
 				),
 			},
 		}.Build(),
