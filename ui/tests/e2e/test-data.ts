@@ -165,6 +165,41 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                     spec_url: "https://raw.githubusercontent.com/linear/linear/master/api/openapi.yaml"
                 }
             }
+        },
+        {
+            id: "postgresql",
+            name: "PostgreSQL",
+            description: "High-performance relational database management system.",
+            icon: "database",
+            tags: ["database", "sql"],
+            service_config: {
+                name: "postgresql",
+                command_line_service: {
+                    command: "mcp-postgres-server",
+                    tools: [
+                        {
+                            name: "query",
+                            description: "Execute read-only SQL queries against the database to extract telemetry and structural data.",
+                            input_schema: { type: "object" },
+                            call_id: "call_postgres_query"
+                        },
+                        {
+                            name: "list_tables",
+                            description: "List all tables in the current schema.",
+                            input_schema: { type: "object" },
+                            call_id: "call_postgres_list_tables"
+                        }
+                    ],
+                    calls: {
+                        call_postgres_query: {
+                            args: ["--query"]
+                        },
+                        call_postgres_list_tables: {
+                            args: ["--list-tables"]
+                        }
+                    }
+                }
+            }
         }
     ];
 

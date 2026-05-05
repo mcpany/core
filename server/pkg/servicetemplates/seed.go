@@ -297,5 +297,38 @@ func (s *Seeder) getBuiltInTemplates() []*configv1.ServiceTemplate {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("postgresql"),
+			Name:        proto.String("PostgreSQL"),
+			Description: proto.String("High-performance relational database management system."),
+			Icon:        proto.String("database"),
+			Tags:        []string{"database", "sql"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("postgresql"),
+				CommandLineService: configv1.CommandLineUpstreamService_builder{
+					Command: proto.String("mcp-postgres-server"),
+					Tools: []*configv1.ToolDefinition{
+						configv1.ToolDefinition_builder{
+							Name:        proto.String("query"),
+							Description: proto.String("Execute read-only SQL queries against the database to extract telemetry and structural data."),
+							CallId: proto.String("call_postgres_query"),
+						}.Build(),
+						configv1.ToolDefinition_builder{
+							Name:        proto.String("list_tables"),
+							Description: proto.String("List all tables in the current schema."),
+							CallId: proto.String("call_postgres_list_tables"),
+						}.Build(),
+					},
+					Calls: map[string]*configv1.CommandLineCallDefinition{
+						"call_postgres_query": configv1.CommandLineCallDefinition_builder{
+							Args: []string{"--query"},
+						}.Build(),
+						"call_postgres_list_tables": configv1.CommandLineCallDefinition_builder{
+							Args: []string{"--list-tables"},
+						}.Build(),
+					},
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }
