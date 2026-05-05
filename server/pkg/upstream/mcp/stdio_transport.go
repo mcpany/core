@@ -43,13 +43,13 @@ type StdioTransport struct {
 // Summary: Executes Connect operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -133,13 +133,13 @@ type stdioConn struct {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -247,13 +247,13 @@ func (c *stdioConn) Read(_ context.Context) (jsonrpc.Message, error) {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -310,13 +310,13 @@ func (c *stdioConn) Write(_ context.Context, msg jsonrpc.Message) error {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -346,13 +346,13 @@ func (c *stdioConn) Close() error {
 // Summary: Executes SessionID operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.

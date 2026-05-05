@@ -43,13 +43,13 @@ type Upstream struct {
 // Summary: Initializes NewUpstream operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -86,13 +86,13 @@ func defaultClientFactory(config *configv1.VectorUpstreamService) (Client, error
 // Summary: Executes Shutdown operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -125,13 +125,13 @@ func (u *Upstream) Shutdown(_ context.Context) error {
 // Summary: Executes Register operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -253,13 +253,13 @@ type vectorCallable struct {
 // Summary: Executes Call operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.

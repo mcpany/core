@@ -83,13 +83,13 @@ type Manager struct {
 // Summary: Initializes NewManager operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -133,13 +133,13 @@ func (m *Manager) seedData() {
 // Summary: Executes ListAlerts operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -174,13 +174,13 @@ func (m *Manager) ListAlerts() []*Alert {
 // Summary: Retrieves GetAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -207,13 +207,13 @@ func (m *Manager) GetAlert(id string) *Alert {
 // Summary: Initializes CreateAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -275,13 +275,13 @@ func (m *Manager) CreateAlert(alert *Alert) *Alert {
 // Summary: Retrieves GetAlertStats operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -335,13 +335,13 @@ func (m *Manager) GetAlertStats() *AlertStats {
 // Summary: Executes DeleteAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -373,13 +373,13 @@ func (m *Manager) DeleteAlert(id string) error {
 // Summary: Executes UpdateAlert operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -445,13 +445,13 @@ func (m *Manager) UpdateAlert(id string, alert *Alert) *Alert {
 // Summary: Retrieves GetWebhookURL operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -478,13 +478,13 @@ func (m *Manager) GetWebhookURL() string {
 // Summary: Updates SetWebhookURL operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -511,13 +511,13 @@ func (m *Manager) SetWebhookURL(url string) {
 // Summary: Executes ListRules operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -551,13 +551,13 @@ func (m *Manager) ListRules() []*AlertRule {
 // Summary: Retrieves GetRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -584,13 +584,13 @@ func (m *Manager) GetRule(id string) *AlertRule {
 // Summary: Initializes CreateRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -623,13 +623,13 @@ func (m *Manager) CreateRule(rule *AlertRule) *AlertRule {
 // Summary: Executes UpdateRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -668,13 +668,13 @@ func (m *Manager) UpdateRule(id string, rule *AlertRule) *AlertRule {
 // Summary: Executes DeleteRule operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.

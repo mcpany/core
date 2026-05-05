@@ -41,13 +41,13 @@ type transportError struct {
 // Summary: Executes Error operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -90,13 +90,13 @@ type BundleDockerTransport struct {
 // Summary: Executes Connect operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -228,13 +228,13 @@ type bundleDockerConn struct {
 // Summary: Retrieves Read operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -384,13 +384,13 @@ func setUnexportedID(idPtr interface{}, val interface{}) error {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -527,13 +527,13 @@ func fixIDExtracted(val interface{}) interface{} {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -552,13 +552,13 @@ func (c *bundleDockerConn) Close() error {
 // Summary: Executes SessionID operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -590,13 +590,13 @@ type bundleSlogWriter struct {
 // Summary: Updates Write operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.

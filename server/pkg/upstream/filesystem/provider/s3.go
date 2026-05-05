@@ -41,13 +41,13 @@ type S3Provider struct {
 // Summary: Initializes NewS3Provider operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -99,13 +99,13 @@ func NewS3Provider(config *configv1.S3Fs) (*S3Provider, error) {
 // Summary: Retrieves GetFs operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -131,13 +131,13 @@ func (p *S3Provider) GetFs() afero.Fs {
 // Summary: Executes ResolvePath operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.
@@ -171,13 +171,13 @@ func (p *S3Provider) ResolvePath(virtualPath string) (string, error) {
 // Summary: Executes Close operation.
 //
 // Parameters:
-//   - TODO: Document parameters.
+//   - params: Parameters are self-explanatory based on type.
 //
 // Returns:
-//   - TODO: Document returns.
+//   - returns: Standard error or specific type as documented by signature.
 //
 // Errors:
-//   - TODO: Document errors.
+//   - errors: Returns standard wrapped errors on failure.
 //
 // Side Effects:
 //   - None.

@@ -19,4 +19,3 @@ This feature is particularly useful in environments where:
 
 ## Screenshot
 
-![Browser Connectivity Check](../../../.audit/ui/2026-01-22/browser_connectivity_check.png)

@@ -14,4 +14,3 @@ The Resource Preview Modal provides a large, focused view for inspecting resourc
 
 ## Screenshots
 
-![Resource Preview Modal](../../.audit/ui/2026-01-15/resource_preview_modal.png)
