@@ -1,8 +1,14 @@
 # MCP Any
 
-## Elevator Pitch
-**What is this?** MCP Any is the Universal Adapter for AI agents.
+## The Ultimate Developer Entry Point
+**What is this?** MCP Any is the **Universal Adapter** for AI agents.
 **Why does it exist?** It empowers developers to build secure, capability-enabled APIs (REST, gRPC, GraphQL, Command-line) through lightweight YAML/JSON configurations, serving as an ultimate universal bridge and eliminating the need to write custom boilerplate adapters. It acts as the backbone of interoperable autonomous systems.
+
+## Identity
+MCP Any is the "Gold Standard" for zero-code integration. Instead of writing and maintaining custom Model Context Protocol (MCP) servers, you write one configuration. We handle:
+- **Universal Adaptation:** Support for gRPC, OpenAPI, HTTP, GraphQL, and CLI.
+- **Security First:** Strict egress policies, context propagation, and input validation.
+- **Zero-Code Capabilities:** Dynamic tool registration from Proto, OpenAPI, or reflection.
 
 ## Architecture
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
@@ -50,14 +56,11 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
    ```
 
 ## Development
-We use `make` and `bazelisk` for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
+We use `bazelisk` exclusively for our development workflow. Maintaining a clean and tested repository is critical to the "Gold Standard".
 
 ```bash
 # Run the test suite to ensure no code logic breaks
-make test
-
-# Run the linter to verify formatting and documentation conventions
-make lint
+bazelisk test //...
 
 # Build the main binary
 bazelisk build //server/cmd/mcpany
