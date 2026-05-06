@@ -101,7 +101,7 @@ jobs:
           GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
           bazelisk build //server/cmd/server \
             --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
+            $(if [ -n "$BUILDBUDDY_API_KEY" ]; then echo "--remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY"; fi) \
             --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH}
 
       - name: Package binaries
@@ -204,7 +204,7 @@ jobs:
           
           bazelisk run //server/cmd/server:push \
             --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
+            $(if [ -n "$BUILDBUDDY_API_KEY" ]; then echo "--remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY"; fi) \
             --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH} \
             -- --remote_tags=latest,${TAG},${{ github.sha }}
 
@@ -267,7 +267,7 @@ jobs:
           
           bazelisk run //ui:push \
             --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
+            $(if [ -n "$BUILDBUDDY_API_KEY" ]; then echo "--remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY"; fi) \
             --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH} \
             -- --remote_tags=latest,${TAG},${{ github.sha }}
 
