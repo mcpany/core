@@ -194,6 +194,17 @@ oci.pull(
     ],
 )
 
+# Distroless Static Debian 12 nonroot image for the main server container.
+oci.pull(
+    name = "distroless_static_nonroot",
+    digest = "sha256:a9329520abc449e3b14d5bc3a6ffae065bdde0f02667fa10880c49b35c109fd1",
+    image = "gcr.io/distroless/static-debian12",
+    platforms = [
+        "linux/amd64",
+        "linux/arm64",
+    ],
+)
+
 # Python 3.12-slim base image for Python-based container images (cowsay server, timeserver).
 oci.pull(
     name = "python312_slim",
@@ -201,7 +212,7 @@ oci.pull(
     image = "mirror.gcr.io/library/python",
     platforms = ["linux/amd64"],
 )
-use_repo(oci, "debian_bookworm_slim", "debian_bookworm_slim_linux_amd64", "debian_bookworm_slim_linux_arm64", "distroless_nodejs24", "distroless_nodejs24_linux_amd64", "distroless_nodejs24_linux_arm64", "python312_slim", "python312_slim_linux_amd64")
+use_repo(oci, "debian_bookworm_slim", "debian_bookworm_slim_linux_amd64", "debian_bookworm_slim_linux_arm64", "distroless_nodejs24", "distroless_nodejs24_linux_amd64", "distroless_nodejs24_linux_arm64", "distroless_static_nonroot", "distroless_static_nonroot_linux_amd64", "distroless_static_nonroot_linux_arm64", "python312_slim", "python312_slim_linux_amd64")
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
 npm.npm_translate_lock(

@@ -102,4 +102,5 @@ jobs:
             --test_env=GITHUB_WORKSPACE \
             --test_env=PATH \
             --test_env=HOME \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
+            --jobs=4

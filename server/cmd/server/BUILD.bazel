@@ -48,7 +48,7 @@ pkg_tar(
 
 oci_image(
     name = "server_image",
-    base = "@debian_bookworm_slim",
+    base = "@distroless_static_nonroot",
     entrypoint = ["/app/server"],
     exposed_ports = [
         "50050/tcp",
