@@ -18,6 +18,9 @@ go_test(
     name = "interop_test",
     srcs = [
         "placeholder_test.go",
+        "autogen_test.go",
+        "crewai_test.go",
+        "openclaw_test.go",
         "swarm_test.go",
     ],
     deps = [":interop"],
