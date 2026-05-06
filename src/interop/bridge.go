@@ -114,6 +114,25 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - Spawns a goroutine to stream results back through the channel.
 	StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error)
+
+	// MonitorEntropy analyzes the subagent's reasoning entropy to detect semantic drift.
+	//
+	// Summary: Returns a mock or calculated entropy score for the task to prevent cognitive stalls.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for execution, handling cancellation.
+	//   - task (*Task): The generic task object.
+	//
+	// Returns:
+	//   - float64: The computed entropy score.
+	//   - error: Indicates failure in computing entropy.
+	//
+	// Throws/Errors:
+	//   - Returns an error if the framework fails to compute entropy or does not support it.
+	//
+	// Side Effects:
+	//   - None.
+	MonitorEntropy(ctx context.Context, task *Task) (float64, error)
 }
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.

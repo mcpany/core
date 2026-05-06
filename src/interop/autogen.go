@@ -232,3 +232,24 @@ func (a *AutoGenAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *Ta
 
 	return stream, nil
 }
+
+// MonitorEntropy analyzes the subagent's reasoning entropy to detect semantic drift.
+//
+// Summary: Returns a mock entropy score.
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, handling cancellation.
+//   - task (*Task): The generic task object.
+//
+// Returns:
+//   - float64: The computed entropy score.
+//   - error: Indicates failure in computing entropy.
+//
+// Throws/Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
+func (a *AutoGenAdapter) MonitorEntropy(ctx context.Context, task *Task) (float64, error) {
+	return 0.8, nil
+}

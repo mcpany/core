@@ -156,6 +156,28 @@ func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan
 	return nil, fmt.Errorf("placeholder method: not implemented")
 }
 
+// MonitorEntropy acts as a stub, returning an unimplemented error.
+//
+// Summary: Satisfies the AgentFramework interface while correctly signaling
+// that the feature is a placeholder and not fully implemented.
+//
+// Parameters:
+//   - ctx (context.Context): Execution context.
+//   - task (*Task): The task to process.
+//
+// Returns:
+//   - float64: Always returns 0.
+//   - error: Always returns an error indicating the method is an unimplemented placeholder.
+//
+// Throws/Errors:
+//   - Returns "placeholder method: not implemented" unconditionally.
+//
+// Side Effects:
+//   - None.
+func (a *PlaceholderAdapter) MonitorEntropy(ctx context.Context, task *Task) (float64, error) {
+	return 0, fmt.Errorf("Not Implemented: %s is a placeholder service", a.name)
+}
+
 // RegisterPlaceholders registers placeholder adapters for missing features in the AdapterHub.
 //
 // Summary: Registers all documented but unimplemented agent frameworks into the provided hub.
