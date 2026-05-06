@@ -9,6 +9,7 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -670,29 +671,11 @@ func (s *Settings) GithubAPIURL() string {
 func getStringSlice(key string) []string {
 	// Check the raw value to distinguish between a string (Env var) and a slice (YAML/JSON).
 	raw := viper.Get(key)
+	var final []string
+
 	if val, ok := raw.(string); ok && val != "" {
-		// It's a string, so it likely comes from an environment variable or flag.
-		// We handle comma separation manually to avoid splitting by spaces within paths.
 		if strings.Contains(val, ",") {
 			parts := strings.Split(val, ",")
-			var final []string
-			for _, p := range parts {
-				p = strings.TrimSpace(p)
-				if p != "" {
-					final = append(final, p)
-				}
-			}
-			return final
-		}
-		return []string{strings.TrimSpace(val)}
-	}
-
-	// Fallback for slices (from config files) or empty values.
-	res := viper.GetStringSlice(key)
-	var final []string
-	for _, item := range res {
-		if strings.Contains(item, ",") {
-			parts := strings.Split(item, ",")
 			for _, p := range parts {
 				p = strings.TrimSpace(p)
 				if p != "" {
@@ -700,11 +683,70 @@ func getStringSlice(key string) []string {
 				}
 			}
 		} else {
-			item = strings.TrimSpace(item)
-			if item != "" {
-				final = append(final, item)
+			final = []string{strings.TrimSpace(val)}
+		}
+	} else if valSlice, ok := raw.([]string); ok {
+		// It's a slice from config file
+		if len(valSlice) == 1 && strings.Contains(valSlice[0], ",") {
+			// Handle edge case where Viper gives us a slice with a single element that contains commas
+			parts := strings.Split(valSlice[0], ",")
+			for _, p := range parts {
+				p = strings.TrimSpace(p)
+				if p != "" {
+					final = append(final, p)
+				}
+			}
+		} else if len(valSlice) > 0 && strings.Contains(valSlice[0], ",") {
+			// Slices with multiple elements where one contains comma
+			for _, v := range valSlice {
+				if strings.Contains(v, ",") {
+					parts := strings.Split(v, ",")
+					for _, p := range parts {
+						p = strings.TrimSpace(p)
+						if p != "" {
+							final = append(final, p)
+						}
+					}
+				} else {
+					final = append(final, strings.TrimSpace(v))
+				}
+			}
+		} else {
+			final = valSlice
+		}
+	} else {
+		// Fallback for slices (from config files) or empty values.
+		slice := viper.GetStringSlice(key)
+		if len(slice) == 0 {
+			final = nil
+		} else {
+			for _, v := range slice {
+				if strings.Contains(v, ",") {
+					parts := strings.Split(v, ",")
+					for _, p := range parts {
+						p = strings.TrimSpace(p)
+						if p != "" {
+							final = append(final, p)
+						}
+					}
+				} else {
+					final = append(final, strings.TrimSpace(v))
+				}
 			}
 		}
 	}
+
+	// Resolve relative paths using BUILD_WORKSPACE_DIRECTORY if running under bazel run
+	if (key == "config-path" || key == "config") && len(final) > 0 {
+		workspaceDir := os.Getenv("BUILD_WORKSPACE_DIRECTORY")
+		if workspaceDir != "" {
+			for i, p := range final {
+				if !filepath.IsAbs(p) && !strings.HasPrefix(p, "http://") && !strings.HasPrefix(p, "https://") {
+					final[i] = filepath.Join(workspaceDir, p)
+				}
+			}
+		}
+	}
+
 	return final
 }
