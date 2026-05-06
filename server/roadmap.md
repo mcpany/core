@@ -12,6 +12,7 @@
 ### Status: Active Development
 
 #### Upcoming (2026-02-23 Evolution)
+*   **[P0] Premium Stack Matrix Visualizer**: Support high-fidelity mock data and Matrix API for the Portainer-style UI.
 *   **[P0] Recursive Context Protocol**: Finalize header-based context inheritance for swarms.
 *   **[x] [P0] Zero-Trust Subagent Scoping**: Implement intent-bound capability tokens.
 *   **[P1] Environment Bridging Middleware**: Secure state sync between cloud sandboxes and local tools.

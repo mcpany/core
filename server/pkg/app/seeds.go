@@ -431,6 +431,31 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("premium-stack-matrix"),
+			Name:        proto.String("Premium Stack Matrix"),
+			Description: proto.String("Gold Standard demonstration of Portainer-style App Grid visualization. Contains dense, high-fidelity mock data for MCP Services (Stacks), Tools, and Resources."),
+			Icon:        proto.String("layout"),
+			Tags:        []string{"dashboard", "matrix", "mock", "portainer"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("premium-stack-matrix"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50050/api/v1/matrix"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("mcp-any-premium-stack-matrix-token"),
+						}.Build(),
+						ParamName: proto.String("X-Matrix-Auth-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }
 

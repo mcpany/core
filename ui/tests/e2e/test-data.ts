@@ -80,6 +80,24 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             }
         },
         {
+            id: "svc_matrix",
+            name: "Premium Stack Matrix",
+            version: "v1.0",
+            http_service: {
+                address: "http://localhost:50050/api/v1/matrix",
+                tools: [
+                    { name: "get_matrix_status", description: "Get status of stack matrix", call_id: "matrix_status_call" },
+                    { name: "reboot_node", description: "Reboot node in stack", call_id: "matrix_reboot_call" },
+                    { name: "scale_stack", description: "Scale up/down stack matrix", call_id: "matrix_scale_call" }
+                ],
+                calls: {
+                    matrix_status_call: { method: "HTTP_METHOD_GET", endpoint_path: "/status" },
+                    matrix_reboot_call: { method: "HTTP_METHOD_POST", endpoint_path: "/reboot" },
+                    matrix_scale_call:  { method: "HTTP_METHOD_POST", endpoint_path: "/scale" }
+                }
+            }
+        },
+        {
             id: "svc_echo",
             name: "Echo Service",
             version: "v1.0",
@@ -227,7 +245,9 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
 export const seedTraffic = async (requestContext?: APIRequestContext) => {
     const context = requestContext || await request.newContext({ baseURL: BASE_URL });
     const points = [
-        { timestamp: new Date().toISOString(), requests: 100, errors: 2 }
+        { timestamp: new Date().toISOString(), requests: 100, errors: 2 },
+        { timestamp: new Date(Date.now() - 60000).toISOString(), requests: 150, errors: 0 },
+        { timestamp: new Date(Date.now() - 120000).toISOString(), requests: 200, errors: 5 }
     ];
     try {
         await context.post('/api/v1/debug/seed_traffic', { data: points, headers: HEADERS });
