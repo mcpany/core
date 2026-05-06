@@ -37,7 +37,7 @@ interface SecretPickerProps {
 }
 
 /**
- * Intent: Document SecretPicker
+ * Summary: Document SecretPicker
  *
  * Params:
  *   - None

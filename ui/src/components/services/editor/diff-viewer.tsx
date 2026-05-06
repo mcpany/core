@@ -16,7 +16,7 @@ interface DiffViewerProps {
 }
 
 /**
- * Intent: Document DiffViewer
+ * Summary: Document DiffViewer
  *
  * Params:
  *   - Documented below.

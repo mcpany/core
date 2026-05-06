@@ -106,7 +106,7 @@ function layoutGraph(graph: any): SwarmTopologyData {
 }
 
 /**
- * Intent: Document SwarmTopologyWidget
+ * Summary: Document SwarmTopologyWidget
  *
  * Params:
  *   - None

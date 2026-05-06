@@ -41,7 +41,7 @@ interface PromptWorkbenchProps {
 }
 
 /**
- * Intent: Document PromptWorkbench
+ * Summary: Document PromptWorkbench
  *
  * Params:
  *   - Documented below.

@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document DownloadReportButton
+ * Summary: Document DownloadReportButton
  *
  * Params:
  *   - None

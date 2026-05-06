@@ -41,7 +41,7 @@ interface ServicesTableProps {
 }
 
 /**
- * Intent: Document ServicesTable
+ * Summary: Document ServicesTable
  *
  * Params:
  *   - Documented below.

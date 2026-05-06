@@ -35,7 +35,7 @@ import { AddWidgetSheet } from "@/components/dashboard/add-widget-sheet";
 import { fetchWithAuth } from "@/lib/client";
 
 /**
- * Intent: Document WidgetInstance
+ * Summary: Document WidgetInstance
  *
  * Params:
  *   - None
@@ -192,7 +192,7 @@ const MemoizedWidgetCard = React.memo(({ widget, index, updateWidgetSize, toggle
 MemoizedWidgetCard.displayName = "MemoizedWidgetCard";
 
 /**
- * Intent: Document DashboardGrid
+ * Summary: Document DashboardGrid
  *
  * Params:
  *   - None

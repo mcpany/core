@@ -25,7 +25,7 @@ interface ToolPresetsProps {
 }
 
 /**
- * Intent: Document ToolPresets
+ * Summary: Document ToolPresets
  *
  * Params:
  *   - Documented below.

@@ -17,7 +17,7 @@ interface TemplateConfigFormProps {
 }
 
 /**
- * Intent: Document TemplateConfigForm
+ * Summary: Document TemplateConfigForm
  *
  * Params:
  *   - Documented below.

@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus, ShoppingBag, BookOpen, CheckCircle2, Circle } from "lucide-react";
 
 /**
- * Intent: Document OnboardingHero
+ * Summary: Document OnboardingHero
  *
  * Params:
  *   - None

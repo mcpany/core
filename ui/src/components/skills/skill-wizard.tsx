@@ -17,7 +17,7 @@ import { ChevronRight, ChevronLeft, Save, Upload } from 'lucide-react';
 const STEPS = ['Metadata', 'Instructions', 'Assets'];
 
 /**
- * Intent: Document SkillWizard
+ * Summary: Document SkillWizard
  *
  * Params:
  *   - None

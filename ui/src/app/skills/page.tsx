@@ -8,7 +8,7 @@
 import SkillList from '@/components/skills/skill-list';
 
 /**
- * Intent: Document SkillsPage
+ * Summary: Document SkillsPage
  *
  * Params:
  *   - None

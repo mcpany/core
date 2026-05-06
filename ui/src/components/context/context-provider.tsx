@@ -30,7 +30,7 @@ interface ContextState {
 const ContextContext = createContext<ContextState | undefined>(undefined);
 
 /**
- * Intent: Document ContextProvider
+ * Summary: Document ContextProvider
  *
  * Params:
  *   - Documented below.
@@ -148,7 +148,7 @@ export function ContextProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Intent: Document useRecursiveContext
+ * Summary: Document useRecursiveContext
  *
  * Params:
  *   - None

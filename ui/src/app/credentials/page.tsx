@@ -7,7 +7,7 @@ import { CredentialList } from "@/components/credentials/credential-list"
 import { Separator } from "@/components/ui/separator"
 
 /**
- * Intent: Document CredentialsPage
+ * Summary: Document CredentialsPage
  *
  * Params:
  *   - None

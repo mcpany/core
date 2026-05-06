@@ -25,7 +25,7 @@ interface InstantiateDialogProps {
 }
 
 /**
- * Intent: Document InstantiateDialog
+ * Summary: Document InstantiateDialog
  *
  * Params:
  *   - Documented below.

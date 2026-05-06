@@ -70,7 +70,7 @@ const TraceListItem = memo(({ trace, isSelected, onSelect }: { trace: Trace, isS
 TraceListItem.displayName = "TraceListItem";
 
 /**
- * Intent: Document TraceList
+ * Summary: Document TraceList
  *
  * Params:
  *   - Documented below.

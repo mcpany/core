@@ -23,7 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo } from "react";
 
 /**
- * Intent: Document InspectorPage
+ * Summary: Document InspectorPage
  *
  * Params:
  *   - None

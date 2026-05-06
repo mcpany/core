@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle2 } from 'lucide-react';
 
 /**
- * Intent: Document StepReview
+ * Summary: Document StepReview
  *
  * Params:
  *   - Documented below.

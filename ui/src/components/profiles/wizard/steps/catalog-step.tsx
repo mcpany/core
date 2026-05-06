@@ -19,7 +19,7 @@ interface CatalogStepProps {
 }
 
 /**
- * Intent: Document CatalogStep
+ * Summary: Document CatalogStep
  *
  * Params:
  *   - Documented below.

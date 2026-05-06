@@ -29,7 +29,7 @@ interface McpContent {
 }
 
 /**
- * Intent: Document SmartResultRenderer
+ * Summary: Document SmartResultRenderer
  *
  * Params:
  *   - None

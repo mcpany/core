@@ -20,7 +20,7 @@ interface OutputTransformerEditorProps {
 }
 
 /**
- * Intent: Document OutputTransformerEditor
+ * Summary: Document OutputTransformerEditor
  *
  * Params:
  *   - None

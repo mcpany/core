@@ -6,7 +6,7 @@ import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 
 /**
- * Intent: Document ThemeProvider
+ * Summary: Document ThemeProvider
  *
  * Params:
  *   - Documented below.

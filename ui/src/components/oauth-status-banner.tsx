@@ -16,7 +16,7 @@ interface OAuthStatusBannerProps {
 }
 
 /**
- * Intent: Document OAuthStatusBanner
+ * Summary: Document OAuthStatusBanner
  *
  * Params:
  *   - Documented below.

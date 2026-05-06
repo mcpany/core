@@ -29,7 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FileInput } from "@/components/ui/file-input";
 
 /**
- * Intent: Document Schema
+ * Summary: Document Schema
  *
  * Params:
  *   - None
@@ -82,7 +82,7 @@ interface SchemaFieldProps {
 }
 
 /**
- * Intent: Document UniversalSchemaForm
+ * Summary: Document UniversalSchemaForm
  *
  * Params:
  *   - None

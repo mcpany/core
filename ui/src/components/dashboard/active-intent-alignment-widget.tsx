@@ -21,7 +21,7 @@ interface SubagentStatus {
 
 
 /**
- * Intent: Document ActiveIntentAlignmentWidget
+ * Summary: Document ActiveIntentAlignmentWidget
  *
  * Params:
  *   - None

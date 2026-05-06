@@ -110,7 +110,7 @@ const defaultEdgeOptions = {
 };
 
 /**
- * Intent: Document NetworkGraphFlowProps
+ * Summary: Document NetworkGraphFlowProps
  *
  * Params:
  *   - None
@@ -134,7 +134,7 @@ export interface NetworkGraphFlowProps {
 }
 
 /**
- * Intent: Document NetworkGraphFlow
+ * Summary: Document NetworkGraphFlow
  *
  * Params:
  *   - Documented below.
@@ -454,7 +454,7 @@ const MetricCard = React.memo(({ label, value, unit, intent = "neutral" }: { lab
 MetricCard.displayName = 'MetricCard';
 
 /**
- * Intent: Document NetworkGraphClient
+ * Summary: Document NetworkGraphClient
  *
  * Params:
  *   - None

@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 /**
- * Intent: Document StepAuth
+ * Summary: Document StepAuth
  *
  * Params:
  *   - None

@@ -28,7 +28,7 @@ const MANUAL_TEMPLATE: any = {
 };
 
 /**
- * Intent: Document StepServiceType
+ * Summary: Document StepServiceType
  *
  * Params:
  *   - None

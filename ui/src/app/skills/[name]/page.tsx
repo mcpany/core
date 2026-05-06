@@ -8,7 +8,7 @@
 import SkillDetail from '@/components/skills/skill-detail';
 
 /**
- * Intent: Document SkillDetailPage
+ * Summary: Document SkillDetailPage
  *
  * Params:
  *   - None

@@ -32,7 +32,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { LogViewer, LogEntry, timeFormatter } from "./log-viewer"
 
 /**
- * Intent: Document LogStream
+ * Summary: Document LogStream
  *
  * Params:
  *   - Documented below.

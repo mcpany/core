@@ -8,7 +8,7 @@
 import { PipelineVisualizer } from "@/components/middleware/pipeline-visualizer";
 
 /**
- * Intent: Document MiddlewarePage
+ * Summary: Document MiddlewarePage
  *
  * Params:
  *   - None

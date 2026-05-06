@@ -28,7 +28,7 @@ const PageFallback = () => (
 );
 
 /**
- * Intent: Document Layout
+ * Summary: Document Layout
  *
  * Params:
  *   - None

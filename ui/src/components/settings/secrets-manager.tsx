@@ -43,7 +43,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient, SecretDefinition } from "@/lib/client";
 
 /**
- * Intent: Document SecretsManager
+ * Summary: Document SecretsManager
  *
  * Params:
  *   - None

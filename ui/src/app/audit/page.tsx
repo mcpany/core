@@ -6,7 +6,7 @@
 import { AuditLogViewer } from "@/components/audit/audit-log-viewer";
 
 /**
- * Intent: Document AuditPage
+ * Summary: Document AuditPage
  *
  * Params:
  *   - None

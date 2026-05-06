@@ -23,7 +23,7 @@ interface NavItemProps {
 }
 
 /**
- * Intent: Document NavItem
+ * Summary: Document NavItem
  *
  * Params:
  *   - Documented below.

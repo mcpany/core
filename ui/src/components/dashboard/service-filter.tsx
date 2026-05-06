@@ -18,7 +18,7 @@ import { apiClient } from "@/lib/client";
 import { Filter } from "lucide-react";
 
 /**
- * Intent: Document ServiceFilter
+ * Summary: Document ServiceFilter
  *
  * Params:
  *   - None

@@ -21,7 +21,7 @@ interface State {
 }
 
 /**
- * Intent: Document ErrorBoundary
+ * Summary: Document ErrorBoundary
  *
  * Params:
  *   - None

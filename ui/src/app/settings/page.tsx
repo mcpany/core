@@ -10,7 +10,7 @@ import { GlobalSettingsForm } from "@/components/settings/global-settings-form";
 import { AuthSettingsForm } from "@/components/settings/auth-settings";
 
 /**
- * Intent: Document SettingsPage
+ * Summary: Document SettingsPage
  *
  * Params:
  *   - None

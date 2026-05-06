@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react"
 import { LogStream } from "@/components/logs/log-stream"
 
 /**
- * Intent: Document LogsPage
+ * Summary: Document LogsPage
  *
  * Params:
  *   - None

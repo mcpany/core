@@ -24,7 +24,7 @@ interface ToolSafetyTableProps {
 }
 
 /**
- * Intent: Document ToolSafetyTable
+ * Summary: Document ToolSafetyTable
  *
  * Params:
  *   - Documented below.

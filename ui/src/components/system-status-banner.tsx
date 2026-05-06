@@ -12,7 +12,7 @@ import { apiClient, DoctorReport } from "@/lib/client";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * Intent: Document SystemStatusBanner
+ * Summary: Document SystemStatusBanner
  *
  * Params:
  *   - None

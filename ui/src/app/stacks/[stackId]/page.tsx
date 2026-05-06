@@ -22,7 +22,7 @@ services:
 `;
 
 /**
- * Intent: Document StackDetailPage
+ * Summary: Document StackDetailPage
  *
  * Params:
  *   - None

@@ -21,7 +21,7 @@ interface ToolSidebarProps {
 }
 
 /**
- * Intent: Document ToolSidebar
+ * Summary: Document ToolSidebar
  *
  * Params:
  *   - Documented below.

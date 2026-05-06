@@ -46,7 +46,7 @@ const LegendItem = ({ icon, label, description, color }: LegendItemProps) => (
 );
 
 /**
- * Intent: Document NetworkLegend
+ * Summary: Document NetworkLegend
  *
  * Params:
  *   - None

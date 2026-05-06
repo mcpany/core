@@ -12,7 +12,7 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings } from "@/hooks/use-siblings";
 
 /**
- * Intent: Document PromptDetailPage
+ * Summary: Document PromptDetailPage
  *
  * Params:
  *   - None

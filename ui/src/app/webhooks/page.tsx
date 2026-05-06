@@ -35,7 +35,7 @@ interface WebhookConfig {
 }
 
 /**
- * Intent: Document WebhooksPage
+ * Summary: Document WebhooksPage
  *
  * Params:
  *   - None

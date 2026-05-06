@@ -21,7 +21,7 @@ interface ToolFailureRate {
 }
 
 /**
- * Intent: Document ToolFailureRateWidget
+ * Summary: Document ToolFailureRateWidget
  *
  * Params:
  *   - None

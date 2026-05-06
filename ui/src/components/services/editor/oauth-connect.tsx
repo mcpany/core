@@ -18,7 +18,7 @@ interface OAuthConnectProps {
 }
 
 /**
- * Intent: Document OAuthConnect
+ * Summary: Document OAuthConnect
  *
  * Params:
  *   - Documented below.

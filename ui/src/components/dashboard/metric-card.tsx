@@ -16,7 +16,7 @@ interface MetricCardProps {
 }
 
 /**
- * Intent: Document MetricCard
+ * Summary: Document MetricCard
  *
  * Params:
  *   - Documented below.

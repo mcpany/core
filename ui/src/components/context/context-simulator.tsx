@@ -18,7 +18,7 @@ import { Ghost, RefreshCw, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 /**
- * Intent: Document ContextSimulator
+ * Summary: Document ContextSimulator
  *
  * Params:
  *   - None

@@ -7,7 +7,7 @@ import { SystemHealth } from "@/components/diagnostics/system-health";
 import { DiscoveryStatus } from "@/components/diagnostics/discovery-status";
 
 /**
- * Intent: Document DiagnosticsPage
+ * Summary: Document DiagnosticsPage
  *
  * Params:
  *   - None

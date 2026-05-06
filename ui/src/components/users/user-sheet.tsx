@@ -58,7 +58,7 @@ const userSchema = z.object({
 type UserValues = z.infer<typeof userSchema>;
 
 /**
- * Intent: Document UserSheet
+ * Summary: Document UserSheet
  *
  * Params:
  *   - Documented below.

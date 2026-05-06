@@ -6,7 +6,7 @@
 import { AnalyticsDashboard } from "@/components/stats/analytics-dashboard";
 
 /**
- * Intent: Document StatsPage
+ * Summary: Document StatsPage
  *
  * Params:
  *   - None

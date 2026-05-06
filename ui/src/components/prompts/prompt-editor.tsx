@@ -64,7 +64,7 @@ const promptSchema = z.object({
 type PromptValues = z.infer<typeof promptSchema>;
 
 /**
- * Intent: Document PromptEditor
+ * Summary: Document PromptEditor
  *
  * Params:
  *   - Documented below.

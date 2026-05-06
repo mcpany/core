@@ -18,7 +18,7 @@ interface ServiceConfigDiffProps {
 }
 
 /**
- * Intent: Document ServiceConfigDiff
+ * Summary: Document ServiceConfigDiff
  *
  * Params:
  *   - Documented below.

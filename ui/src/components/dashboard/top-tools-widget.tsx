@@ -19,7 +19,7 @@ interface ToolUsageStats {
 }
 
 /**
- * Intent: Document TopToolsWidget
+ * Summary: Document TopToolsWidget
  *
  * Params:
  *   - None

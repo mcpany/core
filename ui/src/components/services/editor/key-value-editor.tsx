@@ -24,7 +24,7 @@ interface KeyValuePair {
 }
 
 /**
- * Intent: Document KeyValueEditor
+ * Summary: Document KeyValueEditor
  *
  * Params:
  *   - None

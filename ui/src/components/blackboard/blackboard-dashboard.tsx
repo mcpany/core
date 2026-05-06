@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 
 /**
- * Intent: Document BlackboardDashboard
+ * Summary: Document BlackboardDashboard
  *
  * Params:
  *   - None
@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
  *
  * Summary: Displays a list of shared agent blackboard variables.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

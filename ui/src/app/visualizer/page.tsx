@@ -6,7 +6,7 @@
 import { AgentFlow } from "@/components/visualizer/agent-flow";
 
 /**
- * Intent: Document VisualizerPage
+ * Summary: Document VisualizerPage
  *
  * Params:
  *   - None

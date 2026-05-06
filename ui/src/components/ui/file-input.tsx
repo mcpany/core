@@ -18,7 +18,7 @@ interface FileInputProps {
 }
 
 /**
- * Intent: Document FileInput
+ * Summary: Document FileInput
  *
  * Params:
  *   - Documented below.

@@ -29,7 +29,7 @@ const Virtuoso = lazy(() => import('react-virtuoso').then((m) => ({ default: m.V
 const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ default: m.JsonView })));
 
 /**
- * Intent: Document LogLevel
+ * Summary: Document LogLevel
  *
  * Params:
  *   - None
@@ -48,7 +48,7 @@ const JsonView = lazy(() => import('@/components/ui/json-view').then(m => ({ def
 export type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG"
 
 /**
- * Intent: Document LogEntry
+ * Summary: Document LogEntry
  *
  * Params:
  *   - None
@@ -82,7 +82,7 @@ interface LogViewerProps {
 
 // Optimization: Reuse DateTimeFormat instance
 /**
- * Intent: Document timeFormatter
+ * Summary: Document timeFormatter
  *
  * Params:
  *   - None
@@ -269,7 +269,7 @@ const LogRow = React.memo(({ log, highlightRegex }: { log: LogEntry; highlightRe
 LogRow.displayName = 'LogRow'
 
 /**
- * Intent: Document LogViewer
+ * Summary: Document LogViewer
  *
  * Params:
  *   - Documented below.

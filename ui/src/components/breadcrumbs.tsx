@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 /**
- * Intent: Document BreadcrumbItem
+ * Summary: Document BreadcrumbItem
  *
  * Params:
  *   - None
@@ -54,7 +54,7 @@ interface BreadcrumbsProps {
 }
 
 /**
- * Intent: Document Breadcrumbs
+ * Summary: Document Breadcrumbs
  *
  * Params:
  *   - Documented below.

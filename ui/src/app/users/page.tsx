@@ -15,7 +15,7 @@ import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * Intent: Document UsersPage
+ * Summary: Document UsersPage
  *
  * Params:
  *   - None

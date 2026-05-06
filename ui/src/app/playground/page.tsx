@@ -8,7 +8,7 @@ import { PlaygroundClientPro } from "@/components/playground/pro/playground-clie
 import { Loader2 } from "lucide-react";
 
 /**
- * Intent: Document PlaygroundPage
+ * Summary: Document PlaygroundPage
  *
  * Params:
  *   - None

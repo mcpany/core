@@ -48,7 +48,7 @@ interface AuditLogEntry {
 }
 
 /**
- * Intent: Document ToolRunner
+ * Summary: Document ToolRunner
  *
  * Params:
  *   - Documented below.

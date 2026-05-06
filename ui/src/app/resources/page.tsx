@@ -6,7 +6,7 @@
 import { ResourceExplorer } from "@/components/resources/resource-explorer";
 
 /**
- * Intent: Document ResourcesPage
+ * Summary: Document ResourcesPage
  *
  * Params:
  *   - None

@@ -77,7 +77,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 }
 
 /**
- * Intent: Document FileConfigCard
+ * Summary: Document FileConfigCard
  *
  * Params:
  *   - Documented below.

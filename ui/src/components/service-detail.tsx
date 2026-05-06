@@ -145,7 +145,7 @@ function MetricsCard({ serviceId }: { serviceId: string }) {
 }
 
 /**
- * Intent: Document ServiceDetail
+ * Summary: Document ServiceDetail
  *
  * Params:
  *   - Documented below.

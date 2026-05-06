@@ -134,7 +134,7 @@ const ItemContent = (_: number, svc: UpstreamServiceConfig, context: VirtuosoCon
 };
 
 /**
- * Intent: Document Profile
+ * Summary: Document Profile
  *
  * Params:
  *   - None
@@ -184,7 +184,7 @@ interface ProfileEditorProps {
 }
 
 /**
- * Intent: Document ProfileEditor
+ * Summary: Document ProfileEditor
  *
  * Params:
  *   - Documented below.

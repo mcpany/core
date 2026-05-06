@@ -6,7 +6,7 @@
 import { PromptWorkbench } from "@/components/prompts/prompt-workbench";
 
 /**
- * Intent: Document PromptsPage
+ * Summary: Document PromptsPage
  *
  * Params:
  *   - None

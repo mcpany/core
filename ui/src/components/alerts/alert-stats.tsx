@@ -11,7 +11,7 @@ import { AlertCircle, CheckCircle2, AlertTriangle, Activity, Loader2 } from "luc
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document AlertStats
+ * Summary: Document AlertStats
  *
  * Params:
  *   - None

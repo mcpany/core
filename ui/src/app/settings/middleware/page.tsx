@@ -17,7 +17,7 @@ interface Middleware {
 }
 
 /**
- * Intent: Document MiddlewarePage
+ * Summary: Document MiddlewarePage
  *
  * Params:
  *   - None

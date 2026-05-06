@@ -21,7 +21,7 @@ import { LogStream } from "@/components/logs/log-stream";
 import { ServiceInspector } from "@/components/services/editor/service-inspector";
 
 /**
- * Intent: Document UpstreamServiceDetailPage
+ * Summary: Document UpstreamServiceDetailPage
  *
  * Params:
  *   - None

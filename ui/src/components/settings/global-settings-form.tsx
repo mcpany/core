@@ -41,7 +41,7 @@ const settingsSchema = z.object({
 type SettingsValues = z.infer<typeof settingsSchema>;
 
 /**
- * Intent: Document GlobalSettingsForm
+ * Summary: Document GlobalSettingsForm
  *
  * Params:
  *   - None

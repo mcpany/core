@@ -32,7 +32,7 @@ interface OptimizationTabProps {
 }
 
 /**
- * Intent: Document OptimizationTab
+ * Summary: Document OptimizationTab
  *
  * Params:
  *   - Documented below.

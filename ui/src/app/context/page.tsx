@@ -16,7 +16,7 @@ import { ContextTreemap } from "@/components/context/context-treemap";
 import { ContextSimulator } from "@/components/context/context-simulator";
 
 /**
- * Intent: Document ContextPage
+ * Summary: Document ContextPage
  *
  * Params:
  *   - None

@@ -14,7 +14,7 @@ import { Edit, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
- * Intent: Document SkillDetail
+ * Summary: Document SkillDetail
  *
  * Params:
  *   - None

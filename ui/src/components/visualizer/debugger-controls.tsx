@@ -17,7 +17,7 @@ interface DebuggerControlsProps {
 }
 
 /**
- * Intent: Document DebuggerControls
+ * Summary: Document DebuggerControls
  *
  * Params:
  *   - Documented below.

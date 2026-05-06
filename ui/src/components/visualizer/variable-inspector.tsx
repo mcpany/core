@@ -17,7 +17,7 @@ interface VariableInspectorProps {
 }
 
 /**
- * Intent: Document VariableInspector
+ * Summary: Document VariableInspector
  *
  * Params:
  *   - Documented below.

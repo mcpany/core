@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { SERVICE_REGISTRY } from "@/lib/service-registry";
 
 /**
- * Intent: Document MarketplacePage
+ * Summary: Document MarketplacePage
  *
  * Params:
  *   - None

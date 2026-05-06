@@ -18,7 +18,7 @@ interface ServiceInspectorProps {
 }
 
 /**
- * Intent: Document ServiceInspector
+ * Summary: Document ServiceInspector
  *
  * Params:
  *   - Documented below.

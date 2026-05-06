@@ -40,7 +40,7 @@ import { applyTemplateFields } from "@/lib/template-utils";
 
 
 /**
- * Intent: Document ServicesPage
+ * Summary: Document ServicesPage
  *
  * Params:
  *   - None

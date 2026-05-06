@@ -30,7 +30,7 @@ interface HttpToolEditorProps {
 }
 
 /**
- * Intent: Document HttpToolEditor
+ * Summary: Document HttpToolEditor
  *
  * Params:
  *   - Documented below.

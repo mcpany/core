@@ -29,7 +29,7 @@ interface HttpToolManagerProps {
 }
 
 /**
- * Intent: Document HttpToolManager
+ * Summary: Document HttpToolManager
  *
  * Params:
  *   - Documented below.

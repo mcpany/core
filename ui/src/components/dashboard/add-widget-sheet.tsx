@@ -25,7 +25,7 @@ interface AddWidgetSheetProps {
 }
 
 /**
- * Intent: Document AddWidgetSheet
+ * Summary: Document AddWidgetSheet
  *
  * Params:
  *   - Documented below.

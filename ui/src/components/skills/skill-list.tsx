@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 /**
- * Intent: Document SkillList
+ * Summary: Document SkillList
  *
  * Params:
  *   - None

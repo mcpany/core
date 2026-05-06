@@ -16,7 +16,7 @@ interface ToolInspectorProps {
 }
 
 /**
- * Intent: Document ToolInspector
+ * Summary: Document ToolInspector
  *
  * Params:
  *   - Documented below.

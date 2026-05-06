@@ -34,7 +34,7 @@ interface ToolTableProps {
 // Memoization ensures table only updates when props change.
 
 /**
- * Intent: Document ToolTable
+ * Summary: Document ToolTable
  *
  * Params:
  *   - Documented below.

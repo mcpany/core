@@ -63,7 +63,7 @@ const PageFallback = () => (
 );
 
 /**
- * Intent: Document App
+ * Summary: Document App
  *
  * Params:
  *   - None

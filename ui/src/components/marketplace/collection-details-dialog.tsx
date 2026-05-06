@@ -18,7 +18,7 @@ interface CollectionDetailsDialogProps {
 }
 
 /**
- * Intent: Document CollectionDetailsDialog
+ * Summary: Document CollectionDetailsDialog
  *
  * Params:
  *   - Documented below.

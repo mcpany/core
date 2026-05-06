@@ -14,7 +14,7 @@ interface StackVisualizerProps {
 }
 
 /**
- * Intent: Document StackVisualizer
+ * Summary: Document StackVisualizer
  *
  * Params:
  *   - Documented below.

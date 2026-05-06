@@ -11,7 +11,7 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * Intent: Document RequestVolumeChart
+ * Summary: Document RequestVolumeChart
  *
  * Params:
  *   - None

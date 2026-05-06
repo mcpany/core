@@ -7,7 +7,7 @@ import React from "react";
 import { HitlDashboard } from "@/components/hitl/hitl-dashboard";
 
 /**
- * Intent: Document HitlPage
+ * Summary: Document HitlPage
  *
  * Params:
  *   - None
@@ -19,7 +19,7 @@ import { HitlDashboard } from "@/components/hitl/hitl-dashboard";
  *
  * Summary: Renders the root page view for the HITL dashboard.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

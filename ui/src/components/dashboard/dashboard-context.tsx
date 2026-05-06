@@ -17,7 +17,7 @@ interface DashboardContextType {
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
 /**
- * Intent: Document DashboardProvider
+ * Summary: Document DashboardProvider
  *
  * Params:
  *   - Documented below.
@@ -50,7 +50,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Intent: Document useDashboard
+ * Summary: Document useDashboard
  *
  * Params:
  *   - None

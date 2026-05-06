@@ -114,7 +114,7 @@ const getTableData = (data: unknown, smartTable: boolean) => {
 };
 
 /**
- * Intent: Document JsonView
+ * Summary: Document JsonView
  *
  * Params:
  *   - Documented below.

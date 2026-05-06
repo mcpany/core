@@ -10,7 +10,7 @@ import { Graph, NodeStatus } from '@/types/topology';
 import { usePolling } from '@/hooks/use-polling';
 
 /**
- * Intent: Document MetricPoint
+ * Summary: Document MetricPoint
  *
  * Params:
  *   - None
@@ -61,7 +61,7 @@ const MAX_HISTORY_POINTS = 30;
 const POLLING_INTERVAL = 5000;
 
 /**
- * Intent: Document ServiceHealthProvider
+ * Summary: Document ServiceHealthProvider
  *
  * Params:
  *   - Documented below.
@@ -224,7 +224,7 @@ export function ServiceHealthProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Intent: Document useServiceHealth
+ * Summary: Document useServiceHealth
  *
  * Params:
  *   - None
@@ -251,7 +251,7 @@ export function useServiceHealth() {
 }
 
 /**
- * Intent: Document useTopology
+ * Summary: Document useTopology
  *
  * Params:
  *   - None

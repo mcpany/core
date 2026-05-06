@@ -15,7 +15,7 @@ interface OAuthConfigProps {
 }
 
 /**
- * Intent: Document OAuthConfig
+ * Summary: Document OAuthConfig
  *
  * Params:
  *   - Documented below.

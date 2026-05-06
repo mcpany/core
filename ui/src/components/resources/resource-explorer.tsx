@@ -181,7 +181,7 @@ const MemoizedResourceGridItem = React.memo(({ res, isSelected, onSelect, onPrev
 MemoizedResourceGridItem.displayName = "MemoizedResourceGridItem";
 
 /**
- * Intent: Document ResourceExplorer
+ * Summary: Document ResourceExplorer
  *
  * Params:
  *   - Documented below.

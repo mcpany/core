@@ -27,7 +27,7 @@ interface ProviderStatus {
 }
 
 /**
- * Intent: Document DiscoveryStatus
+ * Summary: Document DiscoveryStatus
  *
  * Params:
  *   - None

@@ -23,7 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document WebhookDialog
+ * Summary: Document WebhookDialog
  *
  * Params:
  *   - None

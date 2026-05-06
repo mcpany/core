@@ -109,7 +109,7 @@ function WizardContent({ onComplete, onCancel }: { onComplete: (config: any) => 
 }
 
 /**
- * Intent: Document CreateConfigWizard
+ * Summary: Document CreateConfigWizard
  *
  * Params:
  *   - Documented below.

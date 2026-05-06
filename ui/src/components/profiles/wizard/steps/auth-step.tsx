@@ -23,7 +23,7 @@ interface AuthStepProps {
 }
 
 /**
- * Intent: Document AuthStep
+ * Summary: Document AuthStep
  *
  * Params:
  *   - Documented below.

@@ -17,7 +17,7 @@ interface ServiceHealthSparklineProps {
 // ⚡ Bolt Optimization: Isolated health visualization to prevent row re-renders on context updates.
 // Randomized Selection from Top 5 High-Impact Targets
 /**
- * Intent: Document ServiceHealthSparkline
+ * Summary: Document ServiceHealthSparkline
  *
  * Params:
  *   - Documented below.

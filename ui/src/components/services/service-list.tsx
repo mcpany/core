@@ -55,7 +55,7 @@ interface ServiceListProps {
 }
 
 /**
- * Intent: Document ServiceList
+ * Summary: Document ServiceList
  *
  * Params:
  *   - Documented below.

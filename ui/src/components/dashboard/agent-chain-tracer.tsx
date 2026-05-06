@@ -24,7 +24,7 @@ import { format } from "date-fns";
 /**
  * Summary: Provides a hardware-attested timeline interface for tracking multi-agent handoffs.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

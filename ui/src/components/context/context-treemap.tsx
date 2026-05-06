@@ -112,7 +112,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 };
 
 /**
- * Intent: Document ContextTreemap
+ * Summary: Document ContextTreemap
  *
  * Params:
  *   - None

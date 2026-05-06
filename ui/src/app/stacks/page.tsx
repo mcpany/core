@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { ServiceCollection } from "@/lib/marketplace-service";
 
 /**
- * Intent: Document StacksPage
+ * Summary: Document StacksPage
  *
  * Params:
  *   - None

@@ -14,7 +14,7 @@ import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document SchemaPlaygroundPage
+ * Summary: Document SchemaPlaygroundPage
  *
  * Params:
  *   - None

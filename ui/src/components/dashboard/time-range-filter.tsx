@@ -16,7 +16,7 @@ import { useDashboard } from "@/components/dashboard/dashboard-context";
 import { Clock } from "lucide-react";
 
 /**
- * Intent: Document TimeRangeFilter
+ * Summary: Document TimeRangeFilter
  *
  * Params:
  *   - None

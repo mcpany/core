@@ -6,7 +6,7 @@
 import { SecretsManager } from "@/components/settings/secrets-manager";
 
 /**
- * Intent: Document SecretsPage
+ * Summary: Document SecretsPage
  *
  * Params:
  *   - None

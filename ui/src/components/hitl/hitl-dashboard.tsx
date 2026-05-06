@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 
 /**
- * Intent: Document HitlDashboard
+ * Summary: Document HitlDashboard
  *
  * Params:
  *   - None
@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
  *
  * Summary: Renders a dashboard for reviewing and managing pending HITL approvals.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:
@@ -47,7 +47,7 @@ interface HITLApproval {
  *
  * Summary: Displays a dashboard component for HITL (Human-in-the-Loop) approvals.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

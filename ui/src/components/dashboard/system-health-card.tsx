@@ -18,7 +18,7 @@ const formatUptime = (seconds: number) => {
 }
 
 /**
- * Intent: Document SystemHealthCard
+ * Summary: Document SystemHealthCard
  *
  * Params:
  *   - None

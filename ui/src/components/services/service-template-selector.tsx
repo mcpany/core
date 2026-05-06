@@ -22,7 +22,7 @@ interface ServiceTemplateSelectorProps {
 const CATEGORIES = ["All", "Web", "Productivity", "Database", "Dev Tools", "Cloud", "System", "Utility", "Other"];
 
 /**
- * Intent: Document ServiceTemplateSelector
+ * Summary: Document ServiceTemplateSelector
  *
  * Params:
  *   - Documented below.

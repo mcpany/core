@@ -28,7 +28,7 @@ interface StackEditorProps {
 }
 
 /**
- * Intent: Document StackEditor
+ * Summary: Document StackEditor
  *
  * Params:
  *   - Documented below.

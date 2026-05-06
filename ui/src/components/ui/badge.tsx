@@ -29,7 +29,7 @@ const badgeVariants = cva(
 )
 
 /**
- * Intent: Document BadgeProps
+ * Summary: Document BadgeProps
  *
  * Params:
  *   - None

@@ -17,7 +17,7 @@ interface HealthPoint {
 }
 
 /**
- * Intent: Document HealthHistoryChart
+ * Summary: Document HealthHistoryChart
  *
  * Params:
  *   - None

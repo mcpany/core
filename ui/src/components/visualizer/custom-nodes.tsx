@@ -28,7 +28,7 @@ const NodeWrapper = ({ children, className, selected }: { children: React.ReactN
 );
 
 /**
- * Intent: Document UserNode
+ * Summary: Document UserNode
  *
  * Params:
  *   - None
@@ -63,7 +63,7 @@ export const UserNode = memo(({ data, selected }: any) => {
 UserNode.displayName = 'UserNode';
 
 /**
- * Intent: Document AgentNode
+ * Summary: Document AgentNode
  *
  * Params:
  *   - None
@@ -104,7 +104,7 @@ export const AgentNode = memo(({ data, selected }: any) => {
 AgentNode.displayName = 'AgentNode';
 
 /**
- * Intent: Document ToolNode
+ * Summary: Document ToolNode
  *
  * Params:
  *   - None
@@ -139,7 +139,7 @@ export const ToolNode = memo(({ data, selected }: any) => {
 ToolNode.displayName = 'ToolNode';
 
 /**
- * Intent: Document ResourceNode
+ * Summary: Document ResourceNode
  *
  * Params:
  *   - None
@@ -175,7 +175,7 @@ export const ResourceNode = memo(({ data, selected }: any) => {
 ResourceNode.displayName = 'ResourceNode';
 
 /**
- * Intent: Document ServiceNode
+ * Summary: Document ServiceNode
  *
  * Params:
  *   - None

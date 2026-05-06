@@ -5,7 +5,7 @@
 import * as React from "react"
 
 /**
- * Intent: Document ShortcutDefinition
+ * Summary: Document ShortcutDefinition
  *
  * Params:
  *   - None
@@ -63,7 +63,7 @@ const KeyboardShortcutsContext = React.createContext<KeyboardShortcutsContextTyp
 const STORAGE_KEY = "mcp_any_shortcut_overrides"
 
 /**
- * Intent: Document KeyboardShortcutsProvider
+ * Summary: Document KeyboardShortcutsProvider
  *
  * Params:
  *   - Documented below.
@@ -160,7 +160,7 @@ export function KeyboardShortcutsProvider({ children }: { children: React.ReactN
 }
 
 /**
- * Intent: Document useKeyboardShortcuts
+ * Summary: Document useKeyboardShortcuts
  *
  * Params:
  *   - None
@@ -210,7 +210,7 @@ function matchesKey(event: KeyboardEvent, keyDef: string): boolean {
 }
 
 /**
- * Intent: Document useShortcut
+ * Summary: Document useShortcut
  *
  * Params:
  *   - Documented below.

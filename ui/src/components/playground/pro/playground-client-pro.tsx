@@ -35,7 +35,7 @@ import { ToolRunner } from "@/components/playground/tool-runner";
 import { Zap } from "lucide-react";
 
 /**
- * Intent: Document PlaygroundClientPro
+ * Summary: Document PlaygroundClientPro
  *
  * Params:
  *   - None

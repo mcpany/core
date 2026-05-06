@@ -48,7 +48,7 @@ interface ServiceImportItem {
 }
 
 /**
- * Intent: Document BulkServiceImport
+ * Summary: Document BulkServiceImport
  *
  * Params:
  *   - None

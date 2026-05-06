@@ -23,7 +23,7 @@ interface SmartTableProps {
 type SortDirection = 'asc' | 'desc' | null;
 
 /**
- * Intent: Document SmartTable
+ * Summary: Document SmartTable
  *
  * Params:
  *   - Documented below.

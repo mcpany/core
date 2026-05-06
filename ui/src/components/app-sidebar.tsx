@@ -212,7 +212,7 @@ const configItems = [
 ]
 
 /**
- * Intent: Document AppSidebar
+ * Summary: Document AppSidebar
  *
  * Params:
  *   - None

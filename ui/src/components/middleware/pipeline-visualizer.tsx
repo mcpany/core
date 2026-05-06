@@ -24,7 +24,7 @@ interface GlobalSettings {
 }
 
 /**
- * Intent: Document PipelineVisualizer
+ * Summary: Document PipelineVisualizer
  *
  * Params:
  *   - None

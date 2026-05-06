@@ -16,7 +16,7 @@ import { Loader2 } from "lucide-react";
 import { DownloadReportButton } from "@/components/dashboard/download-report-button";
 
 /**
- * Intent: Document DashboardPage
+ * Summary: Document DashboardPage
  *
  * Params:
  *   - None

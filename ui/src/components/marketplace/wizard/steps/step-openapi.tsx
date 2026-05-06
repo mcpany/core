@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OpenapiUpstreamService } from '@proto/config/v1/upstream_service';
 
 /**
- * Intent: Document StepOpenAPI
+ * Summary: Document StepOpenAPI
  *
  * Params:
  *   - None

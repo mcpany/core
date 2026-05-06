@@ -41,7 +41,7 @@ import { useShortcut, useKeyboardShortcuts } from "@/contexts/keyboard-shortcuts
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 
 /**
- * Intent: Document reloadPage
+ * Summary: Document reloadPage
  *
  * Params:
  *   - None
@@ -60,7 +60,7 @@ import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
 export const reloadPage = () => window.location.reload();
 
 /**
- * Intent: Document GlobalSearch
+ * Summary: Document GlobalSearch
  *
  * Params:
  *   - None

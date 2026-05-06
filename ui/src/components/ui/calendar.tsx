@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
 /**
- * Intent: Document CalendarProps
+ * Summary: Document CalendarProps
  *
  * Params:
  *   - None

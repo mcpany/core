@@ -17,7 +17,7 @@ import { ServicePropertyCard } from "./service-property-card";
 import { SchemaViewer } from "./tools/schema-viewer";
 
 /**
- * Intent: Document ToolDetail
+ * Summary: Document ToolDetail
  *
  * Params:
  *   - Documented below.

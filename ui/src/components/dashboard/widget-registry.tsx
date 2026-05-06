@@ -14,7 +14,7 @@ import { ActiveIntentAlignmentWidget } from "@/components/dashboard/active-inten
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
 
 /**
- * Intent: Document WidgetSize
+ * Summary: Document WidgetSize
  *
  * Params:
  *   - None
@@ -37,7 +37,7 @@ import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
 /**
- * Intent: Document WidgetDefinition
+ * Summary: Document WidgetDefinition
  *
  * Params:
  *   - None
@@ -69,7 +69,7 @@ export interface WidgetDefinition {
 }
 
 /**
- * Intent: Document WIDGET_DEFINITIONS
+ * Summary: Document WIDGET_DEFINITIONS
  *
  * Params:
  *   - None
@@ -186,7 +186,7 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
 ];
 
 /**
- * Intent: Document getWidgetDefinition
+ * Summary: Document getWidgetDefinition
  *
  * Params:
  *   - Documented below.

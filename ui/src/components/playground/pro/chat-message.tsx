@@ -49,7 +49,7 @@ const DiffEditor = (props: any) => (
 );
 
 /**
- * Intent: Document MessageType
+ * Summary: Document MessageType
  *
  * Params:
  *   - None
@@ -68,7 +68,7 @@ const DiffEditor = (props: any) => (
 export type MessageType = "user" | "assistant" | "tool-call" | "tool-result" | "error";
 
 /**
- * Intent: Document Message
+ * Summary: Document Message
  *
  * Params:
  *   - None
@@ -125,7 +125,7 @@ function analyzeError(error: string): string | null {
 }
 
 /**
- * Intent: Document ChatMessage
+ * Summary: Document ChatMessage
  *
  * Params:
  *   - Documented below.

@@ -43,7 +43,7 @@ interface AuditLogEntry {
 }
 
 /**
- * Intent: Document AuditLogViewer
+ * Summary: Document AuditLogViewer
  *
  * Params:
  *   - None

@@ -55,7 +55,7 @@ const detectSensitiveData = (text: string) => {
 };
 
 /**
- * Intent: Document RegisterServiceDialog
+ * Summary: Document RegisterServiceDialog
  *
  * Params:
  *   - Documented below.

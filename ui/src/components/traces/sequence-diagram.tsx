@@ -88,7 +88,7 @@ const PADDING_BOTTOM = 40;
 const PADDING_X = 40;
 
 /**
- * Intent: Document SequenceDiagram
+ * Summary: Document SequenceDiagram
  *
  * Params:
  *   - Documented below.

@@ -8,7 +8,7 @@ import { BaseEdge, EdgeLabelRenderer, EdgeProps, getSmoothStepPath } from '@xyfl
 import { cn } from '@/lib/utils';
 
 /**
- * Intent: Document TrafficEdge
+ * Summary: Document TrafficEdge
  *
  * Params:
  *   - None

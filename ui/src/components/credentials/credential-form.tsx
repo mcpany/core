@@ -57,7 +57,7 @@ interface CredentialFormProps {
 }
 
 /**
- * Intent: Document CredentialForm
+ * Summary: Document CredentialForm
  *
  * Params:
  *   - Documented below.

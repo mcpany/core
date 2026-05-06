@@ -19,7 +19,7 @@ import { ArrowLeft, Download, Terminal } from "lucide-react";
 import { Link } from 'react-router-dom';
 
 /**
- * Intent: Document ExternalMarketplacePage
+ * Summary: Document ExternalMarketplacePage
  *
  * Params:
  *   - Documented below.

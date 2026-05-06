@@ -26,7 +26,7 @@ interface DiagnosticResult {
 }
 
 /**
- * Intent: Document ServiceDiagnostics
+ * Summary: Document ServiceDiagnostics
  *
  * Params:
  *   - Documented below.

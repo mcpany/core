@@ -14,7 +14,7 @@ import { Loader2 } from "lucide-react";
 import { usePolling } from "@/hooks/use-polling";
 
 /**
- * Intent: Document TracesPage
+ * Summary: Document TracesPage
  *
  * Params:
  *   - None

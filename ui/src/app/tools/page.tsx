@@ -33,7 +33,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * Intent: Document ToolsPage
+ * Summary: Document ToolsPage
  *
  * Params:
  *   - None

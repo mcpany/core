@@ -15,7 +15,7 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
  /**
- * Intent: Document render
+ * Summary: Document render
  *
  * Params:
  *   - Documented below.

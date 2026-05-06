@@ -12,7 +12,7 @@ import { Plus, Trash2, Webhook } from "lucide-react";
 import { WizardWebhook } from "../wizard-context";
 
 /**
- * Intent: Document StepWebhooks
+ * Summary: Document StepWebhooks
  *
  * Params:
  *   - None

@@ -29,7 +29,7 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 
 /**
- * Intent: Document LoginPage
+ * Summary: Document LoginPage
  *
  * Params:
  *   - None

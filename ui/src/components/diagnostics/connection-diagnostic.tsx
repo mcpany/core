@@ -36,7 +36,7 @@ interface ConnectionDiagnosticDialogProps {
 }
 
 /**
- * Intent: Document ConnectionDiagnosticDialog
+ * Summary: Document ConnectionDiagnosticDialog
  *
  * Params:
  *   - Documented below.

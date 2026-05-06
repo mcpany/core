@@ -28,7 +28,7 @@ interface EnvVarEditorProps {
 }
 
 /**
- * Intent: Document EnvVarEditor
+ * Summary: Document EnvVarEditor
  *
  * Params:
  *   - Documented below.

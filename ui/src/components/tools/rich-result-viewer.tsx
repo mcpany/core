@@ -72,7 +72,7 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
 }
 
 /**
- * Intent: Document RichResultViewer
+ * Summary: Document RichResultViewer
  *
  * Params:
  *   - Documented below.

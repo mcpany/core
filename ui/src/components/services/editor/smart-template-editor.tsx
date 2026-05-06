@@ -30,7 +30,7 @@ interface SmartTemplateEditorProps {
 }
 
 /**
- * Intent: Document SmartTemplateEditor
+ * Summary: Document SmartTemplateEditor
  *
  * Params:
  *   - None

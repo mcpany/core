@@ -9,7 +9,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { apiClient } from '@/lib/client';
 
 /**
- * Intent: Document UserRole
+ * Summary: Document UserRole
  *
  * Params:
  *   - None
@@ -28,7 +28,7 @@ import { apiClient } from '@/lib/client';
 export type UserRole = 'admin' | 'editor' | 'viewer';
 
 /**
- * Intent: Document User
+ * Summary: Document User
  *
  * Params:
  *   - None
@@ -76,7 +76,7 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 /**
- * Intent: Document UserProvider
+ * Summary: Document UserProvider
  *
  * Params:
  *   - Documented below.
@@ -150,7 +150,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Intent: Document useUser
+ * Summary: Document useUser
  *
  * Params:
  *   - None

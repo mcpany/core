@@ -49,7 +49,7 @@ interface ServicePaletteProps {
 }
 
 /**
- * Intent: Document ServicePalette
+ * Summary: Document ServicePalette
  *
  * Params:
  *   - Documented below.

@@ -18,7 +18,7 @@ interface PluginUIHostProps {
 }
 
 /**
- * Intent: Document PluginUIHost
+ * Summary: Document PluginUIHost
  *
  * Params:
  *   - None

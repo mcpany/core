@@ -58,7 +58,7 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
 };
 
 /**
- * Intent: Document PolicyEditor
+ * Summary: Document PolicyEditor
  *
  * Params:
  *   - Documented below.

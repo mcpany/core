@@ -21,7 +21,7 @@ interface ServiceConfigStepProps {
 }
 
 /**
- * Intent: Document ServiceConfigStep
+ * Summary: Document ServiceConfigStep
  *
  * Params:
  *   - Documented below.

@@ -25,7 +25,7 @@ interface ServiceResourcesProps {
 }
 
 /**
- * Intent: Document ServiceResources
+ * Summary: Document ServiceResources
  *
  * Params:
  *   - None

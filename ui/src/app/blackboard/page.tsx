@@ -7,7 +7,7 @@ import React from "react";
 import { BlackboardDashboard } from "@/components/blackboard/blackboard-dashboard";
 
 /**
- * Intent: Document BlackboardPage
+ * Summary: Document BlackboardPage
  *
  * Params:
  *   - None
@@ -19,7 +19,7 @@ import { BlackboardDashboard } from "@/components/blackboard/blackboard-dashboar
  *
  * Summary: Renders the root page view for the Blackboard.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

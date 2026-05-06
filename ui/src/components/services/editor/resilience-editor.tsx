@@ -29,7 +29,7 @@ const durationToString = (d: any): string => {
 };
 
 /**
- * Intent: Document ResilienceEditor
+ * Summary: Document ResilienceEditor
  *
  * Params:
  *   - None

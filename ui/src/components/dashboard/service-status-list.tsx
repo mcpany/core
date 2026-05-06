@@ -16,7 +16,7 @@ import { apiClient } from "@/lib/client"
 import { UpstreamServiceConfig } from "@proto/config/v1/upstream_service"
 
 /**
- * Intent: Document ServiceStatusList
+ * Summary: Document ServiceStatusList
  *
  * Params:
  *   - None

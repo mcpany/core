@@ -12,7 +12,7 @@ import { Trash2, Plus } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 /**
- * Intent: Document StepParameters
+ * Summary: Document StepParameters
  *
  * Params:
  *   - None

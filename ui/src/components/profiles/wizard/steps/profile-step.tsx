@@ -21,7 +21,7 @@ interface ProfileStepProps {
 }
 
 /**
- * Intent: Document ProfileStep
+ * Summary: Document ProfileStep
  *
  * Params:
  *   - Documented below.

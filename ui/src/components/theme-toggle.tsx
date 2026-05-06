@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 /**
- * Intent: Document ThemeToggle
+ * Summary: Document ThemeToggle
  *
  * Params:
  *   - None

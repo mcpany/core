@@ -8,7 +8,7 @@ import * as React from "react"
 const MOBILE_BREAKPOINT = 768
 
 /**
- * Intent: Document useIsMobile
+ * Summary: Document useIsMobile
  *
  * Params:
  *   - None

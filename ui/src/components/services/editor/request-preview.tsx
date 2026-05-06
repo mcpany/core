@@ -48,7 +48,7 @@ const getMethodColor = (method: HttpCallDefinition_HttpMethod) => {
 };
 
 /**
- * Intent: Document RequestPreview
+ * Summary: Document RequestPreview
  *
  * Params:
  *   - Documented below.

@@ -35,7 +35,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { sanitizeServiceConfig, SecretHandlingMode } from "@/lib/config-utils"
 
 /**
- * Intent: Document ShareCollectionDialog
+ * Summary: Document ShareCollectionDialog
  *
  * Params:
  *   - None

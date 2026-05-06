@@ -24,7 +24,7 @@ interface ResourceSafetyTableProps {
 }
 
 /**
- * Intent: Document ResourceSafetyTable
+ * Summary: Document ResourceSafetyTable
  *
  * Params:
  *   - Documented below.

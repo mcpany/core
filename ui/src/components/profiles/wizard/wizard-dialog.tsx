@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import { apiClient } from "@/lib/client";
 
 /**
- * Intent: Document WizardService
+ * Summary: Document WizardService
  *
  * Params:
  *   - None
@@ -42,7 +42,7 @@ export interface WizardService {
 }
 
 /**
- * Intent: Document WizardDialog
+ * Summary: Document WizardDialog
  *
  * Params:
  *   - Documented below.

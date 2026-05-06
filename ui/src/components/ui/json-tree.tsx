@@ -18,7 +18,7 @@ interface JsonTreeProps {
 }
 
 /**
- * Intent: Document JsonTree
+ * Summary: Document JsonTree
  *
  * Params:
  *   - Documented below.

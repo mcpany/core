@@ -133,7 +133,7 @@ function OAuthCallbackContent() {
 }
 
 /**
- * Intent: Document OAuthCallbackPage
+ * Summary: Document OAuthCallbackPage
  *
  * Params:
  *   - None

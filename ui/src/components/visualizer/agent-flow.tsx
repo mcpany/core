@@ -38,7 +38,7 @@ const edgeTypes = {
 };
 
 /**
- * Intent: Document AgentFlow
+ * Summary: Document AgentFlow
  *
  * Params:
  *   - None

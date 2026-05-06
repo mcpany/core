@@ -19,7 +19,7 @@ interface ServiceOverviewProps {
 }
 
 /**
- * Intent: Document ServiceOverview
+ * Summary: Document ServiceOverview
  *
  * Params:
  *   - None

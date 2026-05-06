@@ -8,7 +8,7 @@
 import SkillWizard from '@/components/skills/skill-wizard';
 
 /**
- * Intent: Document EditSkillPage
+ * Summary: Document EditSkillPage
  *
  * Params:
  *   - None

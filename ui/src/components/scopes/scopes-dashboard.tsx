@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 /**
  * Summary: Visualizes granular capability tokens grouped by agent roles within a grid layout.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

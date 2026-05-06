@@ -26,7 +26,7 @@ interface KeyboardShortcutsDialogProps {
 }
 
 /**
- * Intent: Document KeyboardShortcutsDialog
+ * Summary: Document KeyboardShortcutsDialog
  *
  * Params:
  *   - Documented below.

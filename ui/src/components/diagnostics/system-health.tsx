@@ -26,7 +26,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Intent: Document SystemHealth
+ * Summary: Document SystemHealth
  *
  * Params:
  *   - None

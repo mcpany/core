@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { defineDraculaTheme } from "@/lib/monaco-theme";
 
 /**
- * Intent: Document ConfigValidatorPage
+ * Summary: Document ConfigValidatorPage
  *
  * Params:
  *   - None

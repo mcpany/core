@@ -10,7 +10,7 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { NetworkGraphFlow } from "@/components/network/network-graph-client";
 
 /**
- * Intent: Document NetworkGraphWidget
+ * Summary: Document NetworkGraphWidget
  *
  * Params:
  *   - None

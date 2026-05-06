@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/toast"
 
 /**
- * Intent: Document Toaster
+ * Summary: Document Toaster
  *
  * Params:
  *   - None

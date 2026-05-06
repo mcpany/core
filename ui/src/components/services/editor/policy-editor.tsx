@@ -21,7 +21,7 @@ interface PolicyEditorProps {
 }
 
 /**
- * Intent: Document PolicyEditor
+ * Summary: Document PolicyEditor
  *
  * Params:
  *   - Documented below.

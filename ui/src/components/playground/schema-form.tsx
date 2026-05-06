@@ -20,7 +20,7 @@ interface SchemaFormProps {
 }
 
 /**
- * Intent: Document SchemaForm
+ * Summary: Document SchemaForm
  *
  * Params:
  *   - Documented below.

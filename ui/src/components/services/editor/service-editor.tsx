@@ -48,7 +48,7 @@ interface ServiceEditorProps {
 }
 
 /**
- * Intent: Document ServiceEditor
+ * Summary: Document ServiceEditor
  *
  * Params:
  *   - Documented below.

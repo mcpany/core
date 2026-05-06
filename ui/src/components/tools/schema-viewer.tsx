@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 /**
- * Intent: Document Schema
+ * Summary: Document Schema
  *
  * Params:
  *   - None
@@ -85,7 +85,7 @@ const TypeBadge = ({ type, format }: { type?: string | string[], format?: string
 };
 
 /**
- * Intent: Document SchemaViewer
+ * Summary: Document SchemaViewer
  *
  * Params:
  *   - Documented below.

@@ -43,7 +43,7 @@ const actions = [
 ];
 
 /**
- * Intent: Document QuickActionsWidget
+ * Summary: Document QuickActionsWidget
  *
  * Params:
  *   - None

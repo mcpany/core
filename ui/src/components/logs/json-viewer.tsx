@@ -12,7 +12,7 @@ interface JsonViewerProps {
 }
 
 /**
- * Intent: Document JsonViewer
+ * Summary: Document JsonViewer
  *
  * Params:
  *   - Documented below.

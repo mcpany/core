@@ -18,7 +18,7 @@ export enum WizardStep {
 }
 
 /**
- * Intent: Document WizardWebhook
+ * Summary: Document WizardWebhook
  *
  * Params:
  *   - None
@@ -44,7 +44,7 @@ export interface WizardWebhook {
 }
 
 /**
- * Intent: Document WizardState
+ * Summary: Document WizardState
  *
  * Params:
  *   - None
@@ -103,7 +103,7 @@ const defaultState: WizardState = {
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
 
 /**
- * Intent: Document WizardProvider
+ * Summary: Document WizardProvider
  *
  * Params:
  *   - Documented below.
@@ -234,7 +234,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Intent: Document useWizard
+ * Summary: Document useWizard
  *
  * Params:
  *   - None

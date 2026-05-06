@@ -16,7 +16,7 @@ import { Link as LinkIcon, Check, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
- * Intent: Document ConnectClientButton
+ * Summary: Document ConnectClientButton
  *
  * Params:
  *   - None

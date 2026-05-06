@@ -19,7 +19,7 @@ interface ServicePropertyCardProps {
 }
 
 /**
- * Intent: Document ServicePropertyCard
+ * Summary: Document ServicePropertyCard
  *
  * Params:
  *   - Documented below.

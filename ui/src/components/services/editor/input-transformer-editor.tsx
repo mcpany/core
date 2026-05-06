@@ -19,7 +19,7 @@ interface InputTransformerEditorProps {
 }
 
 /**
- * Intent: Document InputTransformerEditor
+ * Summary: Document InputTransformerEditor
  *
  * Params:
  *   - None

@@ -44,7 +44,7 @@ interface UserListProps {
 }
 
 /**
- * Intent: Document UserList
+ * Summary: Document UserList
  *
  * Params:
  *   - Documented below.

@@ -48,7 +48,7 @@ function safeParsePayload(payload: any) {
 }
 
 /**
- * Intent: Document RecentActivityWidget
+ * Summary: Document RecentActivityWidget
  *
  * Params:
  *   - None

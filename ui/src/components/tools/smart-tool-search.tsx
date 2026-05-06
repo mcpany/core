@@ -27,7 +27,7 @@ interface SmartToolSearchProps {
 }
 
 /**
- * Intent: Document SmartToolSearch
+ * Summary: Document SmartToolSearch
  *
  * Params:
  *   - Documented below.

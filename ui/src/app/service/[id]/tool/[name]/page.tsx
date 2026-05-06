@@ -12,7 +12,7 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { useServiceSiblings, useToolSiblings } from "@/hooks/use-siblings";
 
 /**
- * Intent: Document ToolDetailPage
+ * Summary: Document ToolDetailPage
  *
  * Params:
  *   - None

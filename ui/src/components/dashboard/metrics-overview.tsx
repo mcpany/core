@@ -95,7 +95,7 @@ import { apiClient, Metric } from "@/lib/client";
 // ... (Icon map and MetricItem remain same)
 
 /**
- * Intent: Document MetricsOverview
+ * Summary: Document MetricsOverview
  *
  * Params:
  *   - None

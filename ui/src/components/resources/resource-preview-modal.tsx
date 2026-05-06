@@ -28,7 +28,7 @@ interface ResourcePreviewModalProps {
 }
 
 /**
- * Intent: Document ResourcePreviewModal
+ * Summary: Document ResourcePreviewModal
  *
  * Params:
  *   - Documented below.

@@ -9,7 +9,7 @@ import { ScopesDashboard } from "@/components/scopes/scopes-dashboard";
 /**
  * Summary: Renders the ScopesPage component, serving as the dashboard interface for configuring capability-based tokens.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

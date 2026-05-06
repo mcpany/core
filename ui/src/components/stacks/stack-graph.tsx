@@ -113,7 +113,7 @@ const nodeTypes = {
 };
 
 /**
- * Intent: Document StackGraph
+ * Summary: Document StackGraph
  *
  * Params:
  *   - None

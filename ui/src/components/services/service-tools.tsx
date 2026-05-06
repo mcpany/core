@@ -26,7 +26,7 @@ interface ServiceToolsProps {
 }
 
 /**
- * Intent: Document ServiceTools
+ * Summary: Document ServiceTools
  *
  * Params:
  *   - None

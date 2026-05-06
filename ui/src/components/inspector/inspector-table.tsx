@@ -81,7 +81,7 @@ interface VisibleRow {
 }
 
 /**
- * Intent: Document InspectorTable
+ * Summary: Document InspectorTable
  *
  * Params:
  *   - Documented below.

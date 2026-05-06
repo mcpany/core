@@ -39,7 +39,7 @@ const buttonVariants = cva(
 )
 
 /**
- * Intent: Document ButtonProps
+ * Summary: Document ButtonProps
  *
  * Params:
  *   - None

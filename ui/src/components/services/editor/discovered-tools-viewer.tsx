@@ -21,7 +21,7 @@ interface DiscoveredToolsViewerProps {
 }
 
 /**
- * Intent: Document DiscoveredToolsViewer
+ * Summary: Document DiscoveredToolsViewer
  *
  * Params:
  *   - None

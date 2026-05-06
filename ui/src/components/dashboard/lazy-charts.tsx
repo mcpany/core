@@ -37,7 +37,7 @@ const _LazyAuditLogWidget = lazy(() =>
 );
 
 /**
- * Intent: Document LazyRequestVolumeChart
+ * Summary: Document LazyRequestVolumeChart
  *
  * Params:
  *   - None
@@ -58,7 +58,7 @@ export const LazyRequestVolumeChart = (props: object) => (
 );
 
 /**
- * Intent: Document LazyRecentActivityWidget
+ * Summary: Document LazyRecentActivityWidget
  *
  * Params:
  *   - None
@@ -79,7 +79,7 @@ export const LazyRecentActivityWidget = (props: object) => (
 );
 
 /**
- * Intent: Document LazyTopToolsWidget
+ * Summary: Document LazyTopToolsWidget
  *
  * Params:
  *   - None
@@ -100,7 +100,7 @@ export const LazyTopToolsWidget = (props: object) => (
 );
 
 /**
- * Intent: Document LazyHealthHistoryChart
+ * Summary: Document LazyHealthHistoryChart
  *
  * Params:
  *   - None
@@ -121,7 +121,7 @@ export const LazyHealthHistoryChart = (props: object) => (
 );
 
 /**
- * Intent: Document LazyAuditLogWidget
+ * Summary: Document LazyAuditLogWidget
  *
  * Params:
  *   - None

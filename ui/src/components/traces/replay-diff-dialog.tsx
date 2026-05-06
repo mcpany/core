@@ -22,7 +22,7 @@ interface ReplayDiffDialogProps {
 }
 
 /**
- * Intent: Document ReplayDiffDialog
+ * Summary: Document ReplayDiffDialog
  *
  * Params:
  *   - None

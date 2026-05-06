@@ -15,7 +15,7 @@ interface SourceEditorProps {
 }
 
 /**
- * Intent: Document SourceEditor
+ * Summary: Document SourceEditor
  *
  * Params:
  *   - Documented below.

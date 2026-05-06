@@ -19,7 +19,7 @@ interface ConfigEditorProps {
 }
 
 /**
- * Intent: Document ConfigEditor
+ * Summary: Document ConfigEditor
  *
  * Params:
  *   - Documented below.

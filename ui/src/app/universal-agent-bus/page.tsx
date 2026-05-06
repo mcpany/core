@@ -22,7 +22,7 @@ import { AgentChainTracer } from "@/components/dashboard/agent-chain-tracer";
 import { LazyMcpDashboard } from "@/components/dashboard/lazy-mcp-dashboard";
 
 /**
- * Intent: Document UniversalAgentBusPage
+ * Summary: Document UniversalAgentBusPage
  *
  * Params:
  *   - None
@@ -34,7 +34,7 @@ import { LazyMcpDashboard } from "@/components/dashboard/lazy-mcp-dashboard";
  *
  * Summary: Renders a dashboard with metrics for the Universal Agent Bus.
  *
- * Parameters:
+ * Params:
  *   - None.
  *
  * Returns:

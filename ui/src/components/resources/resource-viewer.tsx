@@ -30,7 +30,7 @@ interface ResourceViewerProps {
 }
 
 /**
- * Intent: Document ResourceViewer
+ * Summary: Document ResourceViewer
  *
  * Params:
  *   - Documented below.

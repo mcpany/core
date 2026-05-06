@@ -175,7 +175,7 @@ const ServiceHealthItem = memo(function ServiceHealthItem({ service, history }: 
 });
 
 /**
- * Intent: Document ServiceHealthWidget
+ * Summary: Document ServiceHealthWidget
  *
  * Params:
  *   - None
