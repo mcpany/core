@@ -16,10 +16,10 @@ go_library(
     importpath = "github.com/mcpany/core/server/pkg/upstream/filesystem",
     visibility = ["//visibility:public"],
     deps = [
-        "//server/pkg/metrics",
         "//proto/config/v1:config",
         "//server/pkg/health",
         "//server/pkg/logging",
+        "//server/pkg/metrics",
         "//server/pkg/prompt",
         "//server/pkg/resource",
         "//server/pkg/tool",
