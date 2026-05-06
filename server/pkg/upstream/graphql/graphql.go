@@ -6,7 +6,9 @@ package graphql
 
 import (
 	"context"
+	"time"
 	"fmt"
+	"github.com/mcpany/core/server/pkg/metrics"
 	"log"
 	"net/http"
 	"net/url"
@@ -266,6 +268,7 @@ type Callable struct {
 // Side Effects:
 //   - None.
 func (c *Callable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince([]string{"graphql", "request", "latency"}, time.Now())
 	graphqlReq := graphql.NewRequest(c.query)
 	for key, value := range req.Arguments {
 		graphqlReq.Var(key, value)

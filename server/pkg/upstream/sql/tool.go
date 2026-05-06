@@ -249,6 +249,7 @@ func (t *Tool) StreamExecute(ctx context.Context, req *tool.ExecutionRequest) (<
 // Side Effects:
 //   - Executes a query on the database.
 func (t *Tool) Execute(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince([]string{"sql", "request", "latency"}, time.Now())
 	if t.initError != nil {
 		return nil, t.initError
 	}
