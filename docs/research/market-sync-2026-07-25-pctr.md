@@ -43,3 +43,28 @@ PCTR provides the core infrastructure to validate that any rotation event result
 ## 6. Cross-Cutting Concerns
 * **Security (Zero Trust):** Rotation never increases authority; every event is hardware-attested.
 * **Observability:** Every rotation is logged with its parent lineage ID and scope diff.
+
+## 8. Core Logic & Gateway-to-Adapter Flow
+
+The core logic of PCTR enforces strict monotonic subsets of scopes. When a subagent requests a token rotation at the Gateway, PCTR intercepts the request.
+
+```mermaid
+graph TD
+    classDef client fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef gateway fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef middleware fill:#bfb,stroke:#333,stroke-width:2px;
+    classDef adapter fill:#fbb,stroke:#333,stroke-width:2px;
+
+    Client[Subagent]:::client -->|POST /auth/rotate| Gateway[Gateway API]:::gateway
+    Gateway --> PCTR[PCTR Middleware]:::middleware
+
+    subgraph Core Validation
+        PCTR -->|Validate Subset| SubsetCheck{Is requested subset <br/>of current subset?}
+        SubsetCheck -- Yes --> ARI[ARI Provider / Token Mint]
+        SubsetCheck -- No --> Reject[HTTP 403 Forbidden]
+    end
+
+    ARI -->|New Lineage Token| Adapter[Target Adapter]:::adapter
+```
+
+PCTR prevents "ghost mirroring" and ensures that `new_scopes ⊆ current_scopes` cryptographically or logically before generating the rotated token.
