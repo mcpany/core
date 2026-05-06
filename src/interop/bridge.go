@@ -244,6 +244,15 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 	h.adapters[adapter.Name()] = adapter
 }
 
+// ErrorMappingMiddleware standardizes errors into a uniform format for the AI agent.
+func ErrorMappingMiddleware(err error) error {
+	if err == nil {
+		return nil
+	}
+	// Normalizes the payload into a standard mcp.Error equivalent format
+	return fmt.Errorf("[mcp.Error] %w", err)
+}
+
 // RouteTask finds the appropriate adapter for a task and executes it.
 //
 // Summary: Routes a given task to the registered framework adapter and returns the execution result.
@@ -265,9 +274,10 @@ func (h *AdapterHub) RegisterAdapter(adapter AgentFramework) {
 func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, error) {
 	adapter, exists := h.adapters[task.Framework]
 	if !exists {
-		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
+		return nil, ErrorMappingMiddleware(fmt.Errorf("no adapter registered for framework: %s", task.Framework))
 	}
-	return adapter.HandleTask(ctx, task)
+	res, err := adapter.HandleTask(ctx, task)
+	return res, ErrorMappingMiddleware(err)
 }
 
 // StreamRouteTask finds the appropriate adapter for a task and streams its execution.
@@ -291,7 +301,8 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 func (h *AdapterHub) StreamRouteTask(ctx context.Context, task *Task) (<-chan *TaskResult, error) {
 	adapter, exists := h.adapters[task.Framework]
 	if !exists {
-		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
+		return nil, ErrorMappingMiddleware(fmt.Errorf("no adapter registered for framework: %s", task.Framework))
 	}
-	return adapter.StreamTask(ctx, task)
+	stream, err := adapter.StreamTask(ctx, task)
+	return stream, ErrorMappingMiddleware(err)
 }

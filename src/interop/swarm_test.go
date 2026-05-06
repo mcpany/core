@@ -44,6 +44,28 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		}
 	})
 
+	// Add test for new CAH functionality
+	t.Run("OpenClaw_ConsensusAttestation", func(t *testing.T) {
+		taskCAH := &interop.Task{
+			ID:        "task-oc-cah-001",
+			Framework: "OpenClaw",
+			Intent:    "consensus_attestation",
+		}
+
+		resCAH, err := hub.RouteTask(ctx, taskCAH)
+		if err != nil {
+			t.Fatalf("Failed to execute OpenClaw task: %v", err)
+		}
+
+		if !strings.Contains(resCAH.Output, "Executed CAH OpenClaw task: consensus_attestation") {
+			t.Errorf("Expected CAH task output, got '%s'", resCAH.Output)
+		}
+
+		if resCAH.Telemetry["quorum_status"] != "reached" {
+			t.Errorf("Expected quorum_status to be 'reached', got '%s'", resCAH.Telemetry["quorum_status"])
+		}
+	})
+
 	t.Run("OpenClaw_UnsupportedCapability", func(t *testing.T) {
 		taskOCUnsupported := &interop.Task{
 			ID:        "task-oc-unsup",
@@ -55,7 +77,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		_, err := hub.RouteTask(ctx, taskOCUnsupported)
 		if err == nil {
 			t.Error("Expected error for unsupported OpenClaw capability, got nil")
-		} else if err.Error() != "OpenClaw does not support capability: unsupported_intent" {
+		} else if err.Error() != "[mcp.Error] OpenClaw does not support capability: unsupported_intent" {
 			t.Errorf("Unexpected error message: %v", err)
 		}
 	})
@@ -110,7 +132,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		_, err := hub.RouteTask(ctx, taskCAIUnsupported)
 		if err == nil {
 			t.Error("Expected error for unsupported CrewAI capability, got nil")
-		} else if err.Error() != "CrewAI does not support capability: unsupported_intent" {
+		} else if err.Error() != "[mcp.Error] CrewAI does not support capability: unsupported_intent" {
 			t.Errorf("Unexpected error message: %v", err)
 		}
 	})
@@ -148,7 +170,7 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		_, err := hub.RouteTask(ctx, taskAGUnsupported)
 		if err == nil {
 			t.Error("Expected error for unsupported AutoGen capability, got nil")
-		} else if err.Error() != "AutoGen does not support capability: unsupported_intent" {
+		} else if err.Error() != "[mcp.Error] AutoGen does not support capability: unsupported_intent" {
 			t.Errorf("Unexpected error message: %v", err)
 		}
 	})
@@ -397,8 +419,30 @@ func TestMultiAgentSwarmSimulation(t *testing.T) {
 		_, err := hub.StreamRouteTask(ctx, taskStream)
 		if err == nil {
 			t.Error("Expected error for unsupported OpenClaw capability, got nil")
-		} else if err.Error() != "OpenClaw does not support capability: unsupported_intent" {
+		} else if err.Error() != "[mcp.Error] OpenClaw does not support capability: unsupported_intent" {
 			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
+	t.Run("ErrorMappingMiddleware_UnknownFramework", func(t *testing.T) {
+		taskUnknown := &interop.Task{
+			ID:        "task-unknown",
+			Framework: "UnknownFramework",
+			Intent:    "some_intent",
+		}
+
+		_, err := hub.RouteTask(ctx, taskUnknown)
+		if err == nil {
+			t.Error("Expected error for unknown framework, got nil")
+		} else if !strings.HasPrefix(err.Error(), "[mcp.Error]") {
+			t.Errorf("Expected [mcp.Error] prefix, got '%v'", err)
+		}
+
+		_, streamErr := hub.StreamRouteTask(ctx, taskUnknown)
+		if streamErr == nil {
+			t.Error("Expected stream error for unknown framework, got nil")
+		} else if !strings.HasPrefix(streamErr.Error(), "[mcp.Error]") {
+			t.Errorf("Expected [mcp.Error] prefix, got '%v'", streamErr)
 		}
 	})
 }

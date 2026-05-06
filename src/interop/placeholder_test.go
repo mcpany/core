@@ -71,7 +71,7 @@ func TestRegisterPlaceholders(t *testing.T) {
     _, err := hub.RouteTask(context.Background(), task)
     if err == nil {
         t.Error("Expected routing to placeholder to return an error")
-    } else if err.Error() != "Not Implemented: Dynamic Mesh Resilience (DMR) Hub is a placeholder service" {
+    } else if err.Error() != "[mcp.Error] Not Implemented: Dynamic Mesh Resilience (DMR) Hub is a placeholder service" {
         t.Errorf("Unexpected error from routed placeholder: %s", err.Error())
     }
 
@@ -83,7 +83,7 @@ func TestRegisterPlaceholders(t *testing.T) {
     _, err = hub.RouteTask(context.Background(), taskUnknown)
     if err == nil {
         t.Error("Expected unknown framework to return an error")
-    } else if err.Error() != "no adapter registered for framework: Not A Real Feature (NARF)" {
+    } else if err.Error() != "[mcp.Error] no adapter registered for framework: Not A Real Feature (NARF)" {
         t.Errorf("Unexpected error for unknown framework: %s", err.Error())
     }
 }

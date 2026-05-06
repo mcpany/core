@@ -43,8 +43,9 @@ type OpenClawAdapter struct {
 func NewOpenClawAdapter() *OpenClawAdapter {
 	return &OpenClawAdapter{
 		Capabilities: map[string]bool{
-			"adaptive_reasoning": true,
-			"context_sync":       true,
+			"adaptive_reasoning":    true,
+			"context_sync":          true,
+			"consensus_attestation": true,
 		},
 		CurrentEpoch: 1,
 	}
@@ -93,16 +94,24 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 
 	// Simulated execution with state versioning logic (reasoning_epoch)
 	a.CurrentEpoch++
+
 	output := fmt.Sprintf("Executed OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch)
 
+	telemetry := map[string]string{
+		"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+		"entropy_score":   "low",
+	}
+
+	if task.Intent == "consensus_attestation" {
+		output = fmt.Sprintf("Executed CAH OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch)
+		telemetry["quorum_status"] = "reached"
+	}
+
 	res := &TaskResult{
-		TaskID: task.ID,
-		Status: "success",
-		Output: output,
-		Telemetry: map[string]string{
-			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
-			"entropy_score":   "low",
-		},
+		TaskID:    task.ID,
+		Status:    "success",
+		Output:    output,
+		Telemetry: telemetry,
 	}
 
 	if task.Payload["stream"] == "true" {
@@ -193,19 +202,25 @@ func (a *OpenClawAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *T
 
 		a.CurrentEpoch++
 
+		telemetryStart := map[string]string{
+			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+			"entropy_score":   "low",
+			"chunk_index":     "0",
+		}
+
+		if task.Intent == "consensus_attestation" {
+			telemetryStart["quorum_status"] = "gathering"
+		}
+
 		// Send initial chunk
 		select {
 		case <-ctx.Done():
 			return
 		case stream <- &TaskResult{
-			TaskID: task.ID,
-			Status: "streaming",
-			Output: fmt.Sprintf("Started OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch),
-			Telemetry: map[string]string{
-				"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
-				"entropy_score":   "low",
-				"chunk_index":     "0",
-			},
+			TaskID:    task.ID,
+			Status:    "streaming",
+			Output:    fmt.Sprintf("Started OpenClaw task: %s, Epoch: %d", task.Intent, a.CurrentEpoch),
+			Telemetry: telemetryStart,
 		}:
 		}
 
@@ -225,19 +240,25 @@ func (a *OpenClawAdapter) StreamTask(ctx context.Context, task *Task) (<-chan *T
 		}:
 		}
 
+		telemetryFinal := map[string]string{
+			"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
+			"entropy_score":   "low",
+			"chunk_index":     "2",
+		}
+
+		if task.Intent == "consensus_attestation" {
+			telemetryFinal["quorum_status"] = "reached"
+		}
+
 		// Send final chunk
 		select {
 		case <-ctx.Done():
 			return
 		case stream <- &TaskResult{
-			TaskID: task.ID,
-			Status: "success",
-			Output: fmt.Sprintf("Finished OpenClaw task: %s", task.Intent),
-			Telemetry: map[string]string{
-				"reasoning_epoch": fmt.Sprintf("%d", a.CurrentEpoch),
-				"entropy_score":   "low",
-				"chunk_index":     "2",
-			},
+			TaskID:    task.ID,
+			Status:    "success",
+			Output:    fmt.Sprintf("Finished OpenClaw task: %s", task.Intent),
+			Telemetry: telemetryFinal,
 		}:
 		}
 	}()
