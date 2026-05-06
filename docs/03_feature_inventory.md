@@ -446,13 +446,6 @@
 - **Inter-Swarm Deadlock Detector**: (Promoted to P0) Critical for neutralizing resource exhaustion in autonomous production swarms.
 - **Hierarchical Intent Lease (HIL) Broker**: (Re-affirmed P0) Essential for managing the lifecycle of decentralized supervisors in a DSM.
 
-## Evolution: [2026-05-06] (Iteration 2) Updates
-
-### Proposed Additions
-- **Universal Episodic Graph (UEG) Memory Broker**: (P0) Authoritative storage middleware evolving the Shared KV Store into a hardware-attested graph database. Resolves "Context Amnesia" and "Memory Smearing" in deep, horizontal swarms by cryptographically linking reasoning traces to mission-root intents.
-- **Speculative Zero-Knowledge Discovery (SZKD) Engine**: (P0) A background service pre-fetching and sandboxing tool schemas via speculative execution. Utilizes cryptographic masking to hide capability details from agents until a hardware-bound mission handshake is verified, preventing pre-flight capability mapping.
-- **Multimodal Trace Deconstruction (MTD) Pipeline**: (P0) Real-time sanitization layer for the Multimodal State Entanglement (MSE) Provider. Actively deconstructs SVG, WebM, and Audio metadata into verifiable semantic trees before allowing them into the shared teammate mesh.
-
 ## Evolution: [2026-05-06] Updates
 
 ### Proposed Additions
