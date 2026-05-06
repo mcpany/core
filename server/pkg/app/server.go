@@ -510,6 +510,9 @@ func (a *Application) Run(opts RunOptions) error {
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
 	// Add Resilience Middleware
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
+	// Add Attested Mesh Tunneling (AMT) Broker
+	a.ToolManager.AddMiddleware(middleware.NewAMTBroker(middleware.AMTBrokerConfig{Enabled: true}))
+
 	// Add Error Mapping Middleware
 	a.ToolManager.AddMiddleware(middleware.NewErrorMappingMiddleware())
 

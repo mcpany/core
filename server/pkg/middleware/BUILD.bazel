@@ -6,6 +6,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "middleware",
     srcs = [
+        "amt_broker.go",
         "a2a_bridge.go",
         "aia_broker.go",
         "audit.go",
@@ -105,6 +106,7 @@ go_library(
 go_test(
     name = "middleware_test",
     srcs = [
+        "amt_broker_test.go",
         "a2a_bridge_test.go",
         "aia_broker_test.go",
         "audit_export_test.go",
