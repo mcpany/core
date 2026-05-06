@@ -1,5 +1,18 @@
 # Feature Inventory: MCP Any
 
+
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **Edge-Resident Memory Enclave (ERME)**: (P0) High-performance coordination extension providing hardware-attested, isolated memory shards at the network edge for synchronous, lock-free state reads and atomic commits.
+- **Zero-Knowledge Capability Routing (ZKCR)**: (P0) Advanced routing infrastructure requiring cryptographic proof of mission alignment before resolving capability schemas to prevent multi-tenant schema leakage.
+- **Edge-Bound Multimodal Sanitizer (EBMS)**: (P0) Lightweight, WASM-bound sanitizer deployed at the edge to perform sub-millisecond heuristic filtering of visual/audio payloads, preventing multimodal injection latency.
+
+### Priority Shifts
+- **Zero-Knowledge Capability Discovery (ZKCD)**: (Re-affirmed P0) Evolving into the **ZKCR** routing infrastructure.
+- **Multimodal Monologue Scrubber (MMS)**: (Re-affirmed P0) Elevated with mandatory **EBMS** integration at the network edge.
+- **Enclave-Bound Speculative Memory (EBSM)**: (Re-affirmed P0) Designated as a critical dependency for **ERME** to support edge-resident shards.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
