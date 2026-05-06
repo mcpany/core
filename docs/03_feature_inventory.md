@@ -1,5 +1,12 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-05-06] Updates
+
+### Proposed Additions
+- **Swarm-Aware Unified Memory Broker (SUMB)**: (P0) A distributed, high-performance memory bus acting as a subconscious for the agent swarm, passing lightweight memory pointers instead of heavy contexts.
+- **Federated Tool Discovery Registry (FTDR)**: (P0) A dynamic registry for runtime tool discovery and leasing using Zero-Knowledge proofs for capability authorization.
+- **Context-Optimized Multimodal Entanglement (COME)**: (P0) Protocol extension natively supporting secure, high-fidelity transmission and sanitization of multimodal payloads between agents.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
