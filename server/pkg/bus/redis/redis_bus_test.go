@@ -104,7 +104,7 @@ func TestBus_Publish(t *testing.T) {
 	})
 }
 
-func TestBus_Subscribe(t *testing.T) {
+func TestBus_Subscribe_Mock(t *testing.T) {
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
@@ -117,7 +117,7 @@ func TestBus_Subscribe(t *testing.T) {
 	})
 }
 
-func TestBus_SubscribeOnce(t *testing.T) {
+func TestBus_SubscribeOnce_Mock(t *testing.T) {
 	t.Parallel()
 	db, _ := redismock.NewClientMock()
 	b := redis.NewWithClient[string](db)
