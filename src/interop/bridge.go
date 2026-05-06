@@ -114,6 +114,24 @@ type AgentFramework interface {
 	// Side Effects:
 	//   - Spawns a goroutine to stream results back through the channel.
 	StreamTask(ctx context.Context, task *Task) (<-chan *TaskResult, error)
+
+	// VerifyStylometricSignature analyzes a reasoning trace to ensure it matches the behavioral profile.
+	//
+	// Summary: Verifies that a subagent is not mirroring the parent's authority signature.
+	//
+	// Parameters:
+	//   - ctx (context.Context): The context for controlling cancellation and timeouts.
+	//   - trace (string): The stylometric trace to analyze.
+	//
+	// Returns:
+	//   - error: An error if the signature verification fails (e.g., high variance, empty, or too long).
+	//
+	// Throws/Errors:
+	//   - Returns an error if the trace is invalid.
+	//
+	// Side Effects:
+	//   - None.
+	VerifyStylometricSignature(ctx context.Context, trace string) error
 }
 
 // MemoryShard represents a hardware-attested, intent-pinned memory fragment.
@@ -267,6 +285,13 @@ func (h *AdapterHub) RouteTask(ctx context.Context, task *Task) (*TaskResult, er
 	if !exists {
 		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
 	}
+
+	if trace, hasTrace := task.Payload["trace"]; hasTrace {
+		if err := adapter.VerifyStylometricSignature(ctx, trace); err != nil {
+			return nil, err
+		}
+	}
+
 	return adapter.HandleTask(ctx, task)
 }
 
@@ -293,5 +318,12 @@ func (h *AdapterHub) StreamRouteTask(ctx context.Context, task *Task) (<-chan *T
 	if !exists {
 		return nil, fmt.Errorf("no adapter registered for framework: %s", task.Framework)
 	}
+
+	if trace, hasTrace := task.Payload["trace"]; hasTrace {
+		if err := adapter.VerifyStylometricSignature(ctx, trace); err != nil {
+			return nil, err
+		}
+	}
+
 	return adapter.StreamTask(ctx, task)
 }

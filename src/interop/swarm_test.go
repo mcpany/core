@@ -8,6 +8,56 @@ import (
 	"github.com/mcpany/core/src/interop"
 )
 
+func TestGIMMValidation(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+
+	ctx := context.Background()
+
+	taskEmptyTrace := &interop.Task{
+		ID:        "task-gimm-empty",
+		Framework: "OpenClaw",
+		Intent:    "adaptive_reasoning",
+		Payload:   map[string]string{"trace": ""},
+	}
+
+	_, err := hub.RouteTask(ctx, taskEmptyTrace)
+	if err == nil {
+		t.Error("Expected error for empty trace, got nil")
+	} else if err.Error() != "invalid stylometric signature: trace is empty" {
+		t.Errorf("Unexpected error message: %v", err)
+	}
+
+	taskLongTrace := &interop.Task{
+		ID:        "task-gimm-long",
+		Framework: "OpenClaw",
+		Intent:    "adaptive_reasoning",
+		Payload:   map[string]string{"trace": string(make([]byte, 1001))},
+	}
+
+	_, err = hub.RouteTask(ctx, taskLongTrace)
+	if err == nil {
+		t.Error("Expected error for long trace, got nil")
+	} else if err.Error() != "invalid stylometric signature: trace exceeds maximum length" {
+		t.Errorf("Unexpected error message: %v", err)
+	}
+
+    taskValidTrace := &interop.Task{
+		ID:        "task-gimm-valid",
+		Framework: "OpenClaw",
+		Intent:    "adaptive_reasoning",
+		Payload:   map[string]string{"trace": "valid_signature_123"},
+	}
+
+	res, err := hub.RouteTask(ctx, taskValidTrace)
+	if err != nil {
+		t.Fatalf("Failed to execute OpenClaw task with valid trace: %v", err)
+	}
+    if res.Status != "success" {
+        t.Errorf("Expected OpenClaw status 'success', got '%s'", res.Status)
+    }
+}
+
 // TestMultiAgentSwarmSimulation simulates a complete end-to-end swarm test
 // utilizing multiple agent frameworks managed by the Universal Adapter Hub.
 func TestMultiAgentSwarmSimulation(t *testing.T) {

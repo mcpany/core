@@ -165,6 +165,32 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 	return nil
 }
 
+// VerifyStylometricSignature analyzes a reasoning trace to ensure it matches the behavioral profile.
+//
+// Summary: Checks trace validity for stylometric consistency (simulated).
+//
+// Parameters:
+//   - ctx (context.Context): The context for execution, handling cancellation.
+//   - trace (string): The trace content to analyze.
+//
+// Returns:
+//   - error: Indicates failure if the trace is empty or too long.
+//
+// Throws/Errors:
+//   - Returns an error if trace is empty or > 1000 chars.
+//
+// Side Effects:
+//   - None.
+func (a *CrewAIAdapter) VerifyStylometricSignature(ctx context.Context, trace string) error {
+	if trace == "" {
+		return fmt.Errorf("invalid stylometric signature: trace is empty")
+	}
+	if len(trace) > 1000 {
+		return fmt.Errorf("invalid stylometric signature: trace exceeds maximum length")
+	}
+	return nil
+}
+
 // StreamTask streams the execution of a task from the CrewAI framework.
 //
 // Summary: Simulates a streaming task execution for CrewAI delegated roles.

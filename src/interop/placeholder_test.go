@@ -58,6 +58,30 @@ func TestNewPlaceholderAdapterNilCapabilities(t *testing.T) {
     }
 }
 
+func TestVerifyStylometricSignature(t *testing.T) {
+    adapter := interop.NewPlaceholderAdapter("GIMM Hub", nil)
+
+    err := adapter.VerifyStylometricSignature(context.Background(), "")
+    if err == nil {
+        t.Error("Expected error for empty trace, got nil")
+    } else if err.Error() != "invalid stylometric signature: trace is empty" {
+        t.Errorf("Expected 'invalid stylometric signature: trace is empty', got '%s'", err.Error())
+    }
+
+    longTrace := string(make([]byte, 1001))
+    err = adapter.VerifyStylometricSignature(context.Background(), longTrace)
+    if err == nil {
+        t.Error("Expected error for long trace, got nil")
+    } else if err.Error() != "invalid stylometric signature: trace exceeds maximum length" {
+        t.Errorf("Expected 'invalid stylometric signature: trace exceeds maximum length', got '%s'", err.Error())
+    }
+
+    err = adapter.VerifyStylometricSignature(context.Background(), "valid trace")
+    if err != nil {
+        t.Errorf("Expected nil for valid trace, got: %v", err)
+    }
+}
+
 func TestRegisterPlaceholders(t *testing.T) {
     hub := interop.NewAdapterHub()
     interop.RegisterPlaceholders(hub)
