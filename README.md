@@ -8,6 +8,7 @@
 MCP Any relies on a "Configuration over Code" pattern. Users deploy a single binary which reads dynamically loaded capability definitions. The architecture supports gRPC, OpenAPI, HTTP, GraphQL, and CLI tools seamlessly without touching the underlying source code.
 
 **Key Design Patterns & Features:**
+![Dashboard Overview](docs/screenshots/dashboard_overview.png)
 - **Dynamic Tool Registration**: Add and modify capabilities purely via configuration files at runtime.
 - **Safety Policies**: Robust constraint engines and safety layers designed to restrict arbitrary code execution and contain side effects safely.
 - **Upstream Authentication**: Out-of-the-box identity federation with various standard identity providers.

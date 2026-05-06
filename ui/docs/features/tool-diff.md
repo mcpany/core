@@ -11,7 +11,7 @@ MCP Any now supports visual diffing for tool execution results. When you execute
 
 ## Screenshot
 
-![Tool Output Diff](../screenshots/diff-feature.png)
+![Tool Output Diff](../../screenshots/diff-feature.png)
 
 ## Benefits
 

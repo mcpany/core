@@ -12,7 +12,7 @@ Navigate to `/prompts`.
 - **List**: Shows prompt names and descriptions.
 - **Arguments**: detailed list of required input parameters.
 
-![Prompts List](screenshots/prompts_list.png)
+![Prompts List](../screenshots/prompts_list.png)
 
 ### 2. Use Prompt
 Click **"Open in Playground"** on any item.

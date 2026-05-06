@@ -17,7 +17,7 @@ The Playground is the central specialized interface for Developers to interactiv
 
 Navigate to `/playground`. The interface presents a clean slate.
 
-![Playground Overview](screenshots/playground_blank.png)
+![Playground Overview](../screenshots/playground_blank.png)
 
 > **Note**: The page title is "Console".
 
@@ -28,7 +28,7 @@ Click the **Available Tools** button (or press `Cmd+K`) to open the tool selecti
 1. Click "Use Tool" on a tool card (e.g., `filesystem.list_dir`).
 2. A configuration sheet opens showing the **Tool Description** and a dynamically generated **Input Form**.
 
-![Tool Selected](screenshots/playground_tool_selected.png)
+![Tool Selected](../screenshots/playground_tool_selected.png)
 
 ### 3. Execute Tool
 
@@ -37,7 +37,7 @@ Fill in the required arguments in the dialog. The form validates your input base
 1. Enter values (e.g., `/var/log` for path).
 2. Click **"Run Tool"**.
 
-![Form Filled](screenshots/playground_form_filled.png)
+![Form Filled](../screenshots/playground_form_filled.png)
 
 ### 4. View Results
 

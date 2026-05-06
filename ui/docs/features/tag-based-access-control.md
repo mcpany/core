@@ -6,7 +6,7 @@ The **Tag-based Access Control** feature allows you to restrict service access f
 
 In the Profile Editor, you can now define **Access Tags** in addition to the standard Environment Type (Dev, Prod, Debug). Services that have matching tags are automatically included in the profile's allowed list.
 
-![Profile Editor with Tags](../screenshots/profile_editor.png)
+![Profile Editor with Tags](../../screenshots/profile_editor.png)
 
 ## How it Works
 
