@@ -208,7 +208,6 @@ go_test(
     embed = [":tool"],
     tags = ["integration"],
     deps = [
-        "//proto/api/v1:api",
         "//proto/bus",
         "//proto/config/v1:config",
         "//proto/examples/weather/v1:weather",
