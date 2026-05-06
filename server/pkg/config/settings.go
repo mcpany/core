@@ -678,11 +678,19 @@ func getStringSlice(key string) []string {
 			var final []string
 			for _, p := range parts {
 				p = strings.TrimSpace(p)
+				if strings.HasPrefix(p, "[") && strings.HasSuffix(p, "]") {
+					p = p[1 : len(p)-1]
+				}
 				if p != "" {
 					final = append(final, p)
 				}
 			}
 			return final
+		}
+
+		val = strings.TrimSpace(val)
+		if strings.HasPrefix(val, "[") && strings.HasSuffix(val, "]") {
+			val = val[1 : len(val)-1]
 		}
 		return []string{strings.TrimSpace(val)}
 	}
@@ -695,12 +703,18 @@ func getStringSlice(key string) []string {
 			parts := strings.Split(item, ",")
 			for _, p := range parts {
 				p = strings.TrimSpace(p)
+				if strings.HasPrefix(p, "[") && strings.HasPrefix(p, "]") {
+					p = p[1 : len(p)-1]
+				}
 				if p != "" {
 					final = append(final, p)
 				}
 			}
 		} else {
 			item = strings.TrimSpace(item)
+			if strings.HasPrefix(item, "[") && strings.HasSuffix(item, "]") {
+				item = item[1 : len(item)-1]
+			}
 			if item != "" {
 				final = append(final, item)
 			}

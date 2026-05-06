@@ -46,7 +46,7 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
 
 3. **Run a Hello World example:**
    ```bash
-   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+   bazelisk run //:mcpany -- -config examples/hello_world.yaml
    ```
 
 ## Development
@@ -60,7 +60,7 @@ make test
 make lint
 
 # Build the main binary
-bazelisk build //server/cmd/mcpany
+bazelisk build //:mcpany
 ```
 
 ## Configuration
