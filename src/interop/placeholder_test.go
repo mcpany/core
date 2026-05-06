@@ -87,3 +87,36 @@ func TestRegisterPlaceholders(t *testing.T) {
         t.Errorf("Unexpected error for unknown framework: %s", err.Error())
     }
 }
+
+// Adding more test cases to test the full set of placeholder adapters
+func TestPlaceholderAdaptersCoverage(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	interop.RegisterPlaceholders(hub)
+
+	// Route a task to another placeholder service to ensure we're not just
+	// testing one and missing the rest.
+	task2 := &interop.Task{
+		Framework: "Subagent Routing Firewall",
+		Intent:    "any",
+	}
+
+	_, err := hub.RouteTask(context.Background(), task2)
+	if err == nil {
+		t.Error("Expected routing to Subagent Routing Firewall placeholder to return an error")
+	} else if err.Error() != "Not Implemented: Subagent Routing Firewall is a placeholder service" {
+		t.Errorf("Unexpected error from routed placeholder: %s", err.Error())
+	}
+
+    // Try a few more random ones to increase branch coverage?
+	task3 := &interop.Task{Framework: "Hierarchical Provenance Validator", Intent: "any"}
+	_, err = hub.RouteTask(context.Background(), task3)
+	if err == nil || err.Error() != "Not Implemented: Hierarchical Provenance Validator is a placeholder service" {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	task4 := &interop.Task{Framework: "Zero-Knowledge State Attestation (ZKSA) Provider", Intent: "any"}
+	_, err = hub.RouteTask(context.Background(), task4)
+	if err == nil || err.Error() != "Not Implemented: Zero-Knowledge State Attestation (ZKSA) Provider is a placeholder service" {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}

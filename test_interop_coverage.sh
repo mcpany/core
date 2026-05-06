@@ -1,0 +1,3 @@
+#!/bin/bash
+./bazelisk coverage //src/interop/...
+go tool cover -func=/home/jules/.cache/bazel/_bazel_jules/8c069df52082beee3c95ca17836fb8e2/execroot/_main/bazel-out/_coverage/_coverage_report.dat
