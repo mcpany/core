@@ -5,6 +5,8 @@
 package main
 
 import (
+	"path/filepath"
+
 	"context"
 	"fmt"
 	"net/http"
@@ -90,6 +92,8 @@ func loadEnv(cmd *cobra.Command) error {
 // Side Effects:
 //   - Configures global flags and subcommands.
 func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expected to be complex
+	var runCmd *cobra.Command
+
 	rootCmd := &cobra.Command{
 		Use:   appconsts.Name,
 		Short: "MCP Any is a versatile proxy for backend services.",
@@ -99,11 +103,18 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			return loadEnv(cmd)
 		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Track 1: Friction Fighter - Default to run command
+			return runCmd.RunE(cmd, args)
+		},
 		SilenceUsage: true,
 	}
 	rootCmd.PersistentFlags().String("env-file", "", "Path to .env file to load environment variables from")
+	// Bind server flags to root so they can be used without the 'run' subcommand
+	config.BindServerFlags(rootCmd)
+	rootCmd.Flags().Bool("strict", false, "Run in strict mode (validate upstream connectivity before starting)")
 
-	runCmd := &cobra.Command{
+	runCmd = &cobra.Command{
 		Use:   "run",
 		Short: "Run the MCP Any server",
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -123,6 +134,14 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			grpcPort := cfg.GRPCPort()
 			stdio := cfg.Stdio()
 			configPaths := cfg.ConfigPaths()
+			if workspaceDir := os.Getenv("BUILD_WORKSPACE_DIRECTORY"); workspaceDir != "" {
+				for i, path := range configPaths {
+					if !filepath.IsAbs(path) && !strings.HasPrefix(strings.ToLower(path), "http://") && !strings.HasPrefix(strings.ToLower(path), "https://") {
+						configPaths[i] = filepath.Join(workspaceDir, path)
+					}
+				}
+			}
+
 
 			log.Info("Configuration", "mcp-listen-address", bindAddress, "registration-port", grpcPort, "stdio", stdio, "config-path", configPaths)
 

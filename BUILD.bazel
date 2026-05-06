@@ -111,3 +111,9 @@ config_setting(
     values = {"host_cpu": "k8"},
     visibility = ["//visibility:public"],
 )
+
+alias(
+    name = "mcpany",
+    actual = "//server/cmd/mcpany",
+    visibility = ["//visibility:public"],
+)
