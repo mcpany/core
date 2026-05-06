@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "amt",
+    srcs = ["broker.go"],
+    importpath = "github.com/mcpany/core/server/pkg/amt",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "amt_test",
+    srcs = ["broker_test.go"],
+    embed = [":amt"],
+)
