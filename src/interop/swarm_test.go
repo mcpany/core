@@ -630,3 +630,120 @@ func TestStreamTaskCancellationsEvenMore4(t *testing.T) {
     cancel2()    // Cancel before chunk 2
 	for _ = range streamAG1 {} // Drain
 }
+
+func TestHandleTaskStreaming(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+	ctx := context.Background()
+
+	t.Run("OpenClaw_HandleTaskStreaming", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "oc-stream",
+			Framework: "OpenClaw",
+			Intent:    "adaptive_reasoning",
+			Payload:   map[string]string{"stream": "true"},
+		}
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("OpenClaw RouteTask failed: %v", err)
+		}
+		if res.Stream == nil {
+			t.Fatalf("Expected stream to be initialized for OpenClaw")
+		}
+		var chunks []string
+		for chunk := range res.Stream {
+			chunks = append(chunks, chunk)
+		}
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 stream chunks for OpenClaw, got %d", len(chunks))
+		}
+	})
+
+	t.Run("CrewAI_HandleTaskStreaming", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "cai-stream",
+			Framework: "CrewAI",
+			Intent:    "task_delegation",
+			Payload:   map[string]string{"stream": "true"},
+		}
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("CrewAI RouteTask failed: %v", err)
+		}
+		if res.Stream == nil {
+			t.Fatalf("Expected stream to be initialized for CrewAI")
+		}
+		var chunks []string
+		for chunk := range res.Stream {
+			chunks = append(chunks, chunk)
+		}
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 stream chunks for CrewAI, got %d", len(chunks))
+		}
+	})
+
+	t.Run("AutoGen_HandleTaskStreaming", func(t *testing.T) {
+		task := &interop.Task{
+			ID:        "ag-stream",
+			Framework: "AutoGen",
+			Intent:    "multi_agent_chat",
+			Payload:   map[string]string{"stream": "true"},
+		}
+		res, err := hub.RouteTask(ctx, task)
+		if err != nil {
+			t.Fatalf("AutoGen RouteTask failed: %v", err)
+		}
+		if res.Stream == nil {
+			t.Fatalf("Expected stream to be initialized for AutoGen")
+		}
+		var chunks []string
+		for chunk := range res.Stream {
+			chunks = append(chunks, chunk)
+		}
+		if len(chunks) != 2 {
+			t.Errorf("Expected 2 stream chunks for AutoGen, got %d", len(chunks))
+		}
+	})
+}
+
+func TestStreamTaskUnsupportedIntents(t *testing.T) {
+	hub := interop.NewAdapterHub()
+	hub.RegisterAdapter(interop.NewOpenClawAdapter())
+	hub.RegisterAdapter(interop.NewCrewAIAdapter())
+	hub.RegisterAdapter(interop.NewAutoGenAdapter())
+
+	ctx := context.Background()
+
+	t.Run("OpenClaw_StreamTask_Unsupported", func(t *testing.T) {
+		task := &interop.Task{Framework: "OpenClaw", Intent: "unsupported"}
+		_, err := hub.StreamRouteTask(ctx, task)
+		if err == nil {
+			t.Error("Expected error for unsupported intent")
+		} else if err.Error() != "OpenClaw does not support capability: unsupported" {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	})
+
+	t.Run("CrewAI_StreamTask_Unsupported", func(t *testing.T) {
+		task := &interop.Task{Framework: "CrewAI", Intent: "unsupported"}
+		_, err := hub.StreamRouteTask(ctx, task)
+		if err == nil {
+			t.Error("Expected error for unsupported intent")
+		} else if err.Error() != "CrewAI does not support capability: unsupported" {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	})
+
+	t.Run("AutoGen_StreamTask_Unsupported", func(t *testing.T) {
+		task := &interop.Task{Framework: "AutoGen", Intent: "unsupported"}
+		_, err := hub.StreamRouteTask(ctx, task)
+		if err == nil {
+			t.Error("Expected error for unsupported intent")
+		} else if err.Error() != "AutoGen does not support capability: unsupported" {
+			t.Errorf("Unexpected error: %v", err)
+		}
+	})
+}
