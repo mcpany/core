@@ -976,7 +976,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	var finalResult *mcp.CallToolResult
 	var text string
 	var jsonBytes []byte
-	var marshalErr error
+	var marshalErr error // Required for lazy logging later
 	var isStructured bool
 
 	// 1. Check if it's already a CallToolResult

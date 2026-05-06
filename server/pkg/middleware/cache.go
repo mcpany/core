@@ -16,7 +16,6 @@ import (
 	"github.com/eko/gocache/lib/v4/cache"
 	"github.com/eko/gocache/lib/v4/store"
 	gocache_store "github.com/eko/gocache/store/go_cache/v4"
-	jsoniter "github.com/json-iterator/go"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/mcpany/core/server/pkg/metrics"
@@ -422,7 +421,8 @@ func (m *CachingMiddleware) getCacheConfig(t tool.Tool) *configv1.CacheConfig {
 
 func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 	var normalizedInputs []byte
-	var json = jsoniter.ConfigCompatibleWithStandardLibrary
+	// ⚡ Bolt Optimization: Use high-performance util.FastJSONSortKeys instead of standard library compatibility layer.
+	var json = util.FastJSONSortKeys
 
 	// Optimization: Use Arguments map if available to avoid unnecessary unmarshal/marshal cycle.
 	// json.Marshal sorts map keys, so it produces a canonical representation for caching.
@@ -446,8 +446,8 @@ func (m *CachingMiddleware) getCacheKey(req *tool.ExecutionRequest) string {
 
 		if firstChar == '{' || firstChar == '[' {
 			var input any
-			// We use standard json.Unmarshal which sorts map keys when Marshaling back.
-			if err := json.Unmarshal(req.ToolInputs, &input); err == nil {
+			// ⚡ Bolt Optimization: Use high-performance unmarshal, then marshal with sorted keys
+			if err := util.FastJSON.Unmarshal(req.ToolInputs, &input); err == nil {
 				if marshaled, err := json.Marshal(input); err == nil {
 					normalizedInputs = marshaled
 				}

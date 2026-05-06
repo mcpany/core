@@ -19,6 +19,16 @@ var (
 		ValidateJsonRawMessage: true,
 	}.Froze()
 
+	// FastJSONSortKeys is a configured instance of jsoniter that is optimized for performance,
+	// but guarantees map keys are sorted. Useful for canonical JSON formatting for caching.
+	//
+	// Summary: Provides a high-performance JSON marshaller that sorts map keys.
+	FastJSONSortKeys = jsoniter.Config{
+		EscapeHTML:             false, // Matches standard library closely if needed, or false to save time
+		SortMapKeys:            true,
+		ValidateJsonRawMessage: true,
+	}.Froze()
+
 	bufferPool = sync.Pool{
 		New: func() interface{} {
 			return new(bytes.Buffer)

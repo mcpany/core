@@ -1106,32 +1106,39 @@ func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpA
 	dedupTools := func(svc *config_v1.UpstreamServiceConfig) {
 		if cmd := svc.GetCommandLineService(); cmd != nil {
 			seen := make(map[string]bool)
-			var deduplicated []*config_v1.ToolDefinition
+			var temp []*config_v1.ToolDefinition
 			tools := cmd.GetTools()
 			// Iterate backwards so the latter tools (from database override) take precedence
 			for i := len(tools) - 1; i >= 0; i-- {
 				t := tools[i]
 				if !seen[t.GetName()] {
 					seen[t.GetName()] = true
-					// Prepend to keep original order with overrides
-					deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
+					temp = append(temp, t)
 				}
 			}
-			cmd.SetTools(deduplicated)
+			// Reverse temp to keep original order with overrides
+			for i, j := 0, len(temp)-1; i < j; i, j = i+1, j-1 {
+				temp[i], temp[j] = temp[j], temp[i]
+			}
+			cmd.SetTools(temp)
 		}
 
 		if http := svc.GetHttpService(); http != nil {
 			seen := make(map[string]bool)
-			var deduplicated []*config_v1.ToolDefinition
+			var temp []*config_v1.ToolDefinition
 			tools := http.GetTools()
 			for i := len(tools) - 1; i >= 0; i-- {
 				t := tools[i]
 				if !seen[t.GetName()] {
 					seen[t.GetName()] = true
-					deduplicated = append([]*config_v1.ToolDefinition{t}, deduplicated...)
+					temp = append(temp, t)
 				}
 			}
-			http.SetTools(deduplicated)
+			// Reverse temp to keep original order with overrides
+			for i, j := 0, len(temp)-1; i < j; i, j = i+1, j-1 {
+				temp[i], temp[j] = temp[j], temp[i]
+			}
+			http.SetTools(temp)
 		}
 	}
 	if cfg.GetUpstreamServices() != nil {
