@@ -17,6 +17,9 @@ go_library(
 go_test(
     name = "interop_test",
     srcs = [
+        "autogen_test.go",
+        "crewai_test.go",
+        "openclaw_test.go",
         "placeholder_test.go",
         "swarm_test.go",
     ],
