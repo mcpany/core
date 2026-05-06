@@ -158,7 +158,7 @@ func TestMCPTool_Execute_InputTransformerError(t *testing.T) {
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetInputTransformer(inputTransformer)
-	mcpTool := NewMCPTool(toolProto, nil, callDef)
+	mcpTool := NewMCPTool(toolProto, nil, callDef, nil, "")
 	_, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -177,7 +177,7 @@ func TestMCPTool_Execute_OutputTransformerError(t *testing.T) {
 	outputTransformer := &configv1.OutputTransformer{}
 	outputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetOutputTransformer(outputTransformer)
-	mcpTool := NewMCPTool(toolProto, mockClient, callDef)
+	mcpTool := NewMCPTool(toolProto, mockClient, callDef, nil, "")
 	_, err := mcpTool.Execute(context.Background(), &ExecutionRequest{ToolName: "test.test-tool", ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -194,7 +194,7 @@ func TestOpenAPITool_Execute_InputTransformerError(t *testing.T) {
 	inputTransformer := &configv1.InputTransformer{}
 	inputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetInputTransformer(inputTransformer)
-	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "POST", server.URL, nil, callDef)
+	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "POST", server.URL, nil, callDef, nil, "")
 	_, err := openapiTool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{"key":"value"}`)})
 	assert.Error(t, err)
 }
@@ -212,7 +212,7 @@ func TestOpenAPITool_Execute_OutputTransformerError(t *testing.T) {
 	outputTransformer := &configv1.OutputTransformer{}
 	outputTransformer.SetTemplate("{{.invalid}}")
 	callDef.SetOutputTransformer(outputTransformer)
-	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
+	openapiTool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef, nil, "")
 	_, err := openapiTool.Execute(context.Background(), &ExecutionRequest{})
 	assert.Error(t, err)
 }
@@ -347,7 +347,7 @@ func TestMCPTool_Getters(t *testing.T) {
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.MCPCallDefinition{}
 	callDef.SetCache(cacheConfig)
-	mcpTool := NewMCPTool(toolProto, nil, callDef)
+	mcpTool := NewMCPTool(toolProto, nil, callDef, nil, "")
 
 	assert.Equal(t, toolProto, mcpTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, mcpTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -361,7 +361,7 @@ func TestOpenAPITool_Getters(t *testing.T) {
 	cacheConfig.SetIsEnabled(true)
 	callDef := &configv1.OpenAPICallDefinition{}
 	callDef.SetCache(cacheConfig)
-	openapiTool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, callDef)
+	openapiTool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, callDef, nil, "")
 
 	assert.Equal(t, toolProto, openapiTool.Tool(), "Tool() should return the correct tool proto")
 	assert.Equal(t, cacheConfig, openapiTool.GetCacheConfig(), "GetCacheConfig() should return the correct cache config")
@@ -486,7 +486,7 @@ func TestOpenAPITool_Execute_Errors(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.OpenAPICallDefinition{}
 
-	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
+	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef, nil, "")
 
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	// It might NOT error if it returns raw bytes?
@@ -515,7 +515,7 @@ func TestOpenAPITool_Execute_StatusError(t *testing.T) {
 	toolProto := &v1.Tool{}
 	callDef := &configv1.OpenAPICallDefinition{}
 
-	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef)
+	tool := NewOpenAPITool(toolProto, server.Client(), nil, "GET", server.URL, nil, callDef, nil, "")
 
 	_, err := tool.Execute(context.Background(), &ExecutionRequest{ToolInputs: json.RawMessage(`{}`)})
 	assert.Error(t, err)

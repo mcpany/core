@@ -57,7 +57,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 			"userId": "path",
 			"q":      "query",
 		}
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, parameterDefs, "GET", server.URL+"/users/{{userId}}", nil, configv1.OpenAPICallDefinition_builder{}.Build())
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, parameterDefs, "GET", server.URL+"/users/{{userId}}", nil, configv1.OpenAPICallDefinition_builder{}.Build(), nil, "")
 
 		inputs := json.RawMessage(`{"userId": "123", "q": "test"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -80,7 +80,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		}
 
 		toolProto := v1.Tool_builder{}.Build()
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, configv1.OpenAPICallDefinition_builder{}.Build())
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, configv1.OpenAPICallDefinition_builder{}.Build(), nil, "")
 
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err := openAPITool.Execute(context.Background(), req)
@@ -112,7 +112,7 @@ func TestOpenAPITool_Execute(t *testing.T) {
 		authenticator, err := auth.NewUpstreamAuthenticator(authn)
 		require.NoError(t, err)
 
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, authenticator, configv1.OpenAPICallDefinition_builder{}.Build())
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, authenticator, configv1.OpenAPICallDefinition_builder{}.Build(), nil, "")
 
 		req := &tool.ExecutionRequest{ToolInputs: json.RawMessage(`{}`)}
 		_, err = openAPITool.Execute(context.Background(), req)
@@ -147,7 +147,7 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef)
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef, nil, "")
 
 		inputs := json.RawMessage(`{"name": "test"}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -181,7 +181,7 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -233,7 +233,7 @@ func TestOpenAPITool_Execute_Extended(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef)
+		openAPITool := tool.NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{ToolInputs: inputs}

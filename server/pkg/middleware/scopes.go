@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/mcpany/core/server/pkg/tool"
+	"google.golang.org/grpc"
 )
 
 // ScopesConfig defines the configuration for capability-based scoping.
@@ -95,4 +96,74 @@ func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionReque
 	}
 
 	return next(ctx, req)
+}
+
+// GrpcUnaryInterceptor returns a gRPC unary interceptor that enforces granular scopes.
+//
+// Summary: Returns a gRPC unary interceptor for scope enforcement.
+//
+// Returns:
+//   - grpc.UnaryServerInterceptor: The interceptor.
+func (m *ScopesMiddleware) GrpcUnaryInterceptor() grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		// Enforce granular scopes based on the method name
+		role := "default"
+		if r, ok := ctx.Value(agentRoleKey).(string); ok && r != "" {
+			role = r
+		}
+
+		allowedPrefixes, roleExists := m.config.Roles[role]
+		if !roleExists {
+			return nil, fmt.Errorf("access denied: no scope configuration for role '%s'", role)
+		}
+
+		isAllowed := false
+		for _, prefix := range allowedPrefixes {
+			if strings.HasPrefix(info.FullMethod, prefix) {
+				isAllowed = true
+				break
+			}
+		}
+
+		if !isAllowed {
+			return nil, fmt.Errorf("access denied: method '%s' is outside granted scopes", info.FullMethod)
+		}
+
+		return handler(ctx, req)
+	}
+}
+
+// GrpcStreamInterceptor returns a gRPC stream interceptor that enforces granular scopes.
+//
+// Summary: Returns a gRPC stream interceptor for scope enforcement.
+//
+// Returns:
+//   - grpc.StreamServerInterceptor: The interceptor.
+func (m *ScopesMiddleware) GrpcStreamInterceptor() grpc.StreamServerInterceptor {
+	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		ctx := ss.Context()
+		role := "default"
+		if r, ok := ctx.Value(agentRoleKey).(string); ok && r != "" {
+			role = r
+		}
+
+		allowedPrefixes, roleExists := m.config.Roles[role]
+		if !roleExists {
+			return fmt.Errorf("access denied: no scope configuration for role '%s'", role)
+		}
+
+		isAllowed := false
+		for _, prefix := range allowedPrefixes {
+			if strings.HasPrefix(info.FullMethod, prefix) {
+				isAllowed = true
+				break
+			}
+		}
+
+		if !isAllowed {
+			return fmt.Errorf("access denied: method '%s' is outside granted scopes", info.FullMethod)
+		}
+
+		return handler(srv, ss)
+	}
 }

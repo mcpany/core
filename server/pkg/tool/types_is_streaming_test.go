@@ -33,13 +33,13 @@ func TestHTTPTool_IsStreamingReal(t *testing.T) {
 func TestOpenAPITool_IsStreamingReal(t *testing.T) {
 	t.Parallel()
 	toolProto := &v1.Tool{}
-	tool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, &configv1.OpenAPICallDefinition{})
+	tool := NewOpenAPITool(toolProto, nil, nil, "", "", nil, &configv1.OpenAPICallDefinition{}, nil, "")
 	assert.False(t, tool.IsStreaming())
 }
 
 func TestMCPTool_IsStreamingReal(t *testing.T) {
 	t.Parallel()
 	toolProto := &v1.Tool{}
-	tool := NewMCPTool(toolProto, nil, &configv1.MCPCallDefinition{})
+	tool := NewMCPTool(toolProto, nil, &configv1.MCPCallDefinition{}, nil, "")
 	assert.False(t, tool.IsStreaming())
 }

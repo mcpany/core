@@ -51,7 +51,7 @@ func TestMCPTool_Execute(t *testing.T) {
 		toolProto := &v1.Tool{}
 		toolProto.SetName("test-tool")
 		toolProto.SetServiceId("service")
-		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{}, nil, "")
 
 		inputs := json.RawMessage(`{"input":"value"}`)
 		req := &tool.ExecutionRequest{
@@ -75,7 +75,7 @@ func TestMCPTool_Execute(t *testing.T) {
 		toolProto := &v1.Tool{}
 		toolProto.SetName("test-tool")
 		toolProto.SetServiceId("service")
-		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+		mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{}, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{
@@ -103,7 +103,7 @@ func TestMCPTool_Execute(t *testing.T) {
 		inputTransformer := &configv1.InputTransformer{}
 		inputTransformer.SetTemplate(`{"transformed":true}`)
 		callDef.SetInputTransformer(inputTransformer)
-		mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef)
+		mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &tool.ExecutionRequest{

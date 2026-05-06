@@ -76,6 +76,8 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			toolDef,
 			&MockMCPClient{}, // Fixed typo
 			configv1.MCPCallDefinition_builder{}.Build(),
+			nil,
+			"",
 		)
 
 		mcpTool := mt.MCPTool()
@@ -97,6 +99,8 @@ func TestTool_MCPTool_Method(t *testing.T) {
 			"http://example.com",
 			nil,
 			configv1.OpenAPICallDefinition_builder{}.Build(),
+		nil,
+		"",
 		)
 
 		mcpTool := ot.MCPTool()
@@ -206,6 +210,8 @@ func TestTool_GetCacheConfig(t *testing.T) {
 			&pb.Tool{},
 			nil,
 			configv1.MCPCallDefinition_builder{Cache: cacheCfg}.Build(),
+		nil,
+		"",
 		)
 		assert.Equal(t, cacheCfg, mt.GetCacheConfig())
 	})
@@ -220,6 +226,8 @@ func TestTool_GetCacheConfig(t *testing.T) {
 			"",
 			nil,
 			configv1.OpenAPICallDefinition_builder{Cache: cacheCfg}.Build(),
+		nil,
+		"",
 		)
 		assert.Equal(t, cacheCfg, ot.GetCacheConfig())
 	})

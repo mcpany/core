@@ -1230,7 +1230,12 @@ func (u *Upstream) registerTools(
 			// We can add more overrides here if needed (e.g. InputSchema)
 		}
 
-		mcpTool := tool.NewMCPTool(pbTool, toolClient, callDef)
+		callID := ""
+		if hasConfig {
+			callID = configTool.GetCallId()
+		}
+
+		mcpTool := tool.NewMCPTool(pbTool, toolClient, callDef, serviceConfig.GetCallPolicies(), callID)
 		if err := toolManager.AddTool(mcpTool); err != nil {
 			logging.GetLogger().Error("Failed to add tool", "error", err)
 			continue

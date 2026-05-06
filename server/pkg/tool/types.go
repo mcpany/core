@@ -1579,6 +1579,8 @@ type MCPTool struct {
 	cache                *configv1.CacheConfig
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
+	policies             []*CompiledCallPolicy
+	callID               string
 	initError            error
 }
 
@@ -1590,14 +1592,17 @@ type MCPTool struct {
 //   - tool: *v1.Tool. The protobuf definition of the tool.
 //   - client: client.MCPClient. The MCP client for downstream communication.
 //   - callDefinition: *configv1.MCPCallDefinition. The configuration for the MCP call.
+//   - policies: []*CompiledCallPolicy. The compiled call policies.
+//   - callID: string. The call ID.
 //
 // Returns:
 //   - *MCPTool: The initialized MCPTool.
-func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition) *MCPTool {
+func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1.MCPCallDefinition, policies []*configv1.CallPolicy, callID string) *MCPTool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
+	compiled, err := CompileCallPolicies(policies)
 	t := &MCPTool{
 		tool:              tool,
 		client:            client,
@@ -1605,6 +1610,11 @@ func NewMCPTool(tool *v1.Tool, client client.MCPClient, callDefinition *configv1
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
+		policies:          compiled,
+		callID:            callID,
+	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
 	// Cache templates
@@ -1743,6 +1753,12 @@ func (t *MCPTool) IsStreaming() bool {
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
 func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+
 	ch := make(chan any, 1)
 	go func() {
 		defer close(ch)
@@ -1784,6 +1800,13 @@ func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, erro
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
+
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+
 	// Use the tool name from the definition, as the request tool name might be sanitized/modified
 	bareToolName := t.tool.GetName()
 
@@ -1912,6 +1935,8 @@ type OpenAPITool struct {
 	cache                *configv1.CacheConfig
 	cachedInputTemplate  *transformer.TextTemplate
 	cachedOutputTemplate *transformer.TextTemplate
+	policies             []*CompiledCallPolicy
+	callID               string
 	initError            error
 }
 
@@ -1927,14 +1952,17 @@ type OpenAPITool struct {
 //   - url: string. The URL template.
 //   - authenticator: auth.UpstreamAuthenticator. The authenticator for upstream requests.
 //   - callDefinition: *configv1.OpenAPICallDefinition. The configuration for the OpenAPI call.
+//   - policies: []*CompiledCallPolicy. The compiled call policies.
+//   - callID: string. The call ID.
 //
 // Returns:
 //   - *OpenAPITool: The initialized OpenAPITool.
-func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition) *OpenAPITool {
+func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[string]string, method, url string, authenticator auth.UpstreamAuthenticator, callDefinition *configv1.OpenAPICallDefinition, policies []*configv1.CallPolicy, callID string) *OpenAPITool {
 	var webhookClient *WebhookClient
 	if it := callDefinition.GetInputTransformer(); it != nil && it.GetWebhook() != nil {
 		webhookClient = NewWebhookClient(it.GetWebhook())
 	}
+	compiled, err := CompileCallPolicies(policies)
 	t := &OpenAPITool{
 		tool:              tool,
 		client:            client,
@@ -1946,6 +1974,11 @@ func NewOpenAPITool(tool *v1.Tool, client client.HTTPClient, parameterDefs map[s
 		outputTransformer: callDefinition.GetOutputTransformer(),
 		webhookClient:     webhookClient,
 		cache:             callDefinition.GetCache(),
+		policies:          compiled,
+		callID:            callID,
+	}
+	if err != nil {
+		t.initError = fmt.Errorf("failed to compile call policies: %w", err)
 	}
 
 	// Cache templates
@@ -2084,6 +2117,12 @@ func (t *OpenAPITool) IsStreaming() bool {
 //   - <-chan any: A channel that emits streaming results.
 //   - error: An error if the operation fails or streaming is not supported.
 func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+
 	ch := make(chan any, 1)
 	go func() {
 		defer close(ch)
@@ -2127,6 +2166,13 @@ func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, 
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
+
+	if allowed, err := EvaluateCompiledCallPolicy(t.policies, t.tool.GetName(), t.callID, req.ToolInputs); err != nil {
+		return nil, fmt.Errorf("failed to evaluate call policy: %w", err)
+	} else if !allowed {
+		return nil, fmt.Errorf("tool execution blocked by policy")
+	}
+
 	var inputs map[string]any
 	if len(bytes.TrimSpace(req.ToolInputs)) == 0 {
 		req.ToolInputs = []byte("{}")

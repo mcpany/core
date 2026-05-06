@@ -30,7 +30,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
 
         toolProto := &v1.Tool{}
         toolProto.SetName("test-tool")
-        mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+        mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{}, nil, "")
 
         inputs := json.RawMessage(`{}`)
         req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -53,7 +53,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
 
         toolProto := &v1.Tool{}
         toolProto.SetName("test-tool")
-        mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{})
+        mcpTool := tool.NewMCPTool(toolProto, mockClient, &configv1.MCPCallDefinition{}, nil, "")
 
         inputs := json.RawMessage(`{}`)
         req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -85,7 +85,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
             }.Build(),
         }.Build()
 
-        mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef)
+        mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef, nil, "")
 
         inputs := json.RawMessage(`{}`)
         req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -119,7 +119,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
             }.Build(),
         }.Build()
 
-        mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef)
+        mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef, nil, "")
 
         inputs := json.RawMessage(`{}`)
         req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -151,7 +151,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
             }.Build(),
         }.Build()
 
-        mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef)
+        mcpTool := tool.NewMCPTool(toolProto, mockClient, callDef, nil, "")
 
         inputs := json.RawMessage(`{}`)
         req := &tool.ExecutionRequest{ToolInputs: inputs}
@@ -167,7 +167,7 @@ func TestMCPTool_Execute_Coverage(t *testing.T) {
     t.Run("input_decode_error", func(t *testing.T) {
         toolProto := &v1.Tool{}
         toolProto.SetName("test-tool")
-        mcpTool := tool.NewMCPTool(toolProto, &mockMCPClient{}, &configv1.MCPCallDefinition{})
+        mcpTool := tool.NewMCPTool(toolProto, &mockMCPClient{}, &configv1.MCPCallDefinition{}, nil, "")
 
         inputs := json.RawMessage(`{"invalid":`) // Invalid JSON
         req := &tool.ExecutionRequest{ToolInputs: inputs}

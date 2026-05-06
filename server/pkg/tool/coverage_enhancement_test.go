@@ -316,7 +316,7 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef)
+		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "POST", server.URL, nil, callDef, nil, "")
 
 		inputs := json.RawMessage(`{"name": "test"}`)
 		req := &ExecutionRequest{ToolName: "testTool", ToolInputs: inputs}
@@ -347,7 +347,7 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef)
+		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "GET", server.URL, nil, callDef, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &ExecutionRequest{ToolName: "testTool", ToolInputs: inputs}
@@ -369,7 +369,7 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 			}.Build(),
 		}.Build()
 		toolProto := v1.Tool_builder{}.Build()
-		openAPITool := NewOpenAPITool(toolProto, nil, nil, "POST", "http://example.com", nil, callDef)
+		openAPITool := NewOpenAPITool(toolProto, nil, nil, "POST", "http://example.com", nil, callDef, nil, "")
 
 		req := &ExecutionRequest{ToolName: "test"}
 		_, err := openAPITool.Execute(context.Background(), req)
@@ -412,7 +412,7 @@ func TestOpenAPITool_Coverage(t *testing.T) {
 			}.Build(),
 		}.Build()
 
-		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef)
+		openAPITool := NewOpenAPITool(toolProto, mockClient, nil, "POST", targetServer.URL, nil, callDef, nil, "")
 
 		inputs := json.RawMessage(`{}`)
 		req := &ExecutionRequest{ToolName: "testTool", ToolInputs: inputs}
