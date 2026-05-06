@@ -21,6 +21,7 @@ env:
   GOGC: 50 # Balanced GC to avoid excessive CPU usage while keeping memory in check
   GO_RACE: "" # Disable race detector in CI due to OOM on constrained runners
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  BAZEL_HOST_JVM_ARGS: "-Xmx3g" # Limit Bazel's heap to avoid OOM
 
 defaults:
   run:
