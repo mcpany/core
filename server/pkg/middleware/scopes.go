@@ -96,3 +96,8 @@ func (m *ScopesMiddleware) Execute(ctx context.Context, req *tool.ExecutionReque
 
 	return next(ctx, req)
 }
+
+// AgentRoleKeyForTest is exported for testing
+func AgentRoleKeyForTest() any {
+	return agentRoleKey
+}

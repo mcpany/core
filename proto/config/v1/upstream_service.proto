@@ -557,6 +557,7 @@ message ContainerEnvironment {
   map<string, string> volumes = 3;
   // Environment variables to set in the container (supports secrets).
   map<string, SecretValue> env = 4;
+  ResourceLimits resource_limits = 5 [json_name = "resource_limits"];
 }
 
 // Defines strategies for load balancing across multiple service endpoints.
@@ -617,4 +618,12 @@ message TLSConfig {
   string client_key_path = 4 [json_name = "client_key_path"];
   // If true, the client will not verify the server's certificate chain. Use with caution.
   bool insecure_skip_verify = 5 [json_name = "insecure_skip_verify"];
+}
+
+// Defines resource limits for a container environment.
+message ResourceLimits {
+  // The maximum amount of memory the container can use (e.g. "512m").
+  string memory = 1;
+  // The number of CPUs the container can use (e.g. 0.5 or 1).
+  double cpus = 2;
 }

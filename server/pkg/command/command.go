@@ -7,6 +7,7 @@ package command
 import (
 	"context"
 	"fmt"
+	"strings"
 	"io"
 	"net"
 	"os/exec"
@@ -299,6 +300,12 @@ func (e *dockerExecutor) Execute(ctx context.Context, command string, args []str
 	}
 
 	hostConfig := &container.HostConfig{}
+	if e.containerEnv.GetResourceLimits() != nil {
+		hostConfig.Resources = container.Resources{
+			Memory: parseMemoryLimit(e.containerEnv.GetResourceLimits().GetMemory()),
+			NanoCPUs: int64(e.containerEnv.GetResourceLimits().GetCpus() * 1e9),
+		}
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
@@ -440,6 +447,12 @@ func (e *dockerExecutor) ExecuteWithStdIO(ctx context.Context, command string, a
 	}
 
 	hostConfig := &container.HostConfig{}
+	if e.containerEnv.GetResourceLimits() != nil {
+		hostConfig.Resources = container.Resources{
+			Memory: parseMemoryLimit(e.containerEnv.GetResourceLimits().GetMemory()),
+			NanoCPUs: int64(e.containerEnv.GetResourceLimits().GetCpus() * 1e9),
+		}
+	}
 	if e.containerEnv.GetVolumes() != nil {
 		for dest, src := range e.containerEnv.GetVolumes() {
 			// Validate host path (dest) to prevent mounting sensitive directories
@@ -562,4 +575,27 @@ func (c *closeWriter) Close() error {
 		return cw.CloseWrite()
 	}
 	return c.conn.Close()
+}
+
+func parseMemoryLimit(memory string) int64 {
+	if memory == "" {
+		return 0
+	}
+	var val int64
+	var unit string
+	n, _ := fmt.Sscanf(memory, "%d%s", &val, &unit)
+	if n == 0 {
+		return 0
+	}
+	switch strings.ToLower(unit) {
+	case "b":
+		return val
+	case "k", "kb":
+		return val * 1024
+	case "m", "mb":
+		return val * 1024 * 1024
+	case "g", "gb":
+		return val * 1024 * 1024 * 1024
+	}
+	return val
 }

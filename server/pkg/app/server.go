@@ -512,6 +512,13 @@ func (a *Application) Run(opts RunOptions) error {
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
 	// Add Error Mapping Middleware
 	a.ToolManager.AddMiddleware(middleware.NewErrorMappingMiddleware())
+	// Add Scopes Middleware
+	a.ToolManager.AddMiddleware(middleware.NewScopesMiddleware(middleware.ScopesConfig{
+		Roles: map[string][]string{
+			"default": {"mcp:", "grpc-tool-secure"},
+			"admin":   {""},
+		},
+	}))
 
 	a.PromptManager = prompt.NewManager()
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
