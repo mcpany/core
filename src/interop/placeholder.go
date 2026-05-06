@@ -10,14 +10,14 @@ import (
 // Summary: To act as a service placeholder for features documented in the roadmap
 // but not yet fully implemented, preventing "Zombie Docs" or "Ghost Features".
 //
-// Parameters:
+// Params:
 //   - name (string): The name of the framework.
 //   - capabilities (map[string]bool): The capabilities the framework is supposed to support.
 //
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -31,14 +31,14 @@ type PlaceholderAdapter struct {
 //
 // Summary: Initializes a placeholder for an unimplemented framework.
 //
-// Parameters:
+// Params:
 //   - name (string): The name of the framework to mock.
 //   - capabilities (map[string]bool): Optional map of supported capabilities.
 //
 // Returns:
 //   - *PlaceholderAdapter: A pointer to the newly instantiated PlaceholderAdapter.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -57,13 +57,13 @@ func NewPlaceholderAdapter(name string, capabilities map[string]bool) *Placehold
 //
 // Summary: Returns the parameterized name of the placeholder framework.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - string: The name of the framework.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -77,7 +77,7 @@ func (a *PlaceholderAdapter) Name() string {
 // Summary: Satisfies the AgentFramework interface while correctly signaling
 // that the feature is a placeholder and not fully implemented.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): Execution context.
 //   - task (*Task): The task to process.
 //
@@ -85,7 +85,7 @@ func (a *PlaceholderAdapter) Name() string {
 //   - *TaskResult: nil
 //   - error: An error indicating the feature is not implemented.
 //
-// Throws/Errors:
+// Errors:
 //   - Always returns a "Not Implemented" error containing the framework name.
 //
 // Side Effects:
@@ -98,13 +98,13 @@ func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskR
 //
 // Summary: Returns whether the placeholder was initialized with the given capability.
 //
-// Parameters:
+// Params:
 //   - capability (string): The capability identifier.
 //
 // Returns:
 //   - bool: True if the capability is in the map, false otherwise.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -118,14 +118,14 @@ func (a *PlaceholderAdapter) SupportsCapability(capability string) bool {
 // Summary: Satisfies the AgentFramework interface while correctly signaling
 // that the feature is a placeholder.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): Execution context.
 //   - shard (*MemoryShard): The shard to sync.
 //
 // Returns:
 //   - error: An error indicating the feature is not implemented.
 //
-// Throws/Errors:
+// Errors:
 //   - Always returns a "Not Implemented" error containing the framework name.
 //
 // Side Effects:
@@ -139,7 +139,7 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 // Summary: Satisfies the AgentFramework interface while correctly signaling
 // that the feature is a placeholder and not fully implemented.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): Execution context.
 //   - task (*Task): The task to process.
 //
@@ -147,7 +147,7 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 //   - <-chan *TaskResult: Always returns nil.
 //   - error: Always returns an error indicating the method is an unimplemented placeholder.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns "placeholder method: not implemented" unconditionally.
 //
 // Side Effects:
@@ -160,13 +160,13 @@ func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan
 //
 // Summary: Registers all documented but unimplemented agent frameworks into the provided hub.
 //
-// Parameters:
+// Params:
 //   - hub (*AdapterHub): The central adapter hub where placeholders will be registered.
 //
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:

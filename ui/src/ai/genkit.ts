@@ -7,22 +7,19 @@ import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
 /**
- * Summary: Document ai
+ * Summary: The initialized Genkit instance configured with Google AI plugin and Gemini 2.5 Flash model. Used for AI-powered features in the application.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * The initialized Genkit instance configured with Google AI plugin and Gemini 2.5 Flash model.
- * Used for AI-powered features in the application.
+ *   - None.
  */
 export const ai = genkit({
   plugins: [googleAI()],

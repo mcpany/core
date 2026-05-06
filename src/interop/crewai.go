@@ -9,13 +9,13 @@ import (
 //
 // Summary: Provides the implementation for interacting with the CrewAI framework via the universal adapter hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -29,13 +29,13 @@ type CrewAIAdapter struct {
 //
 // Summary: Instantiates and initializes a new adapter for CrewAI with its predefined capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - *CrewAIAdapter: A pointer to the newly created CrewAIAdapter instance.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -54,13 +54,13 @@ func NewCrewAIAdapter() *CrewAIAdapter {
 //
 // Summary: Provides the unique identifier for the CrewAI adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - string: The name of the adapter ("CrewAI").
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -73,7 +73,7 @@ func (a *CrewAIAdapter) Name() string {
 //
 // Summary: Simulates executing a task using the delegated role mechanisms within the CrewAI framework.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for execution, used to handle cancellation and timeouts.
 //   - task (*Task): The universal task definition detailing the requested intent and payload.
 //
@@ -81,7 +81,7 @@ func (a *CrewAIAdapter) Name() string {
 //   - *TaskResult: The generalized result output, indicating success or failure.
 //   - error: An error if the capability is unsupported or if the execution fails.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns "CrewAI does not support capability" if the task's intent is not supported by the adapter.
 //
 // Side Effects:
@@ -126,13 +126,13 @@ func (a *CrewAIAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResult
 //
 // Summary: Checks the internal capabilities map to see if the given intent is supported by CrewAI.
 //
-// Parameters:
+// Params:
 //   - capability (string): The capability or intent name to check.
 //
 // Returns:
 //   - bool: True if the capability is supported, otherwise false.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -145,14 +145,14 @@ func (a *CrewAIAdapter) SupportsCapability(capability string) bool {
 //
 // Summary: Provides a unified way to distribute intent-pinned context to CrewAI's subagents.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //
 // Returns:
 //   - error: An error if the signature is missing or verification fails.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
@@ -169,7 +169,7 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 //
 // Summary: Simulates a streaming task execution for CrewAI delegated roles.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for execution, handling cancellation.
 //   - task (*Task): The generic task object to execute.
 //
@@ -177,7 +177,7 @@ func (a *CrewAIAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard)
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

@@ -32,6 +32,24 @@ graph TD
     C -->|Standard I/O| G[Command Line Tools]:::target
 ```
 
+## Identity Federation
+MCP Any provides robust out-of-the-box identity federation to securely propagate context and authentication headers. It ensures that API keys, Bearer tokens, and mTLS certificates are managed securely so that AI agents do not need to handle raw credentials directly.
+
+```mermaid
+sequenceDiagram
+    participant Agent as AI Agent
+    participant MCP as MCP Any Hub
+    participant IdP as Identity Provider
+    participant Upstream as Target API
+
+    Agent->>MCP: Request Capability Execution (No Auth)
+    MCP->>IdP: Validate Agent Context & Fetch Credentials
+    IdP-->>MCP: Provide Ephemeral Tokens
+    MCP->>Upstream: Execute Request (Injecting Auth)
+    Upstream-->>MCP: Response
+    MCP-->>Agent: Capability Result
+```
+
 ## Getting Started
 Follow these step-by-step instructions to get a "Hello World" instance running locally:
 

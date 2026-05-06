@@ -4,13 +4,13 @@ package arh
 //
 // Summary: Provides a verifiable audit trail for AI-powered fix suggestions, satisfying SSDF requirements.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -23,13 +23,13 @@ type AutomatedRemediationHub struct {
 //
 // Summary: Initializes the ARH placeholder.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - *AutomatedRemediationHub: The initialized placeholder.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:

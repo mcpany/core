@@ -9,13 +9,13 @@ import (
 //
 // Summary: An adapter implementation that bridges the OpenClaw agent framework with the universal hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -29,13 +29,13 @@ type OpenClawAdapter struct {
 //
 // Summary: Initializes and returns a new adapter for OpenClaw with its specific capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - *OpenClawAdapter: A pointer to the newly instantiated OpenClawAdapter.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -54,13 +54,13 @@ func NewOpenClawAdapter() *OpenClawAdapter {
 //
 // Summary: Returns the specific name identifier of the OpenClaw adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - string: The name "OpenClaw".
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -73,7 +73,7 @@ func (a *OpenClawAdapter) Name() string {
 //
 // Summary: Executes the provided task using simulated adaptive reasoning logic.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The task execution context, for managing lifecycle.
 //   - task (*Task): The universal task object describing what to execute.
 //
@@ -81,7 +81,7 @@ func (a *OpenClawAdapter) Name() string {
 //   - *TaskResult: The generalized output from the executed task, along with telemetry data.
 //   - error: An error indicating if the task failed or is unsupported.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:
@@ -121,13 +121,13 @@ func (a *OpenClawAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResu
 //
 // Summary: Determines whether the OpenClaw adapter can execute tasks for a given capability intent.
 //
-// Parameters:
+// Params:
 //   - capability (string): The capability identifier string to query.
 //
 // Returns:
 //   - bool: True if the capability is found in the capabilities map; false otherwise.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -140,14 +140,14 @@ func (a *OpenClawAdapter) SupportsCapability(capability string) bool {
 //
 // Summary: Ingests a memory shard and appends it to OpenClaw's internal state.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
@@ -168,7 +168,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 //
 // Summary: Simulates a streaming task execution by emitting chunks to a channel.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for execution, handling cancellation.
 //   - task (*Task): The generic task object to execute.
 //
@@ -176,7 +176,7 @@ func (a *OpenClawAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShar
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:

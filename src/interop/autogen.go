@@ -9,13 +9,13 @@ import (
 //
 // Summary: Represents an adapter that connects the AutoGen multi-agent framework to the universal adapter hub.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -29,13 +29,13 @@ type AutoGenAdapter struct {
 //
 // Summary: Constructs a new AutoGenAdapter with predefined multi-agent capabilities.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - *AutoGenAdapter: A newly created pointer to an AutoGenAdapter instance.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -54,13 +54,13 @@ func NewAutoGenAdapter() *AutoGenAdapter {
 //
 // Summary: Retrieves the exact name identifier for the AutoGen adapter.
 //
-// Parameters:
+// Params:
 //   - None.
 //
 // Returns:
 //   - string: The name "AutoGen".
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -73,7 +73,7 @@ func (a *AutoGenAdapter) Name() string {
 //
 // Summary: Processes and executes a task through simulated multi-agent subagent execution.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): Execution context for controlling cancellation and timeout.
 //   - task (*Task): The generic task object that needs to be executed by AutoGen.
 //
@@ -81,7 +81,7 @@ func (a *AutoGenAdapter) Name() string {
 //   - *TaskResult: Contains the status, output, and telemetry information from the subagent.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns "AutoGen does not support capability" if the task's intent is missing from capabilities.
 //
 // Side Effects:
@@ -123,13 +123,13 @@ func (a *AutoGenAdapter) HandleTask(ctx context.Context, task *Task) (*TaskResul
 //
 // Summary: Confirms if the AutoGen adapter's capabilities include the requested functionality.
 //
-// Parameters:
+// Params:
 //   - capability (string): The intended capability name.
 //
 // Returns:
 //   - bool: Indicates whether the given capability is supported.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -142,14 +142,14 @@ func (a *AutoGenAdapter) SupportsCapability(capability string) bool {
 //
 // Summary: Ingests a memory shard to synchronize state across agents.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for controlling cancellation and timeouts.
 //   - shard (*MemoryShard): The multimodal memory shard to synchronize.
 //
 // Returns:
 //   - error: An error if the signature is invalid.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the shard signature verification fails.
 //
 // Side Effects:
@@ -167,7 +167,7 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 //
 // Summary: Simulates a streaming task execution by emitting chunks to a channel.
 //
-// Parameters:
+// Params:
 //   - ctx (context.Context): The context for execution, handling cancellation.
 //   - task (*Task): The generic task object to execute.
 //
@@ -175,7 +175,7 @@ func (a *AutoGenAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryShard
 //   - <-chan *TaskResult: A read-only channel emitting streamed chunks.
 //   - error: Indicates failure in executing the task or an unsupported intent.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns an error if the framework's capability check fails for the task's intent.
 //
 // Side Effects:
