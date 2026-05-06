@@ -20,7 +20,7 @@
 -    compilers = ["//:go_apiv2"],
 -    importpath = "github.com/grpc-ecosystem/grpc-gateway/v2/internal/descriptor/apiconfig",
 -    proto = ":apiconfig_proto",
--    deps = ["@org_golang_google_genproto_googleapis_api//annotations"],
+-    deps = ["@org_golang_google_genproto//annotations"],
 -)
 -
 +# Use the pre-generated Go file to avoid @googleapis dependency.
@@ -30,7 +30,7 @@
 +    srcs = ["apiconfig.pb.go"],
      importpath = "github.com/grpc-ecosystem/grpc-gateway/v2/internal/descriptor/apiconfig",
 +    deps = [
-+        "@org_golang_google_genproto_googleapis_api//annotations",
++        "@org_golang_google_genproto//annotations",
 +        "@org_golang_google_protobuf//reflect/protoreflect",
 +        "@org_golang_google_protobuf//runtime/protoimpl",
 +    ],

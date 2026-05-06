@@ -52,7 +52,7 @@ jobs:
           bazelisk run //:lint \
             --config=remote \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
-          bazelisk test //ui:lint //ui:typecheck \
+          bazelisk test --local_test_jobs=auto //ui:lint //ui:typecheck \
             --config=remote \
             --test_output=errors \
             --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
@@ -94,7 +94,7 @@ jobs:
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
-          bazelisk test //... \
+          bazelisk test --local_test_jobs=auto //... \
             --config=remote \
             --test_output=errors \
             --test_summary=terse \

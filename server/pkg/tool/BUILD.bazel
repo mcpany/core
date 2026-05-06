@@ -51,6 +51,7 @@ go_library(
         "@com_github_pion_webrtc_v3//:webrtc",
         "@com_github_puzpuzpuz_xsync_v4//:xsync",
         "@com_github_standard_webhooks_standard_webhooks_libraries//go",
+        "@io_opentelemetry_go_otel//:otel",
         "@org_golang_google_protobuf//encoding/protojson",
         "@org_golang_google_protobuf//proto",
         "@org_golang_google_protobuf//reflect/protoreflect",
@@ -199,6 +200,7 @@ go_test(
         "url_parsing_test.go",
         "vim_security_test.go",
         "watch_security_test.go",
+        "webrtc_extra_test.go",
         "webrtc_test.go",
         "websocket_coverage_test.go",
         "websocket_tool_test.go",
@@ -208,6 +210,7 @@ go_test(
     embed = [":tool"],
     tags = ["integration"],
     deps = [
+        "//proto/api/v1:api",
         "//proto/bus",
         "//proto/config/v1:config",
         "//proto/examples/weather/v1:weather",

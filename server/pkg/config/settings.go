@@ -133,6 +133,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 		logOutput = f
 	}
 	logFormat := viper.GetString("log-format")
+	if logFormat == "" {
+		logFormat = "json"
+	}
 
 	// Always maintain a persistent JSON log for hydration
 	// Use configured logfile if it is JSON, otherwise use default

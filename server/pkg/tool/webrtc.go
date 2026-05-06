@@ -4,6 +4,8 @@
 package tool
 
 import (
+	"go.opentelemetry.io/otel"
+
 	"bytes"
 	"context"
 	"fmt"
@@ -258,6 +260,8 @@ func (t *WebrtcTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (
 // Side Effects:
 //   - Makes a WebRTC network call.
 func (t *WebrtcTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.Webrtc", nil)
+	defer span.End()
 	if t.webrtcPool == nil {
 		// Fallback to creating a new connection if the pool is not initialized
 		return t.executeWithoutPool(ctx, req)

@@ -4,6 +4,8 @@
 package tool
 
 import (
+	"go.opentelemetry.io/otel"
+
 	"bytes"
 	"context"
 	stdjson "encoding/json" // Renamed to stdjson to avoid conflict
@@ -589,6 +591,8 @@ func (t *GRPCTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes a gRPC call to the upstream service.
 func (t *GRPCTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.GRPC", nil)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -971,6 +975,8 @@ func (t *HTTPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *HTTPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.HTTP", nil)
+	defer span.End()
 	if logging.GetLogger().Enabled(ctx, slog.LevelDebug) {
 		logging.GetLogger().Debug("executing tool", "tool", req.ToolName, "inputs", prettyPrint(req.ToolInputs, contentTypeJSON))
 	}
@@ -1778,6 +1784,8 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 // Side Effects:
 //   - Makes a call to a downstream MCP service.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.MCP", nil)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2121,6 +2129,8 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.OpenAPI", nil)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2588,6 +2598,8 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 // Side Effects:
 //   - Executes a local command line process.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.LocalCommand", nil)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -3067,6 +3079,8 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Executes a local command line process, potentially in a container.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	ctx, span := otel.Tracer("mcpany").Start(ctx, "tool.Execute.Command", nil)
+	defer span.End()
 	if t.initError != nil {
 		return nil, t.initError
 	}
