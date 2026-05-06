@@ -1,5 +1,16 @@
 # Feature Inventory: MCP Any
 
+## Evolution: [2026-07-25] Updates
+
+### Proposed Additions
+- **GC-Immune Memory Anchor (GIMA)**: (P0) Advanced pinning mechanism allowing mission-critical context fragments and behavioral guardrails to be anchored in memory, guaranteeing immunity from aggressive context-window garbage collection.
+- **Sandboxed Tool Discovery Environment (STDE)**: (P0) Isolated zero-trust execution sandbox for tool discovery phases, neutralizing "Settings-as-Shell" vulnerabilities during framework capability mapping.
+- **Environment-Aware Multimodal Attestation (EAMA)**: (P0) Identity middleware that cryptographically binds all multimodal reasoning fragments (e.g., SVG/Audio) to hardware-attested environment IDs to eliminate "Trace Replay" attacks.
+
+### Priority Shifts
+- **GC-Immune Reasoning Anchors**: (Evolving) Merging into the robust **GIMA** framework for multimodal support.
+- **Discovery-Phase Sandbox Isolation**: (Evolving) Consolidating into **STDE** for unified zero-trust tool discovery.
+
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
