@@ -8,6 +8,9 @@ Today's market sync revealed a critical vulnerability (CVE-2026-25253) where mal
 The **Local-Loopback Rate Limiter** is a mandatory security middleware for MCP Any that enforces strict request throttling and origin-based auditing for all traffic arriving on the loopback interface.
 
 ## 2. Goals & Non-Goals
+
+![Audit Logs](../screenshots/audit_logs.png)
+
 *   **Goals:**
     - Enforce per-origin rate limits on all loopback (127.0.0.1 / ::1) API and WebSocket endpoints.
     - Implement mandatory audit logging for all blocked loopback requests.

@@ -8,6 +8,9 @@ With the release of OpenClaw v3.3.0, the industry is moving from point-to-point 
 The **CAH Adapter** enables MCP Any to participate in this consensus model. It provides the standardized hooks and multi-signature orchestration required for swarms to attest to reasoning integrity, neutralizing "Hallucination Variance" and "Ghost Reasoning" in complex meshes.
 
 ## 2. Goals & Non-Goals
+
+![Connect Client](../screenshots/connect-client.png)
+
 *   **Goals:**
     *   Implement OpenClaw-compatible CAH consensus hooks.
     *   Orchestrate hardware-attested approval tokens from multiple monitor agents.

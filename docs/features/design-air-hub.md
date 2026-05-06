@@ -3,6 +3,9 @@
 **Created:** 2026-07-02
 
 ## 1. Context and Scope
+
+![Trace Diagnostics](../screenshots/trace_diagnostics.png)
+
 As AI agent swarms move toward horizontal, heterogeneous team structures (e.g., Claude Code teammates collaborating with OpenClaw specialists), "Negotiation Deadlocks" have emerged as a critical bottleneck. Disparate agents often enter infinite refinement loops when their instructions or outputs conflict. The AIR Hub is needed to act as a hardware-attested "Swarm Arbiter" that resolves these conflicts via standardized intent quorums, ensuring the swarm remains aligned with the mission root.
 
 ## 2. Goals & Non-Goals

@@ -3,6 +3,9 @@
 **Created:** 2026-05-21
 
 ## 1. Context and Scope
+
+![Trace Diagnostics](../screenshots/trace_diagnostics.png)
+
 In decentralized agent swarms (e.g., Claude Code Agent Teams, OpenClaw swarms), conflicting instructions and intents are common. "Autonomous Intent Reconciliation" (AIR) is required to determine the "Winning Intent" without human intervention. MCP Any, as the Universal Agent Bus, must provide the infrastructure to resolve these conflicts using verifiable, hardware-attested quorums.
 
 ## 2. Goals & Non-Goals

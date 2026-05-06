@@ -6,6 +6,9 @@
 With the transition of the Agent2Agent (A2A) protocol to the Linux Foundation, it has become the industry standard for inter-agent communication. MCP Any must evolve from a simple protocol bridge to a native A2A Messaging Hub. This hub will manage the discovery, negotiation, and secure delegation of tasks between disparate agent frameworks (e.g., OpenClaw, AutoGen) while enforcing local Zero-Trust security policies.
 
 ## 2. Goals & Non-Goals
+
+![Service Actions Menu](../screenshots/service_actions_menu.png)
+
 * **Goals:**
     * Provide a native, high-performance implementation of the A2A messaging protocol.
     * Act as a security broker that validates A2A task cards against local capability tokens.

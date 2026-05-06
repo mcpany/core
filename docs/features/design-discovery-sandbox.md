@@ -7,6 +7,12 @@
 The emergence of "Ghost-Execution" exploits in the Gemini CLI ecosystem has highlighted a critical vulnerability in how agent frameworks handle tool discovery. Configuration files (e.g., `.gemini/settings.json`) can define a `discoveryCommand` that executes automatically during the discovery phase. If a developer clones a malicious repository, these commands can execute with the developer's privileges before any explicit tool call is authorized. The Discovery Sandbox Middleware aims to isolate all discovery-time execution into a secure, ephemeral environment.
 
 ## 2. Goals & Non-Goals
+
+![Marketplace](../screenshots/marketplace.png)
+
+
+![Service Actions Menu](../screenshots/safe_share_dialog.png)
+
 * **Goals:**
     * Intercept all `discoveryCommand` or similar discovery-phase execution requests.
     * Execute discovery logic in a zero-trust, ephemeral sandbox (e.g., gVisor or isolated Docker container).

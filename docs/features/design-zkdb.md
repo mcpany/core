@@ -8,6 +8,9 @@ In heterogeneous agent swarms, the tool discovery phase has become a primary att
 The Zero-Knowledge Discovery Broker (ZKDB) evolves the discovery process by mandating **Zero-Knowledge Capability Proofs (ZKCP)**. It ensures that agent capabilities remain cryptographically masked from unauthenticated peers, releasing full schemas only after a mission-bound, hardware-attested handshake is completed.
 
 ## 2. Goals & Non-Goals
+
+![Service Config](../screenshots/service_config.png)
+
 * **Goals:**
     * Mask tool schemas and metadata from unauthenticated peers during the discovery phase.
     * Prevent "Shadow Mapping" and "Capability Squatting" in the discovery bus.

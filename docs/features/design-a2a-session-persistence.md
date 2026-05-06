@@ -6,6 +6,9 @@
 As agent swarms evolve from short-lived command-line tools to long-running, autonomous reasoning agents, the fragility of authenticated A2A sessions has become a critical failure point. "Session Decay" occurs when ephemeral auth tokens expire during deep reasoning loops, causing subagents to lose access to parent context or delegated tools. The A2A Session Persistence Middleware provides a core security service that manages token refresh and trust persistence across deep agent hierarchies.
 
 ## 2. Goals & Non-Goals
+
+![A2A Session Persistence Middleware](../screenshots/middleware.png)
+
 * **Goals:**
     * Implement a centralized token refresh and session persistence service for A2A communications.
     * Support "Attested Lineage" where trust is maintained through multi-hop delegations (integration with Multi-Hop Trust Relay).
