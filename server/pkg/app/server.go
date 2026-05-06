@@ -1999,6 +1999,8 @@ func (a *Application) runServerMode(
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/api/v1/entropy/{session_id}", authMiddleware(a.handleGetEntropy()))
+	mux.Handle("/api/v1/policy/entropy-gate", authMiddleware(a.handlePostEntropyGate()))
 	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
