@@ -4,40 +4,36 @@
  */
 
 /**
- * Summary: Document SpanStatus
+ * Summary: Represents the status of a span.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the status of a span.
+ *   - None.
  */
 export type SpanStatus = 'success' | 'error' | 'pending';
 
 /**
- * Summary: Document Span
+ * Summary: Represents a span in a trace.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents a span in a trace.
+ *   - None.
  */
 export interface Span {
   id: string;
@@ -54,21 +50,19 @@ export interface Span {
 }
 
 /**
- * Summary: Document Trace
+ * Summary: Represents a full trace.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents a full trace.
+ *   - None.
  */
 export interface Trace {
   id: string;

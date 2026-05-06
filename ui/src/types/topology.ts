@@ -4,21 +4,19 @@
  */
 
 /**
- * Summary: Document NodeType
+ * Summary: Represents the type of a node in the topology graph.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the type of a node in the topology graph.
+ *   - None.
  */
 export type NodeType =
   | 'NODE_TYPE_UNSPECIFIED'
@@ -33,21 +31,19 @@ export type NodeType =
   | 'NODE_TYPE_WEBHOOK';
 
 /**
- * Summary: Document NodeStatus
+ * Summary: Represents the operational status of a node.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the operational status of a node.
+ *   - None.
  */
 export type NodeStatus =
   | 'NODE_STATUS_UNSPECIFIED'
@@ -56,21 +52,19 @@ export type NodeStatus =
   | 'NODE_STATUS_ERROR';
 
 /**
- * Summary: Document NodeMetrics
+ * Summary: Performance metrics associated with a node.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Performance metrics associated with a node.
+ *   - None.
  */
 export interface NodeMetrics {
   /** Queries per second. */
@@ -82,21 +76,19 @@ export interface NodeMetrics {
 }
 
 /**
- * Summary: Document Node
+ * Summary: Represents a single node in the topology graph.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents a single node in the topology graph.
+ *   - None.
  */
 export interface Node {
   /** Unique identifier for the node. */
@@ -116,21 +108,19 @@ export interface Node {
 }
 
 /**
- * Summary: Document Graph
+ * Summary: Represents the entire topology graph structure.
  *
  * Params:
- *   - None
+ *   - None.
  *
  * Returns:
- *   - None
+ *   - None.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
- * Represents the entire topology graph structure.
+ *   - None.
  */
 export interface Graph {
   /** List of client nodes connected to the system. */

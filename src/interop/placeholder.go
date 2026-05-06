@@ -17,7 +17,7 @@ import (
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -38,7 +38,7 @@ type PlaceholderAdapter struct {
 // Returns:
 //   - *PlaceholderAdapter: A pointer to the newly instantiated PlaceholderAdapter.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -63,7 +63,7 @@ func NewPlaceholderAdapter(name string, capabilities map[string]bool) *Placehold
 // Returns:
 //   - string: The name of the framework.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -85,7 +85,7 @@ func (a *PlaceholderAdapter) Name() string {
 //   - *TaskResult: nil
 //   - error: An error indicating the feature is not implemented.
 //
-// Throws/Errors:
+// Errors:
 //   - Always returns a "Not Implemented" error containing the framework name.
 //
 // Side Effects:
@@ -104,7 +104,7 @@ func (a *PlaceholderAdapter) HandleTask(ctx context.Context, task *Task) (*TaskR
 // Returns:
 //   - bool: True if the capability is in the map, false otherwise.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:
@@ -125,7 +125,7 @@ func (a *PlaceholderAdapter) SupportsCapability(capability string) bool {
 // Returns:
 //   - error: An error indicating the feature is not implemented.
 //
-// Throws/Errors:
+// Errors:
 //   - Always returns a "Not Implemented" error containing the framework name.
 //
 // Side Effects:
@@ -147,7 +147,7 @@ func (a *PlaceholderAdapter) SyncMemoryShard(ctx context.Context, shard *MemoryS
 //   - <-chan *TaskResult: Always returns nil.
 //   - error: Always returns an error indicating the method is an unimplemented placeholder.
 //
-// Throws/Errors:
+// Errors:
 //   - Returns "placeholder method: not implemented" unconditionally.
 //
 // Side Effects:
@@ -166,7 +166,7 @@ func (a *PlaceholderAdapter) StreamTask(ctx context.Context, task *Task) (<-chan
 // Returns:
 //   - None.
 //
-// Throws/Errors:
+// Errors:
 //   - None.
 //
 // Side Effects:

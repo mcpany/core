@@ -15,26 +15,21 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
  /**
- * Intent: Document render
+ * Summary: A custom render function that wraps the component with necessary providers for testing.
  *
  * Params:
- *   - Documented below.
+ *   - ui (ReactElement): The React component to render.
+ *   - options (Omit<RenderOptions, 'wrapper'>): Optional configuration for testing-library render.
  *
  * Returns:
- *   - Documented below.
+ *   - RenderResult: The result of testing-library's render function.
  *
  * Errors:
- *   - None
+ *   - None.
  *
  * Side Effects:
- *   - None
- *
-  * render wraps the component in a MemoryRouter for testing.
-  *
-  * @param ui The component to render.
-  * @param options Additional rendering options.
-  * @returns The rendered component with testing utilities.
-  */
+ *   - Wraps the provided UI component within application context providers (e.g., ThemeProvider).
+ */
 export function render(
   ui: React.ReactElement,
   options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType<{ children: React.ReactNode }> }
