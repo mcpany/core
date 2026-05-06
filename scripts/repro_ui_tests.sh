@@ -38,7 +38,7 @@ echo "Backend is up."
 # Phase 2 & 3: Drive & Snapshot
 echo "--- Phase 2 & 3: Driving UI and Taking Snapshots ---"
 cd ui
-# Ensure protos are linked for the frontend build
+# Ensure protos are linked for the frontend build (idempotent)
 rm -rf proto && ln -s ../bazel-bin/proto proto
 
 # Run Playwright screenshot suite
@@ -50,15 +50,17 @@ cd ..
 echo "--- Phase 4: Documentation Sync ---"
 mkdir -p docs/screenshots
 cp ui/docs/screenshots/*.png docs/screenshots/
-# Ensure ui/docs/screenshots is also populated for frontend-specific docs
+# Ensure ui/docs/screenshots is also populated for localized docs
 mkdir -p ui/docs/screenshots
 cp docs/screenshots/*.png ui/docs/screenshots/
 
-# Update markdown references to use relative paths in all subdirectories
-# This ensures images render correctly in GitHub/GitLab and local editors
-find docs ui/docs -name "*.md" | xargs -r grep -l "screenshots/" | xargs -r sed -i 's|docs/screenshots/|../screenshots/|g; s|screenshots/|../screenshots/|g'
-# Special case for root README.md - keep absolute-ish path from root
-sed -i 's|../screenshots/|docs/screenshots/|g' README.md
+# Update markdown references to use correct relative paths
+# Root docs: keep docs/screenshots/ or screenshots/
+find docs/ ui/docs/ -maxdepth 1 -name "*.md" | xargs -r sed -i 's|docs/screenshots/|screenshots/|g'
+# Subdirectory docs: use ../screenshots/
+find docs/*/ ui/docs/*/ -name "*.md" | xargs -r sed -i 's|docs/screenshots/|../screenshots/|g; s|\](screenshots/|](../screenshots/|g'
+# Special case for project README.md
+[ -f README.md ] && sed -i 's|\](screenshots/|](docs/screenshots/|g' README.md
 
 # Phase 5: Audit
 echo "--- Phase 5: Consistency Audit ---"
@@ -68,7 +70,7 @@ if [ -n "$MISSING_LINKS" ]; then
     echo "$MISSING_LINKS"
 fi
 
-# Fix permissions
+# Fix permissions (no executable bit on PNGs)
 find docs/screenshots ui/docs/screenshots -name "*.png" -exec chmod 644 {} +
 
 echo "Success! Screenshots generated and documentation updated."
