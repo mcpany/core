@@ -303,6 +303,11 @@ func (tm *Manager) rebuildChain() {
 		log := logging.GetLogger().With("toolName", req.ToolName)
 		t := req.Tool
 
+		// Fast path: Tool is likely stored in the context by executeTool logic above
+		if t == nil {
+			t, _ = GetFromContext(ctx)
+		}
+
 		result, err := t.Execute(ctx, req)
 
 		// Get post-hooks from context or service info if needed
