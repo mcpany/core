@@ -3,6 +3,9 @@
 **Created:** 2026-03-28
 
 ## 1. Context and Scope
+
+![Safe Share Dialog](../screenshots/safe_share_dialog.png)
+
 The rapid expansion of the OpenClaw plugin market and other third-party agent skill repositories provides swarms with vast new capabilities. However, these external plugins are often unverified and can contain "Invisible" instructions or malicious configuration hooks that lead to command injection and data exfiltration.
 
 MCP Any needs a secure, attested bridge for importing tools from these marketplaces. The Ingestion Adapter provides a standardized workflow for discovery, profiling, and sandboxing marketplace-sourced skills before they are exposed to the agent reasoning engine.

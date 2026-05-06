@@ -1,5 +1,8 @@
 # Design Document: Multimodal Inference-Time Sanitizer (MITS)
 
+![Traces](../screenshots/traces.png)
+
+
 ## 1. Objective
 To design and implement the Multimodal Inference-Time Sanitizer (MITS) middleware for MCP Any. This component will provide real-time sanitization of non-textual reasoning traces (such as SVG, CSS, and audio metadata) using OpenClaw ContextEngine hooks to detect and neutralize "Context Smuggling" and "Prompt Path" injections via polyglot payloads.
 

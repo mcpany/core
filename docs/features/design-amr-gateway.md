@@ -3,6 +3,9 @@
 **Created:** 2026-06-24
 
 ## 1. Context and Scope
+
+![Service Config](../screenshots/service_config.png)
+
 As agent missions become multi-day and span hundreds of tool calls, the cost of "Cold Booting" a session (re-injecting 100k+ tokens of reasoning history) becomes prohibitive in terms of both latency and token economics. Currently, if an orchestration node crashes or a teammate rotates, the agent must often re-read the entire context to reach the same cognitive state.
 
 The **Atomic Mission-Resumption (AMR) Gateway** provides a hardware-locked mechanism to snapshot the "Reasoning Frontier." It allows agents to resume execution from a verified, cryptographically signed point-in-time, ensuring that "Cognitive Stall" is eliminated during process handoffs or recovery events.
