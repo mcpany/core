@@ -49,13 +49,23 @@ jobs:
           # Run //:lint (buildifier + gazelle + golangci-lint) and
           # //ui:lint + //ui:typecheck (eslint + tsc) in a single Bazel invocation
           # so remote cache is shared across all of them.
-          bazelisk run //:lint \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
-          bazelisk test //ui:lint //ui:typecheck \
-            --config=remote \
-            --test_output=errors \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+          if [ -n "$BUILDBUDDY_API_KEY" ]; then
+            bazelisk run //:lint \
+              --config=remote \
+              --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+            bazelisk test //ui:lint //ui:typecheck \
+              --config=remote \
+              --test_output=errors \
+              --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+          else
+            bazelisk run //:lint \
+              --config=remote \
+              --remote_upload_local_results=false
+            bazelisk test //ui:lint //ui:typecheck \
+              --config=remote \
+              --test_output=errors \
+              --remote_upload_local_results=false
+          fi
 
   bazel-test:
     runs-on: ubuntu-latest
@@ -94,12 +104,24 @@ jobs:
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
-          bazelisk test //... \
-            --config=remote \
-            --test_output=errors \
-            --test_summary=terse \
-            --test_timeout=300,600,900,1800 \
-            --test_env=GITHUB_WORKSPACE \
-            --test_env=PATH \
-            --test_env=HOME \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+          if [ -n "$BUILDBUDDY_API_KEY" ]; then
+            bazelisk test //... \
+              --config=remote \
+              --test_output=errors \
+              --test_summary=terse \
+              --test_timeout=300,600,900,1800 \
+              --test_env=GITHUB_WORKSPACE \
+              --test_env=PATH \
+              --test_env=HOME \
+              --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
+          else
+            bazelisk test //... \
+              --config=remote \
+              --test_output=errors \
+              --test_summary=terse \
+              --test_timeout=300,600,900,1800 \
+              --test_env=GITHUB_WORKSPACE \
+              --test_env=PATH \
+              --test_env=HOME \
+              --remote_upload_local_results=false
+          fi
