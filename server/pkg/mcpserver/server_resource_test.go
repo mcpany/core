@@ -289,7 +289,7 @@ func TestServer_CallTool_Logging(t *testing.T) {
 	// Reset logger to capture output
 	logging.ForTestsOnlyResetLogger()
 	var buf bytes.Buffer
-	logging.Init(slog.LevelInfo, &buf, "", "json")
+	logging.Init(slog.LevelDebug, &buf, "", "json")
 
 	poolManager := pool.NewManager()
 	factory := factory.NewUpstreamServiceFactory(poolManager, nil)

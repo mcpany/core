@@ -968,7 +968,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	if err != nil {
 		// Log error result (nil result usually)
 		if logger.Enabled(ctx, slog.LevelInfo) {
-			logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", LazyLogResult{Value: result}.LogValue())
+			logger.Info("Tool execution completed with error", "error", err)
 		}
 		return nil, err
 	}
@@ -1024,6 +1024,8 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
 		if len(jsonBytes) == 0 && marshalErr == nil {
+			// ⚡ Bolt Optimization: Delay marshaling if we're not going to log it and we don't strictly need it right now?
+			// Wait, we need it to return text to the client if it's not structured.
 			jsonBytes, marshalErr = util.FastMarshal(result)
 			if marshalErr == nil {
 				text = util.BytesToString(jsonBytes)
@@ -1042,7 +1044,7 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	}
 
 	// Log the result
-	if logger.Enabled(ctx, slog.LevelInfo) {
+	if logger.Enabled(ctx, slog.LevelDebug) {
 		var logValue slog.Value
 		// Avoid double serialization by reusing context from tool execution
 		logValue = LazyLogResult{
@@ -1052,7 +1054,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 			FinalResult:  finalResult,
 		}.LogValue()
 
-		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
+		logger.Debug("Tool execution completed", "result_type", fmt.Sprintf("%T", result), "result_value", logValue)
+	} else if logger.Enabled(ctx, slog.LevelInfo) {
+		logger.Info("Tool execution completed", "result_type", fmt.Sprintf("%T", result))
 	}
 
 	return finalResult, nil
