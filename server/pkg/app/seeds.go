@@ -431,6 +431,27 @@ func init() {
 				}.Build(),
 			}.Build(),
 		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("premium-timeline-tracer"),
+			Name:        proto.String("Premium Timeline Tracer"),
+			Description: proto.String("Gold Standard demonstration of high-fidelity, interactive tool execution timelines. Emits recursive execution graphs, token consumption, and simulated latency for visual tracing."),
+			Icon:        proto.String("clock"),
+			Tags:        []string{"tracing", "telemetry", "mock", "ui"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("premium-timeline-tracer"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50051/api/v2/timeline/tracer"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					Oauth2: configv1.OAuth2Auth_builder{
+						Scopes: proto.String("timeline:read,timeline:trace"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
 	}
 }
 
