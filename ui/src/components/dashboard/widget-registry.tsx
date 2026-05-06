@@ -11,7 +11,7 @@ import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
 import { ActiveIntentAlignmentWidget } from "@/components/dashboard/active-intent-alignment-widget";
-import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
+import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck, Globe } from "lucide-react";
 
 /**
  * Intent: Document WidgetSize
@@ -182,6 +182,14 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         defaultSize: "two-thirds",
         component: React.lazy(() => import('./swarm-topology-widget').then(m => ({ default: m.SwarmTopologyWidget }))),
         icon: Share2
+    },
+    {
+        type: "global-activity-map",
+        title: "Global Agent Activity Map",
+        description: "Live glowing globe visualization of multi-regional agent nodes and cross-region intent traffic.",
+        defaultSize: "two-thirds",
+        component: React.lazy(() => import('./global-activity-map-widget').then(m => ({ default: m.GlobalActivityMapWidget }))),
+        icon: Globe
     },
 ];
 

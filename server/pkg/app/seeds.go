@@ -414,6 +414,16 @@ func init() {
 			Tags:        []string{"telemetry", "analytics", "mock"},
 			ServiceConfig: configv1.UpstreamServiceConfig_builder{
 				Name: proto.String("global-telemetry"),
+				ConfigurationSchema: proto.String(`{
+  "type": "object",
+  "title": "Global Telemetry Config",
+  "properties": {
+    "REGION": {
+      "type": "string",
+      "default": "global"
+    }
+  }
+}`),
 				McpService: configv1.McpUpstreamService_builder{
 					HttpConnection: configv1.McpStreamableHttpConnection_builder{
 						HttpAddress: proto.String("http://localhost:50050/api/v1/telemetry/global"),
