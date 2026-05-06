@@ -15,6 +15,7 @@ MCP Any aims to be the indispensable core infrastructure layer for all AI agents
 ## Core Pillars
 1. **Universal Connectivity**: Support any MCP server, any LLM, and any agent framework.
 2. **Zero Trust Security**: Granular, capability-based access control for all tool calls.
+![Policy Editor](screenshots/policy_editor.png)
 3. **Context Persistence**: Shared state and context inheritance across agent swarms and execution environments.
 
 ## Strategic Evolution: [2026-05-23]

@@ -11,4 +11,8 @@ echo "Starting reproducible UI state capture..."
 # Run the screenshot generation suite using bazel
 ./bazelisk run //ui:playwright_tests_generate_docs_screenshots_spec_ts
 
-echo "UI state capture complete. Screenshots saved to ui/docs/screenshots/."
+echo "Copying screenshots to docs/screenshots/..."
+mkdir -p docs/screenshots
+cp -r ui/docs/screenshots/* docs/screenshots/
+
+echo "UI state capture complete. Screenshots saved to docs/screenshots/."

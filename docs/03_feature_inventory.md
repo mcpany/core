@@ -3,6 +3,7 @@
 ## Evolution: [2026-04-01] (Iteration 2) Updates
 
 ### Proposed Additions
+![Playground](screenshots/playground.png)
 - **Agentic Entropy Monitor (AEM)**: (P0) Authoritative coherence service performing real-time analysis of subagent reasoning entropy to block semantic drift.
 - **GC-Immune Reasoning Anchors**: (P0) Advanced pinning mechanism for mission-critical context fragments to prevent eviction during aggressive context-window garbage collection.
 - **Environment-Aware Provenance (EAP) Provider**: (P0) Identity middleware cryptographically binding reasoning fragments to hardware-attested environment IDs (e.g., Container IDs) to neutralize Trace Replay attacks.
