@@ -49,9 +49,14 @@ jobs:
           # Run //:lint (buildifier + gazelle + golangci-lint) and
           # //ui:lint + //ui:typecheck (eslint + tsc) in a single Bazel invocation
           # so remote cache is shared across all of them.
-          if [ -z "$BUILDBUDDY_API_KEY" ]; then
-            bazelisk run //:lint
-            bazelisk test //ui:lint //ui:typecheck --test_output=errors
+          if [[ -z "${BUILDBUDDY_API_KEY:-}" || "${BUILDBUDDY_API_KEY:-}" == "" ]]; then
+            bazelisk run //:lint \
+              --config=remote \
+              --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
+            bazelisk test //ui:lint //ui:typecheck \
+              --config=remote \
+              --test_output=errors \
+              --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
           else
             bazelisk run //:lint \
               --config=remote \
@@ -99,14 +104,16 @@ jobs:
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
-          if [ -z "$BUILDBUDDY_API_KEY" ]; then
+          if [[ -z "${BUILDBUDDY_API_KEY:-}" || "${BUILDBUDDY_API_KEY:-}" == "" ]]; then
             bazelisk test //... \
+              --config=remote \
               --test_output=errors \
               --test_summary=terse \
               --test_timeout=300,600,900,1800 \
               --test_env=GITHUB_WORKSPACE \
               --test_env=PATH \
               --test_env=HOME \
+              --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW \
               --jobs=4
           else
             bazelisk test //... \

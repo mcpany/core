@@ -1,90 +1,93 @@
 # Copyright 2025 Author(s) of MCP Any
 # SPDX-License-Identifier: Apache-2.0
+
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: "The release version (e.g., v1.2.3)"
-        required: true
-  schedule:
-    - cron: '0 3 * * *'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
 
 env:
-  # Define registries and image names centrally
-  DOCKERHUB_IMAGE: mcpany/server
-  GHCR_IMAGE: ghcr.io/mcpany/server
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  GOGC: 50
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  setup:
+  build-and-push-docker:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    outputs:
-      version: ${{ steps.vars.outputs.version }}
-      is_release: ${{ steps.vars.outputs.is_release }}
-      tags_dockerhub: ${{ steps.vars.outputs.tags_dockerhub }}
-      tags_ghcr: ${{ steps.vars.outputs.tags_ghcr }}
-      tags_ui_dockerhub: ${{ steps.vars.outputs.tags_ui_dockerhub }}
-      tags_ui_ghcr: ${{ steps.vars.outputs.tags_ui_ghcr }}
     steps:
-      - name: Set variables
-        id: vars
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            VERSION="${{ github.event.inputs.release_version }}"
-            IS_RELEASE="true"
-            echo "version=${VERSION}" >> $GITHUB_OUTPUT
-            echo "is_release=true" >> $GITHUB_OUTPUT
-            # Tags for Docker Hub
-            echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION},${{ env.DOCKERHUB_IMAGE }}:latest" >> $GITHUB_OUTPUT
-            # Tags for GHCR
-            echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION},${{ env.GHCR_IMAGE }}:latest" >> $GITHUB_OUTPUT
-            echo "tags_ui_dockerhub=mcpany/ui:${VERSION},mcpany/ui:latest" >> $GITHUB_OUTPUT
-            echo "tags_ui_ghcr=ghcr.io/mcpany/ui:${VERSION},ghcr.io/mcpany/ui:latest" >> $GITHUB_OUTPUT
-          else
-            # Generate timestamp
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            VERSION="dev-${TIMESTAMP}"
-            IS_RELEASE="false"
-            echo "version=${VERSION}" >> $GITHUB_OUTPUT
-            echo "is_release=false" >> $GITHUB_OUTPUT
-            # Tags
-            echo "tags_dockerhub=${{ env.DOCKERHUB_IMAGE }}:${VERSION},${{ env.DOCKERHUB_IMAGE }}:dev-latest,${{ env.DOCKERHUB_IMAGE }}:dev" >> $GITHUB_OUTPUT
-            echo "tags_ghcr=${{ env.GHCR_IMAGE }}:${VERSION},${{ env.GHCR_IMAGE }}:dev-latest,${{ env.GHCR_IMAGE }}:dev" >> $GITHUB_OUTPUT
-            echo "tags_ui_dockerhub=mcpany/ui:${VERSION},mcpany/ui:dev-latest,mcpany/ui:dev" >> $GITHUB_OUTPUT
-            echo "tags_ui_ghcr=ghcr.io/mcpany/ui:${VERSION},ghcr.io/mcpany/ui:dev-latest,ghcr.io/mcpany/ui:dev" >> $GITHUB_OUTPUT
-          fi
+      - uses: actions/checkout@v5
 
-  # ==============================================================================
-  # JOB 1: BUILD BINARIES (Go Cross-Compilation)
-  # Builds .zip files for Windows/Mac/Linux
-  # Only runs on manual release
-  # ==============================================================================
-  build-binaries:
-    needs: setup
-    if: needs.setup.outputs.is_release == 'true'
-    name: Build Binaries (${{ matrix.platform }})
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-bazel-artifacts:
+    name: Build Native Artifacts
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     strategy:
       matrix:
         include:
-          - platform: linux/amd64
-            bazel_platform: k8
-          - platform: linux/arm64
-            bazel_platform: aarch64
-          - platform: linux/386
-            bazel_platform: //:linux_386 # Placeholder if needed
-          - platform: darwin/amd64
-            bazel_platform: darwin_x86_64
-          - platform: darwin/arm64
-            bazel_platform: darwin_arm64
-          - platform: windows/amd64
-            bazel_platform: windows_x86_64
+          - os: linux
+            arch: amd64
+            bazel_platform: "@toolchains_buildbuddy//platforms:linux_x86_64"
+            runner: ubuntu-latest
+            suffix: linux-amd64
+          - os: linux
+            arch: arm64
+            bazel_platform: "@toolchains_buildbuddy//platforms:linux_arm64"
+            runner: ubuntu-latest
+            suffix: linux-arm64
+          - os: darwin
+            arch: amd64
+            bazel_platform: "@toolchains_buildbuddy//platforms:macos_x86_64"
+            runner: macos-latest
+            suffix: darwin-amd64
+          - os: darwin
+            arch: arm64
+            bazel_platform: "@toolchains_buildbuddy//platforms:macos_aarch64"
+            runner: macos-latest
+            suffix: darwin-arm64
+
+    runs-on: ${{ matrix.runner }}
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
       - name: Set up Bazel
         uses: bazel-contrib/setup-bazel@0.18.0
@@ -93,196 +96,57 @@ jobs:
           disk-cache: ${{ runner.os }}-bazel-disk-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
           repository-cache: true
 
-      - name: Build binary
+      - name: Build Server Binary
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
         run: |
-          GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
-          GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
-          bazelisk build //server/cmd/server \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
-            --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH}
-
-      - name: Package binaries
-        id: package
-        run: |
-          RELEASE_DIR=./build/release
-          mkdir -p $RELEASE_DIR
-          PLATFORM=${{ matrix.platform }}
-          GOOS=${PLATFORM%/*}
-          GOARCH=${PLATFORM#*/}
-          echo "goos=${GOOS}" >> $GITHUB_OUTPUT
-          echo "goarch=${GOARCH}" >> $GITHUB_OUTPUT
-          echo "platform_name=$(echo ${{ matrix.platform }} | tr '/' '-')" >> $GITHUB_OUTPUT
-
-          BINARY_NAME=server-$GOOS-$GOARCH
-          if [ "$GOOS" = "windows" ]; then
-            BINARY_NAME=$BINARY_NAME.exe
+          if [[ -z "${BUILDBUDDY_API_KEY:-}" || "${BUILDBUDDY_API_KEY:-}" == "" ]]; then
+            bazelisk build //server/cmd/server:server \
+              --config=remote \
+              --platforms=${{ matrix.bazel_platform }} \
+              --remote_header=x-buildbuddy-api-key=vGFjlQg7X49NwoQHAfRW
+          else
+            bazelisk build //server/cmd/server:server \
+              --config=remote \
+              --platforms=${{ matrix.bazel_platform }} \
+              --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY
           fi
           
-          # Find the built binary in bazel-out
-          # rules_go output for //server/cmd/server:server is usually server/cmd/server/server_/server
-          SRC_BIN=$(bazelisk cquery //server/cmd/server --output=files --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH})
-          cp $SRC_BIN $RELEASE_DIR/$BINARY_NAME
-          zip -j $RELEASE_DIR/$BINARY_NAME.zip $RELEASE_DIR/$BINARY_NAME
+          mkdir -p dist
+          cp bazel-bin/server/cmd/server/server_/server dist/mcpany-server-${{ matrix.suffix }}
 
-      - name: Upload binaries artifact
+      - name: Upload Binary Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-binaries-${{ steps.package.outputs.platform_name }}
-          path: ./build/release/*.zip
+          name: mcpany-server-${{ matrix.suffix }}
+          path: dist/mcpany-server-${{ matrix.suffix }}
 
-  # ==============================================================================
-  # JOB 2: CREATE GITHUB RELEASE
-  # Aggregates the binaries and creates the release page
-  # Only runs on manual release
-  # ==============================================================================
-  create-release:
-    needs: [setup, build-binaries]
-    if: needs.setup.outputs.is_release == 'true'
+  create-github-release:
+    needs: [build-and-push-docker, build-bazel-artifacts]
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     steps:
-      - name: Download all binaries
+      - uses: actions/checkout@v5
+
+      - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: release-binaries-*
-          merge-multiple: true
-          path: ./build/release
+          path: artifacts
 
-      - name: Release
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p release-assets
+          find artifacts -type f -name "mcpany-server-*" -exec cp {} release-assets/ \;
+          cd release-assets
+          
+          # Generate checksums
+          sha256sum * > checksums.txt
+
+          # Make binaries executable
+          chmod +x mcpany-server-*
+
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.setup.outputs.version }}
-          name: Release ${{ needs.setup.outputs.version }}
-          files: ./build/release/*.zip
+          files: |
+            release-assets/*
           generate_release_notes: true
-          draft: true
-          prerelease: false
-          make_latest: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  # ==============================================================================
-  # JOB 3: DOCKER BUILD (MATRIX)
-  # Runs in parallel with binary builds.
-  # Uses Native ARM runners for speed.
-  # ==============================================================================
-  docker-build:
-    needs: setup
-    if: needs.setup.outputs.is_release == 'true'
-    name: Build & Push Docker Image (${{ matrix.platform }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform: [linux/amd64, linux/arm64]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
-        with:
-          bazelisk-cache: true
-          disk-cache: ${{ runner.os }}-bazel-docker-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
-          repository-cache: true
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Image
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
-        run: |
-          GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
-          GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
-          TAG=$(echo ${{ github.ref_name }} | sed 's/^v//')
-          
-          bazelisk run //server/cmd/server:push \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
-            --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH} \
-            -- --remote_tags=latest,${TAG},${{ github.sha }}
-
-  # ==============================================================================
-  # JOB 4: DOCKER MERGE
-  # Combines the AMD64 and ARM64 digests into one "latest" tag
-  # ==============================================================================
-  docker-merge:
-    needs: [setup, docker-build]
-    if: needs.setup.outputs.is_release == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Finalize Multi-arch Manifest
-        run: |
-          echo "Multi-arch images pushed via Bazel oci_push."
-
-  # ==============================================================================
-  # JOB 5: UI DOCKER BUILD (MATRIX)
-  # ==============================================================================
-  docker-build-ui:
-    needs: setup
-    if: needs.setup.outputs.is_release == 'true'
-    name: Build & Push UI Docker Image (${{ matrix.platform }})
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform: [linux/amd64, linux/arm64]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up Bazel
-        uses: bazel-contrib/setup-bazel@0.18.0
-        with:
-          bazelisk-cache: true
-          disk-cache: ${{ runner.os }}-bazel-ui-docker-${{ hashFiles('**/BUILD', '**/BUILD.bazel', '**/*.bzl', 'WORKSPACE', 'MODULE.bazel') }}
-          repository-cache: true
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Image
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_OFFICIAL_API_KEY }}
-        run: |
-          GOOS=$(echo ${{ matrix.platform }} | cut -d'/' -f1)
-          GOARCH=$(echo ${{ matrix.platform }} | cut -d'/' -f2)
-          TAG=$(echo ${{ github.ref_name }} | sed 's/^v//')
-          
-          bazelisk run //ui:push \
-            --config=remote \
-            --remote_header=x-buildbuddy-api-key=$BUILDBUDDY_API_KEY \
-            --platforms=@rules_go//go/toolchain:${GOOS}_${GOARCH} \
-            -- --remote_tags=latest,${TAG},${{ github.sha }}
-
-  docker-merge-ui:
-    needs: [setup, docker-build-ui]
-    if: needs.setup.outputs.is_release == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Finalize Multi-arch Manifest
-        run: |
-          echo "Multi-arch UI images pushed via Bazel oci_push."
