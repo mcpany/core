@@ -252,6 +252,7 @@ type Manager struct {
 	bus         *bus.Provider
 	mu          sync.RWMutex
 	middlewares []ExecutionMiddleware
+	compiledChain ExecutionFunc
 	cachedTools []Tool
 	// cachedMCPTools caches the list of tools in MCP format to avoid
 	// re-allocating and re-converting them on every request.
@@ -280,7 +281,7 @@ type Manager struct {
 // Side Effects:
 //   - Allocates memory for internal maps and indices.
 func NewManager(bus *bus.Provider) *Manager {
-	return &Manager{
+	m := &Manager{
 		bus:                  bus,
 		tools:                xsync.NewMap[string, Tool](),
 		serviceInfo:          xsync.NewMap[string, *ServiceInfo](),
@@ -290,6 +291,52 @@ func NewManager(bus *bus.Provider) *Manager {
 		profileDefs:          make(map[string]*configv1.ProfileDefinition),
 		allowedServicesCache: make(map[string]map[string]bool),
 	}
+	m.rebuildChain()
+	return m
+}
+
+// rebuildChain compiles the middleware chain into a single ExecutionFunc.
+// It should be called whenever middlewares are modified.
+func (tm *Manager) rebuildChain() {
+	// 4. Define Core Execution (Execute + PostHooks)
+	executeCore := func(ctx context.Context, req *ExecutionRequest) (any, error) {
+		log := logging.GetLogger().With("toolName", req.ToolName)
+		t := req.Tool
+
+		result, err := t.Execute(ctx, req)
+
+		// Get post-hooks from context or service info if needed
+		serviceID := t.Tool().GetServiceId()
+		serviceInfo, ok := tm.serviceInfo.Load(serviceID)
+		if ok {
+			for _, h := range serviceInfo.PostHooks {
+				newResult, hkErr := h.ExecutePost(ctx, req, result)
+				if hkErr != nil {
+					log.Warn("Post-hook execution failed", "error", hkErr)
+					return nil, hkErr
+				}
+				result = newResult
+			}
+		}
+
+		if err != nil {
+			log.Error("Tool execution failed", "error", err)
+		} else {
+			log.Debug("Tool execution successful")
+		}
+		return result, err
+	}
+
+	chain := executeCore
+	for i := len(tm.middlewares) - 1; i >= 0; i-- {
+		m := tm.middlewares[i]
+		chain = func(next ExecutionFunc) ExecutionFunc {
+			return func(ctx context.Context, req *ExecutionRequest) (any, error) {
+				return m.Execute(ctx, req, next)
+			}
+		}(chain)
+	}
+	tm.compiledChain = chain
 }
 
 // SetProfiles sets the enabled profiles and their definitions for filtering.
@@ -582,7 +629,10 @@ func (tm *Manager) matchesProperties(annotations *v1.ToolAnnotations, props map[
 // Side Effects:
 //   - Appends middleware to the internal list.
 func (tm *Manager) AddMiddleware(middleware ExecutionMiddleware) {
+	tm.mu.Lock()
 	tm.middlewares = append(tm.middlewares, middleware)
+	tm.rebuildChain()
+	tm.mu.Unlock()
 }
 
 // SetMCPServer provides the Manager with a reference to the MCP server.
@@ -697,14 +747,12 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 	serviceInfo, ok := tm.serviceInfo.Load(serviceID)
 
 	var preHooks []PreCallHook
-	var postHooks []PostCallHook
 	if ok {
 		if serviceInfo.HealthStatus == HealthStatusUnhealthy {
 			log.Warn("Service is unhealthy, denying execution", "serviceID", serviceID)
 			return nil, fmt.Errorf("service %s is currently unhealthy", serviceID)
 		}
 		preHooks = serviceInfo.PreHooks
-		postHooks = serviceInfo.PostHooks
 	}
 
 	// 2. Initialize Context with Tool and CacheControl
@@ -732,39 +780,13 @@ func (tm *Manager) ExecuteTool(ctx context.Context, req *ExecutionRequest) (any,
 		}
 	}
 
-	// 4. Define Core Execution (Execute + PostHooks)
-	executeCore := func(ctx context.Context, req *ExecutionRequest) (any, error) {
-		result, err := t.Execute(ctx, req)
+	// 4. Update the request object so that executeCore has the latest tool logic
+	req.Tool = t
 
-		// Execute Post Hooks
-		for _, h := range postHooks {
-			newResult, hkErr := h.ExecutePost(ctx, req, result)
-			if hkErr != nil {
-				log.Warn("Post-hook execution failed", "error", hkErr)
-				return nil, hkErr
-			}
-			result = newResult
-		}
-
-		if err != nil {
-			log.Error("Tool execution failed", "error", err)
-		} else {
-			log.Debug("Tool execution successful")
-		}
-		return result, err
-	}
-
-	// 5. Build and Run Middleware Chain
-	chain := executeCore
-	for i := len(tm.middlewares) - 1; i >= 0; i-- {
-		m := tm.middlewares[i]
-		chain = func(next ExecutionFunc) ExecutionFunc {
-			return func(ctx context.Context, req *ExecutionRequest) (any, error) {
-				log.Debug("Executing middleware", "middleware", i)
-				return m.Execute(ctx, req, next)
-			}
-		}(chain)
-	}
+	// Get compiled chain
+	tm.mu.RLock()
+	chain := tm.compiledChain
+	tm.mu.RUnlock()
 
 	start := time.Now()
 	result, err := chain(ctx, req)
