@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
@@ -129,11 +130,20 @@ func newRootCmd() *cobra.Command { //nolint:gocyclo // Main entry point, expecte
 			// Track 1: Friction Fighter - Verify config files exist before proceeding
 			if len(configPaths) > 0 {
 				log.Info("Attempting to load services from config path", "paths", configPaths)
-				for _, path := range configPaths {
+				for i, path := range configPaths {
 					if strings.HasPrefix(strings.ToLower(path), "http://") || strings.HasPrefix(strings.ToLower(path), "https://") {
 						continue
 					}
+					// If the file doesn't exist, check if BUILD_WORKSPACE_DIRECTORY is set
+					// and try resolving the path relative to it.
 					if _, err := osFs.Stat(path); os.IsNotExist(err) {
+						if buildWorkspaceDir := os.Getenv("BUILD_WORKSPACE_DIRECTORY"); buildWorkspaceDir != "" && !filepath.IsAbs(path) {
+							resolvedPath := filepath.Join(buildWorkspaceDir, path)
+							if _, err := osFs.Stat(resolvedPath); err == nil {
+								configPaths[i] = resolvedPath
+								continue
+							}
+						}
 						return fmt.Errorf("❌ Configuration file not found: %s\n\n💡 Tip: You can generate a default configuration using:\n   %s config generate > %s", path, appconsts.Name, path)
 					} else if err != nil {
 						return fmt.Errorf("❌ Failed to access configuration file %s: %w", path, err)

@@ -46,7 +46,8 @@ Follow these step-by-step instructions to get a "Hello World" instance running l
 
 3. **Run a Hello World example:**
    ```bash
-   bazelisk run //server/cmd/mcpany -- -config examples/hello_world.yaml
+   # Thanks to automatic workspace path resolution, you can run this from anywhere in the repo!
+   bazelisk run //server/cmd/mcpany -- run --config-path examples/hello_world.yaml
    ```
 
 ## Development
