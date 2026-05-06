@@ -5,11 +5,11 @@ package vector
 
 import (
 	"context"
-	"time"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"github.com/mcpany/core/server/pkg/metrics"
+	"time"
 
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	"github.com/mcpany/core/server/pkg/logging"
@@ -266,6 +266,7 @@ type vectorCallable struct {
 // Side Effects:
 //   - None.
 func (c *vectorCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince([]string{"vector", "request", "latency"}, time.Now())
 	defer metrics.MeasureSince([]string{"vector", "request", "latency"}, time.Now())
 	return c.handler(ctx, req.Arguments)
 }

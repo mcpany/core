@@ -1779,6 +1779,7 @@ func (t *MCPTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-c
 //   - Makes a call to a downstream MCP service.
 func (t *MCPTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) {
 	defer metrics.MeasureSince([]string{"mcp", "request", "latency"}, time.Now())
+	defer metrics.MeasureSince([]string{"mcp", "request", "latency"}, time.Now())
 	if t.initError != nil {
 		return nil, t.initError
 	}
@@ -2122,6 +2123,7 @@ func (t *OpenAPITool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Makes an HTTP request to the upstream service.
 func (t *OpenAPITool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	defer metrics.MeasureSince([]string{"openapi", "request", "latency"}, time.Now())
 	defer metrics.MeasureSince([]string{"openapi", "request", "latency"}, time.Now())
 	if t.initError != nil {
 		return nil, t.initError
@@ -2590,6 +2592,7 @@ func (t *LocalCommandTool) StreamExecute(ctx context.Context, req *ExecutionRequ
 // Side Effects:
 //   - Executes a local command line process.
 func (t *LocalCommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	defer metrics.MeasureSince([]string{"local_command", "request", "latency"}, time.Now())
 	defer metrics.MeasureSince([]string{"local_command", "request", "latency"}, time.Now())
 	if t.initError != nil {
 		return nil, t.initError
@@ -3070,6 +3073,7 @@ func (t *CommandTool) StreamExecute(ctx context.Context, req *ExecutionRequest) 
 // Side Effects:
 //   - Executes a local command line process, potentially in a container.
 func (t *CommandTool) Execute(ctx context.Context, req *ExecutionRequest) (any, error) { //nolint:gocyclo
+	defer metrics.MeasureSince([]string{"command", "request", "latency"}, time.Now())
 	defer metrics.MeasureSince([]string{"command", "request", "latency"}, time.Now())
 	if t.initError != nil {
 		return nil, t.initError

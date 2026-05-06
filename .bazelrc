@@ -91,7 +91,7 @@ build:buildbuddy --config=buildbuddy_remote-arm64 --cpu=aarch64
 build:buildbuddy-official --bes_results_url=https://onehumancorp.buildbuddy.io/invocation/
 build:buildbuddy-official --bes_backend=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --remote_cache=grpcs://onehumancorp.buildbuddy.io
-common:buildbuddy-official --remote_upload_local_results
+# common:buildbuddy-official --remote_upload_local_results
 common:buildbuddy-official --remote_timeout=10m
 common:buildbuddy-official --remote_executor=grpcs://onehumancorp.buildbuddy.io
 common:buildbuddy-official --remote_cache_compression

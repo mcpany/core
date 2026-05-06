@@ -6,7 +6,6 @@ package filesystem
 
 import (
 	"context"
-	"time"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -14,6 +13,7 @@ import (
 	"github.com/mcpany/core/server/pkg/metrics"
 	"io"
 	"sync"
+	"time"
 
 	"github.com/alexliesenfeld/health"
 	configv1 "github.com/mcpany/core/proto/config/v1"
@@ -269,6 +269,7 @@ type fsCallable struct {
 //   - any: The result of the execution.
 //   - error: An error if execution fails.
 func (c *fsCallable) Call(ctx context.Context, req *tool.ExecutionRequest) (any, error) {
+	defer metrics.MeasureSince([]string{"filesystem", "request", "latency"}, time.Now())
 	defer metrics.MeasureSince([]string{"filesystem", "request", "latency"}, time.Now())
 	args := req.Arguments
 	if args == nil && len(req.ToolInputs) > 0 {

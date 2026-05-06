@@ -101,6 +101,8 @@ jobs:
             --test_timeout=300,600,900,1800 \
             --jobs=4 \
             --local_test_jobs=4 \
+            --jobs=4 \
+            --local_test_jobs=4 \
             --test_env=GITHUB_WORKSPACE \
             --test_env=PATH \
             --test_env=HOME \
