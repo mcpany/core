@@ -50,13 +50,15 @@ cd ..
 echo "--- Phase 4: Documentation Sync ---"
 mkdir -p docs/screenshots
 cp ui/docs/screenshots/*.png docs/screenshots/
-# Ensure ui/docs/screenshots is also populated
+# Ensure ui/docs/screenshots is also populated for frontend-specific docs
 mkdir -p ui/docs/screenshots
 cp docs/screenshots/*.png ui/docs/screenshots/
 
-# Update markdown references to use relative paths in features/ subdirectories
+# Update markdown references to use relative paths in all subdirectories
 # This ensures images render correctly in GitHub/GitLab and local editors
-find docs/features ui/docs/features -name "*.md" | xargs -r grep -l "screenshots/" | xargs -r sed -i 's|docs/screenshots/|../screenshots/|g; s|screenshots/|../screenshots/|g'
+find docs ui/docs -name "*.md" | xargs -r grep -l "screenshots/" | xargs -r sed -i 's|docs/screenshots/|../screenshots/|g; s|screenshots/|../screenshots/|g'
+# Special case for root README.md - keep absolute-ish path from root
+sed -i 's|../screenshots/|docs/screenshots/|g' README.md
 
 # Phase 5: Audit
 echo "--- Phase 5: Consistency Audit ---"
