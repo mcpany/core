@@ -133,6 +133,7 @@ go_test(
         "api_templates_test.go",
         "api_test.go",
         "api_traces_limit_test.go",
+        "api_traces_seed_test.go",
         "api_traces_test.go",
         "api_users_me_test.go",
         "api_users_security_test.go",
