@@ -11,6 +11,18 @@ TYPE_PATTERN = re.compile(r'^type\s+([A-Z][a-zA-Z0-9_]*)\s+(struct|interface)\s*
 METHOD_PATTERN = re.compile(r'^func\s+\((.*?)\)\s+([A-Z][a-zA-Z0-9_]*)\s*\((.*?)\)\s*(\(.*\)|[a-zA-Z0-9_*\[\]\.]*)?\s*{')
 
 def nice_name(name):
+    """
+    Summary: nice_name.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     # Split camelCase -> "camel case"
     # e.g. HTTPRateLimit -> HTTP Rate Limit
     # e.g. SaveUser -> Save User
@@ -19,6 +31,18 @@ def nice_name(name):
     return s2.lower()
 
 def parse_params(param_str):
+    """
+    Summary: parse_params.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     if not param_str:
         return []
     params = []
@@ -47,6 +71,18 @@ def parse_params(param_str):
     return parsed
 
 def parse_returns(return_str):
+    """
+    Summary: parse_returns.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     if not return_str:
         return []
     return_str = return_str.strip()
@@ -75,6 +111,18 @@ def parse_returns(return_str):
     return parsed
 
 def generate_doc(name, params, returns, receiver=None, is_type=False):
+    """
+    Summary: generate_doc.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     nice = nice_name(name)
     summary = f"{name} {nice}."
 
@@ -148,6 +196,18 @@ def generate_doc(name, params, returns, receiver=None, is_type=False):
     return lines
 
 def process_file(filepath):
+    """
+    Summary: process_file.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     with open(filepath, 'r') as f:
         lines = f.readlines()
 
@@ -220,6 +280,18 @@ def process_file(filepath):
         f.writelines(final_lines)
 
 def scan_dir(root_dir):
+    """
+    Summary: scan_dir.
+
+    Parameters:
+      - None.
+
+    Returns:
+      - None.
+
+    Throws/Errors:
+      - None.
+    """
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith('.go') and not file.endswith('_test.go') and 'vendor' not in root:

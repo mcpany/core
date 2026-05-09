@@ -62,6 +62,20 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 /**
+ * Summary: Document useRealTimeTopology
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Hook to fetch and manage the network topology graph.
  * @returns The topology state and controls.
  */

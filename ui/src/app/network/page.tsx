@@ -6,6 +6,20 @@
 import { NetworkGraphClient } from "@/components/network/network-graph-client";
 
 /**
+ * Intent: Document NetworkPage
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * NetworkPage component.
  * @returns The rendered component.
  */

@@ -5,11 +5,12 @@
 package tool
 
 import (
+	"context"
 	"sync"
 
-	"github.com/mcpany/core/server/pkg/logging"
 	configv1 "github.com/mcpany/core/proto/config/v1"
 	v1 "github.com/mcpany/core/proto/mcp_router/v1"
+	"github.com/mcpany/core/server/pkg/logging"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -70,6 +71,47 @@ func (t *baseTool) MCPTool() *mcp.Tool {
 //
 // Returns:
 //   - *configv1.CacheConfig: Always returns nil.
+//
+// IsStreaming returns true if the tool supports streaming execution.
+//
+// Summary: Checks if the tool supports streaming execution.
+//
+// Returns:
+//   - bool: True if streaming is supported.
+func (t *baseTool) IsStreaming() bool {
+	return false
+}
+
+// StreamExecute handles the streaming execution of the tool.
+//
+// Summary: Executes the tool in streaming mode.
+//
+// Parameters:
+//   - ctx: context.Context. The context for the request.
+//   - req: *ExecutionRequest. The request payload.
+//
+// Returns:
+//   - <-chan any: A channel that emits streaming results.
+//   - error: An error if the operation fails or streaming is not supported.
+func (t *baseTool) StreamExecute(ctx context.Context, req *ExecutionRequest) (<-chan any, error) {
+	return nil, nil // Should be implemented by embedding struct if supported
+}
+
+// GetCacheConfig returns the cache configuration for the tool.
+//
+// Summary: Retrieves the cache configuration for the tool.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.CacheConfig: Always returns nil for baseTool.
+//
+// Errors:
+//   - None.
+//
+// Side Effects:
+//   - None.
 func (t *baseTool) GetCacheConfig() *configv1.CacheConfig {
 	return nil
 }

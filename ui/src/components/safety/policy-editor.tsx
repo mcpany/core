@@ -29,6 +29,13 @@ interface PolicyEditorProps {
     onUpdate: (policies: CallPolicy[]) => void;
 }
 
+/**
+ * ACTION_LABELS component.
+ * @param props - The component props.
+ * @param props.policies - The policies property.
+ * @param props.onUpdate - The onUpdate property.
+ * @returns The rendered component.
+ */
 const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.ALLOW]: "Allow",
     [CallPolicy_Action.DENY]: "Deny",
@@ -36,6 +43,13 @@ const ACTION_LABELS: Record<number, string> = {
     [CallPolicy_Action.DELETE_CACHE]: "Delete Cache",
 };
 
+/**
+ * ACTION_COLORS component.
+ * @param props - The component props.
+ * @param props.policies - The policies property.
+ * @param props.onUpdate - The onUpdate property.
+ * @returns The rendered component.
+ */
 const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "outline"> = {
     [CallPolicy_Action.ALLOW]: "default", // Green-ish usually, but default works
     [CallPolicy_Action.DENY]: "destructive",
@@ -44,6 +58,20 @@ const ACTION_COLORS: Record<number, "default" | "destructive" | "secondary" | "o
 };
 
 /**
+ * Intent: Document PolicyEditor
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A component for editing call policies.
  * @param props The component props.
  * @param props.policies The list of policies to edit.

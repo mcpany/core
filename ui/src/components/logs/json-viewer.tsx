@@ -12,6 +12,20 @@ interface JsonViewerProps {
 }
 
 /**
+ * Intent: Document JsonViewer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * JsonViewer is a component that renders JSON data with syntax highlighting.
  * @deprecated Use JsonView from "@/components/ui/json-view" instead.
  *
@@ -21,6 +35,6 @@ interface JsonViewerProps {
  */
 export default function JsonViewer({ data }: JsonViewerProps) {
   return (
-    <JsonView data={data} />
+    <JsonView data={data} smartTable={true} />
   );
 }

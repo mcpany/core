@@ -15,6 +15,20 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
  /**
+ * Intent: Document render
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
   * render wraps the component in a MemoryRouter for testing.
   *
   * @param ui The component to render.
@@ -26,6 +40,12 @@ export function render(
   options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType<{ children: React.ReactNode }> }
 ) {
   const { wrapper: Wrapper, ...rest } = options ?? {};
+/**
+ * WrapperComponent component.
+ * @param props - The component props.
+ * @param props.children - The child components.
+ * @returns The rendered component.
+ */
   const WrapperComponent = ({ children }: { children: React.ReactNode }) => (
     <MemoryRouter>{Wrapper ? <Wrapper>{children}</Wrapper> : children}</MemoryRouter>
   );

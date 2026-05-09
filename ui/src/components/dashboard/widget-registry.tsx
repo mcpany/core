@@ -10,9 +10,24 @@ import { LazyRequestVolumeChart, LazyTopToolsWidget, LazyHealthHistoryChart, Laz
 import { ToolFailureRateWidget } from "@/components/dashboard/tool-failure-rate-widget";
 import { QuickActionsWidget } from "@/components/dashboard/quick-actions-widget";
 import { NetworkGraphWidget } from "@/components/dashboard/network-graph-widget";
+import { ActiveIntentAlignmentWidget } from "@/components/dashboard/active-intent-alignment-widget";
 import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse, Zap, Share2, ClipboardCheck } from "lucide-react";
 
 /**
+ * Intent: Document WidgetSize
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines the possible sizes for a dashboard widget.
  * - full: Takes up the full width (12 columns).
  * - two-thirds: Takes up 2/3 of the width (8 columns).
@@ -22,6 +37,20 @@ import { Activity, BarChart, Server, AlertTriangle, TrendingUp, Hash, HeartPulse
 export type WidgetSize = "full" | "half" | "third" | "two-thirds";
 
 /**
+ * Intent: Document WidgetDefinition
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Defines the metadata and component for a dashboard widget.
  */
 export interface WidgetDefinition {
@@ -40,10 +69,32 @@ export interface WidgetDefinition {
 }
 
 /**
+ * Intent: Document WIDGET_DEFINITIONS
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Registry of all available dashboard widgets.
  * This list determines what widgets are available to add to the dashboard.
  */
 export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
+    {
+        type: "intent-alignment",
+        title: "Active Intent Alignment Monitor",
+        description: "Visual indicator for AIA heartbeat status and semantic drift alerts.",
+        defaultSize: "third",
+        component: ActiveIntentAlignmentWidget,
+        icon: Activity
+    },
     {
         type: "metrics",
         title: "Metrics Overview",
@@ -124,9 +175,31 @@ export const WIDGET_DEFINITIONS: WidgetDefinition[] = [
         component: LazyAuditLogWidget,
         icon: ClipboardCheck
     },
+    {
+        type: "swarm-topology",
+        title: "Swarm Topology",
+        description: "Multi-Agent Swarm Topology & Sovereignty Monitor.",
+        defaultSize: "two-thirds",
+        component: React.lazy(() => import('./swarm-topology-widget').then(m => ({ default: m.SwarmTopologyWidget }))),
+        icon: Share2
+    },
 ];
 
 /**
+ * Intent: Document getWidgetDefinition
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Retrieves a widget definition by its type.
  *
  * @param type - The widget type identifier.

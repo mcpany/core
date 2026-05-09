@@ -1,0 +1,41 @@
+<<<<<<< SEARCH
+func TestBuildSafeEnv(t *testing.T) {
+	// Setup initial state
+	allowedEnvVars := []string{"PATH", "HOME", "USER", "TMPDIR", "TZ", "LANG", "LC_ALL"}
+	for _, key := range allowedEnvVars {
+		os.Unsetenv(key)
+	}
+
+	tests := []struct {
+		name        string
+		setupEnv    map[string]string
+		resolvedEnv map[string]string
+		expected    []string
+	}{
+=======
+func TestBuildSafeEnv(t *testing.T) {
+	// Save the original environment
+	originalEnv := os.Environ()
+	defer func() {
+		os.Clearenv()
+		for _, e := range originalEnv {
+			parts := strings.SplitN(e, "=", 2)
+			if len(parts) == 2 {
+				os.Setenv(parts[0], parts[1])
+			}
+		}
+	}()
+
+	// Setup initial state
+	allowedEnvVars := []string{"PATH", "HOME", "USER", "TMPDIR", "TZ", "LANG", "LC_ALL"}
+	for _, key := range allowedEnvVars {
+		os.Unsetenv(key)
+	}
+
+	tests := []struct {
+		name        string
+		setupEnv    map[string]string
+		resolvedEnv map[string]string
+		expected    []string
+	}{
+>>>>>>> REPLACE

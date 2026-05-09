@@ -12,6 +12,8 @@ import (
 )
 
 // MockClientConn is a mock implementation of grpc.ClientConnInterface for testing.
+//
+// Summary: Represents a MockClientConn.
 type MockClientConn struct {
 	grpc.ClientConnInterface
 	t       *testing.T
@@ -25,6 +27,20 @@ type MockClientConn struct {
 //
 // Returns:
 //   - *MockClientConn: A new mock client connection.
+//
+// Summary: Initializes NewMockClientConn operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func NewMockClientConn(t *testing.T) *MockClientConn {
 	return &MockClientConn{
 		t:       t,
@@ -37,6 +53,20 @@ func NewMockClientConn(t *testing.T) *MockClientConn {
 // Parameters:
 //   - method: The method to mock.
 //   - client: The mock client implementation.
+//
+// Summary: Updates SetClient operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *MockClientConn) SetClient(method string, client interface{}) {
 	m.clients[method] = client
 }
@@ -52,6 +82,20 @@ func (m *MockClientConn) SetClient(method string, client interface{}) {
 //
 // Returns:
 //   - error: An error if the invocation fails.
+//
+// Summary: Executes Invoke operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ interface{}, _ ...grpc.CallOption) error {
 	// Not implemented for this mock
 	return nil
@@ -68,6 +112,20 @@ func (m *MockClientConn) Invoke(_ context.Context, _ string, _ interface{}, _ in
 // Returns:
 //   - grpc.ClientStream: The client stream.
 //   - error: An error if the stream creation fails.
+//
+// Summary: Initializes NewStream operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func (m *MockClientConn) NewStream(_ context.Context, _ *grpc.StreamDesc, method string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
 	if client, ok := m.clients[method]; ok {
 		return client.(grpc.ClientStream), nil

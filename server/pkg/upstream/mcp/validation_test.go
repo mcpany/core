@@ -17,7 +17,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 
 	t.Run("Validation passed", func(t *testing.T) {
 		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
+			Command: proto.String("/bin/echo"),
 			Env: map[string]*configv1.SecretValue{
 				"REQUIRED_VAR": configv1.SecretValue_builder{
 					PlainText: proto.String("present"),
@@ -36,7 +36,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 
 	t.Run("Validation failed - missing var", func(t *testing.T) {
 		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
+			Command: proto.String("/bin/echo"),
 			Env:     map[string]*configv1.SecretValue{},
 			Validation: configv1.EnvValidation_builder{
 				RequiredEnv: []string{"MISSING_VAR"},
@@ -52,7 +52,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 	t.Run("Validation passed - inherited var", func(t *testing.T) {
 		t.Setenv("LANG", "C.UTF-8")
 		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
+			Command: proto.String("/bin/echo"),
 			Validation: configv1.EnvValidation_builder{
 				RequiredEnv: []string{"LANG"},
 			}.Build(),
@@ -73,7 +73,7 @@ func TestBuildCommandFromStdioConfig_Validation(t *testing.T) {
 
 	t.Run("Validation failed - multiple missing", func(t *testing.T) {
 		stdio := configv1.McpStdioConnection_builder{
-			Command: proto.String("echo"),
+			Command: proto.String("/bin/echo"),
 			Validation: configv1.EnvValidation_builder{
 				RequiredEnv: []string{"MISSING_1", "MISSING_2"},
 			}.Build(),

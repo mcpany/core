@@ -1,4 +1,18 @@
 /**
+ * Summary: Document MarketplaceItemConfig
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Copyright 2026 Author(s) of MCP Any
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,6 +27,20 @@ export interface MarketplaceItemConfig {
 }
 
 /**
+ * Summary: Document EnvVarDefinition
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * EnvVarDefinition type definition.
  */
 export interface EnvVarDefinition {
@@ -25,6 +53,20 @@ export interface EnvVarDefinition {
 }
 
 /**
+ * Summary: Document MarketplaceItem
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * MarketplaceItem type definition.
  */
 export interface MarketplaceItem {
@@ -36,6 +78,20 @@ export interface MarketplaceItem {
 }
 
 /**
+ * Summary: Document MARKETPLACE_ITEMS
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * The MARKETPLACE_ITEMS const.
  */
 export const MARKETPLACE_ITEMS: MarketplaceItem[] = [

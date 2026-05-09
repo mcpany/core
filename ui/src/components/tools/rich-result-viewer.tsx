@@ -7,12 +7,13 @@
 
 import { useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileJson, Table as TableIcon, Terminal, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { SmartTable } from "./smart-table";
+
 
 interface RichResultViewerProps {
     result: any;
@@ -35,6 +36,12 @@ interface McpContentRendererProps {
     content: McpContent[];
 }
 
+/**
+ * McpContentRenderer component.
+ * @param props - The component props.
+ * @param props.content - The content property.
+ * @returns The rendered component.
+ */
 function McpContentRenderer({ content }: McpContentRendererProps) {
     return (
         <div className="space-y-6 p-4">
@@ -65,6 +72,20 @@ function McpContentRenderer({ content }: McpContentRendererProps) {
 }
 
 /**
+ * Intent: Document RichResultViewer
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * RichResultViewer displays tool execution results in a user-friendly format.
  * It automatically detects if the result contains JSON or tabular data and provides
  * appropriate views (Table, JSON, Raw).
@@ -125,8 +146,43 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         return null;
     }, [content]);
 
-    const isTableEligible = useMemo(() => {
-        return !mcpContent && Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null;
+    const { isTableEligible, tableData } = useMemo(() => {
+        if (mcpContent) return { isTableEligible: false, tableData: [] };
+
+        // 1. Array of objects
+        if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object' && content[0] !== null) {
+            return { isTableEligible: true, tableData: content };
+        }
+
+        // 2. Object containing an array of objects. We aggressively scan the top 2 levels.
+        if (content && typeof content === 'object' && !Array.isArray(content) && content !== null) {
+            let largestArray: any[] = [];
+
+            // Level 1 scan
+            Object.values(content).forEach(val => {
+                 if (Array.isArray(val) && val.length > 0 && val.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                     if (val.length > largestArray.length) {
+                         largestArray = val;
+                     }
+                 }
+                 // Level 2 scan
+                 else if (val && typeof val === 'object' && !Array.isArray(val) && val !== null) {
+                      Object.values(val).forEach(nestedVal => {
+                           if (Array.isArray(nestedVal) && nestedVal.length > 0 && nestedVal.every(item => typeof item === 'object' && item !== null && !Array.isArray(item))) {
+                               if (nestedVal.length > largestArray.length) {
+                                   largestArray = nestedVal;
+                               }
+                           }
+                      });
+                 }
+            });
+
+            if (largestArray.length > 0) {
+                 return { isTableEligible: true, tableData: largestArray };
+            }
+        }
+
+        return { isTableEligible: false, tableData: [] };
     }, [content, mcpContent]);
 
     // Get columns for table
@@ -135,13 +191,13 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
         // aggregate all keys from all objects to handle sparse data
         const keys = new Set<string>();
         // Limit rows scanned for columns to avoid perf issues on huge datasets
-        content.slice(0, 50).forEach((item: any) => {
+        tableData.slice(0, 50).forEach((item: any) => {
             if (typeof item === 'object' && item !== null) {
                 Object.keys(item).forEach(k => keys.add(k));
             }
         });
         return Array.from(keys);
-    }, [content, isTableEligible]);
+    }, [tableData, isTableEligible]);
 
     const renderCell = (value: any) => {
         if (value === null || value === undefined) return <span className="text-muted-foreground">-</span>;
@@ -187,38 +243,19 @@ export function RichResultViewer({ result }: RichResultViewerProps) {
 
             {isTableEligible && (
                 <TabsContent value="table" className="border rounded-md">
-                    <ScrollArea className="h-[400px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    {columns.map(col => (
-                                        <TableHead key={col} className="whitespace-nowrap">{col}</TableHead>
-                                    ))}
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {content.map((row: any, i: number) => (
-                                    <TableRow key={i}>
-                                        {columns.map(col => (
-                                            <TableCell key={col} className="py-2">
-                                                {renderCell(row[col])}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </ScrollArea>
+                    <div className="h-[400px]">
+                        <SmartTable data={tableData} />
+                    </div>
                 </TabsContent>
             )}
 
             <TabsContent value="json">
-                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} />
+                <JsonView data={content} maxHeight={400} defaultExpandedLevel={2} smartTable={true} />
             </TabsContent>
 
             {isExtracted && (
                 <TabsContent value="raw">
-                    <JsonView data={result} maxHeight={400} />
+                    <JsonView data={result} maxHeight={400} smartTable={false} />
                 </TabsContent>
             )}
         </Tabs>

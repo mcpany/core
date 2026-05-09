@@ -21,6 +21,8 @@ import (
 )
 
 // Settings defines the global configuration for the application.
+//
+// Summary: Represents a Settings.
 type Settings struct {
 	proto           *configv1.GlobalSettings
 	grpcPort        string
@@ -103,6 +105,9 @@ func (s *Settings) Load(cmd *cobra.Command, fs afero.Fs) error {
 	s.stdio = viper.GetBool("stdio") // Corrected from "std"
 	// Bind config paths
 	s.configPaths = getStringSlice("config-path")
+	if len(s.configPaths) == 0 && viper.IsSet("config") {
+		s.configPaths = getStringSlice("config")
+	}
 	s.debug = viper.GetBool("debug")
 	s.logLevel = viper.GetString("log-level")
 
@@ -577,6 +582,38 @@ func (s *Settings) GetDlp() *configv1.DLPConfig {
 //   - Updates the DLP setting.
 func (s *Settings) SetDlp(dlp *configv1.DLPConfig) {
 	s.proto.SetDlp(dlp)
+}
+
+// GetSso returns the SSO configuration.
+//
+// Summary: Retrieves the SSO configuration.
+//
+// Parameters:
+//   - None.
+//
+// Returns:
+//   - *configv1.SSOConfig: The SSO config.
+//
+// Side Effects:
+//   - None.
+func (s *Settings) GetSso() *configv1.SSOConfig {
+	return s.proto.GetSso()
+}
+
+// SetSso sets the SSO configuration.
+//
+// Summary: Sets the SSO configuration.
+//
+// Parameters:
+//   - sso: *configv1.SSOConfig. The SSO config.
+//
+// Returns:
+//   - None.
+//
+// Side Effects:
+//   - Updates the SSO setting.
+func (s *Settings) SetSso(sso *configv1.SSOConfig) {
+	s.proto.SetSso(sso)
 }
 
 // GetOidc returns the OIDC configuration.

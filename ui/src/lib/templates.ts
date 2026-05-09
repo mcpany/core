@@ -7,6 +7,20 @@ import { UpstreamServiceConfig } from "@/lib/types";
 import { Database, FileText, Github, Globe, Server, Activity, Cloud, MessageSquare, Map, Clock, Zap, CheckCircle2 } from "lucide-react";
 
 /**
+ * Summary: Document ServiceTemplate
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A template for creating a new service configuration.
  */
 export interface ServiceTemplate {
@@ -50,6 +64,20 @@ export interface ServiceTemplate {
 }
 
 /**
+ * Summary: Document SERVICE_TEMPLATES
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * A list of built-in service templates.
  */
 export const SERVICE_TEMPLATES: ServiceTemplate[] = [

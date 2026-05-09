@@ -34,6 +34,7 @@ func TestMCPServerReconciler_Reconcile(t *testing.T) {
 			Replicas:    &replicas,
 			Image:       "mcpany/server:latest",
 			ServiceType: "ClusterIP",
+			ConfigMap:   "my-config-map",
 		},
 	}
 

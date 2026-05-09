@@ -211,6 +211,15 @@ type Runner interface {
 //   - MetricsGatherer: prometheus.Gatherer. Interface for gathering metrics.
 //   - BoundHTTPPort: atomic.Int32. The actual bound HTTP port.
 //   - BoundGRPCPort: atomic.Int32. The actual bound gRPC port.
+// Application ...
+//
+// Summary: Represents the Application.
+// Parameters:
+//   - None.
+// Returns:
+//   - None.
+// Throws/Errors:
+//   - None.
 type Application struct {
 	runStdioModeFunc func(ctx context.Context, mcpSrv *mcpserver.Server) error
 	PromptManager    prompt.ManagerInterface
@@ -301,7 +310,6 @@ type Application struct {
 	// statsCache for dashboard
 	statsCacheMu sync.RWMutex
 	statsCache   map[string]statsCacheEntry
-
 }
 
 type statsCacheEntry struct {
@@ -330,8 +338,8 @@ func NewApplication() *Application {
 		configFiles:     make(map[string]string),
 		startupCh:       make(chan struct{}),
 		startTime:       time.Now(),
-		MetricsGatherer:   prometheus.DefaultGatherer,
-		statsCache:        make(map[string]statsCacheEntry),
+		MetricsGatherer: prometheus.DefaultGatherer,
+		statsCache:      make(map[string]statsCacheEntry),
 	}
 }
 
@@ -416,10 +424,35 @@ func (a *Application) Run(opts RunOptions) error {
 		}
 	}()
 
+	// Determine config sources
+	// Priority: File (if enabled/provided) > Database
 	var stores []config.Store
 
-	// Initialize DB if empty
-	if err := a.initializeDatabase(opts.Ctx, storageStore); err != nil {
+	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
+	if len(opts.ConfigPaths) > 0 {
+		// Always load config files if they are explicitly provided
+		log.Info("Loading config from files (highest priority)", "paths", opts.ConfigPaths)
+		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
+	} else if enableFileConfig {
+		log.Info("File configuration enabled via env var, but no config paths provided.")
+	}
+
+	// Add database as a fallback/secondary source
+	stores = append(stores, storageStore)
+
+	multiStore := config.NewMultiStore(stores...)
+
+	var cfg *config_v1.McpAnyServerConfig
+	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
+	if err != nil {
+		return fmt.Errorf("failed to load services from merged config: %w", err)
+	}
+	if cfg == nil {
+		cfg = config_v1.McpAnyServerConfig_builder{}.Build()
+	}
+
+	// Initialize DB if empty (passing the loaded config to check if seeding is needed)
+	if err := a.initializeDatabase(opts.Ctx, storageStore, cfg); err != nil {
 		return fmt.Errorf("failed to initialize database: %w", err)
 	}
 
@@ -429,32 +462,6 @@ func (a *Application) Run(opts RunOptions) error {
 			log.Error("Failed to initialize log persistence", "error", err)
 		}
 		a.startLogPersistence(opts.Ctx, s)
-	}
-
-	// Determine config sources
-	// Priority: Database < File (if enabled)
-	stores = append(stores, storageStore)
-
-	enableFileConfig := os.Getenv("MCPANY_ENABLE_FILE_CONFIG") == "true"
-	if len(opts.ConfigPaths) > 0 {
-		// Always load config files if they are explicitly provided
-		log.Info("Loading config from files (overrides database)", "paths", opts.ConfigPaths)
-		stores = append(stores, config.NewFileStore(fs, opts.ConfigPaths))
-	} else if enableFileConfig {
-		// If enabled but no paths provided, we might still want to load from default locations (if any)
-		// but currently NewFileStore requires paths. We keep this variable if it's used elsewhere,
-		// but for now, we just log that we are enabled but have no paths.
-		log.Info("File configuration enabled via env var, but no config paths provided.")
-	}
-	multiStore := config.NewMultiStore(stores...)
-
-	var cfg *config_v1.McpAnyServerConfig
-	cfg, err = config.LoadServices(opts.Ctx, multiStore, "server")
-	if err != nil {
-		return fmt.Errorf("failed to load services from config: %w", err)
-	}
-	if cfg == nil {
-		cfg = config_v1.McpAnyServerConfig_builder{}.Build()
 	}
 	a.lastReloadTime = time.Now()
 
@@ -503,6 +510,8 @@ func (a *Application) Run(opts RunOptions) error {
 	a.ToolManager.AddMiddleware(middleware.NewToolMetricsMiddleware(tokenizer.NewSimpleTokenizer()))
 	// Add Resilience Middleware
 	a.ToolManager.AddMiddleware(middleware.NewResilienceMiddleware(a.ToolManager))
+	// Add Error Mapping Middleware
+	a.ToolManager.AddMiddleware(middleware.NewErrorMappingMiddleware())
 
 	a.PromptManager = prompt.NewManager()
 	a.TemplateManager = NewTemplateManager("data") // Use "data" directory for now
@@ -554,13 +563,28 @@ func (a *Application) Run(opts RunOptions) error {
 	a.AuthManager = authManager
 
 	// Initialize Profile Manager and set profile definitions
-	// GetProfileDefinitions returns nil if not set, handled by Update
 	var profileDefinitions []*config_v1.ProfileDefinition
 	if cfg.GetGlobalSettings() != nil {
 		profileDefinitions = cfg.GetGlobalSettings().GetProfileDefinitions()
 	} else {
 		profileDefinitions = config.GlobalSettings().GetProfileDefinitions()
 	}
+
+	// Ensure there is at least a "default" profile
+	hasDefault := false
+	for _, p := range profileDefinitions {
+		if p.GetName() == "default" {
+			hasDefault = true
+			break
+		}
+	}
+	if !hasDefault {
+		log.Debug("Injected missing 'default' profile definition")
+		profileDefinitions = append(profileDefinitions, config_v1.ProfileDefinition_builder{
+			Name: proto.String("default"),
+		}.Build())
+	}
+
 	a.ProfileManager = profile.NewManager(profileDefinitions)
 
 	// Set profiles for tool filtering
@@ -704,6 +728,8 @@ func (a *Application) Run(opts RunOptions) error {
 		cfg.GetGlobalSettings().GetContextOptimizer(),
 		cfg.GetGlobalSettings().GetDebugger(),
 		cfg.GetGlobalSettings().GetSmartRecovery(),
+		nil,
+		nil,
 	)
 	if err != nil {
 		workerCancel()
@@ -1043,8 +1069,9 @@ func (a *Application) updateGlobalSettings(cfg *config_v1.McpAnyServerConfig) {
 	}
 }
 
-//nolint:gocyclo // complexity is fine here
 // reconcileServices reconciles the service registry with the new configuration.
+//
+//nolint:gocyclo // complexity is fine here
 func (a *Application) reconcileServices(ctx context.Context, cfg *config_v1.McpAnyServerConfig) {
 	log := logging.GetLogger()
 	// Get current active services
@@ -1972,6 +1999,7 @@ func (a *Application) runServerMode(
 	mux.Handle("/healthz", healthHandler)
 	mux.Handle("/health", healthHandler)
 	mux.Handle("/metrics", authMiddleware(metrics.Handler()))
+	mux.Handle("/api/v1/alignment/status", authMiddleware(a.handleActiveIntentAlignment()))
 	mux.Handle("/upload", authMiddleware(http.HandlerFunc(a.uploadFile)))
 
 	// OIDC Routes
@@ -2151,10 +2179,10 @@ func (a *Application) runServerMode(
 		if standardMiddlewares.Debugger != nil {
 			finalHandler = standardMiddlewares.Debugger.Handler(finalHandler)
 		}
-			// Recursive Context
-			if standardMiddlewares.RecursiveContext != nil {
-				finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
-			}
+		// Recursive Context
+		if standardMiddlewares.RecursiveContext != nil {
+			finalHandler = standardMiddlewares.RecursiveContext.HandleContext(finalHandler)
+		}
 	}
 
 	// Middleware order: SecurityHeaders -> CORS -> CSRF -> JSONRPCCompliance -> Recovery -> IPAllowList -> RateLimit -> (Debugger -> Optimizer -> Mux)
@@ -2224,11 +2252,7 @@ func (a *Application) runServerMode(
 	}
 	v1.RegisterRegistrationServiceServer(grpcServer, registrationServer)
 
-	var auditMiddleware *middleware.AuditMiddleware
-	if standardMiddlewares != nil {
-		auditMiddleware = standardMiddlewares.Audit
-	}
-	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, auditMiddleware)
+	adminServer := admin.NewServer(cachingMiddleware, a.ToolManager, serviceRegistry, store, a.DiscoveryManager, a.GetAuditMiddleware)
 	pb_admin.RegisterAdminServiceServer(grpcServer, adminServer)
 
 	// Register Skill Service
@@ -2613,6 +2637,21 @@ func startGrpcServer(
 		<-shutdownComplete
 		serverLog.Info("Server shut down.")
 	}()
+}
+
+// GetAuditMiddleware returns the current audit middleware.
+//
+// Summary: Returns the active audit middleware.
+//
+// Returns:
+//   - *middleware.AuditMiddleware: The current audit middleware instance.
+func (a *Application) GetAuditMiddleware() *middleware.AuditMiddleware {
+	a.configMu.Lock()
+	defer a.configMu.Unlock()
+	if a.standardMiddlewares != nil {
+		return a.standardMiddlewares.Audit
+	}
+	return nil
 }
 
 // wrapBindError checks if the error is a port conflict and returns a user-friendly error message.

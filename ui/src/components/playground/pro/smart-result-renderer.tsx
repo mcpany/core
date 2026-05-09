@@ -6,10 +6,10 @@
 
 
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Code, Table as TableIcon, Image as ImageIcon, FileText } from "lucide-react";
 import { JsonView } from "@/components/ui/json-view";
+import { SmartTable } from "../../tools/smart-table";
 import { unwrapMcpResult } from "@/lib/mcp-unwrap";
 
 /**
@@ -29,6 +29,20 @@ interface McpContent {
 }
 
 /**
+ * Intent: Document SmartResultRenderer
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Renders the result of a tool execution in a smart, tabular format if possible,
  * falling back to a raw JSON view.
  */
@@ -130,7 +144,7 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     }, [userViewMode, tableData, mcpContent]);
 
     const renderRaw = () => (
-        <JsonView data={result} maxHeight={400} />
+        <JsonView data={result} maxHeight={400} smartTable={false} />
     );
 
     const renderRich = () => {
@@ -142,7 +156,17 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
                     <div key={idx} className="flex flex-col gap-2">
                         {item.type === 'text' && (
                             <div className="whitespace-pre-wrap font-mono text-sm bg-muted/30 p-3 rounded-md border border-white/5">
-                                {item.text}
+                                {(() => {
+                                    try {
+                                        if (item.text) {
+                                            const parsed = JSON.parse(item.text);
+                                            if (typeof parsed === 'object' && parsed !== null) {
+                                                return <JsonView data={parsed} maxHeight={400} smartTable={false} />;
+                                            }
+                                        }
+                                    } catch (e) {}
+                                    return item.text;
+                                })()}
                             </div>
                         )}
                         {item.type === 'image' && item.data && (
@@ -172,49 +196,10 @@ export function SmartResultRenderer({ result }: SmartResultRendererProps) {
     const renderSmartTable = () => {
         if (!tableData) return null;
 
-        // Determine columns from all keys in the first 10 rows
-        const allKeys = new Set<string>();
-        tableData.slice(0, 10).forEach((row: any) => {
-            Object.keys(row).forEach(k => allKeys.add(k));
-        });
-        const columns = Array.from(allKeys);
-
         return (
-            <div className="rounded-md border max-h-[400px] overflow-auto">
-                <Table>
-                    <TableHeader className="bg-muted/50 sticky top-0">
-                        <TableRow>
-                            {columns.map(col => (
-                                <TableHead key={col} className="whitespace-nowrap font-medium text-xs px-2 py-1 h-8">
-                                    {col}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {tableData.map((row: any, idx: number) => (
-                            <TableRow key={idx} className="hover:bg-muted/50">
-                                {columns.map(col => {
-                                    const val = row[col];
-                                    let displayVal = val;
-                                    if (typeof val === 'object' && val !== null) {
-                                        displayVal = JSON.stringify(val);
-                                    } else if (typeof val === 'boolean') {
-                                        displayVal = val ? "true" : "false";
-                                    }
-
-                                    return (
-                                        <TableCell key={col} className="px-2 py-1 text-xs max-w-[200px] truncate" title={String(displayVal)}>
-                                            {String(displayVal ?? "")}
-                                        </TableCell>
-                                    );
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-                <div className="bg-muted/30 px-2 py-1 text-[10px] text-muted-foreground border-t">
-                    Showing {tableData.length} rows
+            <div className="rounded-md border overflow-hidden max-h-[400px]">
+                <div className="h-full min-h-[300px]">
+                    <SmartTable data={tableData} />
                 </div>
             </div>
         );

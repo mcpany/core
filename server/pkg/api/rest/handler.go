@@ -24,7 +24,8 @@ import (
 //   - r (*http.Request): The HTTP request containing the configuration in the body.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Errors:
 //   - 405 Method Not Allowed: If method is not POST.
@@ -122,6 +123,7 @@ func ValidateConfigHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
+
 
 func respondWithJSONError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")

@@ -4,9 +4,6 @@
  */
 
 import { request, APIRequestContext } from '@playwright/test';
-import { ServiceTemplate } from '../../../proto/config/v1/service_template';
-import { UpstreamServiceConfig } from '../../../proto/config/v1/upstream_service';
-import { User } from '../../../proto/config/v1/user';
 
 const BASE_URL = process.env.BACKEND_URL || 'http://localhost:50050';
 const API_KEY = process.env.MCPANY_API_KEY || 'test-token';
@@ -94,16 +91,25 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                         description: "Echoes back input",
                         input_schema: { type: "object" },
                         call_id: "echo_call"
+                    },
+                    {
+                        name: "get_users",
+                        description: "Returns a list of users in a table",
+                        input_schema: { type: "object" },
+                        call_id: "get_users_call"
                     }
                 ],
                 calls: {
                     echo_call: {
                         args: ["echoed_output"]
+                    },
+                    get_users_call: {
+                        args: ['{"users": [{"id": 1, "name": "Alice", "role": "Admin", "active": true, "long_text": "This is a very long text that should be truncated in the table cell to prevent layout blowouts."}, {"id": 2, "name": "Bob", "role": "User", "active": false, "long_text": "Short text"}, {"id": 3, "name": "Charlie", "role": "Manager", "active": true, "long_text": "Another long text string here that should be handled gracefully by the new SmartTable styling."}]}']
                     }
                 }
             }
         }
-    ].map((service) => UpstreamServiceConfig.toJSON(UpstreamServiceConfig.fromJSON(service)));
+    ];
 
     const templates = [
         {
@@ -160,7 +166,7 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
                 }
             }
         }
-    ].map((template) => ServiceTemplate.toJSON(ServiceTemplate.fromJSON(template)));
+    ];
 
     const users = [
         {
@@ -175,8 +181,27 @@ export const seedGlobalState = async (requestContext?: APIRequestContext) => {
             roles: ["admin"],
             profile_ids: ["dev", "prod"]
         }
-    ].map((user) => User.toJSON(User.fromJSON(user)));
+    ];
 
+        const traces = [
+        {
+            id: 'trace-1',
+            rootSpan: {
+              id: 'span-1',
+              name: 'calculate_sum',
+              serviceName: 'Math',
+              type: 'tool',
+              status: 'success',
+              startTime: Date.now() - 150,
+              endTime: Date.now(),
+              children: [],
+            },
+            timestamp: new Date().toISOString(),
+            totalDuration: 150,
+            status: 'success',
+            trigger: 'user'
+        }
+    ];
     const seedRequest = {
         upstream_services: services,
         service_templates: templates,
@@ -309,5 +334,31 @@ export const cleanupCollection = async (name?: string, requestContext?: APIReque
         await context.delete(`/api/v1/collections/${name}`, { headers: HEADERS });
     } catch (e) {
         // Ignore cleanup errors (collection may not exist)
+    }
+};
+
+export const seedTraces = async (requestContext?: APIRequestContext) => {
+    const context = requestContext || await request.newContext({ baseURL: BASE_URL });
+    const trace = {
+        id: 'trace-1',
+        rootSpan: {
+            id: 'span-1',
+            name: 'calculate_sum',
+            serviceName: 'Math',
+            type: 'tool',
+            status: 'success',
+            startTime: Date.now() - 150,
+            endTime: Date.now(),
+            children: []
+        },
+        timestamp: new Date().toISOString(),
+        totalDuration: 150,
+        status: 'success',
+        trigger: 'user'
+    };
+    try {
+        await context.post('/api/v1/debug/traces', { data: [trace], headers: HEADERS });
+    } catch (e) {
+        console.log(`Failed to seed trace: ${e}`);
     }
 };

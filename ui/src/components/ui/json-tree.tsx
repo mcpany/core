@@ -18,6 +18,20 @@ interface JsonTreeProps {
 }
 
 /**
+ * Intent: Document JsonTree
+ *
+ * Params:
+ *   - Documented below.
+ *
+ * Returns:
+ *   - Documented below.
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * JsonTree component.
  * Renders a recursive tree view of JSON data.
  *
@@ -138,6 +152,12 @@ export function JsonTree({ data, level = 0, defaultExpandedLevel = 1, className 
   );
 }
 
+/**
+ * PrimitiveValue component.
+ * @param props - The component props.
+ * @param props.value - The current value.
+ * @returns The rendered component.
+ */
 function PrimitiveValue({ value }: { value: unknown }) {
   if (typeof value === 'string') {
     if (value.startsWith('data:image/') && value.length > 50) {

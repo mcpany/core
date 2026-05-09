@@ -4,6 +4,20 @@
  */
 
 /**
+ * Summary: Document NodeType
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents the type of a node in the topology graph.
  */
 export type NodeType =
@@ -19,6 +33,20 @@ export type NodeType =
   | 'NODE_TYPE_WEBHOOK';
 
 /**
+ * Summary: Document NodeStatus
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents the operational status of a node.
  */
 export type NodeStatus =
@@ -28,6 +56,20 @@ export type NodeStatus =
   | 'NODE_STATUS_ERROR';
 
 /**
+ * Summary: Document NodeMetrics
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Performance metrics associated with a node.
  */
 export interface NodeMetrics {
@@ -40,6 +82,20 @@ export interface NodeMetrics {
 }
 
 /**
+ * Summary: Document Node
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents a single node in the topology graph.
  */
 export interface Node {
@@ -60,6 +116,20 @@ export interface Node {
 }
 
 /**
+ * Summary: Document Graph
+ *
+ * Params:
+ *   - None
+ *
+ * Returns:
+ *   - None
+ *
+ * Errors:
+ *   - None
+ *
+ * Side Effects:
+ *   - None
+ *
  * Represents the entire topology graph structure.
  */
 export interface Graph {

@@ -10,9 +10,13 @@ import (
 
 // BuiltinTemplates contains the seed configurations for high-value MCP servers.
 // Deprecated: Use BuiltinServiceTemplates instead.
+//
+// Summary: Represents a BuiltinTemplates.
 var BuiltinTemplates []*configv1.UpstreamServiceConfig
 
 // BuiltinServiceTemplates contains the rich seed configurations for the UI wizard.
+//
+// Summary: Represents a BuiltinServiceTemplates.
 var BuiltinServiceTemplates []*configv1.ServiceTemplate
 
 func init() {
@@ -231,6 +235,27 @@ func init() {
 			}.Build(),
 		}.Build(),
 		configv1.ServiceTemplate_builder{
+			Id:          proto.String("a2a-agent-chain"),
+			Name:        proto.String("A2A Agent Chain Tracer"),
+			Description: proto.String("High-fidelity telemetry provider for the A2A messaging hub. Emits cryptographically signed task proposals, bids, and handoff events for visual tracing."),
+			Icon:        proto.String("activity"),
+			Tags:        []string{"a2a", "tracing", "telemetry", "security"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("a2a-agent-chain"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50051/api/v2/a2a/tracer"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					Oauth2: configv1.OAuth2Auth_builder{
+						Scopes: proto.String("a2a:read,a2a:trace"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
 			Id:          proto.String("github"),
 			Name:        proto.String("GitHub"),
 			Description: proto.String("Code hosting and collaboration."),
@@ -352,6 +377,56 @@ func init() {
 				UpstreamAuth: configv1.Authentication_builder{
 					Oauth2: configv1.OAuth2Auth_builder{
 						Scopes: proto.String("read:jira-work,write:jira-work"),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("swarm-orchestrator"),
+			Name:        proto.String("Swarm Orchestrator"),
+			Description: proto.String("Gold Standard demonstration of multi-agent swarm topology, cryptographic entanglement, and active intent alignment. Simulates a high-performance, hardware-attested agent mesh."),
+			Icon:        proto.String("network"),
+			Tags:        []string{"security", "topology", "mock"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("swarm-orchestrator"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50050/api/v1/topology"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("mcp-any-swarm-attestation-token"),
+						}.Build(),
+						ParamName: proto.String("X-Hardware-Attested-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
+					}.Build(),
+				}.Build(),
+			}.Build(),
+		}.Build(),
+		configv1.ServiceTemplate_builder{
+			Id:          proto.String("global-telemetry"),
+			Name:        proto.String("Global Telemetry"),
+			Description: proto.String("Gold Standard demonstration of global agent activity map visualization data. Contains geolocated tool execution metrics and active agent nodes."),
+			Icon:        proto.String("globe"),
+			Tags:        []string{"telemetry", "analytics", "mock"},
+			ServiceConfig: configv1.UpstreamServiceConfig_builder{
+				Name: proto.String("global-telemetry"),
+				McpService: configv1.McpUpstreamService_builder{
+					HttpConnection: configv1.McpStreamableHttpConnection_builder{
+						HttpAddress: proto.String("http://localhost:50050/api/v1/telemetry/global"),
+					}.Build(),
+					ToolAutoDiscovery: proto.Bool(true),
+				}.Build(),
+				UpstreamAuth: configv1.Authentication_builder{
+					ApiKey: configv1.APIKeyAuth_builder{
+						Value: configv1.SecretValue_builder{
+							PlainText: proto.String("mcp-any-global-telemetry-token"),
+						}.Build(),
+						ParamName: proto.String("X-Telemetry-Auth-Token"),
+						In:        configv1.APIKeyAuth_HEADER.Enum(),
 					}.Build(),
 				}.Build(),
 			}.Build(),

@@ -29,13 +29,28 @@ import (
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
+//
+// Summary: Executes BindRootFlags operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func BindRootFlags(cmd *cobra.Command) {
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("MCPANY")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	cmd.PersistentFlags().String("mcp-listen-address", ":50050", "MCP server's bind address. Env: MCPANY_MCP_LISTEN_ADDRESS")
-	cmd.PersistentFlags().StringSlice("config-path", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
+	cmd.PersistentFlags().StringSliceP("config-path", "c", []string{}, "Paths to configuration files or directories for pre-registering services. Can be specified multiple times. Env: MCPANY_CONFIG_PATH")
+	cmd.PersistentFlags().StringSlice("config", []string{}, "Alias for --config-path")
 	cmd.PersistentFlags().String("metrics-listen-address", "", "Address to expose Prometheus metrics on. If not specified, metrics are disabled. Env: MCPANY_METRICS_LISTEN_ADDRESS")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug logging. Env: MCPANY_DEBUG")
 	cmd.PersistentFlags().String("log-level", "info", "Set the log level (debug, info, warn, error). Env: MCPANY_LOG_LEVEL")
@@ -49,6 +64,10 @@ func BindRootFlags(cmd *cobra.Command) {
 	}
 	if err := viper.BindPFlag("config-path", cmd.PersistentFlags().Lookup("config-path")); err != nil {
 		fmt.Fprintf(os.Stderr, "Error binding config-path flag: %v\n", err)
+		os.Exit(1)
+	}
+	if err := viper.BindPFlag("config", cmd.PersistentFlags().Lookup("config")); err != nil {
+		fmt.Fprintf(os.Stderr, "Error binding config flag: %v\n", err)
 		os.Exit(1)
 	}
 	if err := viper.BindPFlag("metrics-listen-address", cmd.PersistentFlags().Lookup("metrics-listen-address")); err != nil {
@@ -86,12 +105,27 @@ func BindRootFlags(cmd *cobra.Command) {
 //   - cmd (*cobra.Command): The command instance to which the server flags will be attached.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
 //   - Exits the application on error.
+//
+// Summary: Executes BindServerFlags operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func BindServerFlags(cmd *cobra.Command) {
 	cmd.Flags().String("grpc-port", "", "Port for the gRPC registration server. If not specified, gRPC registration is disabled. Env: MCPANY_GRPC_PORT")
 	cmd.Flags().Bool("stdio", false, "Enable stdio mode for JSON-RPC communication. Env: MCPANY_STDIO")
@@ -135,11 +169,26 @@ func BindServerFlags(cmd *cobra.Command) {
 //   - cmd (*cobra.Command): The command instance to which the flags will be attached.
 //
 // Returns:
-//   None.
+//
+//	None.
 //
 // Side Effects:
 //   - Modifies the global Viper configuration state.
 //   - Registers flags on the provided Cobra command.
+//
+// Summary: Executes BindFlags operation.
+//
+// Parameters:
+//   - TODO: Document parameters.
+//
+// Returns:
+//   - TODO: Document returns.
+//
+// Errors:
+//   - TODO: Document errors.
+//
+// Side Effects:
+//   - None.
 func BindFlags(cmd *cobra.Command) {
 	BindRootFlags(cmd)
 	BindServerFlags(cmd)
