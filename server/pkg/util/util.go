@@ -183,7 +183,7 @@ func sanitizePart(sb *strings.Builder, id string, alwaysAppendHash bool, maxSani
 func appendHashSuffix(sb *strings.Builder, id string, reqHashLength int) {
 	// Append Hash
 	// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
-	sum := sha256.Sum256(stringToBytes(id))
+	sum := sha256.Sum256(StringToBytes(id))
 
 	// Avoid hex.EncodeToString allocation
 	var hashBuf [64]byte // sha256 hex is 64 chars
@@ -388,7 +388,7 @@ func SanitizeOperationID(input string) string {
 
 			// Optimization: Use sha256.Sum256 to avoid heap allocation of hash.Hash
 			// Use zero-copy string to byte conversion
-			sum := sha256.Sum256(stringToBytes(badChunk))
+			sum := sha256.Sum256(StringToBytes(badChunk))
 			var hashBuf [64]byte
 			hex.Encode(hashBuf[:], sum[:])
 
@@ -400,9 +400,9 @@ func SanitizeOperationID(input string) string {
 	return sb.String()
 }
 
-// stringToBytes converts a string to a byte slice without allocation.
+// StringToBytes converts a string to a byte slice without allocation.
 // IMPORTANT: The returned byte slice must not be modified.
-func stringToBytes(s string) []byte {
+func StringToBytes(s string) []byte {
 	return unsafe.Slice(unsafe.StringData(s), len(s))
 }
 
