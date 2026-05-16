@@ -21,7 +21,7 @@ MCP Any, as the universal agent infrastructure, is uniquely positioned to act as
 * **User Persona:** Multi-Agent Developer
 * **Primary Goal:** Surface a secure interactive dashboard
 
-![Dashboard Overview](screenshots/dashboard_overview.png)
+![Dashboard Overview](../screenshots/dashboard_overview.png)
  from a remote specialist agent to a local developer workspace.
 * **The Happy Path (Tasks):**
     1. A specialist agent (e.g., a Database Tuner) identifies a need for user feedback on a complex configuration.
