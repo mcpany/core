@@ -24,4 +24,4 @@ To allow all tools except those starting with `delete_`:
    - **Regex**: `^delete_.*`
    - **Action**: **Deny (Unexport)**
 
-![Policy Editor](../screenshots/policy_editor.png)
+![Policy Editor](../../screenshots/policy_editor.png)

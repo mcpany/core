@@ -12,14 +12,14 @@ Navigate to `/network`. The graph renders automatically using a hierarchical lay
 - **Nodes**: Represent Services, Clients, and Shared Resources.
 - **Edges**: Represent active connections or dependencies.
 
-![Network Graph](screenshots/network_graph.png)
+![Network Graph](../screenshots/network_graph.png)
 
 ### 2. Inspect Node
 Click on any node (e.g., a Service node) to open the **Details Panel**.
 - **Metrics**: Real-time uptime and active connection count.
 - **Tools**: List of tools exposed by this service.
 
-![Node Details](screenshots/node_detail_panel.png)
+![Node Details](../screenshots/node_detail_panel.png)
 
 ### 3. Filter and Zoom
 - **Zoom**: Use your mouse wheel or trackpad to zoom in/out.

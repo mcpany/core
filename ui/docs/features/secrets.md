@@ -12,7 +12,7 @@ Navigate to `/secrets` (or **Settings > Secrets**).
 - **List**: Shows all stored keys.
 - **Value**: Displayed as `*****` for security.
 
-![Secrets List](screenshots/secrets_list.png)
+![Secrets List](../screenshots/secrets_list.png)
 
 ### 2. Add Secret
 1. Click **"Add Secret"**.
@@ -22,7 +22,7 @@ Navigate to `/secrets` (or **Settings > Secrets**).
 5. Enter the **Secret Value** (e.g., `sk-...`).
 6. Click **"Save Secret"**.
 
-![Create Secret](screenshots/secret_create_modal.png)
+![Create Secret](../screenshots/secret_create_modal.png)
 
 ### 3. Usage in Services
 

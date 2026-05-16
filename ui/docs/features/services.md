@@ -17,7 +17,7 @@ Manage upstream services connected to the MCP Any platform. The Services Dashboa
 
 Navigate to the **Services** page via the sidebar. This view provides a high-level overview of all registered upstream services.
 
-![Services List](screenshots/services_list.png)
+![Services List](../screenshots/services_list.png)
 
 Key columns:
 
@@ -38,7 +38,7 @@ To register a new upstream service:
 3. Select a service template (e.g., PostgreSQL, HTTP) or configure a custom type.
 4. Follow the configuration wizard to register the service.
 
-![Add Service Sheet](screenshots/services_add_dialog.png)
+![Add Service Sheet](../screenshots/services_add_dialog.png)
 
 ### 3. Configure Service
 
@@ -48,7 +48,7 @@ To edit an existing service:
 2. A detailed **Configuration Sheet** will open.
 3. Here you can update the endpoint, manage **Environment Variables**, and view specialized settings.
 
-![Service Configuration](screenshots/service_config.png)
+![Service Configuration](../screenshots/service_config.png)
 
 ### 4. Toggle Service State
 
