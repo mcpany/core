@@ -6,7 +6,7 @@ MCP Any provides real-time and historical analytics for every tool. This helps d
 
 The "Analytics" tab in the Tool Runner provides a comprehensive view of tool execution:
 
-![Tool Analytics](../screenshots/tool_analytics.png)
+![Tool Analytics](../../screenshots/tool_analytics.png)
 
 - **Total Calls**: The total number of times this tool has been executed (all-time).
 - **Success Rate**: The percentage of successful executions (all-time).

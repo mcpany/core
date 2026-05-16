@@ -13,4 +13,4 @@ On smaller screens:
 - **Tables**: Transform into card views or scrollable lists.
 - **Graphs**: Network graph simplifies touch interactions.
 
-![Mobile Dashboard](screenshots/mobile_dashboard.png)
+![Mobile Dashboard](../screenshots/mobile_dashboard.png)
