@@ -16,7 +16,7 @@ Navigate to `/stacks`. The editor is divided into three panes:
 - **Center**: YAML Editor.
 - **Right**: Live Visualizer.
 
-![Stack Composer Overview](screenshots/stack_composer_overview.png)
+![Stack Composer Overview](../screenshots/stack_composer_overview.png)
 
 ### 2. Using the Palette
 
@@ -26,7 +26,7 @@ To add a service:
 2. Click on a template (e.g. `Postgres`, `Redis`).
 3. The corresponding YAML configuration is injected into the editor cursor position.
 
-![Service Palette](screenshots/stack_composer_palette.png)
+![Service Palette](../screenshots/stack_composer_palette.png)
 
 ### 3. Manual Configuration
 

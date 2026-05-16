@@ -18,4 +18,4 @@ The **Connect Client Center** simplifies the process of connecting your favorite
 
 ## Screenshots
 
-![Connect Client Dialog](../screenshots/connect-client.png)
+![Connect Client Dialog](../../screenshots/connect-client.png)

@@ -18,4 +18,4 @@ The **Real-time Inspector** allows you to monitor JSON-RPC traffic and tool exec
 4. Watch new traces appear in real-time.
 5. Click on a trace to view detailed information about the request, response, and latency.
 
-![Inspector](../screenshots/inspector.png)
+![Inspector](../../screenshots/inspector.png)
