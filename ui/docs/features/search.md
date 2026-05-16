@@ -11,7 +11,7 @@ Navigate the entire system from the keyboard. The Global Search (Command Palette
 Press `Ctrl+K` (or `Cmd+K` on Mac) anywhere in the application.
 The search modal appears.
 
-![Global Search](screenshots/global_search.png)
+![Global Search](../screenshots/global_search.png)
 
 ### 2. Navigate
 - **Type**: Enter a query (e.g., "Postgres").

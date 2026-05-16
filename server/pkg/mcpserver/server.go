@@ -1024,9 +1024,9 @@ func (s *Server) CallTool(ctx context.Context, req *tool.ExecutionRequest) (any,
 	// 3. Fallback: If no structured result identified, treat as raw data
 	if finalResult == nil {
 		if len(jsonBytes) == 0 && marshalErr == nil {
-			jsonBytes, marshalErr = util.FastMarshal(result)
+			text, marshalErr = util.FastMarshalToString(result)
 			if marshalErr == nil {
-				text = util.BytesToString(jsonBytes)
+				jsonBytes = util.StringToBytes(text)
 			}
 		}
 
